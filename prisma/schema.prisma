@@ -1,0 +1,221 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  MANAGER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum OrderItemType {
+  BOOK
+  PACK
+}
+
+enum CouponType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+// Admin User
+model CategoryConfig {
+  id             String    @id @default(uuid())
+  name           String    @unique
+  badge          String?   // PROMO | NEW | HOT | etc.
+  badgeColor     String?   // hex code or tailwind class
+  badgeExpiresAt DateTime? // Date d'expiration pour le badge
+  quote          String?   @db.Text
+  quoteSource    String?   // L'auteur ou le livre
+  isPinned       Boolean   @default(false)
+  updatedAt      DateTime  @updatedAt
+}
+
+model SearchLog {
+  id        String   @id @default(uuid())
+  query     String
+  category  String?
+  createdAt DateTime @default(now())
+}
+
+model BadgeClick {
+  id        String   @id @default(uuid())
+  badge     String   // PROMO, NEW, HOTEL, etc.
+  category  String
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // Hashé avec bcrypt
+  role      UserRole @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// Livre
+model Book {
+  id          String      @id @default(uuid())
+  title       String      @db.VarChar(255)
+  author      String      @db.VarChar(255)
+  description String      @db.Text
+  isbn        String?     @unique @db.VarChar(20)
+  price         Float       @db.Double
+  originalPrice Float?      @db.Double
+  stock         Int         @default(0)
+  image         String      @db.VarChar(500)
+  category    String?     @db.VarChar(100)
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  packBooks  PackBook[]
+  orderItems OrderItem[]
+  reviews    Review[]
+
+  @@index([category])
+  @@index([active])
+  @@map("books")
+}
+
+// Pack de livres (Offre groupée)
+model Pack {
+  id          String      @id @default(uuid())
+  name        String      @db.VarChar(255)
+  description String?     @db.Text
+  price       Float       @db.Double
+  image       String?     @db.VarChar(500)
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  books      PackBook[]
+  orderItems OrderItem[]
+
+  @@index([active])
+  @@map("packs")
+}
+
+// Table de liaison Pack <-> Book (Many-to-Many)
+model PackBook {
+  id     String @id @default(uuid())
+  packId String
+  bookId String
+  
+  // Relations
+  pack Pack @relation(fields: [packId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([packId, bookId])
+  @@index([packId])
+  @@index([bookId])
+  @@map("pack_books")
+}
+
+// Commande (COD - Cash On Delivery)
+model Order {
+  id        String      @id @default(uuid())
+  
+  // Informations client
+  fullName  String      @db.VarChar(255)
+  phone     String      @db.VarChar(20)
+  address   String      @db.VarChar(500)
+  city      String      @db.VarChar(100)
+  comment   String?     @db.Text
+  
+  // Informations commande
+  total     Float       @db.Double
+  discount  Float       @default(0) @db.Double
+  couponCode String?    @db.VarChar(50)
+  status    OrderStatus @default(PENDING)
+  
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  
+  // Relations
+  items OrderItem[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([phone])
+  @@map("orders")
+}
+
+// Ligne de commande (peut être un livre ou un pack)
+model OrderItem {
+  id       String        @id @default(uuid())
+  orderId  String
+  type     OrderItemType // BOOK ou PACK
+  quantity Int           @default(1)
+  price    Float         @db.Double // Prix au moment de l'achat
+  
+  // Relations optionnelles (un seul des deux sera rempli selon le type)
+  bookId String?
+  packId String?
+  
+  // Relations
+  order Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  book  Book?  @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  pack  Pack?  @relation(fields: [packId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([bookId])
+  @@index([packId])
+  @@map("order_items")
+}
+
+// Code Promo
+model Coupon {
+  id          String     @id @default(uuid())
+  code        String     @unique @db.VarChar(50)
+  discount    Float      @db.Double // Valeur numérique
+  type        CouponType @default(PERCENTAGE)
+  minAmount   Float?     @db.Double
+  isActive    Boolean    @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("coupons")
+}
+
+// Avis Clients
+model Review {
+  id        String   @id @default(uuid())
+  bookId    String
+  fullName  String   @db.VarChar(255)
+  rating    Int      @default(5)
+  comment   String   @db.Text
+  isApproved Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([bookId])
+  @@index([isApproved])
+  @@map("reviews")
+}
