@@ -1,0 +1,267 @@
+{
+    "HomePage": {
+        "hero": {
+            "Badge": "مختارات 2024",
+            "TitlePart1": "معرفة",
+            "TitlePart2": "جميلة.",
+            "Description": "اكتشف مجموعة متميزة من الكتب التي تغير نظرتك للعالم. المعرفة بأسلوب راقٍ.",
+            "ShopLibrary": "تسوق المكتبة",
+            "OurBundles": "باقاتنا",
+            "EditorsChoice": "ختيار المحرر",
+            "Select": "تحديد"
+        },
+        "Features": {
+            "ShippingTitle": "شحن سريع",
+            "ShippingDesc": "تغطية شاملة للمغرب في وقت قياسي.",
+            "PaymentTitle": "دفع آمن",
+            "PaymentDesc": "الدفع عند الاستلام بكل ثقة.",
+            "PacksTitle": "باقات مميزة",
+            "PacksDesc": "مختارات بعناية بأسعار مدروسة."
+        },
+        "Quotes": {
+            "WisdomOfTheDay": "حكمة اليوم",
+            "FeaturedIn": "وردت في"
+        },
+        "Collections": {
+            "Subtitle": "مختارات بعناية",
+            "Title": "مجموعاتنا"
+        },
+        "NewArrivals": {
+            "Subtitle": "موسم جديد",
+            "Title": "أحدث الوصولات",
+            "ViewAll": "عرض الكل"
+        },
+        "CTA": {
+            "TitlePart1": "جاهز لقراءتك",
+            "TitlePart2": "المقبلة؟",
+            "Button": "ابدأ الآن"
+        }
+    },
+    "Navigation": {
+        "Home": "الرئيسية",
+        "Books": "الكتب",
+        "Packs": "الباقات",
+        "Cart": "السلة",
+        "Login": "دخول",
+        "Admin": "إدارة",
+        "Search": "ابحث عن الكتب..."
+    },
+    "Footer": {
+        "About": "عن ريواية",
+        "Contact": "اتصل بنا",
+        "Terms": "شروط الخدمة",
+        "Privacy": "سياسة الخصوصية"
+    },
+    "Common": {
+        "Loading": "جاري التحميل...",
+        "Price": "السعر",
+        "AddToCart": "أضف إلى السلة",
+        "OutOfStock": "نفذت الكمية",
+        "Remaining": "متبقي",
+        "By": "بواسطة",
+        "BestSeller": "الأكثر مبيعاً"
+    },
+    "Packs": {
+        "Save": "وفر",
+        "Exclusive": "باقة حصرية",
+        "Includes": "كتب متضمنة",
+        "RegularPrice": "السعر العادي",
+        "PackPrice": "سعر الباقة",
+        "AddSelection": "أضف المختارات"
+    },
+    "FAQ": {
+        "Title": "أسئلة مكررة",
+        "Subtitle": "مركز المساعدة",
+        "Questions": {
+            "Shipping": {
+                "Question": "ما هي أوقات التوصيل؟",
+                "Answer": "نقوم بالتوصيل خلال 24-48 ساعة في المدن الكبرى (الدار البيضاء، الرباط، مراكش، طنجة) و 48-72 ساعة للمناطق الأخرى."
+            },
+            "Payment": {
+                "Question": "ما هي وسائل الدفع المقبولة؟",
+                "Answer": "نقبل حالياً الدفع عند الاستلام فقط لضمان رضاكم التام عند الاستلام."
+            },
+            "Returns": {
+                "Question": "هل يمكنني إرجاع كتاب؟",
+                "Answer": "نعم، لديك 3 أيام بعد التوصيل للإبلاغ عن مشكلة إذا كان الكتاب تالفاً أو لا يطابق طلبك."
+            },
+            "DeliveryCost": {
+                "Question": "كم تكلفة التوصيل؟",
+                "Answer": "التوصيل مجاني للطلبات التي تزيد عن 400 درهم. للطلبات الأقل، تطبق رسوم ثابتة قدرها 35 درهم."
+            }
+        }
+    },
+    "Returns": {
+        "Title": "سياسة الإرجاع",
+        "Subtitle": "راحة البال",
+        "Intro": "نريدك أن تحب تجربة القراءة الخاصة بك. إليك كيفية تعاملنا مع المرتجعات.",
+        "Policy": {
+            "Point1": "لديك 3 أيام تقويمية للإبلاغ عن مشكلة.",
+            "Point2": "يجب أن يكون المنتج غير مستخدم وفي نفس الحالة التي استلمته بها.",
+            "Point3": "يرجى الاتصال بنا عبر نموذج الاتصال أو واتساب لبدء عملية الإرجاع.",
+            "Point4": "تتم معالجة الاسترداد بعد فحص المنتج المرجح."
+        }
+    },
+    "Contact": {
+        "Title": "اتصل بنا",
+        "Subtitle": "ابقى على تواصل",
+        "Form": {
+            "Name": "الاسم الكامل",
+            "Email": "البريد الإلكتروني",
+            "Message": "رسالتك",
+            "Submit": "إرسال الرسالة",
+            "Sending": "جاري الإرسال..."
+        },
+        "Info": {
+            "Email": "البريد الإلكتروني",
+            "Phone": "الهاتف",
+            "Address": "العنوان",
+            "Hours": "ساعات العمل"
+        }
+    },
+    "BookDetail": {
+        "BackToSelection": "العودة إلى القائمة",
+        "OnlyLeft": "بقي {stock} فقط",
+        "FastMove": "شحن سريع",
+        "Secured": "آمن",
+        "Original": "أصلي",
+        "ReaderReviews": "{count} آراء القراء",
+        "BeFirstToReview": "كن أول من يبدي رأيه",
+        "TaxesIncluded": "شامل الضرائب · الدفع عند الاستلام",
+        "ReadyForCollection": "جاهز للشحن",
+        "OutOfStock": "نفذت الكمية",
+        "Abstract": "ملخص",
+        "Technical": "معلومات تقنية",
+        "Reference": "المرجع",
+        "Volume": "الحجم",
+        "Pages": "صفحة",
+        "RiwayaSelect": "مختارات ريواية",
+        "OriginalMasterpiece": "تحفة أصلية",
+        "PremiumPaperQual": "ورق فاخر",
+        "GlobalStandard": "معايير عالمية",
+        "CulturalSelect": "مختارات ثقافية",
+        "Voices": "أصوات",
+        "SharePerspective": "شارك وجهة نظرك مع مجتمعنا الفكري.",
+        "Reflections": "{count} تأملات",
+        "RecommendedReads": "قراءات مقترحة",
+        "ExploreAll": "استكشف الكل"
+    },
+    "Cart": {
+        "Title": "سلتك",
+        "SelectedItems": "{count} عناصر مختارة",
+        "EmptyTitle": "سلتك فارغة.",
+        "EmptyDesc": "يبدو أنك لم تكتشف <br /> كنوزنا بعد.",
+        "DiscoverBooks": "اكتشف الكتب",
+        "Set": "باقة",
+        "Titles": "عناوين",
+        "ClearSelection": "إفراغ السلة",
+        "Subtotal": "المجموع الفرعي",
+        "Delivery": "التوصيل",
+        "Complimentary": "مجاني",
+        "FreeShippingAd": "أضف {amount} درهم للحصول على توصيل مجاني.",
+        "OrderTotal": "الإجمالي",
+        "ProceedToCheckout": "إتمام الشراء",
+        "KeepExploring": "متابعة التسوق"
+    },
+    "Checkout": {
+        "BackToSelection": "العودة للقائمة",
+        "YourDetails": "بياناتك",
+        "ShippingInfo": "معلومات الشحن",
+        "FirstName": "الاسم الأول",
+        "LastName": "الاسم العائلي",
+        "MobileNumber": "رقم الهاتف",
+        "City": "المدينة",
+        "ChooseCity": "اختر مدينتك",
+        "FullAddress": "العنوان الكامل",
+        "NoteOptional": "ملاحظة (اختياري)",
+        "PaymentMethod": "طريقة الدفع",
+        "CashOnDelivery": "الدفع عند الاستلام",
+        "PayWhenReceive": "ادفع عند استلام طلبك.",
+        "SelectionSummary": "ملخص الطلب",
+        "PromotionalCode": "رمز ترويجي",
+        "CodeApplied": "تم تطبيق الرمز",
+        "DeliveryFee": "رسوم التوصيل",
+        "Free": "مجاني",
+        "TotalAmount": "المبلغ الإجمالي",
+        "CompletePurchase": "تأكيد الطلب",
+        "Processing": "جاري المعالجة...",
+        "FastDelivery": "توصيل سريع <br /> خلال 24-48 ساعة.",
+        "Errors": {
+            "FirstNameRequired": "الاسم الأول مطلوب",
+            "LastNameRequired": "الاسم العائلي مطلوب",
+            "PhoneRequired": "رقم الهاتف مطلوب",
+            "PhoneInvalid": "رقم غير صحيح (مثال: 0612345678)",
+            "CityRequired": "المدينة مطلوبة",
+            "AddressRequired": "العنوان مطلوب",
+            "UnexpectedError": "حدث خطأ غير متوقع"
+        }
+    },
+    "Review": {
+        "SuccessTitle": "شكراً لرأيك!",
+        "SuccessDesc": "رأيك يساعد القراء الآخرين على الاختيار الصحيح.",
+        "Title": "أضف تقييمك",
+        "GlobalRating": "التقييم العام",
+        "FullName": "الاسم الكامل",
+        "YourComment": "تعليقك",
+        "PlaceholderName": "مثال: أحمد بن علي",
+        "PlaceholderComment": "ما رأيك في هذا الكتاب؟",
+        "Submit": "إرسال التقييم"
+    },
+    "ReviewList": {
+        "NoReviews": "كن أول من يبدي رأيه في هذا الكتاب! ✨"
+    },
+    "PredictiveSearch": {
+        "Placeholder": "ابحث عن كتاب، مؤلف...",
+        "RecentSearches": "عمليات البحث الأخيرة",
+        "Clear": "مسح",
+        "PopularThemes": "مواضيع شائعة",
+        "BookCount": "{count} كتب",
+        "Remaining": "متبقي!",
+        "From": "ابتداء من {price} درهم",
+        "Suggestions": "اقتراحات",
+        "By": "بقلم {author}",
+        "NoResultsTitle": "عذراً!",
+        "NoResultsDesc": "لا توجد كتب تطابق بحثك.",
+        "ViewAll": "عرض كل النتائج",
+        "EndsIn": "ينتهي في: {time}"
+    },
+    "Categories": {
+        "Développement Personnel": "تطوير الذات",
+        "Business & Finance": "أعمال ومال",
+        "Psychologie": "علم النفس",
+        "Romans & Fiction": "روايات وخيال",
+        "Religion": "دين",
+        "Organisation": "تنظيم",
+        "All": "كل التصنيفات"
+    },
+    "BooksPage": {
+        "Title": "المكتبة",
+        "ItemsAvailable": "{count} كتب متاحة",
+        "In": "في",
+        "Filters": "تصفية",
+        "SearchItems": "بحث",
+        "SearchPlaceholder": "العنوان، المؤلف...",
+        "Apply": "تطبيق",
+        "Languages": "اللغات",
+        "AllLanguages": "كل اللغات",
+        "Categories": "التصنيفات",
+        "Active": "نـشطة",
+        "Reset": "إعادة تعيين",
+        "NoVolumes": "لم يتم العثور على كتب",
+        "EmptyCollection": "مجموعتنا فارغة لهذه المرشحات.",
+        "EmptyFilters": "محو المرشحات",
+        "Results": "نتائج"
+    },
+    "ReviewsSection": {
+        "Title": "آراء العملاء",
+        "NoReviews": "لا توجد آراء حتى الآن",
+        "BeFirst": "كن أول من يشارك رأيه!",
+        "AverageRating": "التقييم المتوسط",
+        "BasedOn": "بناءً على {count} تقييم",
+        "WriteReview": "اكتب تقييماً",
+        "YourOpinion": "شارك رأيك",
+        "HelpOthers": "ساعد القراء الآخرين في اتخاذ قرارهم",
+        "Submitted": "شكراً!",
+        "SubmittedDesc": "تم إرسال تقييمك وهو في انتظار المراجعة."
+    }
+}

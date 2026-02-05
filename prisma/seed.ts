@@ -39,6 +39,7 @@ async function main() {
       stock: 50,
       category: 'Développement Personnel',
       image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600',
+      language: 'en'
     },
     {
       title: 'Le pouvoir du moment présent',
@@ -48,6 +49,7 @@ async function main() {
       stock: 30,
       category: 'Développement Personnel',
       image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=600',
+      language: 'fr'
     },
     {
       title: 'Les 4 accords Toltèques',
@@ -57,6 +59,7 @@ async function main() {
       stock: 35,
       category: 'Développement Personnel',
       image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600',
+      language: 'fr'
     },
     {
       title: 'Miracle Morning',
@@ -66,6 +69,7 @@ async function main() {
       stock: 25,
       category: 'Développement Personnel',
       image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=600',
+      language: 'fr'
     },
 
     // Business & Finance
@@ -77,15 +81,17 @@ async function main() {
       stock: 45,
       category: 'Business & Finance',
       image: 'https://images.unsplash.com/photo-1554774853-719586f8c277?auto=format&fit=crop&q=80&w=600',
+      language: 'fr'
     },
     {
-      title: 'Réfléchissez et devenez riche',
+      title: 'Think and Grow Rich',
       author: 'Napoleon Hill',
-      description: 'Le chef-d\'œuvre de Napoleon Hill. Ce livre vous enseigne comment utiliser le pouvoir de votre esprit pour acquérir la richesse.',
+      description: 'The masterpiece by Napoleon Hill. This book teaches you how to use the power of your mind to acquire wealth.',
       price: 140,
       stock: 40,
       category: 'Business & Finance',
       image: 'https://images.unsplash.com/photo-1621360841011-cb2aab44c20f?auto=format&fit=crop&q=80&w=600',
+      language: 'en'
     },
     {
       title: 'La semaine de 4 heures',
@@ -95,6 +101,7 @@ async function main() {
       stock: 15,
       category: 'Business & Finance',
       image: 'https://images.unsplash.com/photo-1555449918-7b9613583569?auto=format&fit=crop&q=80&w=600',
+      language: 'fr'
     },
 
     // Psychologie
@@ -106,15 +113,17 @@ async function main() {
       stock: 20,
       category: 'Psychologie',
       image: 'https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?auto=format&fit=crop&q=80&w=600',
+      language: 'fr'
     },
     {
-      title: 'Système 1 / Système 2',
+      title: 'Thinking, Fast and Slow',
       author: 'Daniel Kahneman',
-      description: 'Les deux vitesses de la pensée. Une exploration fascinante du fonctionnement de notre esprit par un prix Nobel.',
+      description: ' The two systems that drive the way we think. System 1 is fast, intuitive, and emotional; System 2 is slower, more deliberative, and more logical.',
       price: 220,
       stock: 10,
       category: 'Psychologie',
       image: 'https://images.unsplash.com/photo-1555252554-e69ea2388042?auto=format&fit=crop&q=80&w=600',
+      language: 'en'
     },
 
     // Fiction & Romans
@@ -126,6 +135,7 @@ async function main() {
       stock: 60,
       category: 'Romans & Fiction',
       image: 'https://images.unsplash.com/photo-1518373714866-3f1479826059?auto=format&fit=crop&q=80&w=600',
+      language: 'fr'
     },
     {
       title: '1984',
@@ -135,35 +145,39 @@ async function main() {
       stock: 55,
       category: 'Romans & Fiction',
       image: 'https://images.unsplash.com/photo-1531988042232-c555f697be4d?auto=format&fit=crop&q=80&w=600',
+      language: 'fr'
     },
     {
-      title: 'Le Petit Prince',
+      title: 'The Little Prince',
       author: 'Antoine de Saint-Exupéry',
-      description: 'Le conte poétique et philosophique le plus lu au monde. Une histoire pour les enfants et les grandes personnes.',
+      description: 'A poetic and philosophical tale. A story for children and grown-ups alike.',
       price: 90,
       stock: 70,
       category: 'Romans & Fiction',
       image: 'https://images.unsplash.com/photo-1633477189729-9290b3261d0a?auto=format&fit=crop&q=80&w=600',
+      language: 'en'
     },
 
     // Religion
     {
-      title: 'La vie du Prophète (Sîra)',
-      author: 'Tariq Ramadan',
-      description: 'Une plongée spirituelle et historique dans la vie du Prophète Muhammad (PSL).',
+      title: 'الرحيق المختوم',
+      author: 'صفي الرحمن المباركفوري',
+      description: 'بحث في السيرة النبوية على صاحبها أفضل الصلاة والسلام.',
       price: 240,
       stock: 15,
       category: 'Religion',
       image: 'https://images.unsplash.com/photo-1576766453916-2d6d8ee82780?auto=format&fit=crop&q=80&w=600',
+      language: 'ar'
     },
     {
-      title: 'Ne sois pas triste',
-      author: 'Aaidh ibn Abdullah al-Qarni',
-      description: 'Un best-seller mondial qui offre des conseils pratiques pour surmonter les épreuves de la vie avec foi et optimisme.',
+      title: 'لا تحزن',
+      author: 'عائض القرني',
+      description: 'كتاب يدعو إلى التفاؤل ونبذ اليأس.',
       price: 180,
       stock: 40,
       category: 'Religion',
       image: 'https://images.unsplash.com/photo-1519791883288-dc8bd696e667?auto=format&fit=crop&q=80&w=600',
+      language: 'ar'
     },
   ]
 

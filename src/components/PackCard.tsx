@@ -1,9 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 import { Package, ShoppingCart, Sparkles, ArrowRight } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
+import { useTranslations } from 'next-intl'
+import { useUIStore } from '@/store/ui'
 
 interface PackCardProps {
     id: string
@@ -30,7 +32,9 @@ export default function PackCard({
     image,
     books,
 }: PackCardProps) {
+    const t = useTranslations('Packs')
     const addItem = useCartStore((state) => state.addItem)
+    const openCart = useUIStore((state) => state.openCart)
     const totalOriginalPrice = books.reduce((sum, pb) => sum + pb.book.price, 0)
     const savings = totalOriginalPrice - price
     const savingsPercent = Math.round((savings / totalOriginalPrice) * 100)
@@ -40,7 +44,7 @@ export default function PackCard({
             {/* Savings Badge - Style Pixio */}
             <div className="absolute top-6 right-6 z-10 pointer-events-none">
                 <div className="bg-pixio-pink text-black px-4 py-2 rounded-full shadow-lg border border-black/5 rotate-12 group-hover:rotate-0 transition-transform">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-center leading-none">Save</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-center leading-none">{t('Save')}</p>
                     <p className="text-xl font-black leading-none text-center">-{savingsPercent}%</p>
                 </div>
             </div>
@@ -87,13 +91,13 @@ export default function PackCard({
             <div className="p-8">
                 <Link href={`/packs/${id}`}>
                     <div className="flex flex-col items-center text-center mb-6">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Exclusive Pack</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">{t('Exclusive')}</span>
                         <h3 className="text-2xl font-black text-black tracking-tighter mb-2 group-hover:translate-y-1 transition-transform">
                             {name}
                         </h3>
                         <div className="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-gray-100 shadow-sm">
                             <Sparkles className="w-3 h-3 text-yellow-500" />
-                            <span className="text-[10px] font-black black uppercase tracking-widest">{books.length} Titres inclus</span>
+                            <span className="text-[10px] font-black black uppercase tracking-widest">{books.length} {t('Includes')}</span>
                         </div>
                     </div>
                 </Link>
@@ -101,12 +105,12 @@ export default function PackCard({
                 {/* Price Section - Style Pixio */}
                 <div className="bg-white rounded-[1.5rem] p-6 border border-gray-50 shadow-sm space-y-4">
                     <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-widest">
-                        <span className="text-gray-400">Regular Price</span>
+                        <span className="text-gray-400">{t('RegularPrice')}</span>
                         <span className="text-gray-300 line-through">{totalOriginalPrice} MAD</span>
                     </div>
 
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-black uppercase tracking-widest text-black">Pack Price</span>
+                        <span className="text-[11px] font-black uppercase tracking-widest text-black">{t('PackPrice')}</span>
                         <span className="text-3xl font-black text-black tracking-tighter">
                             {price} <span className="text-[10px] font-black text-gray-400">MAD</span>
                         </span>
@@ -125,9 +129,10 @@ export default function PackCard({
                                 image: image || books[0]?.book.image || '/images/placeholder-pack.jpg',
                                 booksCount: books.length
                             })
+                            openCart()
                         }}
                     >
-                        <span>Add Selection</span>
+                        <span>{t('AddSelection')}</span>
                         <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                     </button>
                 </div>

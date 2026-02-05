@@ -86,6 +86,7 @@ model Book {
   stock         Int         @default(0)
   image         String      @db.VarChar(500)
   category    String?     @db.VarChar(100)
+  language    String      @default("fr") @db.VarChar(10)
   active      Boolean     @default(true)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt

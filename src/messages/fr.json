@@ -1,0 +1,267 @@
+{
+    "HomePage": {
+        "hero": {
+            "Badge": "Sélections 2024",
+            "TitlePart1": "Beau",
+            "TitlePart2": "Savoir.",
+            "Description": "Découvrez une sélection premium de volumes qui transforment votre vision du monde. Le savoir, avec style.",
+            "ShopLibrary": "La Librairie",
+            "OurBundles": "Nos Packs",
+            "EditorsChoice": "Choix de l'éditeur",
+            "Select": "SÉLECTIONNER"
+        },
+        "Features": {
+            "ShippingTitle": "Livraison Express",
+            "ShippingDesc": "Couverture partout au Maroc en un temps record.",
+            "PaymentTitle": "Paiement Sécurisé",
+            "PaymentDesc": "Paiement à la livraison en toute confiance.",
+            "PacksTitle": "Packs Premium",
+            "PacksDesc": "Des sélections soignées à des prix étudiés."
+        },
+        "Quotes": {
+            "WisdomOfTheDay": "Sagesse du jour",
+            "FeaturedIn": "Featured in"
+        },
+        "Collections": {
+            "Subtitle": "Sélections Soignées",
+            "Title": "Nos Collections"
+        },
+        "NewArrivals": {
+            "Subtitle": "Nouvelle Saison",
+            "Title": "Derniers Arrivages",
+            "ViewAll": "Tout voir"
+        },
+        "CTA": {
+            "TitlePart1": "Prêt pour votre",
+            "TitlePart2": "prochaine lecture ?",
+            "Button": "Démarrer maintenant"
+        }
+    },
+    "Navigation": {
+        "Home": "Accueil",
+        "Books": "Livres",
+        "Packs": "Packs",
+        "Cart": "Panier",
+        "Login": "Connexion",
+        "Admin": "Admin",
+        "Search": "Rechercher des livres..."
+    },
+    "Footer": {
+        "About": "À propos",
+        "Contact": "Contact",
+        "Terms": "Conditions d'utilisation",
+        "Privacy": "Politique de confidentialité"
+    },
+    "Common": {
+        "Loading": "Chargement...",
+        "Price": "Prix",
+        "AddToCart": "Ajouter au panier",
+        "OutOfStock": "Rupture de stock",
+        "Remaining": "restants",
+        "By": "Par",
+        "BestSeller": "Meilleure Vente"
+    },
+    "Packs": {
+        "Save": "Économisez",
+        "Exclusive": "Pack Exclusif",
+        "Includes": "Titres inclus",
+        "RegularPrice": "Prix Normal",
+        "PackPrice": "Prix Pack",
+        "AddSelection": "Ajouter la sélection"
+    },
+    "FAQ": {
+        "Title": "Questions Fréquentes",
+        "Subtitle": "Centre d'aide",
+        "Questions": {
+            "Shipping": {
+                "Question": "Quels sont les délais de livraison ?",
+                "Answer": "Nous livrons en 24-48h pour les grandes villes (Casablanca, Rabat, Marrakech, Tanger) et 48-72h pour les autres régions."
+            },
+            "Payment": {
+                "Question": "Quels moyens de paiement acceptez-vous ?",
+                "Answer": "Nous acceptons uniquement le paiement à la livraison (Cash on Delivery) pour garantir votre satisfaction à la réception."
+            },
+            "Returns": {
+                "Question": "Puis-je retourner un livre ?",
+                "Answer": "Oui, vous disposez de 3 jours après la livraison pour signaler un problème si le livre est endommagé ou ne correspond pas à votre commande."
+            },
+            "DeliveryCost": {
+                "Question": "Combien coûte la livraison ?",
+                "Answer": "La livraison est gratuite pour toute commande supérieure à 400 MAD. En dessous, un tarif fixe de 35 MAD s'applique."
+            }
+        }
+    },
+    "Returns": {
+        "Title": "Politique de Retour",
+        "Subtitle": "Tranquillité d'esprit",
+        "Intro": "Nous voulons que vous aimiez votre lecture. Voici comment nous traitons les retours.",
+        "Policy": {
+            "Point1": "Vous avez 3 jours calendaires pour signaler un problème.",
+            "Point2": "L'article doit être inutilisé et dans le même état que vous l'avez reçu.",
+            "Point3": "Veuillez nous contacter via le formulaire ou WhatsApp pour initier un retour.",
+            "Point4": "Les remboursements sont traités après inspection de l'article retourné."
+        }
+    },
+    "Contact": {
+        "Title": "Contactez-nous",
+        "Subtitle": "Restons en contact",
+        "Form": {
+            "Name": "Nom complet",
+            "Email": "Adresse Email",
+            "Message": "Votre Message",
+            "Submit": "Envoyer le message",
+            "Sending": "Envoi en cours..."
+        },
+        "Info": {
+            "Email": "Email",
+            "Phone": "Téléphone",
+            "Address": "Adresse",
+            "Hours": "Heures d'ouverture"
+        }
+    },
+    "BookDetail": {
+        "BackToSelection": "Retour à la sélection",
+        "OnlyLeft": "Plus que {stock} exemplaires",
+        "FastMove": "Envoi Rapide",
+        "Secured": "Sécurisé",
+        "Original": "Original",
+        "ReaderReviews": "{count} Avis lecteurs",
+        "BeFirstToReview": "Soyez le premier à donner votre avis",
+        "TaxesIncluded": "Taxes incluses · Paiement à la livraison",
+        "ReadyForCollection": "Prêt à l'expédition",
+        "OutOfStock": "Rupture de stock",
+        "Abstract": "Résumé",
+        "Technical": "Fiche Technique",
+        "Reference": "Référence",
+        "Volume": "Volume",
+        "Pages": "Pages",
+        "RiwayaSelect": "Sélection Riwaya",
+        "OriginalMasterpiece": "Chef-d'œuvre original",
+        "PremiumPaperQual": "Papier Premium",
+        "GlobalStandard": "Standard international",
+        "CulturalSelect": "Sélection Culturelle",
+        "Voices": "Voix",
+        "SharePerspective": "Partagez votre perspective avec notre communauté intellectuelle.",
+        "Reflections": "{count} Réflexions",
+        "RecommendedReads": "Lectures Recommandées",
+        "ExploreAll": "Tout explorer"
+    },
+    "Cart": {
+        "Title": "Votre Panier",
+        "SelectedItems": "{count} Articles sélectionnés",
+        "EmptyTitle": "Votre panier est vide.",
+        "EmptyDesc": "Il semble que vous n'ayez pas encore découvert <br /> nos trésors.",
+        "DiscoverBooks": "Découvrir les livres",
+        "Set": "PACK",
+        "Titles": "Titres",
+        "ClearSelection": "Vider la sélection",
+        "Subtotal": "Sous-total",
+        "Delivery": "Livraison",
+        "Complimentary": "Offerte",
+        "FreeShippingAd": "Ajoutez {amount} MAD pour la livraison gratuite.",
+        "OrderTotal": "Total Commande",
+        "ProceedToCheckout": "Passer la commande",
+        "KeepExploring": "Continuer vos achats"
+    },
+    "Checkout": {
+        "BackToSelection": "Retour à la sélection",
+        "YourDetails": "Vos Coordonnées",
+        "ShippingInfo": "Informations de livraison",
+        "FirstName": "Prénom",
+        "LastName": "Nom",
+        "MobileNumber": "Téléphone mobile",
+        "City": "Ville",
+        "ChooseCity": "Choisir votre ville",
+        "FullAddress": "Adresse complète",
+        "NoteOptional": "Note (Optionnel)",
+        "PaymentMethod": "Moyen de paiement",
+        "CashOnDelivery": "Paiement à la livraison",
+        "PayWhenReceive": "Payez à la réception de votre commande.",
+        "SelectionSummary": "Résumé de la sélection",
+        "PromotionalCode": "Code Promo",
+        "CodeApplied": "Code Appliqué",
+        "DeliveryFee": "Frais de livraison",
+        "Free": "Gratuit",
+        "TotalAmount": "Montant Total",
+        "CompletePurchase": "Confirmer la commande",
+        "Processing": "Traitement...",
+        "FastDelivery": "Livraison rapide <br /> sous 24-48h.",
+        "Errors": {
+            "FirstNameRequired": "Le prénom est requis",
+            "LastNameRequired": "Le nom est requis",
+            "PhoneRequired": "Le téléphone est requis",
+            "PhoneInvalid": "Numéro invalide (Ex: 0612345678)",
+            "CityRequired": "La ville est requise",
+            "AddressRequired": "L'adresse est requise",
+            "UnexpectedError": "Une erreur inattendue est survenue"
+        }
+    },
+    "Review": {
+        "SuccessTitle": "Merci pour votre avis !",
+        "SuccessDesc": "Votre témoignage aide les autres lecteurs à faire le bon choix.",
+        "Title": "Laissez votre avis",
+        "GlobalRating": "Note globale",
+        "FullName": "Nom complet",
+        "YourComment": "Votre commentaire",
+        "PlaceholderName": "Ex: Ahmed Benali",
+        "PlaceholderComment": "Qu'avez-vous pensé de ce livre ?",
+        "Submit": "Envoyer l'avis"
+    },
+    "ReviewList": {
+        "NoReviews": "Soyez le premier à donner votre avis sur ce livre ! ✨"
+    },
+    "PredictiveSearch": {
+        "Placeholder": "Rechercher un livre, un auteur...",
+        "RecentSearches": "Recherches récentes",
+        "Clear": "Effacer",
+        "PopularThemes": "Thèmes populaires",
+        "BookCount": "{count} livre(s)",
+        "Remaining": "restant !",
+        "From": "Dès {price} MAD",
+        "Suggestions": "Suggestions",
+        "By": "Par {author}",
+        "NoResultsTitle": "Oups !",
+        "NoResultsDesc": "Aucun livre ne correspond à votre recherche.",
+        "ViewAll": "Voir tous les résultats",
+        "EndsIn": "Fin dans: {time}"
+    },
+    "Categories": {
+        "Développement Personnel": "Développement Personnel",
+        "Business & Finance": "Business & Finance",
+        "Psychologie": "Psychologie",
+        "Romans & Fiction": "Romans & Fiction",
+        "Religion": "Religion",
+        "Organisation": "Organisation",
+        "All": "Toutes les catégories"
+    },
+    "BooksPage": {
+        "Title": "Bibliothèque",
+        "ItemsAvailable": "{count} articles disponibles",
+        "In": "dans",
+        "Filters": "Filtres",
+        "SearchItems": "Rechercher",
+        "SearchPlaceholder": "Titre, auteur...",
+        "Apply": "Appliquer",
+        "Languages": "Langues",
+        "AllLanguages": "Toutes les langues",
+        "Categories": "Catégories",
+        "Active": "Actifs",
+        "Reset": "Réinitialiser",
+        "NoVolumes": "Aucun volume trouvé",
+        "EmptyCollection": "Notre collection est vide pour ces filtres.",
+        "EmptyFilters": "Effacer les filtres",
+        "Results": "Résultats"
+    },
+    "ReviewsSection": {
+        "Title": "Avis Clients",
+        "NoReviews": "Aucun avis pour le moment",
+        "BeFirst": "Soyez le premier à partager votre avis !",
+        "AverageRating": "Note moyenne",
+        "BasedOn": "Basé sur {count} avis",
+        "WriteReview": "Écrire un avis",
+        "YourOpinion": "Partagez votre avis",
+        "HelpOthers": "Aidez les autres lecteurs à faire leur choix",
+        "Submitted": "Merci !",
+        "SubmittedDesc": "Votre avis a été soumis et est en attente de modération."
+    }
+}

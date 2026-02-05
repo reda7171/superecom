@@ -1,4 +1,6 @@
 import { Star, User } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl';
 
 interface Review {
     id: string
@@ -9,10 +11,13 @@ interface Review {
 }
 
 export default function ReviewList({ reviews }: { reviews: Review[] }) {
+    const t = useTranslations('ReviewList');
+    const locale = useLocale();
+
     if (reviews.length === 0) {
         return (
             <div className="text-center py-12 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                <p className="text-gray-400 font-bold italic">Soyez le premier à donner votre avis sur ce livre ! ✨</p>
+                <p className="text-gray-400 font-bold italic">{t('NoReviews')}</p>
             </div>
         )
     }
@@ -29,7 +34,7 @@ export default function ReviewList({ reviews }: { reviews: Review[] }) {
                             <div>
                                 <h4 className="font-black text-gray-900 leading-none">{review.fullName}</h4>
                                 <p className="text-[10px] font-bold text-gray-400 uppercase mt-1">
-                                    {new Date(review.createdAt).toLocaleDateString('fr-FR')}
+                                    {new Date(review.createdAt).toLocaleDateString(locale === 'ar' ? 'ar-MA' : (locale === 'fr' ? 'fr-FR' : 'en-US'))}
                                 </p>
                             </div>
                         </div>

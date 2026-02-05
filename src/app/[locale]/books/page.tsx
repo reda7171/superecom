@@ -4,12 +4,14 @@ import { parsePriceFilter } from '@/lib/utils/search'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import BookCard from '@/components/BookCard'
-import { Filter, SlidersHorizontal, Quote, Banknote } from 'lucide-react'
-import Link from 'next/link'
+import { Filter, SlidersHorizontal, Quote, Banknote, Globe } from 'lucide-react'
+import { Link } from '@/i18n/routing'
+import { getTranslations } from 'next-intl/server'
 
 interface SearchParams {
     category?: string
     search?: string
+    language?: string
 }
 
 export default async function BooksPage({
@@ -18,6 +20,9 @@ export default async function BooksPage({
     searchParams: Promise<SearchParams>
 }) {
     const params = await searchParams
+    const tCommon = await getTranslations('Common');
+    const tCats = await getTranslations('Categories');
+    const tBooksPage = await getTranslations('BooksPage'); // Assuming you might have a dedicated namespace or use Common
 
     // Parser le prix dans la recherche si elle existe
     const priceFilter = params.search ? parsePriceFilter(params.search) : { minPrice: undefined, maxPrice: undefined, cleanQuery: params.search };
@@ -29,10 +34,17 @@ export default async function BooksPage({
             minPrice: priceFilter.minPrice,
             maxPrice: priceFilter.maxPrice,
             active: true,
+            language: params.language,
         }),
         getBookCategories(),
         params.category ? getCategoryConfigByName(params.category) : null
     ])
+
+    const languages = [
+        { code: 'fr', label: 'Français' },
+        { code: 'en', label: 'English' },
+        { code: 'ar', label: 'العربية' },
+    ];
 
     return (
         <div className="min-h-screen bg-pixio-cream">
@@ -41,10 +53,10 @@ export default async function BooksPage({
             {/* Page Header */}
             <div className="bg-pixio-beige pt-20 pb-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h1 className="text-6xl font-black text-black mb-6 tracking-tighter">Library<span className="text-gray-300">.</span></h1>
+                    <h1 className="text-6xl font-black text-black mb-6 tracking-tighter">{tBooksPage('Title')}<span className="text-gray-300">.</span></h1>
                     <p className="text-[10px] uppercase font-black tracking-[0.4em] text-gray-400 mb-10">
-                        {books.length} items available
-                        {params.category && ` in ${params.category}`}
+                        {tBooksPage('ItemsAvailable', { count: books.length })}
+                        {params.category && ` ${tBooksPage('In')} ${tCats(params.category as any)}`}
                     </p>
 
                     {categoryConfig?.quote && (
@@ -74,59 +86,101 @@ export default async function BooksPage({
                                 <div className="w-10 h-10 bg-black text-white rounded-2xl flex items-center justify-center">
                                     <SlidersHorizontal className="w-5 h-5" />
                                 </div>
-                                <h2 className="text-sm font-black uppercase tracking-widest text-black">Filters</h2>
+                                <h2 className="text-sm font-black uppercase tracking-widest text-black">{tBooksPage('Filters')}</h2>
                             </div>
 
                             {/* Search */}
                             <div className="mb-12">
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 ml-1">
-                                    Search items
+                                    {tBooksPage('SearchItems')}
                                 </label>
                                 <form action="/books" method="get" className="relative group">
                                     <input
                                         type="text"
                                         name="search"
                                         defaultValue={params.search}
-                                        placeholder="Title, author..."
+                                        placeholder={tBooksPage('SearchPlaceholder')}
                                         className="w-full px-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-black text-xs text-black"
                                     />
                                     <button
                                         type="submit"
                                         className="w-full mt-3 px-6 py-4 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-gray-800 transition-all shadow-xl shadow-black/5 active:scale-95"
                                     >
-                                        Apply
+                                        {tBooksPage('Apply')}
                                     </button>
                                 </form>
+                            </div>
+
+                            {/* Languages */}
+                            <div className="mb-12">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-3">
+                                    <Globe className="w-3 h-3" />
+                                    {tBooksPage('Languages')}
+                                </h3>
+                                <ul className="space-y-2">
+                                    <li>
+                                        <Link
+                                            href={params.category ? `/books?category=${params.category}` : '/books'}
+                                            className={`block px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${!params.language
+                                                ? 'bg-black text-white shadow-xl shadow-black/10'
+                                                : 'text-gray-400 hover:bg-pixio-cream/50 hover:text-black'
+                                                }`}
+                                        >
+                                            {tBooksPage('AllLanguages')}
+                                        </Link>
+                                    </li>
+                                    {languages.map((lang) => (
+                                        <li key={lang.code}>
+                                            <Link
+                                                href={`/books?${new URLSearchParams({
+                                                    ...(params.category ? { category: params.category } : {}),
+                                                    ...(params.search ? { search: params.search } : {}),
+                                                    language: lang.code
+                                                }).toString()}`}
+                                                className={`block px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${params.language === lang.code
+                                                    ? 'bg-black text-white shadow-xl shadow-black/10'
+                                                    : 'text-gray-400 hover:bg-pixio-cream/50 hover:text-black'
+                                                    }`}
+                                            >
+                                                {lang.label}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
 
                             {/* Categories */}
                             <div>
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-3">
                                     <Filter className="w-3 h-3" />
-                                    Categories
+                                    {tBooksPage('Categories')}
                                 </h3>
                                 <ul className="space-y-2">
                                     <li>
                                         <Link
-                                            href="/books"
+                                            href={params.language ? `/books?language=${params.language}` : '/books'}
                                             className={`block px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${!params.category
                                                 ? 'bg-black text-white shadow-xl shadow-black/10'
                                                 : 'text-gray-400 hover:bg-pixio-cream/50 hover:text-black'
                                                 }`}
                                         >
-                                            All Selects
+                                            {tCats('All')}
                                         </Link>
                                     </li>
                                     {categories.map((category) => (
                                         <li key={category}>
                                             <Link
-                                                href={`/books?category=${encodeURIComponent(category)}`}
+                                                href={`/books?${new URLSearchParams({
+                                                    category: category,
+                                                    ...(params.language ? { language: params.language } : {}),
+                                                    ...(params.search ? { search: params.search } : {})
+                                                }).toString()}`}
                                                 className={`block px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${params.category === category
                                                     ? 'bg-black text-white shadow-xl shadow-black/10'
                                                     : 'text-gray-400 hover:bg-pixio-cream/50 hover:text-black'
                                                     }`}
                                             >
-                                                {category}
+                                                {tCats(category as any)}
                                             </Link>
                                         </li>
                                     ))}
@@ -134,28 +188,43 @@ export default async function BooksPage({
                             </div>
 
                             {/* Active Filters */}
-                            {(params.category || params.search) && (
+                            {(params.category || params.search || params.language) && (
                                 <div className="mt-10 pt-10 border-t border-gray-50">
                                     <div className="flex items-center justify-between mb-6">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-black">Active</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-black">{tBooksPage('Active')}</span>
                                         <Link
                                             href="/books"
                                             className="text-[10px] font-black uppercase tracking-widest text-gray-300 hover:text-black transition-colors"
                                         >
-                                            Reset
+                                            {tBooksPage('Reset')}
                                         </Link>
                                     </div>
                                     <div className="space-y-2">
+                                        {params.language && (
+                                            <div className="flex items-center justify-between px-4 py-3 bg-pixio-cream/50 border border-gray-100 rounded-xl text-[9px] font-black uppercase tracking-widest">
+                                                <span className="text-black">{languages.find(l => l.code === params.language)?.label || params.language}</span>
+                                                <Link href={`/books?${new URLSearchParams({
+                                                    ...(params.category ? { category: params.category } : {}),
+                                                    ...(params.search ? { search: params.search } : {})
+                                                }).toString()}`} className="text-gray-300 hover:text-black">×</Link>
+                                            </div>
+                                        )}
                                         {params.category && (
                                             <div className="flex items-center justify-between px-4 py-3 bg-pixio-cream/50 border border-gray-100 rounded-xl text-[9px] font-black uppercase tracking-widest">
-                                                <span className="text-black">{params.category}</span>
-                                                <Link href="/books" className="text-gray-300 hover:text-black">×</Link>
+                                                <span className="text-black">{tCats(params.category as any)}</span>
+                                                <Link href={`/books?${new URLSearchParams({
+                                                    ...(params.language ? { language: params.language } : {}),
+                                                    ...(params.search ? { search: params.search } : {})
+                                                }).toString()}`} className="text-gray-300 hover:text-black">×</Link>
                                             </div>
                                         )}
                                         {params.search && (
                                             <div className="flex items-center justify-between px-4 py-3 bg-pixio-cream/50 border border-gray-100 rounded-xl text-[9px] font-black uppercase tracking-widest">
                                                 <span className="text-black">"{params.search}"</span>
-                                                <Link href={params.category ? `/books?category=${params.category}` : '/books'} className="text-gray-300 hover:text-black">×</Link>
+                                                <Link href={`/books?${new URLSearchParams({
+                                                    ...(params.category ? { category: params.category } : {}),
+                                                    ...(params.language ? { language: params.language } : {})
+                                                }).toString()}`} className="text-gray-300 hover:text-black">×</Link>
                                             </div>
                                         )}
                                         {(priceFilter.minPrice !== undefined || priceFilter.maxPrice !== undefined) && (
@@ -187,15 +256,15 @@ export default async function BooksPage({
                                 <div className="w-24 h-24 bg-pixio-cream rounded-full flex items-center justify-center mx-auto mb-10">
                                     <Filter className="w-10 h-10 text-black/10" />
                                 </div>
-                                <h3 className="text-2xl font-black text-black mb-4">No volumes found</h3>
+                                <h3 className="text-2xl font-black text-black mb-4">{tBooksPage('NoVolumes')}</h3>
                                 <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-10">
-                                    Our collection is empty for these filters.
+                                    {tBooksPage('EmptyCollection')}
                                 </p>
                                 <Link
                                     href="/books"
                                     className="inline-flex items-center gap-4 px-10 py-5 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-gray-800 transition-all shadow-2xl"
                                 >
-                                    Empty filters
+                                    {tBooksPage('EmptyFilters')}
                                 </Link>
                             </div>
                         ) : (
@@ -203,7 +272,7 @@ export default async function BooksPage({
                                 {/* Results Header */}
                                 <div className="flex items-center justify-between mb-12 px-2">
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">
-                                        <span className="text-black">{books.length}</span> Results
+                                        <span className="text-black">{books.length}</span> {tBooksPage('Results')}
                                     </p>
                                 </div>
 

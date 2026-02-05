@@ -11,7 +11,8 @@ import {
     Users,
     LogOut,
     Ticket,
-    MessageSquare
+    MessageSquare,
+    BarChart3
 } from 'lucide-react'
 
 const navigation = [
@@ -22,7 +23,7 @@ const navigation = [
     { name: 'Clients', href: '/admin/customers', icon: Users },
     { name: 'Coupons', href: '/admin/coupons', icon: Ticket },
     { name: 'Avis', href: '/admin/reviews', icon: MessageSquare },
-    { name: 'Marketing', href: '/admin/marketing', icon: LayoutDashboard },
+    { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
 ]
 
 export default function AdminLayout({

@@ -9,6 +9,7 @@ export interface BookFilters {
     maxPrice?: number
     search?: string
     active?: boolean
+    language?: string
 }
 
 /**
@@ -22,6 +23,11 @@ export async function getBooks(filters?: BookFilters) {
     // Filtre par catégorie
     if (filters?.category) {
         where.category = filters.category
+    }
+
+    // Filtre par langue
+    if (filters?.language && filters.language !== 'all') {
+        where.language = filters.language
     }
 
     // Filtre par prix

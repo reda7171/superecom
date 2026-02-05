@@ -1,15 +1,19 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 import { BookOpen, ShoppingCart, Search, Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import CartDrawer from './CartDrawer'
 import { useCartStore } from '@/store/cart'
 import PredictiveSearch from './PredictiveSearch'
+import LanguageSwitcher from './LanguageSwitcher'
+import { useTranslations } from 'next-intl'
+import { useUIStore } from '@/store/ui'
 
 export default function Header() {
+    const t = useTranslations('Navigation')
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-    const [cartOpen, setCartOpen] = useState(false)
+    const { isCartOpen, openCart, closeCart } = useUIStore()
     const [mounted, setMounted] = useState(false)
     const getTotalItems = useCartStore((state) => state.getTotalItems)
 
@@ -40,21 +44,21 @@ export default function Header() {
                             href="/books"
                             className="text-gray-900 hover:text-black font-black text-[13px] uppercase tracking-widest transition-colors relative group"
                         >
-                            Shop
+                            {t('Books')}
                             <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-black group-hover:w-4 transition-all duration-300" />
                         </Link>
                         <Link
                             href="/packs"
                             className="text-gray-900 hover:text-black font-black text-[13px] uppercase tracking-widest transition-colors relative group"
                         >
-                            Collections
+                            {t('Packs')}
                             <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-black group-hover:w-4 transition-all duration-300" />
                         </Link>
                         <Link
-                            href="/about"
+                            href="/"
                             className="text-gray-900 hover:text-black font-black text-[13px] uppercase tracking-widest transition-colors relative group"
                         >
-                            Story
+                            {t('Home')}
                             <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-black group-hover:w-4 transition-all duration-300" />
                         </Link>
                     </nav>
@@ -66,8 +70,12 @@ export default function Header() {
 
                     {/* Actions */}
                     <div className="flex items-center gap-4 shrink-0">
+                        <div className="hidden lg:block">
+                            <LanguageSwitcher />
+                        </div>
+
                         {/* Cart - Style Pixio */}
-                        <button onClick={() => setCartOpen(true)} className="relative group">
+                        <button onClick={openCart} className="relative group">
                             <div className="w-10 h-10 border-2 border-transparent group-hover:border-black rounded-full flex items-center justify-center transition-all">
                                 <ShoppingCart className="w-6 h-6 text-gray-900" />
                                 {totalItems > 0 && (
@@ -101,31 +109,34 @@ export default function Header() {
                                 className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                Livres
+                                {t('Books')}
                             </Link>
                             <Link
                                 href="/packs"
                                 className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                Packs
+                                {t('Packs')}
                             </Link>
                             <Link
-                                href="/about"
+                                href="/"
                                 className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                À propos
+                                {t('Home')}
                             </Link>
                             <div className="px-4 py-2">
                                 <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg">
                                     <Search className="w-4 h-4 text-gray-600" />
                                     <input
                                         type="text"
-                                        placeholder="Rechercher..."
+                                        placeholder={t('Search')}
                                         className="bg-transparent text-sm text-gray-700 outline-none flex-1"
                                     />
                                 </div>
+                            </div>
+                            <div className="px-4 py-2">
+                                <LanguageSwitcher />
                             </div>
                         </nav>
                     </div>
@@ -133,7 +144,7 @@ export default function Header() {
             </div>
 
             {/* Cart Drawer */}
-            <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+            <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
         </header>
     )
 }

@@ -7,6 +7,8 @@ Password: admin123 (hash: $2a$10$...)
 Role: ADMIN
 
 
+traduction du site web (Francais / Arabe / anglais)
+
 inspiré vous du design existe dans image : C:\Users\redaa\Desktop\riwaya\.agent\rules\images-inspiration\template.png
 
 pas beaucoup de lignes dans meme page ,pensé component

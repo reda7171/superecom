@@ -1,30 +1,9 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import createMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
 
-export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl
-
-    // Routes admin à protéger
-    if (pathname.startsWith('/admin')) {
-        // Vérifier si l'utilisateur est authentifié
-        const token = request.cookies.get('admin-token')
-
-        // Si pas de token et pas sur la page de login, rediriger
-        if (!token && pathname !== '/admin/login') {
-            const loginUrl = new URL('/admin/login', request.url)
-            loginUrl.searchParams.set('from', pathname)
-            return NextResponse.redirect(loginUrl)
-        }
-
-        // Si token présent et sur la page de login, rediriger vers dashboard
-        if (token && pathname === '/admin/login') {
-            return NextResponse.redirect(new URL('/admin', request.url))
-        }
-    }
-
-    return NextResponse.next()
-}
+export default createMiddleware(routing);
 
 export const config = {
-    matcher: '/admin/:path*',
-}
+    // Match only internationalized pathnames
+    matcher: ['/', '/(fr|en|ar)/:path*']
+};

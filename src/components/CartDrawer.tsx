@@ -2,9 +2,11 @@
 
 import { useCartStore } from '@/store/cart'
 import Image from 'next/image'
-import Link from 'next/link'
+// import Link from 'next/link' <-- remove standard next link
 import { X, Minus, Plus, ShoppingCart, Trash2, ArrowRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { Link } from '@/i18n/routing'
+import { useTranslations } from 'next-intl'
 
 interface CartDrawerProps {
     isOpen: boolean
@@ -14,6 +16,7 @@ interface CartDrawerProps {
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, clearCart } = useCartStore()
     const [mounted, setMounted] = useState(false)
+    const t = useTranslations('Cart');
 
     // Éviter les problèmes d'hydratation avec localStorage
     useEffect(() => {
@@ -39,7 +42,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
             {/* Drawer */}
             <div
-                className={`fixed top-0 right-0 h-full w-full sm:w-[520px] bg-white shadow-[0_0_100px_rgba(0,0,0,0.1)] z-50 transform transition-transform duration-500 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
+                className={`fixed top-0 right-0 rtl:left-0 rtl:right-auto h-full w-full sm:w-[520px] bg-white shadow-[0_0_100px_rgba(0,0,0,0.1)] z-50 transform transition-transform duration-500 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full rtl:-translate-x-full'
                     }`}
             >
                 <div className="flex flex-col h-full">
@@ -50,9 +53,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                 <ShoppingCart className="w-6 h-6 text-white" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-black tracking-tight">Your Cart</h2>
+                                <h2 className="text-2xl font-black text-black tracking-tight">{t('Title')}</h2>
                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-                                    {totalItems} Selected Items
+                                    {t('SelectedItems', { count: totalItems })}
                                 </p>
                             </div>
                         </div>
@@ -76,18 +79,19 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                     <div className="absolute inset-0 bg-pixio-pink rounded-full blur-2xl opacity-20 scale-150"></div>
                                 </div>
                                 <div className="space-y-3">
-                                    <h3 className="text-2xl font-black text-black tracking-tight">Your cart is empty.</h3>
-                                    <p className="text-gray-500 font-medium">
-                                        Seems like you haven't discovered <br /> our treasures yet.
-                                    </p>
+                                    <h3 className="text-2xl font-black text-black tracking-tight">{t('EmptyTitle')}</h3>
+                                    <p
+                                        className="text-gray-500 font-medium"
+                                        dangerouslySetInnerHTML={{ __html: t.raw('EmptyDesc') }}
+                                    />
                                 </div>
                                 <Link
                                     href="/books"
                                     onClick={onClose}
                                     className="inline-flex items-center gap-3 px-10 py-5 bg-black text-white font-black text-xs uppercase tracking-widest rounded-full hover:bg-gray-800 transition-all shadow-xl hover:shadow-black/20"
                                 >
-                                    <span>Discover Books</span>
-                                    <ArrowRight className="w-4 h-4" />
+                                    <span>{t('DiscoverBooks')}</span>
+                                    <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                                 </Link>
                             </div>
                         ) : (
@@ -110,7 +114,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                             {item.type === 'PACK' && (
                                                 <div className="absolute top-2 left-2">
                                                     <span className="px-2 py-0.5 bg-black text-white text-[8px] font-black uppercase tracking-widest rounded-md">
-                                                        SET
+                                                        {t('Set')}
                                                     </span>
                                                 </div>
                                             )}
@@ -136,7 +140,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                                     </p>
                                                     {item.booksCount && (
                                                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-2 py-0.5 bg-gray-50 rounded-full">
-                                                            {item.booksCount} Titles
+                                                            {item.booksCount} {t('Titles')}
                                                         </span>
                                                     )}
                                                 </div>
@@ -172,7 +176,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                         onClick={clearCart}
                                         className="w-full py-4 text-[10px] text-gray-400 hover:text-black font-black uppercase tracking-[0.2em] transition-colors"
                                     >
-                                        Clear Selection
+                                        {t('ClearSelection')}
                                     </button>
                                 )}
                             </div>
@@ -185,13 +189,13 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             {/* Summary */}
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-widest">
-                                    <span className="text-gray-400">Subtotal</span>
+                                    <span className="text-gray-400">{t('Subtotal')}</span>
                                     <span className="text-black">{totalPrice} MAD</span>
                                 </div>
                                 <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-widest">
-                                    <span className="text-gray-400">Delivery</span>
+                                    <span className="text-gray-400">{t('Delivery')}</span>
                                     {shippingFee === 0 ? (
-                                        <span className="text-pixio-pink bg-black px-2 py-1 rounded-md">Complimentary</span>
+                                        <span className="text-pixio-pink bg-black px-2 py-1 rounded-md">{t('Complimentary')}</span>
                                     ) : (
                                         <span className="text-black">{shippingFee} MAD</span>
                                     )}
@@ -200,12 +204,12 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                 {totalPrice < 500 && (
                                     <div className="p-4 bg-pixio-yellow rounded-2xl border border-black/5">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-black/60">
-                                            Ad <span className="text-black">{500 - totalPrice} MAD</span> to unlock <span className="text-black">free shipping</span>.
+                                            {t('FreeShippingAd', { amount: 500 - totalPrice })}
                                         </p>
                                     </div>
                                 )}
                                 <div className="flex justify-between items-center pt-6 border-t border-gray-50">
-                                    <span className="text-[13px] font-black uppercase tracking-[0.2em] text-black">Order Total</span>
+                                    <span className="text-[13px] font-black uppercase tracking-[0.2em] text-black">{t('OrderTotal')}</span>
                                     <span className="text-3xl font-black text-black tracking-tighter">{finalTotal} MAD</span>
                                 </div>
                             </div>
@@ -217,15 +221,15 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                     onClick={onClose}
                                     className="flex items-center justify-center gap-3 w-full py-6 bg-black text-white font-black text-xs uppercase tracking-[0.2em] rounded-full hover:bg-gray-800 transition-all shadow-2xl hover:shadow-black/20"
                                 >
-                                    <span>Proceed to Checkout</span>
-                                    <ArrowRight className="w-4 h-4" />
+                                    <span>{t('ProceedToCheckout')}</span>
+                                    <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                                 </Link>
 
                                 <button
                                     onClick={onClose}
                                     className="w-full text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
                                 >
-                                    Keep Exploring
+                                    {t('KeepExploring')}
                                 </button>
                             </div>
                         </div>

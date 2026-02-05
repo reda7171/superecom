@@ -18,7 +18,7 @@ export async function createReview(data: z.infer<typeof ReviewSchema>) {
         await prisma.review.create({
             data: {
                 ...validated,
-                isApproved: true, // Pour l'instant on approuve automatiquement (MVP)
+                isApproved: false, // En attente de modération
             }
         })
 
@@ -64,5 +64,83 @@ export async function deleteReview(id: string) {
         return { success: true }
     } catch (error) {
         return { success: false, error: 'Erreur lors de la suppression' }
+    }
+}
+
+/**
+ * Récupérer tous les avis avec filtres (admin)
+ */
+export async function getAllReviews(filter?: 'all' | 'approved' | 'pending') {
+    try {
+        const reviews = await prisma.review.findMany({
+            where: filter === 'approved'
+                ? { isApproved: true }
+                : filter === 'pending'
+                    ? { isApproved: false }
+                    : {},
+            include: {
+                book: {
+                    select: {
+                        id: true,
+                        title: true,
+                        image: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        })
+
+        return reviews
+    } catch (error) {
+        console.error('Erreur récupération avis:', error)
+        return []
+    }
+}
+
+/**
+ * Récupérer la note moyenne d'un livre
+ */
+export async function getBookAverageRating(bookId: string) {
+    try {
+        const result = await prisma.review.aggregate({
+            where: {
+                bookId,
+                isApproved: true,
+            },
+            _avg: {
+                rating: true,
+            },
+            _count: {
+                id: true,
+            },
+        })
+
+        return {
+            average: result._avg.rating || 0,
+            count: result._count.id,
+        }
+    } catch (error) {
+        console.error('Erreur calcul note moyenne:', error)
+        return { average: 0, count: 0 }
+    }
+}
+
+/**
+ * Statistiques des avis
+ */
+export async function getReviewsStats() {
+    try {
+        const [total, approved, pending] = await Promise.all([
+            prisma.review.count(),
+            prisma.review.count({ where: { isApproved: true } }),
+            prisma.review.count({ where: { isApproved: false } }),
+        ])
+
+        return { total, approved, pending }
+    } catch (error) {
+        console.error('Erreur stats avis:', error)
+        return { total: 0, approved: 0, pending: 0 }
     }
 }

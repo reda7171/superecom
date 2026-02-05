@@ -5,13 +5,15 @@ import { Search as SearchIcon, Loader2, BookOpen, X, ArrowRight, Clock } from 'l
 import { searchBooksPredictive } from '@/lib/actions/search'
 import { getPopularCategories } from '@/lib/actions/categories'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+// import Link from 'next/link' <-- use i18n link
+import { Link, useRouter } from '@/i18n/routing'
 import { Hash } from 'lucide-react'
 import { trackBadgeClick } from '@/lib/actions/analytics'
+import { useTranslations } from 'next-intl'
 
 const Countdown = ({ expiresAt }: { expiresAt: string | Date }) => {
     const [timeLeft, setTimeLeft] = useState('')
+    const t = useTranslations('PredictiveSearch');
 
     useEffect(() => {
         const calculateTimeLeft = () => {
@@ -33,7 +35,7 @@ const Countdown = ({ expiresAt }: { expiresAt: string | Date }) => {
     return (
         <div className="flex items-center gap-1.5 mt-0.5 text-[8px] font-black text-orange-600 animate-pulse uppercase tracking-tight">
             <Clock className="w-2.5 h-2.5" />
-            <span>Fin dans: {timeLeft}</span>
+            <span>{t('EndsIn', { time: timeLeft })}</span>
         </div>
     )
 }
@@ -57,6 +59,7 @@ export default function PredictiveSearch() {
     const [isOpen, setIsOpen] = useState(false)
     const searchRef = useRef<HTMLDivElement>(null)
     const router = useRouter()
+    const t = useTranslations('PredictiveSearch');
 
     // Charger l'historique et les catégories au montage
     useEffect(() => {
@@ -150,16 +153,16 @@ export default function PredictiveSearch() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onFocus={() => (query.length >= 2 || history.length > 0 || popularCats.length > 0) && setIsOpen(true)}
-                    placeholder="Rechercher un livre, un auteur..."
-                    className="w-full bg-white border-2 border-gray-100 focus:border-black rounded-[2rem] py-4 pl-14 pr-10 font-bold text-gray-900 transition-all outline-none placeholder:text-gray-400 shadow-sm focus:shadow-xl group-hover/input:border-gray-200"
+                    placeholder={t('Placeholder')}
+                    className="w-full bg-white border-2 border-gray-100 focus:border-black rounded-[2rem] py-4 pl-14 pr-10 rtl:pr-14 rtl:pl-10 font-bold text-gray-900 transition-all outline-none placeholder:text-gray-400 shadow-sm focus:shadow-xl group-hover/input:border-gray-200"
                 />
-                <SearchIcon className={`absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${isOpen ? 'text-black' : 'text-gray-300'}`} />
+                <SearchIcon className={`absolute left-5 rtl:right-5 rtl:left-auto top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${isOpen ? 'text-black' : 'text-gray-300'}`} />
 
                 {query && (
                     <button
                         type="button"
                         onClick={() => setQuery('')}
-                        className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 hover:text-black transition-colors"
+                        className="absolute right-5 rtl:left-5 rtl:right-auto top-1/2 -translate-y-1/2 text-gray-300 hover:text-black transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -177,12 +180,12 @@ export default function PredictiveSearch() {
                             {history.length > 0 && (
                                 <div className="px-2">
                                     <div className="flex justify-between items-center mb-3">
-                                        <span className="text-[11px] font-black uppercase text-gray-900 tracking-widest">Recherches récentes</span>
+                                        <span className="text-[11px] font-black uppercase text-gray-900 tracking-widest">{t('RecentSearches')}</span>
                                         <button
                                             onClick={clearHistory}
                                             className="text-[10px] font-black uppercase text-gray-400 hover:text-red-500 transition-colors"
                                         >
-                                            Effacer
+                                            {t('Clear')}
                                         </button>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
@@ -203,7 +206,7 @@ export default function PredictiveSearch() {
                             {popularCats.length > 0 && (
                                 <div>
                                     <div className="px-2 mb-4">
-                                        <span className="text-[11px] font-black uppercase text-gray-900 tracking-widest">Thèmes populaires</span>
+                                        <span className="text-[11px] font-black uppercase text-gray-900 tracking-widest">{t('PopularThemes')}</span>
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         {popularCats.map((cat, idx) => {
@@ -227,17 +230,17 @@ export default function PredictiveSearch() {
                                                         <div className="flex flex-col items-center gap-1 mt-1">
                                                             <span className={`text-[10px] font-bold uppercase tracking-tighter ${cat.count < 3 && cat.count > 0 ? 'text-orange-500 animate-pulse' : 'text-gray-400'}`}>
                                                                 {cat.count < 3 && cat.count > 0 && '🔥 '}
-                                                                {cat.count} livre{cat.count > 1 ? 's' : ''}
-                                                                {cat.count < 3 && cat.count > 0 && ' restant!'}
+                                                                {t('BookCount', { count: cat.count })}
+                                                                {cat.count < 3 && cat.count > 0 && ` ${t('Remaining')}`}
                                                             </span>
                                                             {cat.topAuthor && (
                                                                 <span className="text-[10px] font-medium text-gray-500 italic">
-                                                                    Par {cat.topAuthor}
+                                                                    {t('By', { author: cat.topAuthor })}
                                                                 </span>
                                                             )}
                                                             {cat.minPrice > 0 && (
                                                                 <span className="text-[10px] font-black text-black bg-white px-3 py-1 rounded-full shadow-sm mt-1">
-                                                                    Dès {cat.minPrice} MAD
+                                                                    {t('From', { price: cat.minPrice })}
                                                                 </span>
                                                             )}
                                                         </div>
@@ -251,7 +254,7 @@ export default function PredictiveSearch() {
                                                     {badge && (
                                                         <div
                                                             style={badgeStyle}
-                                                            className={`absolute top-0 right-0 px-4 py-1 ${badgeColorClass} text-white text-[9px] font-black uppercase tracking-tighter rounded-bl-2xl shadow-sm`}
+                                                            className={`absolute top-0 right-0 rtl:left-0 rtl:right-auto px-4 py-1 ${badgeColorClass} text-white text-[9px] font-black uppercase tracking-tighter rounded-bl-2xl rtl:rounded-bl-none rtl:rounded-br-2xl shadow-sm`}
                                                         >
                                                             {badge === 'PROMO' && cat.avgDiscount > 0
                                                                 ? `-${cat.avgDiscount}% ${badgeLabel}`
@@ -272,7 +275,7 @@ export default function PredictiveSearch() {
                     {query.length >= 2 && (
                         <>
                             <div className="p-4 border-b border-gray-50 bg-pixio-cream/50 flex justify-between items-center">
-                                <span className="text-[11px] font-black uppercase text-gray-900 tracking-widest">Suggestions</span>
+                                <span className="text-[11px] font-black uppercase text-gray-900 tracking-widest">{t('Suggestions')}</span>
                                 {isLoading && <Loader2 className="w-4 h-4 animate-spin text-black" />}
                             </div>
 
@@ -301,11 +304,11 @@ export default function PredictiveSearch() {
                                                 <div className="flex-1 min-w-0 space-y-1">
                                                     <p className="text-[10px] font-black uppercase text-gray-400 tracking-tighter">{book.category || 'Collection'}</p>
                                                     <h4 className="font-black text-gray-900 text-sm truncate group-hover/item:text-black transition-colors leading-none">{book.title}</h4>
-                                                    <p className="text-[10px] font-bold text-gray-500 italic">Par {book.author}</p>
+                                                    <p className="text-[10px] font-bold text-gray-500 italic">{t('By', { author: book.author })}</p>
                                                     <div className="flex items-center justify-between mt-2">
                                                         <span className="text-sm font-black text-gray-900">{book.price} MAD</span>
-                                                        <div className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-all -translate-x-2 group-hover/item:translate-x-0">
-                                                            <ArrowRight className="w-3 h-3" />
+                                                        <div className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-all -translate-x-2 group-hover/item:translate-x-0 rtl:translate-x-2 rtl:group-hover/item:translate-x-0">
+                                                            <ArrowRight className="w-3 h-3 rtl:rotate-180" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -318,8 +321,8 @@ export default function PredictiveSearch() {
                                             <BookOpen className="w-10 h-10 text-gray-200" />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-black text-gray-900">Oups !</p>
-                                            <p className="text-[11px] font-bold text-gray-500 mt-1">Aucun livre ne correspond à votre recherche.</p>
+                                            <p className="text-sm font-black text-gray-900">{t('NoResultsTitle')}</p>
+                                            <p className="text-[11px] font-bold text-gray-500 mt-1">{t('NoResultsDesc')}</p>
                                         </div>
                                     </div>
                                 )}
@@ -331,8 +334,8 @@ export default function PredictiveSearch() {
                                         onClick={handleSearch}
                                         className="w-full py-4 bg-black text-white text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-gray-800 transition-all flex items-center justify-center gap-3 shadow-lg hover:shadow-black/20 group/all"
                                     >
-                                        Voir tous les résultats
-                                        <ArrowRight className="w-4 h-4 transition-transform group-hover/all:translate-x-1" />
+                                        {t('ViewAll')}
+                                        <ArrowRight className="w-4 h-4 transition-transform group-hover/all:translate-x-1 rtl:rotate-180 rtl:group-hover/all:-translate-x-1" />
                                     </button>
                                 </div>
                             )}

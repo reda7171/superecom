@@ -1,0 +1,267 @@
+{
+    "HomePage": {
+        "hero": {
+            "Badge": "Curated Selections 2024",
+            "TitlePart1": "Beautiful",
+            "TitlePart2": "Knowledge.",
+            "Description": "Discover a premium selection of volumes that transform your view of the world. Knowledge, with style.",
+            "ShopLibrary": "Shop Library",
+            "OurBundles": "Our Bundles",
+            "EditorsChoice": "Editor's Choice",
+            "Select": "SELECT"
+        },
+        "Features": {
+            "ShippingTitle": "Express Shipping",
+            "ShippingDesc": "Pan-Morocco coverage in record time.",
+            "PaymentTitle": "Secured Payment",
+            "PaymentDesc": "Pay on delivery with full confidence.",
+            "PacksTitle": "Premium Packs",
+            "PacksDesc": "Curated selections at architected prices."
+        },
+        "Quotes": {
+            "WisdomOfTheDay": "Wisdom of the day",
+            "FeaturedIn": "Featured in"
+        },
+        "Collections": {
+            "Subtitle": "Curated Selections",
+            "Title": "Our Collections"
+        },
+        "NewArrivals": {
+            "Subtitle": "New Season",
+            "Title": "New Arrivals",
+            "ViewAll": "View All"
+        },
+        "CTA": {
+            "TitlePart1": "Ready for your",
+            "TitlePart2": "next reading?",
+            "Button": "Start Now"
+        }
+    },
+    "Navigation": {
+        "Home": "Home",
+        "Books": "Books",
+        "Packs": "Packs",
+        "Cart": "Cart",
+        "Login": "Login",
+        "Admin": "Admin",
+        "Search": "Search books..."
+    },
+    "Footer": {
+        "About": "About",
+        "Contact": "Contact",
+        "Terms": "Terms of Service",
+        "Privacy": "Privacy Policy"
+    },
+    "Common": {
+        "Loading": "Loading...",
+        "Price": "Price",
+        "AddToCart": "Add to Cart",
+        "OutOfStock": "Out of Stock",
+        "Remaining": "remaining",
+        "By": "By",
+        "BestSeller": "Best Seller"
+    },
+    "Packs": {
+        "Save": "Save",
+        "Exclusive": "Exclusive Pack",
+        "Includes": "Titles included",
+        "RegularPrice": "Regular Price",
+        "PackPrice": "Pack Price",
+        "AddSelection": "Add Selection"
+    },
+    "FAQ": {
+        "Title": "Frequently Asked Questions",
+        "Subtitle": "Help Center",
+        "Questions": {
+            "Shipping": {
+                "Question": "What are the shipping times?",
+                "Answer": "We deliver within 24-48 hours in major cities (Casablanca, Rabat, Marrakech, Tangier) and 48-72 hours for other regions."
+            },
+            "Payment": {
+                "Question": "What payment methods are accepted?",
+                "Answer": "We currently only accept Cash on Delivery (COD) to ensure your complete satisfaction upon receipt."
+            },
+            "Returns": {
+                "Question": "Can I return a book?",
+                "Answer": "Yes, you have 3 days after delivery to request a return if the book is damaged or does not correspond to your order."
+            },
+            "DeliveryCost": {
+                "Question": "How much does delivery cost?",
+                "Answer": "Delivery is free for orders over 400 MAD. For orders below this amount, a flat fee of 35 MAD applies."
+            }
+        }
+    },
+    "Returns": {
+        "Title": "Return Policy",
+        "Subtitle": "Peace of Mind",
+        "Intro": "We want you to love your reading experience. Here is how we handle returns.",
+        "Policy": {
+            "Point1": "You have 3 calendar days to report an issue.",
+            "Point2": "The item must be unused and in the same condition that you received it.",
+            "Point3": "Please contact us via the contact form or WhatsApp to initiate a return.",
+            "Point4": "Refunds are processed after inspection of the returned item."
+        }
+    },
+    "Contact": {
+        "Title": "Contact Us",
+        "Subtitle": "Get in Touch",
+        "Form": {
+            "Name": "Full Name",
+            "Email": "Email Address",
+            "Message": "Your Message",
+            "Submit": "Send Message",
+            "Sending": "Sending..."
+        },
+        "Info": {
+            "Email": "Email",
+            "Phone": "Phone",
+            "Address": "Address",
+            "Hours": "Opening Hours"
+        }
+    },
+    "BookDetail": {
+        "BackToSelection": "Back to selection",
+        "OnlyLeft": "Only {stock} left",
+        "FastMove": "Fast Move",
+        "Secured": "Secured",
+        "Original": "Original",
+        "ReaderReviews": "{count} Reader reviews",
+        "BeFirstToReview": "Be the first to review",
+        "TaxesIncluded": "Local Taxes included · Cash on Delivery",
+        "ReadyForCollection": "Ready for collection",
+        "OutOfStock": "Out of stock",
+        "Abstract": "Abstract",
+        "Technical": "Technical",
+        "Reference": "Reference",
+        "Volume": "Volume",
+        "Pages": "Pages",
+        "RiwayaSelect": "Riwaya Select",
+        "OriginalMasterpiece": "Original Masterpiece",
+        "PremiumPaperQual": "Premium Paper Qual",
+        "GlobalStandard": "Global standard",
+        "CulturalSelect": "Cultural Select",
+        "Voices": "Voices",
+        "SharePerspective": "Share your perspective with our intellectual community.",
+        "Reflections": "{count} Reflections",
+        "RecommendedReads": "Recommended Reads",
+        "ExploreAll": "Explore all"
+    },
+    "Cart": {
+        "Title": "Your Cart",
+        "SelectedItems": "{count} Selected Items",
+        "EmptyTitle": "Your cart is empty.",
+        "EmptyDesc": "Seems like you haven't discovered <br /> our treasures yet.",
+        "DiscoverBooks": "Discover Books",
+        "Set": "SET",
+        "Titles": "Titles",
+        "ClearSelection": "Clear Selection",
+        "Subtotal": "Subtotal",
+        "Delivery": "Delivery",
+        "Complimentary": "Complimentary",
+        "FreeShippingAd": "Add {amount} MAD to unlock free shipping.",
+        "OrderTotal": "Order Total",
+        "ProceedToCheckout": "Proceed to Checkout",
+        "KeepExploring": "Keep Exploring"
+    },
+    "Checkout": {
+        "BackToSelection": "Back to selection",
+        "YourDetails": "Your Details",
+        "ShippingInfo": "Shipping Information",
+        "FirstName": "First Name",
+        "LastName": "Last Name",
+        "MobileNumber": "Mobile Number",
+        "City": "City",
+        "ChooseCity": "Choose your city",
+        "FullAddress": "Full Address",
+        "NoteOptional": "Note (Optional)",
+        "PaymentMethod": "Payment Method",
+        "CashOnDelivery": "Cash on Delivery",
+        "PayWhenReceive": "Pay when you receive your order.",
+        "SelectionSummary": "Selection Summary",
+        "PromotionalCode": "Promotional Code",
+        "CodeApplied": "Code Applied",
+        "DeliveryFee": "Delivery Fee",
+        "Free": "Free",
+        "TotalAmount": "Total Amount",
+        "CompletePurchase": "Complete Purchase",
+        "Processing": "Processing...",
+        "FastDelivery": "Fast worldwide <br /> delivery within 48h.",
+        "Errors": {
+            "FirstNameRequired": "First name is required",
+            "LastNameRequired": "Last name is required",
+            "PhoneRequired": "Phone number is required",
+            "PhoneInvalid": "Invalid number (Ex: 0612345678)",
+            "CityRequired": "City is required",
+            "AddressRequired": "Address is required",
+            "UnexpectedError": "An unexpected error occurred"
+        }
+    },
+    "Review": {
+        "SuccessTitle": "Thank you for your review!",
+        "SuccessDesc": "Your feedback helps other readers make the right choice.",
+        "Title": "Leave your review",
+        "GlobalRating": "Global Rating",
+        "FullName": "Full Name",
+        "YourComment": "Your Comment",
+        "PlaceholderName": "Ex: John Doe",
+        "PlaceholderComment": "What did you think of this book?",
+        "Submit": "Submit Review"
+    },
+    "ReviewList": {
+        "NoReviews": "Be the first to review this book! ✨"
+    },
+    "PredictiveSearch": {
+        "Placeholder": "Search for a book, an author...",
+        "RecentSearches": "Recent Searches",
+        "Clear": "Clear",
+        "PopularThemes": "Popular Themes",
+        "BookCount": "{count} book(s)",
+        "Remaining": "remaining!",
+        "From": "From {price} MAD",
+        "Suggestions": "Suggestions",
+        "By": "By {author}",
+        "NoResultsTitle": "Oops!",
+        "NoResultsDesc": "No books match your search.",
+        "ViewAll": "View all results",
+        "EndsIn": "Ends in: {time}"
+    },
+    "Categories": {
+        "Développement Personnel": "Personal Development",
+        "Business & Finance": "Business & Finance",
+        "Psychologie": "Psychology",
+        "Romans & Fiction": "Novels & Fiction",
+        "Religion": "Religion",
+        "Organisation": "Organization",
+        "All": "All Categories"
+    },
+    "BooksPage": {
+        "Title": "Library",
+        "ItemsAvailable": "{count} items available",
+        "In": "in",
+        "Filters": "Filters",
+        "SearchItems": "Search items",
+        "SearchPlaceholder": "Title, author...",
+        "Apply": "Apply",
+        "Languages": "Languages",
+        "AllLanguages": "All Languages",
+        "Categories": "Categories",
+        "Active": "Active",
+        "Reset": "Reset",
+        "NoVolumes": "No volumes found",
+        "EmptyCollection": "Our collection is empty for these filters.",
+        "EmptyFilters": "Empty filters",
+        "Results": "Results"
+    },
+    "ReviewsSection": {
+        "Title": "Customer Reviews",
+        "NoReviews": "No reviews yet",
+        "BeFirst": "Be the first to share your opinion!",
+        "AverageRating": "Average rating",
+        "BasedOn": "Based on {count} review(s)",
+        "WriteReview": "Write a review",
+        "YourOpinion": "Share your opinion",
+        "HelpOthers": "Help other readers make their choice",
+        "Submitted": "Thank you!",
+        "SubmittedDesc": "Your review has been submitted and is awaiting moderation."
+    }
+}
