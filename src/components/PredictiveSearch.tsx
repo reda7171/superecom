@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Search as SearchIcon, Loader2, BookOpen, X, ArrowRight, Clock } from 'lucide-react'
-import { searchBooksPredictive } from '@/lib/actions/search'
+import { searchBooksPredictive, getPopularSearches } from '@/lib/actions/search'
 import { getPopularCategories } from '@/lib/actions/categories'
 import Image from 'next/image'
 // import Link from 'next/link' <-- use i18n link
@@ -44,17 +44,8 @@ export default function PredictiveSearch() {
     const [query, setQuery] = useState('')
     const [results, setResults] = useState<any[]>([])
     const [history, setHistory] = useState<string[]>([])
-    const [popularCats, setPopularCats] = useState<{
-        name: string;
-        count: number;
-        badge: string | null;
-        badgeColor: string | null;
-        badgeExpiresAt: Date | string | null;
-        topAuthor: string | null;
-        minPrice: number;
-        avgDiscount?: number;
-        isFreeDelivery?: boolean;
-    }[]>([])
+    const [popularCats, setPopularCats] = useState<any[]>([])
+    const [popularSearches, setPopularSearches] = useState<string[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const searchRef = useRef<HTMLDivElement>(null)
@@ -70,6 +61,9 @@ export default function PredictiveSearch() {
 
         // Charger les thèmes populaires avec leurs comptes
         getPopularCategories().then((data: any) => setPopularCats(data))
+
+        // Charger les recherches populaires
+        getPopularSearches().then((data: any) => setPopularSearches(data))
 
         const handleClickOutside = (event: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -196,6 +190,25 @@ export default function PredictiveSearch() {
                                                 className="px-4 py-2 bg-gray-50 hover:bg-black hover:text-white rounded-full text-sm font-bold text-gray-600 transition-all"
                                             >
                                                 {item}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {/* Recherches populaires */}
+                            {popularSearches.length > 0 && (
+                                <div className="px-2">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <span className="text-[11px] font-black uppercase text-gray-900 tracking-widest">{t('PopularSearches')}</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {popularSearches.map((item, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => handleHistoryClick(item)}
+                                                className="px-4 py-2 bg-pixio-yellow/20 hover:bg-pixio-yellow rounded-full text-sm font-bold text-gray-900 transition-all font-bold"
+                                            >
+                                                ✨ {item}
                                             </button>
                                         ))}
                                     </div>

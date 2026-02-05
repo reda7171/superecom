@@ -27,6 +27,7 @@ export async function searchBooksPredictive(query: string) {
                 id: true,
                 title: true,
                 author: true,
+                description: true,
                 image: true,
                 price: true,
                 category: true
@@ -42,9 +43,10 @@ export async function searchBooksPredictive(query: string) {
             keys: [
                 { name: 'title', weight: 1.0 },
                 { name: 'author', weight: 0.8 },
-                { name: 'category', weight: 0.5 }
+                { name: 'category', weight: 0.5 },
+                { name: 'description', weight: 0.3 }
             ],
-            threshold: 0.4,
+            threshold: 0.35,
             distance: 100,
             ignoreLocation: true
         }
@@ -54,11 +56,11 @@ export async function searchBooksPredictive(query: string) {
         const topResults = results.slice(0, 6).map(result => result.item)
 
         // Log de la recherche pour les tendances
-        if (topResults.length > 0) {
-            const bestCat = topResults[0].category;
-            (prisma as any).searchLog.create({
+        if (query.trim().length >= 3) {
+            const bestCat = topResults.length > 0 ? topResults[0].category : null;
+            prisma.searchLog.create({
                 data: {
-                    query: query.toLowerCase(),
+                    query: query.toLowerCase().trim(),
                     category: bestCat
                 }
             }).catch(() => { })
@@ -70,3 +72,29 @@ export async function searchBooksPredictive(query: string) {
         return []
     }
 }
+
+/**
+ * Récupère les recherches les plus populaires
+ */
+export async function getPopularSearches(limit = 5) {
+    try {
+        const stats = await prisma.searchLog.groupBy({
+            by: ['query'],
+            _count: {
+                query: true
+            },
+            orderBy: {
+                _count: {
+                    query: 'desc'
+                }
+            },
+            take: limit
+        });
+
+        return stats.map(s => s.query);
+    } catch (error) {
+        console.error('Erreur stats recherches:', error);
+        return [];
+    }
+}
+
