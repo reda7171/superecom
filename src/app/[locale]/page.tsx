@@ -1,7 +1,7 @@
 import { getPopularBooks } from '@/lib/db/books'
 import { getPopularPacks } from '@/lib/db/packs'
 import { getAllCategoryQuotes } from '@/lib/actions/categories'
-import Header from '@/components/Header'
+import Header from '@/components/HeaderWithUser'
 import BookCard from '@/components/BookCard'
 import PackCard from '@/components/PackCard'
 import Footer from '@/components/Footer'

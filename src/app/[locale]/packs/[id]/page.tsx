@@ -1,5 +1,5 @@
 import { getPackById } from '@/lib/db/packs'
-import Header from '@/components/Header'
+import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import BookCard from '@/components/BookCard'
 import AddToCartButton from '@/components/AddToCartButton'

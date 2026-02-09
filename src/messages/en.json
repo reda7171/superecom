@@ -41,6 +41,7 @@
         "Home": "Home",
         "Books": "Books",
         "Packs": "Packs",
+        "Community": "Community",
         "Cart": "Cart",
         "Login": "Login",
         "Admin": "Admin",
@@ -169,7 +170,8 @@
         "ShippingInfo": "Shipping Information",
         "FirstName": "First Name",
         "LastName": "Last Name",
-        "MobileNumber": "Mobile Number",
+        "Email": "Email",
+        "MobileNumber": "Phone Number",
         "City": "City",
         "ChooseCity": "Choose your city",
         "FullAddress": "Full Address",
@@ -190,7 +192,9 @@
             "FirstNameRequired": "First name is required",
             "LastNameRequired": "Last name is required",
             "PhoneRequired": "Phone number is required",
-            "PhoneInvalid": "Invalid number (Ex: 0612345678)",
+            "PhoneInvalid": "Invalid number (ex: 0612345678)",
+            "EmailRequired": "Email is required",
+            "EmailInvalid": "Invalid email format",
             "CityRequired": "City is required",
             "AddressRequired": "Address is required",
             "UnexpectedError": "An unexpected error occurred"
@@ -264,5 +268,106 @@
         "HelpOthers": "Help other readers make their choice",
         "Submitted": "Thank you!",
         "SubmittedDesc": "Your review has been submitted and is awaiting moderation."
+    },
+    "Wishlist": {
+        "Title": "My Favorites",
+        "Subtitle": "{count} saved item(s)",
+        "EmptyTitle": "Your list is empty",
+        "EmptyDesc": "You haven't added any books to your favorites yet.",
+        "ContinueShopping": "Continue Shopping",
+        "AddToCart": "Add to Cart"
+    },
+    "Tracking": {
+        "Title": "Order Tracking",
+        "Subtitle": "Enter your order number to track its status",
+        "OrderId": "Order Number",
+        "Contact": "Email or Phone",
+        "TrackButton": "Track Order",
+        "Status": "Current Status",
+        "OrderDate": "Order Date",
+        "Total": "Total",
+        "Items": "Items",
+        "Back": "Back to Home",
+        "Steps": {
+            "PENDING": "Pending Confirmation",
+            "CONFIRMED": "Confirmed",
+            "SHIPPED": "Shipping",
+            "DELIVERED": "Delivered",
+            "CANCELLED": "Cancelled"
+        }
+    },
+    "Community": {
+        "RegisterTitle": "Join Riwaya Community",
+        "RegisterSubtitle": "Exchange your favorite books with passionate readers",
+        "LoginTitle": "Member Login",
+        "LoginSubtitle": "Access your exchange dashboard",
+        "FullName": "Full Name",
+        "Email": "Email",
+        "Password": "Password",
+        "City": "City",
+        "CityPlaceholder": "Casablanca, Rabat...",
+        "RegisterButton": "Register",
+        "LoginButton": "Login",
+        "NoAccount": "No account yet?",
+        "AlreadyAccount": "Already registered?",
+        "MyBooks": "My Books",
+        "AddBook": "Add a Book",
+        "Credits": "Credits",
+        "ExchangesLabel": "Exchanges",
+        "BookForm": {
+            "Title": "Book Title",
+            "Author": "Author",
+            "Condition": "Condition",
+            "Description": "Description (optional)",
+            "Isbn": "ISBN (optional)",
+            "Submit": "Add to my library",
+            "Conditions": {
+                "NEW": "New",
+                "GOOD": "Good",
+                "USED": "Used / Acceptable"
+            }
+        },
+        "Market": {
+            "Title": "Book Market",
+            "Subtitle": "Find treasures near you",
+            "SearchPlaceholder": "Search by title, author...",
+            "CityFilter": "Filter by city",
+            "ConditionFilter": "Filter by condition",
+            "ExchangeButton": "Request Exchange",
+            "NoResults": "No books found",
+            "PostedBy": "Posted by",
+            "In": "in"
+        },
+        "Exchange": {
+            "Title": "Propose Exchange",
+            "Subtitle": "Send a request to",
+            "YourOffer": "Your Offer",
+            "SelectBook": "Select one of your books",
+            "OrCredits": "Or use credits",
+            "CreditsAvailable": "Credits available",
+            "Message": "Message (optional)",
+            "Submit": "Send Request",
+            "Success": "Request sent successfully!",
+            "BackToMarket": "Back to Market"
+        },
+        "Exchanges": {
+            "Title": "My Exchanges",
+            "Received": "Received",
+            "Sent": "Sent",
+            "EmptyReceived": "No requests received yet.",
+            "EmptySent": "You haven't sent any requests.",
+            "Status": {
+                "PENDING": "Pending",
+                "ACCEPTED": "Accepted",
+                "REJECTED": "Rejected",
+                "COMPLETED": "Completed",
+                "CANCELLED": "Cancelled"
+            },
+            "Actions": {
+                "Accept": "Accept",
+                "Reject": "Reject",
+                "Contact": "Contact"
+            }
+        }
     }
 }

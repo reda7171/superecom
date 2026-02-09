@@ -1,4 +1,4 @@
-import Header from '@/components/Header'
+import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import { Mail, Phone, MapPin, Send } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'

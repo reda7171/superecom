@@ -6,6 +6,7 @@ import { ShoppingCart, Star, ArrowRight } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui'
+import WishlistButton from '@/components/WishlistButton'
 
 interface BookCardProps {
     id: string
@@ -49,9 +50,17 @@ export default function BookCard({
                         unoptimized
                     />
 
-                    {/* Stock Badge */}
+                    {/* Wishlist Button */}
+                    <div className="absolute top-4 right-4 z-20">
+                        <WishlistButton
+                            item={{ id, title, price, image, type: 'BOOK', slug: `/books/${id}`, author }}
+                            className="bg-white/80 backdrop-blur-sm hover:bg-white shadow-sm"
+                        />
+                    </div>
+
+                    {/* Stock Badge - Déplacé en bas à droite */}
                     {stock <= 5 && stock > 0 && (
-                        <div className="absolute top-4 right-4">
+                        <div className="absolute bottom-4 right-4">
                             <span className="px-4 py-1.5 bg-white text-orange-600 text-[9px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg border border-orange-200">
                                 {stock} {t('Remaining')}
                             </span>

@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server';
 export default async function Footer() {
     const t = await getTranslations('Footer');
     const tNav = await getTranslations('Navigation');
+    const tTrack = await getTranslations('Tracking');
 
     return (
         <footer className="bg-black text-white pt-24 pb-12">
@@ -41,6 +42,7 @@ export default async function Footer() {
                             */}
                             <li><Link href="/faq" className="text-gray-500 hover:text-white transition-colors text-sm font-bold tracking-tight">Shipping</Link></li>
                             <li><Link href="/returns" className="text-gray-500 hover:text-white transition-colors text-sm font-bold tracking-tight">Returns</Link></li>
+                            <li><Link href="/tracking" className="text-gray-500 hover:text-white transition-colors text-sm font-bold tracking-tight">{tTrack('Title')}</Link></li>
                             <li><Link href="/contact" className="text-gray-500 hover:text-white transition-colors text-sm font-bold tracking-tight">{t('Contact')}</Link></li>
                         </ul>
                     </div>

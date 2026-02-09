@@ -12,7 +12,8 @@ import {
     LogOut,
     Ticket,
     MessageSquare,
-    BarChart3
+    BarChart3,
+    Repeat
 } from 'lucide-react'
 
 const navigation = [
@@ -21,6 +22,7 @@ const navigation = [
     { name: 'Packs', href: '/admin/packs', icon: Package },
     { name: 'Commandes', href: '/admin/orders', icon: ShoppingCart },
     { name: 'Clients', href: '/admin/customers', icon: Users },
+    { name: 'Community', href: '/admin/community', icon: Repeat },
     { name: 'Coupons', href: '/admin/coupons', icon: Ticket },
     { name: 'Avis', href: '/admin/reviews', icon: MessageSquare },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },

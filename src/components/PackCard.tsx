@@ -6,6 +6,7 @@ import { Package, ShoppingCart, Sparkles, ArrowRight } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui'
+import WishlistButton from '@/components/WishlistButton'
 
 interface PackCardProps {
     id: string
@@ -54,6 +55,21 @@ export default function PackCard({
                 <div className="bg-black text-white p-2.5 rounded-2xl shadow-lg group-hover:-translate-y-1 transition-transform">
                     <Package className="w-5 h-5" />
                 </div>
+            </div>
+
+            {/* Wishlist Button */}
+            <div className="absolute top-20 left-6 z-10">
+                <WishlistButton
+                    item={{
+                        id,
+                        title: name,
+                        price,
+                        image: image || (books && books.length > 0 ? books[0].book.image : '/images/placeholder.jpg'),
+                        type: 'PACK',
+                        slug: `/packs/${id}`
+                    }}
+                    className="bg-white text-black rounded-2xl shadow-lg hover:scale-110 transition-transform w-[40px] h-[40px]"
+                />
             </div>
 
             {/* Image Section */}

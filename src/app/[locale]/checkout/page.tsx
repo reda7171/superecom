@@ -1,7 +1,7 @@
 'use client'
 
 import { useCartStore } from '@/store/cart'
-import Header from '@/components/Header'
+import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import Image from 'next/image'
 import { useRouter } from '@/i18n/routing'
@@ -16,6 +16,7 @@ import { useTranslations } from 'next-intl'
 interface CheckoutForm {
     firstName: string
     lastName: string
+    email: string
     phone: string
     address: string
     city: string
@@ -77,6 +78,7 @@ export default function CheckoutPage() {
 
             const result = await createOrder({
                 fullName: `${data.firstName} ${data.lastName}`,
+                email: data.email,
                 phone: data.phone,
                 address: data.address,
                 city: data.city,
@@ -142,6 +144,22 @@ export default function CheckoutPage() {
                                         />
                                         {errors.lastName && <p className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">{errors.lastName.message}</p>}
                                     </div>
+                                </div>
+
+                                <div className="space-y-3 mb-8">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('Email')}</label>
+                                    <input
+                                        {...register('email', {
+                                            required: t('Errors.EmailRequired'),
+                                            pattern: {
+                                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                                message: t('Errors.EmailInvalid')
+                                            }
+                                        })}
+                                        className="w-full px-6 py-5 bg-pixio-cream/50 border-2 border-transparent rounded-[1.5rem] focus:bg-white focus:border-black outline-none transition-all font-black text-black"
+                                        placeholder="email@example.com"
+                                    />
+                                    {errors.email && <p className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">{errors.email.message}</p>}
                                 </div>
 
                                 <div className="space-y-3 mb-8">

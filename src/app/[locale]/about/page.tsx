@@ -1,4 +1,4 @@
-import Header from '@/components/Header'
+import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import { BookOpen, Target, Heart, Award, ShieldCheck, Truck, Clock, Headphones, Quote, Sparkles } from 'lucide-react'
 

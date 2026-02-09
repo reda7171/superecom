@@ -1,7 +1,7 @@
 import { getBooks, getBookCategories } from '@/lib/db/books'
 import { getCategoryConfigByName } from '@/lib/actions/categories'
 import { parsePriceFilter } from '@/lib/utils/search'
-import Header from '@/components/Header'
+import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import BookCard from '@/components/BookCard'
 import { Filter, SlidersHorizontal, Quote, Banknote, Globe } from 'lucide-react'

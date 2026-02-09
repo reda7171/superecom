@@ -1,4 +1,4 @@
-import Header from '@/components/Header'
+import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import { RotateCcw, ShieldCheck, Clock, MessageCircle } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'

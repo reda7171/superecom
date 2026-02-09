@@ -162,13 +162,6 @@ Optimisation : Désactivation des logs de débogage pour de meilleures performan
 
 
 
-Serveur Entrant:  mail.ardi.ma
-IMAP Port: 993 POP3 Port: 995
-
-Serveur Sortant: mail.ardi.ma
-SMTP Port: 465
-
-IMAP, POP3, et SMTP authentification exigé.
 
 
 

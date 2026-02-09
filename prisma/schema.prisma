@@ -12,6 +12,7 @@ datasource db {
 enum UserRole {
   ADMIN
   MANAGER
+  USER
 }
 
 enum OrderStatus {
@@ -70,6 +71,26 @@ model User {
   role      UserRole @default(ADMIN)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Exchange Profile (Community)
+  fullName  String?  @db.VarChar(255)
+  city      String?  @db.VarChar(100)
+  credits   Int      @default(10) // Monnaie d'échange
+  rating    Float    @default(5.0)
+  image     String?  @db.VarChar(500)
+  bio       String?  @db.Text
+  instagram String?  @db.VarChar(100)
+  facebook  String?  @db.VarChar(100)
+  twitter   String?  @db.VarChar(100)
+
+  // Relations
+  ownedBooks        ExchangeBook[] @relation("OwnedBooks")
+  sentExchanges     Exchange[]     @relation("SentExchanges")
+  receivedExchanges Exchange[]     @relation("ReceivedExchanges")
+  messages          Message[]
+  notifications     Notification[]
+  ratingsGiven      Rating[]       @relation("RatingsGiven")
+  ratingsReceived   Rating[]       @relation("RatingsReceived")
 
   @@map("users")
 }
@@ -142,6 +163,7 @@ model Order {
   
   // Informations client
   fullName  String      @db.VarChar(255)
+  email     String?     @db.VarChar(255) // Optional pour compatibilité, mais requis par le front
   phone     String      @db.VarChar(20)
   address   String      @db.VarChar(500)
   city      String      @db.VarChar(100)
@@ -219,4 +241,176 @@ model Review {
   @@index([bookId])
   @@index([isApproved])
   @@map("reviews")
+}
+
+// ============================================
+// EXCHANGE SYSTEM (V2)
+// ============================================
+
+enum ExchangeType {
+  DIRECT
+  CREDIT
+  GIVEAWAY
+}
+
+enum ExchangeStatus {
+  PENDING         // En attente
+  ACCEPTED        // Accepté par le vendeur (en attente de livraison)
+  REJECTED        // Refusé
+  COUNTER_OFFER   // Contre-proposition (future)
+  IN_PROGRESS     // Livraison en cours / RDV fixé
+  COMPLETED       // Terminé (livres échangés)
+  CANCELLED       // Annulé
+}
+
+enum BookCondition {
+  NEW     // Comme neuf
+  GOOD    // Bon état
+  USED    // Occasion (traces d'usure)
+}
+
+// Livre dédié à l'échange (séparé du catalogue de vente)
+model ExchangeBook {
+  id          String        @id @default(uuid())
+  ownerId     String
+  
+  title       String
+  author      String
+  isbn        String?
+  condition   BookCondition @default(GOOD)
+  description String?       @db.Text
+  image       String?
+  language    String        @default("fr")
+  
+  // Préférences d'échange
+  exchangeType ExchangeType @default(DIRECT) // Ce que le propriétaire accepte
+  
+  status      String        @default("AVAILABLE") // AVAILABLE, PENDING, EXCHANGED
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  owner       User          @relation("OwnedBooks", fields: [ownerId], references: [id], onDelete: Cascade)
+  offeredIn   Exchange[]    @relation("BookOffered")
+  requestedIn Exchange[]    @relation("BookRequested")
+
+  @@index([ownerId])
+  @@index([status])
+  @@map("exchange_books")
+}
+
+// Transaction d'échange
+model Exchange {
+  id              String         @id @default(uuid())
+  
+  requesterId     String
+  responderId     String
+  
+  bookOfferedId   String?        // Null si échange contre crédits
+  bookRequestedId String
+  
+  type            ExchangeType   @default(DIRECT)
+  status          ExchangeStatus @default(PENDING)
+  
+  creditsAmount   Int?           // Montant crédits si applicable
+  message         String?        @db.Text // Message initial
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relations
+  requester       User           @relation("SentExchanges", fields: [requesterId], references: [id])
+  responder       User           @relation("ReceivedExchanges", fields: [responderId], references: [id])
+  
+  bookOffered     ExchangeBook?  @relation("BookOffered", fields: [bookOfferedId], references: [id])
+  bookRequested   ExchangeBook   @relation("BookRequested", fields: [bookRequestedId], references: [id])
+  chat            Chat?
+
+  @@index([requesterId])
+  @@index([responderId])
+  @@index([status])
+  @@map("exchanges")
+}
+
+// Chat entre utilisateurs pour un échange
+model Chat {
+  id         String    @id @default(uuid())
+  exchangeId String    @unique
+  
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  
+  // Relations
+  exchange   Exchange  @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
+  messages   Message[]
+  
+  @@map("chats")
+}
+
+// Messages dans un chat
+model Message {
+  id        String   @id @default(uuid())
+  chatId    String
+  senderId  String
+  content   String   @db.Text
+  read      Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+  
+  // Relations
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  sender    User     @relation(fields: [senderId], references: [id])
+  
+  @@index([chatId])
+  @@index([senderId])
+  @@map("messages")
+}
+
+// Notifications utilisateur
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String           @db.VarChar(255)
+  message   String           @db.Text
+  link      String?          @db.VarChar(500)
+  read      Boolean          @default(false)
+  
+  createdAt DateTime         @default(now())
+  
+  // Relations
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([read])
+  @@map("notifications")
+}
+
+// Évaluations après échange
+model Rating {
+  id         String   @id @default(uuid())
+  exchangeId String   @unique
+  fromUserId String
+  toUserId   String
+  rating     Int      // 1-5
+  comment    String?  @db.Text
+  
+  createdAt  DateTime @default(now())
+  
+  // Relations
+  fromUser   User     @relation("RatingsGiven", fields: [fromUserId], references: [id])
+  toUser     User     @relation("RatingsReceived", fields: [toUserId], references: [id])
+  
+  @@index([fromUserId])
+  @@index([toUserId])
+  @@map("ratings")
+}
+
+enum NotificationType {
+  EXCHANGE_REQUEST
+  EXCHANGE_ACCEPTED
+  EXCHANGE_REJECTED
+  NEW_MESSAGE
+  EXCHANGE_COMPLETED
+  RATING_RECEIVED
 }

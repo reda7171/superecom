@@ -1,7 +1,7 @@
 'use client'
 
 import { useCartStore } from '@/store/cart'
-import Header from '@/components/Header'
+import Header from '@/components/HeaderWithUser'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Minus, Plus, Trash2, ShoppingCart, Shield, Truck } from 'lucide-react'

@@ -41,6 +41,7 @@
         "Home": "Accueil",
         "Books": "Livres",
         "Packs": "Packs",
+        "Community": "Echanges",
         "Cart": "Panier",
         "Login": "Connexion",
         "Admin": "Admin",
@@ -169,7 +170,8 @@
         "ShippingInfo": "Informations de livraison",
         "FirstName": "Prénom",
         "LastName": "Nom",
-        "MobileNumber": "Téléphone mobile",
+        "Email": "Email",
+        "MobileNumber": "Numéro de téléphone mobile",
         "City": "Ville",
         "ChooseCity": "Choisir votre ville",
         "FullAddress": "Adresse complète",
@@ -190,7 +192,9 @@
             "FirstNameRequired": "Le prénom est requis",
             "LastNameRequired": "Le nom est requis",
             "PhoneRequired": "Le téléphone est requis",
-            "PhoneInvalid": "Numéro invalide (Ex: 0612345678)",
+            "PhoneInvalid": "Numéro invalide (ex: 0612345678)",
+            "EmailRequired": "L'email est requis",
+            "EmailInvalid": "Format d'email invalide",
             "CityRequired": "La ville est requise",
             "AddressRequired": "L'adresse est requise",
             "UnexpectedError": "Une erreur inattendue est survenue"
@@ -264,5 +268,106 @@
         "HelpOthers": "Aidez les autres lecteurs à faire leur choix",
         "Submitted": "Merci !",
         "SubmittedDesc": "Votre avis a été soumis et est en attente de modération."
+    },
+    "Wishlist": {
+        "Title": "Mes Favoris",
+        "Subtitle": "{count} élément(s) sauvegardé(s)",
+        "EmptyTitle": "Votre liste est vide",
+        "EmptyDesc": "Vous n'avez pas encore ajouté de livres à vos favoris.",
+        "ContinueShopping": "Continuer mes achats",
+        "AddToCart": "Ajouter au panier"
+    },
+    "Tracking": {
+        "Title": "Suivi de Commande",
+        "Subtitle": "Entrez votre numéro de commande pour voir son statut",
+        "OrderId": "Numéro de commande",
+        "Contact": "Email ou Téléphone",
+        "TrackButton": "Suivre ma commande",
+        "Status": "Statut actuel",
+        "OrderDate": "Date de commande",
+        "Total": "Total",
+        "Items": "Articles",
+        "Back": "Retour à l'accueil",
+        "Steps": {
+            "PENDING": "En attente de confirmation",
+            "CONFIRMED": "Confirmée",
+            "SHIPPED": "En cours de livraison",
+            "DELIVERED": "Livrée",
+            "CANCELLED": "Annulée"
+        }
+    },
+    "Community": {
+        "RegisterTitle": "Rejoindre la Communauté Riwaya",
+        "RegisterSubtitle": "Echangez vos livres préférés avec des lecteurs passionnés",
+        "LoginTitle": "Connexion Membre",
+        "LoginSubtitle": "Accédez à votre espace d'échange",
+        "FullName": "Nom & Prénom",
+        "Email": "Email",
+        "Password": "Mot de passe",
+        "City": "Ville",
+        "CityPlaceholder": "Casablanca, Rabat...",
+        "RegisterButton": "S'inscrire",
+        "LoginButton": "Se connecter",
+        "NoAccount": "Pas encore de compte ?",
+        "AlreadyAccount": "Déjà inscrit ?",
+        "MyBooks": "Mes Livres",
+        "AddBook": "Proposer un livre",
+        "Credits": "Crédits",
+        "ExchangesLabel": "Échanges",
+        "BookForm": {
+            "Title": "Titre du livre",
+            "Author": "Auteur",
+            "Condition": "État",
+            "Description": "Description (optionnel)",
+            "Isbn": "ISBN (optionnel)",
+            "Submit": "Ajouter à ma bibliothèque",
+            "Conditions": {
+                "NEW": "Neuf",
+                "GOOD": "Bon état",
+                "USED": "Usé / Acceptable"
+            }
+        },
+        "Market": {
+            "Title": "Marché aux Livres",
+            "Subtitle": "Trouvez des perles rares près de chez vous",
+            "SearchPlaceholder": "Rechercher par titre, auteur...",
+            "CityFilter": "Filtrer par ville",
+            "ConditionFilter": "Filtrer par état",
+            "ExchangeButton": "Proposer un échange",
+            "NoResults": "Aucun livre trouvé",
+            "PostedBy": "Proposé par",
+            "In": "à"
+        },
+        "Exchange": {
+            "Title": "Proposer un échange",
+            "Subtitle": "Envoyez une demande à",
+            "YourOffer": "Votre offre",
+            "SelectBook": "Choisissez un de vos livres",
+            "OrCredits": "Ou utilisez vos crédits",
+            "CreditsAvailable": "Crédits disponibles",
+            "Message": "Message (optionnel)",
+            "Submit": "Envoyer la demande",
+            "Success": "Demande envoyée avec succès !",
+            "BackToMarket": "Retour au marché"
+        },
+        "Exchanges": {
+            "Title": "Mes Échanges",
+            "Received": "Reçus",
+            "Sent": "Envoyés",
+            "EmptyReceived": "Aucune demande reçue pour le moment.",
+            "EmptySent": "Vous n'avez envoyé aucune demande.",
+            "Status": {
+                "PENDING": "En attente",
+                "ACCEPTED": "Accepté",
+                "REJECTED": "Refusé",
+                "COMPLETED": "Terminé",
+                "CANCELLED": "Annulé"
+            },
+            "Actions": {
+                "Accept": "Accepter",
+                "Reject": "Refuser",
+                "Contact": "Contacter"
+            }
+        }
     }
 }

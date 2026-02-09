@@ -1,5 +1,5 @@
 import { getOrderById } from '@/lib/actions/orders'
-import Header from '@/components/Header'
+import Header from '@/components/HeaderWithUser'
 import Link from 'next/link'
 import { ArrowLeft, CheckCircle, Package, Truck, Wallet, Ticket, Loader2, ArrowRight } from 'lucide-react'
 import { notFound } from 'next/navigation'

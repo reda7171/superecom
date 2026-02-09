@@ -1,5 +1,5 @@
 import { getPacks } from '@/lib/db/packs'
-import Header from '@/components/Header'
+import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import PackCard from '@/components/PackCard'
 import { Package, Sparkles } from 'lucide-react'

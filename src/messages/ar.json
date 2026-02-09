@@ -41,6 +41,7 @@
         "Home": "الرئيسية",
         "Books": "الكتب",
         "Packs": "الباقات",
+        "Community": "تبادل",
         "Cart": "السلة",
         "Login": "دخول",
         "Admin": "إدارة",
@@ -169,6 +170,7 @@
         "ShippingInfo": "معلومات الشحن",
         "FirstName": "الاسم الأول",
         "LastName": "الاسم العائلي",
+        "Email": "البريد الإلكتروني",
         "MobileNumber": "رقم الهاتف",
         "City": "المدينة",
         "ChooseCity": "اختر مدينتك",
@@ -191,6 +193,8 @@
             "LastNameRequired": "الاسم العائلي مطلوب",
             "PhoneRequired": "رقم الهاتف مطلوب",
             "PhoneInvalid": "رقم غير صحيح (مثال: 0612345678)",
+            "EmailRequired": "البريد الإلكتروني مطلوب",
+            "EmailInvalid": "صيغة البريد الإلكتروني غير صحيحة",
             "CityRequired": "المدينة مطلوبة",
             "AddressRequired": "العنوان مطلوب",
             "UnexpectedError": "حدث خطأ غير متوقع"
@@ -264,5 +268,106 @@
         "HelpOthers": "ساعد القراء الآخرين في اتخاذ قرارهم",
         "Submitted": "شكراً!",
         "SubmittedDesc": "تم إرسال تقييمك وهو في انتظار المراجعة."
+    },
+    "Wishlist": {
+        "Title": "مفضلاتي",
+        "Subtitle": "{count} عناصر محفوظة",
+        "EmptyTitle": "قائمتك فارغة",
+        "EmptyDesc": "لم تقم بإضافة أي كتب إلى مفضلاتك بعد.",
+        "ContinueShopping": "متابعة التسوق",
+        "AddToCart": "أضف إلى السلة"
+    },
+    "Tracking": {
+        "Title": "تتبع الطلب",
+        "Subtitle": "أدخل رقم الطلب لتتبع حالته",
+        "OrderId": "رقم الطلب",
+        "Contact": "البريد الإلكتروني أو الهاتف",
+        "TrackButton": "تتبع الطلب",
+        "Status": "الحالة الحالية",
+        "OrderDate": "تاريخ الطلب",
+        "Total": "الإجمالية",
+        "Items": "المنتجات",
+        "Back": "العودة للرئيسية",
+        "Steps": {
+            "PENDING": "في انتظار التأكيد",
+            "CONFIRMED": "تم التأكيد",
+            "SHIPPED": "جاري التوصيل",
+            "DELIVERED": "تم التوصيل",
+            "CANCELLED": "ملغى"
+        }
+    },
+    "Community": {
+        "RegisterTitle": "انضم إلى مجتمع رواية",
+        "RegisterSubtitle": "تبادل كتبك المفضلة مع قراء شغوفين",
+        "LoginTitle": "دخول الأعضاء",
+        "LoginSubtitle": "اذهب إلى مساحتك الخاصة للتبادل",
+        "FullName": "الاسم الكامل",
+        "Email": "البريد الإلكتروني",
+        "Password": "كلمة المرور",
+        "City": "المدينة",
+        "CityPlaceholder": "الدار البيضاء، الرباط...",
+        "RegisterButton": "تسجيل",
+        "LoginButton": "دخول",
+        "NoAccount": "ليس لديك حساب؟",
+        "AlreadyAccount": "مسجل بالفعل؟",
+        "MyBooks": "كتبي",
+        "AddBook": "أضف كتاباً",
+        "Credits": "أرصدة",
+        "ExchangesLabel": "تبادلات",
+        "BookForm": {
+            "Title": "عنوان الكتاب",
+            "Author": "المؤلف",
+            "Condition": "الحالة",
+            "Description": "وصف (اختياري)",
+            "Isbn": "ISBN (اختياري)",
+            "Submit": "إضافة لمكتبتي",
+            "Conditions": {
+                "NEW": "جديد",
+                "GOOD": "حالة جيدة",
+                "USED": "مستعمل / مقبول"
+            }
+        },
+        "Market": {
+            "Title": "سوق الكتب",
+            "Subtitle": "اعثر على كنوز قرب منزلك",
+            "SearchPlaceholder": "بحث بالعنوان، المؤلف...",
+            "CityFilter": "تصفية حسب المدينة",
+            "ConditionFilter": "تصفية حسب الحالة",
+            "ExchangeButton": "اطلب تبادلاً",
+            "NoResults": "لم يتم العثور على أي كتاب",
+            "PostedBy": "مقدم من",
+            "In": "في"
+        },
+        "Exchange": {
+            "Title": "اقتراح تبادل",
+            "Subtitle": "أرسل طلباً إلى",
+            "YourOffer": "عضرك",
+            "SelectBook": "اختر كتاباً من كتبك",
+            "OrCredits": "أو استخدم رصيدك",
+            "CreditsAvailable": "الرصيد المتاح",
+            "Message": "رسالة (اختياري)",
+            "Submit": "إرسال الطلب",
+            "Success": "تم إرسال الطلب بنجاح!",
+            "BackToMarket": "العودة للسوق"
+        },
+        "Exchanges": {
+            "Title": "تبادلاتي",
+            "Received": "الواردة",
+            "Sent": "المرسلة",
+            "EmptyReceived": "لا توجد طلبات واردة حالياً.",
+            "EmptySent": "لم ترسل أي طلب بعد.",
+            "Status": {
+                "PENDING": "قيد الانتظار",
+                "ACCEPTED": "مقبول",
+                "REJECTED": "مرفوض",
+                "COMPLETED": "مكتمل",
+                "CANCELLED": "ملغى"
+            },
+            "Actions": {
+                "Accept": "قبول",
+                "Reject": "رفض",
+                "Contact": "تواصل"
+            }
+        }
     }
 }
