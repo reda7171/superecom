@@ -17,6 +17,7 @@ interface ExchangeFormProps {
 
 export default function ExchangeForm({ details }: ExchangeFormProps) {
     const t = useTranslations('Community.Exchange')
+    const tc = useTranslations('Community')
     const router = useRouter()
 
     // State
@@ -96,9 +97,9 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
                             >
                                 <div className="flex items-center gap-2 mb-2">
                                     <RefreshCw className="w-5 h-5" />
-                                    <span className="font-black text-xs uppercase tracking-widest">Livre contre Livre</span>
+                                    <span className="font-black text-xs uppercase tracking-widest">{t('BookToBook')}</span>
                                 </div>
-                                <p className="text-xs opacity-80 leading-relaxed">Échangez un de vos livres contre celui-ci.</p>
+                                <p className="text-xs opacity-80 leading-relaxed">{t('BookToBookDesc')}</p>
                             </button>
 
                             <button
@@ -109,9 +110,9 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
                             >
                                 <div className="flex items-center gap-2 mb-2">
                                     <Coins className="w-5 h-5" />
-                                    <span className="font-black text-xs uppercase tracking-widest">Crédits</span>
+                                    <span className="font-black text-xs uppercase tracking-widest">{tc('Credits')}</span>
                                 </div>
-                                <p className="text-xs opacity-80 leading-relaxed">Utilisez votre solde de crédits (Solde: {currentUser.credits})</p>
+                                <p className="text-xs opacity-80 leading-relaxed">{t('CreditsDesc')} (Solde: {currentUser.credits})</p>
                             </button>
                         </div>
                         <input type="hidden" name="type" value={type} />
@@ -128,9 +129,9 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
                                     required
                                     value={selectedBook}
                                     onChange={(e) => setSelectedBook(e.target.value)}
-                                    className="w-full pl-12 pr-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black appearance-none"
+                                    className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black appearance-none"
                                 >
-                                    <option value="" disabled>Sélectionnez un livre...</option>
+                                    <option value="" disabled>{tc('SelectPlaceholder')}</option>
                                     {myBooks.map((b: any) => (
                                         <option key={b.id} value={b.id}>{b.title} ({b.author})</option>
                                     ))}
@@ -157,8 +158,8 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
                         <textarea
                             name="message"
                             rows={3}
-                            className="w-full p-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black resize-none"
-                            placeholder="Bonjour, je suis intéressé par ce livre..."
+                            className="w-full p-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black resize-none"
+                            placeholder={t('MessagePlaceholder')}
                         />
                     </div>
 

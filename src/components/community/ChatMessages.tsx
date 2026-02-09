@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { markMessagesAsRead } from '@/lib/actions/community-chat'
-import { getCommunityUser } from '@/lib/actions/community-auth'
 
 interface Message {
     id: string
@@ -24,6 +24,7 @@ interface ChatMessagesProps {
 
 export default function ChatMessages({ messages, chatId, userId }: ChatMessagesProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null)
+    const t = useTranslations('Community.Chat')
 
     // Auto-scroll vers le bas
     useEffect(() => {
@@ -40,8 +41,8 @@ export default function ChatMessages({ messages, chatId, userId }: ChatMessagesP
             <div className="flex-grow flex items-center justify-center p-12">
                 <div className="text-center">
                     <div className="text-6xl mb-4">💬</div>
-                    <p className="text-lg font-black text-gray-400">Aucun message</p>
-                    <p className="text-sm text-gray-400 mt-2">Commencez la conversation !</p>
+                    <p className="text-lg font-black text-gray-400">{t('Empty')}</p>
+                    <p className="text-sm text-gray-400 mt-2">{t('StartConversation')}</p>
                 </div>
             </div>
         )
@@ -81,7 +82,7 @@ export default function ChatMessages({ messages, chatId, userId }: ChatMessagesP
                         <div className={`flex flex-col ${isCurrentUser ? 'items-end' : 'items-start'} max-w-[85%] md:max-w-[70%]`}>
                             {showAvatar && (
                                 <span className="text-[10px] font-black text-gray-400 mb-1 px-2 uppercase tracking-widest">
-                                    {message.sender.fullName || 'Utilisateur'}
+                                    {message.sender.fullName || 'User'}
                                 </span>
                             )}
                             <div
@@ -96,13 +97,13 @@ export default function ChatMessages({ messages, chatId, userId }: ChatMessagesP
                             </div>
                             <div className={`flex items-center gap-2 mt-1 px-2 ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'}`}>
                                 <span className="text-[10px] font-bold text-gray-400">
-                                    {new Date(message.createdAt).toLocaleTimeString('fr-FR', {
+                                    {new Date(message.createdAt).toLocaleTimeString([], {
                                         hour: '2-digit',
                                         minute: '2-digit'
                                     })}
                                 </span>
                                 {isCurrentUser && message.read && (
-                                    <span className="text-[10px] font-black text-blue-500 uppercase tracking-tighter">Lu</span>
+                                    <span className="text-[10px] font-black text-blue-500 uppercase tracking-tighter">{t('Read')}</span>
                                 )}
                             </div>
                         </div>

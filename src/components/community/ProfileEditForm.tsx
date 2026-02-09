@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
+import { useTranslations } from 'next-intl'
 import { updateProfile } from '@/lib/actions/community-user'
 import { User, MapPin, Loader2, Save, Image as ImageIcon, RefreshCw, Instagram, Facebook, Twitter, FileText } from 'lucide-react'
 import { MOROCCO_CITIES } from '@/lib/constants/cities'
@@ -24,6 +25,8 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
+    const t = useTranslations('Community.Profile')
+    const tc = useTranslations('Community')
 
     const [selectedImage, setSelectedImage] = useState(user.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.fullName}`)
     const [customImage, setCustomImage] = useState('')
@@ -58,7 +61,7 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
 
     return (
         <div className="w-full max-w-2xl bg-white rounded-[2.5rem] p-10 shadow-xl shadow-black/5 border border-gray-100">
-            <h1 className="text-3xl font-black text-black tracking-tighter mb-8">Modifier mon profil</h1>
+            <h1 className="text-3xl font-black text-black tracking-tighter mb-8">{t('EditTitle')}</h1>
 
             <form onSubmit={onSubmit} className="space-y-8">
                 {/* Avatar Section */}
@@ -107,35 +110,34 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Nom */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Nom complet</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{tc('FullName')}</label>
                         <div className="relative">
                             <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                             <input
                                 name="fullName"
                                 defaultValue={user.fullName}
                                 required
-                                className="w-full pl-12 pr-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
+                                className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
                             />
                         </div>
                     </div>
 
                     {/* Ville */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Ville</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{tc('City')}</label>
                         <div className="relative">
                             <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 pointer-events-none z-10" />
                             <select
                                 name="city"
                                 defaultValue={user.city}
                                 required
-                                className="w-full pl-12 pr-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black appearance-none cursor-pointer"
+                                className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black appearance-none cursor-pointer"
                             >
-                                <option value="" disabled>Sélectionnez une ville</option>
+                                <option value="" disabled>{tc('CityPlaceholder')}</option>
                                 {MOROCCO_CITIES.map((city) => (
                                     <option key={city} value={city}>{city}</option>
                                 ))}
                             </select>
-                            {/* Custom arrow */}
                             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -154,15 +156,15 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                             name="bio"
                             defaultValue={user.bio || ''}
                             rows={3}
-                            className="w-full pl-12 pr-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black resize-none"
-                            placeholder="Dites-nous en plus sur vous..."
+                            className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black resize-none"
+                            placeholder="..."
                         />
                     </div>
                 </div>
 
                 {/* Réseaux Sociaux */}
                 <div className="space-y-4 pt-4 border-t border-gray-100">
-                    <h3 className="text-sm font-black uppercase tracking-widest text-black">Réseaux Sociaux</h3>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-black">Socials</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="relative">
@@ -205,7 +207,7 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
 
                 {success && (
                     <div className="p-4 bg-green-50 text-green-600 rounded-xl text-sm font-bold text-center animate-in fade-in slide-in-from-top-2">
-                        Profil mis à jour avec succès ! Le serveur va redémarrer...
+                        {t('Success')}
                     </div>
                 )}
 
@@ -216,7 +218,7 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                 >
                     {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                         <>
-                            <Save className="w-4 h-4" /> Enregistrer les modifications
+                            <Save className="w-4 h-4" /> {t('Save')}
                         </>
                     )}
                 </button>

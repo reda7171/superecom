@@ -2,6 +2,7 @@
 
 import { useState, useRef, KeyboardEvent } from 'react'
 import { Send, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { sendMessage } from '@/lib/actions/community-chat'
 import { useRouter } from '@/i18n/routing'
 
@@ -14,6 +15,7 @@ export default function ChatInput({ chatId }: ChatInputProps) {
     const [sending, setSending] = useState(false)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const router = useRouter()
+    const t = useTranslations('Community.Chat')
 
     async function handleSend() {
         if (!message.trim() || sending) return
@@ -30,7 +32,7 @@ export default function ChatInput({ chatId }: ChatInputProps) {
                 textareaRef.current.style.height = 'auto'
             }
         } else {
-            alert(result.error || 'Erreur lors de l\'envoi du message')
+            alert(result.error || 'Error sending message')
         }
 
         setSending(false)
@@ -59,7 +61,7 @@ export default function ChatInput({ chatId }: ChatInputProps) {
                     onChange={(e) => setMessage(e.target.value)}
                     onInput={handleInput}
                     onKeyDown={handleKeyDown}
-                    placeholder="Écrivez votre message..."
+                    placeholder={t('Placeholder')}
                     disabled={sending}
                     rows={1}
                     className="flex-grow px-4 py-3 bg-white border-2 border-gray-200 rounded-2xl focus:border-black outline-none transition-all font-medium text-black resize-none max-h-32 disabled:opacity-50"
@@ -78,7 +80,7 @@ export default function ChatInput({ chatId }: ChatInputProps) {
                 </button>
             </div>
             <p className="text-xs text-gray-400 mt-2 ml-1">
-                Appuyez sur <kbd className="px-2 py-0.5 bg-gray-200 rounded text-xs font-bold">Entrée</kbd> pour envoyer, <kbd className="px-2 py-0.5 bg-gray-200 rounded text-xs font-bold">Shift + Entrée</kbd> pour une nouvelle ligne
+                {t('Instructions')}
             </p>
         </div>
     )

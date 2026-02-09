@@ -336,7 +336,11 @@
             "ExchangeButton": "Request Exchange",
             "NoResults": "No books found",
             "PostedBy": "Posted by",
-            "In": "in"
+            "In": "in",
+            "Owner": "Owner",
+            "Request": "Request Exchange",
+            "AllCities": "All Cities",
+            "Filter": "Filter"
         },
         "Exchange": {
             "Title": "Propose Exchange",
@@ -367,6 +371,36 @@
                 "Accept": "Accept",
                 "Reject": "Reject",
                 "Contact": "Contact"
+            },
+            "ChatButton": "Chat",
+            "FinishButton": "Finish",
+            "HistoryChat": "Chat History"
+        },
+        "Notifications": {
+            "Title": "Notifications",
+            "MarkAllRead": "Mark all as read",
+            "Empty": "No notifications",
+            "All": "See all notifications",
+            "Loading": "Loading notifications..."
+        },
+        "Chat": {
+            "Title": "Chat",
+            "Placeholder": "Type your message...",
+            "Send": "Send",
+            "Read": "Read",
+            "SystemMessage": "Start of conversation regarding"
+        },
+        "Profile": {
+            "Title": "My Profile",
+            "EditTitle": "Edit Profile",
+            "Save": "Save Changes",
+            "Updating": "Updating...",
+            "Success": "Profile updated successfully",
+            "Photo": "Profile Picture",
+            "Stats": {
+                "Books": "Books",
+                "Exchanges": "Exchanges",
+                "Credits": "Credits"
             }
         }
     }

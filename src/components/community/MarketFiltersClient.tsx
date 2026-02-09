@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useRouter, usePathname } from '@/i18n/routing'
+import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Search, MapPin, Loader2 } from 'lucide-react'
 import { MOROCCO_CITIES } from '@/lib/constants/cities'
 
@@ -26,6 +28,7 @@ export default function MarketFiltersClient() {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
+    const t = useTranslations('Community.Market')
 
     const [search, setSearch] = useState(searchParams.get('search') || '')
     const [city, setCity] = useState(searchParams.get('city') || '')
@@ -58,7 +61,7 @@ export default function MarketFiltersClient() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                     type="text"
-                    placeholder="Rechercher un livre, auteur..."
+                    placeholder={t('SearchPlaceholder')}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full pl-12 pr-4 py-4 bg-white border border-gray-100 rounded-2xl shadow-sm focus:border-black focus:ring-0 outline-none transition-all font-bold text-sm"
@@ -71,7 +74,7 @@ export default function MarketFiltersClient() {
                     onChange={(e) => setCity(e.target.value)}
                     className="w-full pl-12 pr-10 py-4 bg-white border border-gray-100 rounded-2xl shadow-sm focus:border-black focus:ring-0 outline-none transition-all font-bold text-sm appearance-none cursor-pointer"
                 >
-                    <option value="">Toutes les villes</option>
+                    <option value="">{t('AllCities')}</option>
                     {MOROCCO_CITIES.map((cityName) => (
                         <option key={cityName} value={cityName}>{cityName}</option>
                     ))}

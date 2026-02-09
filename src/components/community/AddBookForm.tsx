@@ -11,6 +11,7 @@ import ImageUpload from '@/components/ImageUpload'
 
 export default function AddBookForm() {
     const t = useTranslations('Community.BookForm')
+    const tc = useTranslations('Community')
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -32,7 +33,7 @@ export default function AddBookForm() {
                 const uploadResult = await uploadBookImage(imageFormData)
 
                 if (!uploadResult.success) {
-                    setError(uploadResult.error || "Erreur lors de l'upload de l'image")
+                    setError(uploadResult.error || "Error uploading image")
                     setLoading(false)
                     return
                 }
@@ -55,7 +56,7 @@ export default function AddBookForm() {
                 setLoading(false)
             }
         } catch (err) {
-            setError("Une erreur est survenue")
+            setError("An error occurred")
             setLoading(false)
         }
     }
@@ -85,8 +86,8 @@ export default function AddBookForm() {
                         <input
                             name="title"
                             required
-                            className="w-full pl-12 pr-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
-                            placeholder="Harry Potter..."
+                            className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
+                            placeholder="..."
                         />
                     </div>
                 </div>
@@ -99,8 +100,8 @@ export default function AddBookForm() {
                         <input
                             name="author"
                             required
-                            className="w-full pl-12 pr-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
-                            placeholder="J.K. Rowling"
+                            className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
+                            placeholder="..."
                         />
                     </div>
                 </div>
@@ -114,7 +115,7 @@ export default function AddBookForm() {
                             <select
                                 name="condition"
                                 required
-                                className="w-full pl-12 pr-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black appearance-none"
+                                className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black appearance-none"
                             >
                                 <option value="NEW">{t('Conditions.NEW')}</option>
                                 <option value="GOOD">{t('Conditions.GOOD')}</option>
@@ -130,7 +131,7 @@ export default function AddBookForm() {
                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-gray-300">#</span>
                             <input
                                 name="isbn"
-                                className="w-full pl-12 pr-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
+                                className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
                                 placeholder="978-..."
                             />
                         </div>
@@ -145,7 +146,7 @@ export default function AddBookForm() {
                         <textarea
                             name="description"
                             rows={4}
-                            className="w-full pl-12 pr-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black resize-none"
+                            className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black resize-none"
                             placeholder="..."
                         />
                     </div>

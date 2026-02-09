@@ -1,17 +1,19 @@
 'use client'
 
-import { useSearchParams, useRouter, usePathname } from 'next/navigation'
+import { useRouter, usePathname } from '@/i18n/routing'
 import { Search, MapPin, Filter } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useSearchParams as useSearchParamsNext } from 'next/navigation'
 
 export default function MarketSearch({ cities }: { cities: string[] }) {
     const t = useTranslations('Community.Market')
-    const searchParams = useSearchParams()
+    const tbf = useTranslations('Community.BookForm')
+    const searchParams = useSearchParamsNext()
     const pathname = usePathname()
     const { replace } = useRouter()
 
     const handleSearch = (formData: FormData) => {
-        const params = new URLSearchParams(searchParams)
+        const params = new URLSearchParams(searchParams.toString())
 
         const search = formData.get('search') as string
         const city = formData.get('city') as string
@@ -37,7 +39,7 @@ export default function MarketSearch({ cities }: { cities: string[] }) {
                 <input
                     name="search"
                     defaultValue={searchParams.get('search')?.toString()}
-                    className="w-full pl-12 pr-6 py-3 bg-pixio-cream/50 border-2 border-transparent rounded-xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black text-sm"
+                    className="w-full pl-12 pr-6 py-3 bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black text-sm"
                     placeholder={t('SearchPlaceholder')}
                 />
             </div>
@@ -48,7 +50,7 @@ export default function MarketSearch({ cities }: { cities: string[] }) {
                 <select
                     name="city"
                     defaultValue={searchParams.get('city')?.toString()}
-                    className="w-full pl-12 pr-6 py-3 bg-pixio-cream/50 border-2 border-transparent rounded-xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black text-sm appearance-none cursor-pointer"
+                    className="w-full pl-12 pr-6 py-3 bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black text-sm appearance-none cursor-pointer"
                 >
                     <option value="">{t('CityFilter')}</option>
                     {cities.map(city => (
@@ -63,17 +65,17 @@ export default function MarketSearch({ cities }: { cities: string[] }) {
                 <select
                     name="condition"
                     defaultValue={searchParams.get('condition')?.toString()}
-                    className="w-full pl-12 pr-6 py-3 bg-pixio-cream/50 border-2 border-transparent rounded-xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black text-sm appearance-none cursor-pointer"
+                    className="w-full pl-12 pr-6 py-3 bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black text-sm appearance-none cursor-pointer"
                 >
                     <option value="">{t('ConditionFilter')}</option>
-                    <option value="NEW">Neuf</option>
-                    <option value="GOOD">Bon état</option>
-                    <option value="USED">Occasion</option>
+                    <option value="NEW">{tbf('Conditions.NEW')}</option>
+                    <option value="GOOD">{tbf('Conditions.GOOD')}</option>
+                    <option value="USED">{tbf('Conditions.USED')}</option>
                 </select>
             </div>
 
             <button type="submit" className="bg-black text-white px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-gray-800 transition-all shadow-md w-full md:w-auto">
-                Filtrer
+                {t('Filter')}
             </button>
         </form>
     )

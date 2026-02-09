@@ -336,7 +336,11 @@
             "ExchangeButton": "اطلب تبادلاً",
             "NoResults": "لم يتم العثور على أي كتاب",
             "PostedBy": "مقدم من",
-            "In": "في"
+            "In": "في",
+            "Owner": "المالك",
+            "Request": "اطلب تبادلاً",
+            "AllCities": "كل المدن",
+            "Filter": "تصفية"
         },
         "Exchange": {
             "Title": "اقتراح تبادل",
@@ -366,7 +370,38 @@
             "Actions": {
                 "Accept": "قبول",
                 "Reject": "رفض",
-                "Contact": "تواصل"
+                "Contact": "تواصل",
+                "Chat": "دردشة"
+            },
+            "ChatButton": "تحدث",
+            "FinishButton": "إنهاء",
+            "HistoryChat": "سجل الدردشة"
+        },
+        "Notifications": {
+            "Title": "التنبيهات",
+            "MarkAllRead": "تحديد الكل كمقروء",
+            "Empty": "لا توجد تنبيهات",
+            "All": "عرض كل التنبيهات",
+            "Loading": "جاري تحميل التنبيهات..."
+        },
+        "Chat": {
+            "Title": "المحادثة",
+            "Placeholder": "اكتب رسالتك...",
+            "Send": "إرسال",
+            "Read": "تمت القراءة",
+            "SystemMessage": "بداية المحادثة بخصوص"
+        },
+        "Profile": {
+            "Title": "ملفي الشخصي",
+            "EditTitle": "تعديل الملف الشخصي",
+            "Save": "حفظ التغييرات",
+            "Updating": "جاري التحديث...",
+            "Success": "تم تحديث الملف بنجاح",
+            "Photo": "الصورة الشخصية",
+            "Stats": {
+                "Books": "الكتب",
+                "Exchanges": "التبادلات",
+                "Credits": "الأرصدة"
             }
         }
     }

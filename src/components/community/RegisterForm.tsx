@@ -2,14 +2,14 @@
 
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { register } from '@/lib/actions/community-auth'
-import { Link } from '@/i18n/routing'
+import { Link, useRouter } from '@/i18n/routing'
 import { Loader2, ArrowRight } from 'lucide-react'
 import { MOROCCO_CITIES } from '@/lib/constants/cities'
 
 export default function RegisterForm() {
     const t = useTranslations('Community')
+    const tm = useTranslations('Community.Market')
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -26,7 +26,7 @@ export default function RegisterForm() {
             router.push('/community')
             router.refresh()
         } else {
-            setError(res.error || "Une erreur est survenue")
+            setError(res.error || "An error occurred")
             setLoading(false)
         }
     }

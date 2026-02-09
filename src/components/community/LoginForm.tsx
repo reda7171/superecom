@@ -2,9 +2,8 @@
 
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { login } from '@/lib/actions/community-auth'
-import { Link } from '@/i18n/routing'
+import { Link, useRouter } from '@/i18n/routing'
 import { Loader2, ArrowRight } from 'lucide-react'
 
 export default function LoginForm() {
@@ -25,7 +24,7 @@ export default function LoginForm() {
             router.push('/community')
             router.refresh()
         } else {
-            setError(res.error || "Une erreur est survenue")
+            setError(res.error || "An error occurred")
             setLoading(false)
         }
     }

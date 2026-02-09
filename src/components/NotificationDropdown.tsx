@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Bell, X, Check, Trash2 } from 'lucide-react'
 import { Link, useRouter } from '@/i18n/routing'
+import { useTranslations } from 'next-intl'
 
 interface Notification {
     id: string
@@ -119,6 +120,8 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
         }
     }
 
+    const t = useTranslations('Community.Notifications')
+
     return (
         <div className="relative" ref={dropdownRef}>
             {/* Bell Icon */}
@@ -139,14 +142,14 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
                 <div className="absolute right-0 top-full mt-2 w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                     {/* Header */}
                     <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                        <h3 className="font-black text-lg text-black">Notifications</h3>
+                        <h3 className="font-black text-lg text-black">{t('Title')}</h3>
                         {unreadCount > 0 && (
                             <button
                                 onClick={markAllAsRead}
                                 className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
                             >
                                 <Check className="w-4 h-4" />
-                                Tout marquer comme lu
+                                {t('MarkAllRead')}
                             </button>
                         )}
                     </div>
@@ -156,7 +159,7 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
                         {notifications.length === 0 ? (
                             <div className="px-6 py-12 text-center">
                                 <Bell className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                                <p className="text-sm font-bold text-gray-400">Aucune notification</p>
+                                <p className="text-sm font-bold text-gray-400">{t('Empty')}</p>
                             </div>
                         ) : (
                             notifications.map((notification) => (
@@ -221,7 +224,7 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
                                 onClick={() => setIsOpen(false)}
                                 className="text-xs font-bold text-blue-600 hover:text-blue-700 block text-center"
                             >
-                                Voir toutes les notifications →
+                                {t('All')} →
                             </Link>
                         </div>
                     )}
