@@ -10,10 +10,12 @@ import {
     ShoppingCart,
     Users,
     LogOut,
+    Repeat,
+    AlertCircle,
+    ShieldCheck,
     Ticket,
     MessageSquare,
-    BarChart3,
-    Repeat
+    BarChart3
 } from 'lucide-react'
 
 const navigation = [
@@ -22,11 +24,16 @@ const navigation = [
     { name: 'Packs', href: '/admin/packs', icon: Package },
     { name: 'Commandes', href: '/admin/orders', icon: ShoppingCart },
     { name: 'Clients', href: '/admin/customers', icon: Users },
-    { name: 'Community', href: '/admin/community', icon: Repeat },
-    { name: 'Coupons', href: '/admin/coupons', icon: Ticket },
+    { name: 'Echanges', href: '/admin/exchanges', icon: Repeat },
+    { name: 'Community', href: '/admin/community', icon: Users }, // Changed icon to Users for community generally
+    { name: 'Signalements', href: '/admin/reports', icon: AlertCircle },
     { name: 'Avis', href: '/admin/reviews', icon: MessageSquare },
+    { name: 'Coupons', href: '/admin/coupons', icon: Ticket },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+    { name: 'Audit Log', href: '/admin/audit', icon: ShieldCheck },
 ]
+
+import OrderNotifications from '@/components/admin/OrderNotifications'
 
 export default function AdminLayout({
     children,
@@ -42,14 +49,27 @@ export default function AdminLayout({
         router.refresh()
     }
 
+    const isLoginPage = pathname?.endsWith('/admin/login')
+
+    if (isLoginPage) {
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <main>
+                    {children}
+                </main>
+            </div>
+        )
+    }
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Sidebar */}
             <aside className="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200">
                 <div className="flex flex-col h-full">
                     {/* Logo */}
-                    <div className="flex items-center h-16 px-6 border-b border-gray-200">
-                        <h1 className="text-xl font-bold text-gray-900">Riwaya Admin</h1>
+                    <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+                        <h1 className="text-sm font-black text-gray-900 uppercase tracking-tighter">Riwaya</h1>
+                        <OrderNotifications />
                     </div>
 
                     {/* Navigation */}

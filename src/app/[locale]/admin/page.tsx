@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { BookOpen, Package, ShoppingCart, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { getBadgeStats } from '@/lib/actions/analytics'
+import DashboardAnalytics from '@/components/admin/DashboardAnalytics'
 
 async function getStats() {
     const [booksCount, packsCount, ordersCount, totalRevenue] = await Promise.all([
@@ -42,11 +43,95 @@ async function getLowStockBooks() {
     })
 }
 
+async function getTopPerformers() {
+    // Récupérer les livres les plus vendus
+    const topBooks = await prisma.orderItem.groupBy({
+        by: ['bookId'],
+        where: {
+            type: 'BOOK',
+            bookId: { not: null }
+        },
+        _sum: {
+            quantity: true,
+            price: true
+        },
+        _count: {
+            id: true
+        },
+        orderBy: {
+            _sum: {
+                quantity: 'desc'
+            }
+        },
+        take: 5
+    })
+
+    // Récupérer les détails des livres
+    const booksWithDetails = await Promise.all(
+        topBooks.map(async (item) => {
+            const book = await prisma.book.findUnique({
+                where: { id: item.bookId! },
+                select: { id: true, title: true, author: true, image: true, price: true }
+            })
+            return {
+                ...book,
+                totalOrders: item._count.id,
+                totalQuantity: item._sum.quantity || 0,
+                totalRevenue: item._sum.price || 0
+            }
+        })
+    )
+
+    // Récupérer les packs les plus vendus
+    const topPacks = await prisma.orderItem.groupBy({
+        by: ['packId'],
+        where: {
+            type: 'PACK',
+            packId: { not: null }
+        },
+        _sum: {
+            quantity: true,
+            price: true
+        },
+        _count: {
+            id: true
+        },
+        orderBy: {
+            _sum: {
+                quantity: 'desc'
+            }
+        },
+        take: 5
+    })
+
+    // Récupérer les détails des packs
+    const packsWithDetails = await Promise.all(
+        topPacks.map(async (item) => {
+            const pack = await prisma.pack.findUnique({
+                where: { id: item.packId! },
+                select: { id: true, name: true, image: true, price: true }
+            })
+            return {
+                ...pack,
+                totalOrders: item._count.id,
+                totalQuantity: item._sum.quantity || 0,
+                totalRevenue: item._sum.price || 0
+            }
+        })
+    )
+
+    return {
+        books: booksWithDetails.filter(b => b.id !== null),
+        packs: packsWithDetails.filter(p => p.id !== null)
+    }
+}
+
 export default async function AdminDashboard() {
     const stats = await getStats()
     const recentOrders = await getRecentOrders()
     const lowStockBooks = await getLowStockBooks()
     const badgeStats = await getBadgeStats()
+    const topPerformers = await getTopPerformers()
 
     const statCards = [
         {
@@ -128,6 +213,9 @@ export default async function AdminDashboard() {
                 })}
             </div>
 
+            {/* Extended Analytics & Charts */}
+            <DashboardAnalytics />
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Marketing Analytics (New Widget) */}
                 <div className="lg:col-span-3">
@@ -149,6 +237,95 @@ export default async function AdminDashboard() {
                                             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mt-1">{stat.name}</span>
                                         </div>
                                     ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Top Performers */}
+                <div className="lg:col-span-3">
+                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50">
+                            <h2 className="text-lg font-black text-gray-900 flex items-center gap-2">
+                                <TrendingUp className="w-5 h-5 text-blue-600" />
+                                Top Performers
+                            </h2>
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Produits les plus vendus</p>
+                        </div>
+                        <div className="p-6">
+                            {topPerformers.books.length === 0 && topPerformers.packs.length === 0 ? (
+                                <p className="text-center text-gray-400 text-sm italic py-8">Aucune vente enregistrée pour le moment.</p>
+                            ) : (
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    {/* Top Books */}
+                                    <div>
+                                        <h3 className="text-sm font-black text-gray-700 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                            <BookOpen className="w-4 h-4" />
+                                            Livres
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {topPerformers.books.length === 0 ? (
+                                                <p className="text-xs text-gray-400 italic">Aucun livre vendu</p>
+                                            ) : (
+                                                topPerformers.books.map((book: any, index: number) => (
+                                                    <div key={book.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl hover:bg-blue-50 transition-colors border border-gray-100">
+                                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-black text-sm shrink-0">
+                                                            #{index + 1}
+                                                        </div>
+                                                        {book.image && (
+                                                            <div className="w-10 h-14 bg-gray-200 rounded overflow-hidden shrink-0">
+                                                                <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+                                                            </div>
+                                                        )}
+                                                        <div className="flex-grow min-w-0">
+                                                            <p className="font-bold text-sm text-gray-900 truncate">{book.title}</p>
+                                                            <p className="text-xs text-gray-500 truncate">{book.author}</p>
+                                                            <div className="flex items-center gap-3 mt-1">
+                                                                <span className="text-xs font-black text-blue-600">{book.totalQuantity} vendus</span>
+                                                                <span className="text-xs font-bold text-gray-400">•</span>
+                                                                <span className="text-xs font-black text-green-600">{book.totalRevenue.toFixed(0)} MAD</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Top Packs */}
+                                    <div>
+                                        <h3 className="text-sm font-black text-gray-700 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                            <Package className="w-4 h-4" />
+                                            Packs
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {topPerformers.packs.length === 0 ? (
+                                                <p className="text-xs text-gray-400 italic">Aucun pack vendu</p>
+                                            ) : (
+                                                topPerformers.packs.map((pack: any, index: number) => (
+                                                    <div key={pack.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl hover:bg-purple-50 transition-colors border border-gray-100">
+                                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 text-white font-black text-sm shrink-0">
+                                                            #{index + 1}
+                                                        </div>
+                                                        {pack.image && (
+                                                            <div className="w-10 h-14 bg-gray-200 rounded overflow-hidden shrink-0">
+                                                                <img src={pack.image} alt={pack.name} className="w-full h-full object-cover" />
+                                                            </div>
+                                                        )}
+                                                        <div className="flex-grow min-w-0">
+                                                            <p className="font-bold text-sm text-gray-900 truncate">{pack.name}</p>
+                                                            <div className="flex items-center gap-3 mt-1">
+                                                                <span className="text-xs font-black text-purple-600">{pack.totalQuantity} vendus</span>
+                                                                <span className="text-xs font-bold text-gray-400">•</span>
+                                                                <span className="text-xs font-black text-green-600">{pack.totalRevenue.toFixed(0)} MAD</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>

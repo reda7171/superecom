@@ -51,8 +51,8 @@ export default async function AdminBooksPage({
                                 key={option.value}
                                 href={`/admin/community/books?status=${option.value}`}
                                 className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${status === option.value
-                                        ? 'bg-black text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-black text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 {option.label}
@@ -64,7 +64,7 @@ export default async function AdminBooksPage({
 
             {/* Books Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {data.books.map((book) => (
+                {data.books.map((book: any) => (
                     <div key={book.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-lg transition-shadow">
                         {/* Image */}
                         <div className="aspect-[3/4] bg-gray-100 relative overflow-hidden">
@@ -77,8 +77,8 @@ export default async function AdminBooksPage({
                             )}
                             <div className="absolute top-3 right-3">
                                 <span className={`px-3 py-1 rounded-full text-xs font-black ${book.status === 'AVAILABLE' ? 'bg-green-100 text-green-700' :
-                                        book.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
-                                            'bg-gray-100 text-gray-700'
+                                    book.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
+                                        'bg-gray-100 text-gray-700'
                                     }`}>
                                     {book.status}
                                 </span>
@@ -92,8 +92,8 @@ export default async function AdminBooksPage({
 
                             <div className="flex items-center gap-2 mb-3">
                                 <span className={`px-2 py-1 rounded-lg text-xs font-black ${book.condition === 'NEW' ? 'bg-blue-100 text-blue-700' :
-                                        book.condition === 'GOOD' ? 'bg-green-100 text-green-700' :
-                                            'bg-orange-100 text-orange-700'
+                                    book.condition === 'GOOD' ? 'bg-green-100 text-green-700' :
+                                        'bg-orange-100 text-orange-700'
                                     }`}>
                                     {book.condition}
                                 </span>

@@ -31,6 +31,32 @@
             "Title": "New Arrivals",
             "ViewAll": "View All"
         },
+        "BestSellers": {
+            "Subtitle": "Top Rated",
+            "Title": "Best Sellers",
+            "Description": "Discover the books that our readers love the most. Proven favorites that transformed thousands of lives.",
+            "ViewAll": "View All",
+            "NoData": "No sales data yet"
+        },
+        "BestAuthors": {
+            "Subtitle": "Featured Authors",
+            "Title": "Best Authors",
+            "Description": "Meet the authors whose works have captivated our readers. Discover their most popular titles.",
+            "BooksSold": "Sold",
+            "BookSingular": "Book",
+            "BooksPlural": "Books",
+            "ViewBooks": "View Books",
+            "NoData": "No author data yet"
+        },
+        "ExchangeBooks": {
+            "Subtitle": "Community",
+            "Title": "Books for Exchange",
+            "Description": "Discover books available for exchange from our community. Share, swap, and connect with fellow readers.",
+            "ViewAll": "View All",
+            "ViewMore": "View More Books",
+            "NoData": "No exchange books available yet",
+            "JoinCommunity": "Join Community"
+        },
         "CTA": {
             "TitlePart1": "Ready for your",
             "TitlePart2": "next reading?",
@@ -51,7 +77,16 @@
         "About": "About",
         "Contact": "Contact",
         "Terms": "Terms of Service",
-        "Privacy": "Privacy Policy"
+        "Privacy": "Privacy Policy",
+        "Slogan": "Beautifully curated knowledge for the modern mind. Worldwide delivery starting from Morocco.",
+        "Navigation": "Navigation",
+        "Support": "Support",
+        "Shipping": "Shipping",
+        "Returns": "Returns",
+        "Journal": "Journal",
+        "NewsletterText": "Join our newsletter for exclusive curated selections.",
+        "Join": "Join",
+        "Rights": "All rights reserved."
     },
     "Common": {
         "Loading": "Loading...",
@@ -105,7 +140,9 @@
     },
     "Contact": {
         "Title": "Contact Us",
-        "Subtitle": "Get in Touch",
+        "Subtitle": "Let's Stay in Touch",
+        "GetInTouch": "Get in touch",
+        "LoveToHear": "We'd love to hear from you.",
         "Form": {
             "Name": "Full Name",
             "Email": "Email Address",
@@ -117,7 +154,9 @@
             "Email": "Email",
             "Phone": "Phone",
             "Address": "Address",
-            "Hours": "Opening Hours"
+            "Location": "Casablanca, Morocco",
+            "Hours": "Business Hours",
+            "HoursValue": "Mon - Fri: 9:00 - 18:00"
         }
     },
     "BookDetail": {
@@ -198,6 +237,17 @@
             "CityRequired": "City is required",
             "AddressRequired": "Address is required",
             "UnexpectedError": "An unexpected error occurred"
+        },
+        "Success": {
+            "OrderConfirmed": "Order Confirmed",
+            "ThankYou": "Thank you {name}, your selection is being prepared.",
+            "OrderReference": "Order Reference",
+            "OrderDate": "Order Date",
+            "TotalPaid": "Total Charged (COD)",
+            "NextSteps": "Next Steps",
+            "AgentContact": "An agent will contact you within 24h for confirmation.",
+            "PrepareAmount": "Please prepare the exact amount for delivery.",
+            "BackHome": "Back Home"
         }
     },
     "Review": {
@@ -402,6 +452,69 @@
                 "Exchanges": "Exchanges",
                 "Credits": "Credits"
             }
+        },
+        "Ratings": {
+            "Title": "Rate the Exchange",
+            "Subtitle": "How was your experience with this user?",
+            "Label": "Your Rating",
+            "CommentLabel": "Comment (optional)",
+            "Placeholder": "Share more details about the exchange...",
+            "Submit": "Submit Rating",
+            "Success": "Thank you for your feedback!",
+            "Button": "Rate now"
         }
+    },
+    "PacksPage": {
+        "Title": "Bundle Deals",
+        "Subtitle": "Save up to 30% by choosing our curated book collections. Hand-picked literature for universal minds.",
+        "NoCollections": "No collections found",
+        "Curating": "New arrivals are being curated.",
+        "Benefits": {
+            "HighSavings": {
+                "Title": "High Savings",
+                "Desc": "Up to 30% off unit price"
+            },
+            "CuratedMix": {
+                "Title": "Curated Mix",
+                "Desc": "Selected by local experts"
+            },
+            "ExpressPack": {
+                "Title": "Express Pack",
+                "Desc": "All volumes in one delivery"
+            }
+        }
+    },
+    "PackDetail": {
+        "BackToBundles": "Back to bundles",
+        "VolumeSelection": "{count} Volumes Selection",
+        "SavingsOff": "-{amount} MAD OFF",
+        "BundleContent": "Bundle Content",
+        "GlobalShip": "Shipping Morocco wide",
+        "SecureCOD": "Cash on Delivery",
+        "VolumesInCollection": "Volumes in this Collection"
+    },
+    "CartPage": {
+        "Title": "Archive",
+        "CollectionCount": "{count} Collections",
+        "EmptyTitle": "Your archive is empty",
+        "EmptyDesc": "It seems you haven't curated any volumes yet. Explore our selects to start your collection.",
+        "BrowseLibrary": "Browse Library",
+        "ViewBundles": "View Bundles",
+        "BundleBadge": "BUNDLE",
+        "ItemUnit": "item",
+        "VolumesIncluded": "{count} volumes included",
+        "DeleteItem": "Delete item",
+        "ClearSelection": "Clear all selects",
+        "SummaryTitle": "Archive Summary",
+        "Items": "Items",
+        "Shipping": "Shipping",
+        "FreeShip": "Free Ship",
+        "FreeShippingAd": "Only <span class=\"text-black\">{amount} MAD</span> more for <span class=\"text-black\">FREE WORLDWIDE SHIP</span>.",
+        "TotalValue": "Total Value",
+        "TaxesNote": "Taxes dynamic calculated",
+        "BeginCheckout": "Begin Checkout",
+        "ContinueShopping": "Continue curating",
+        "Secure": "Secure",
+        "FastShip": "Fast Ship"
     }
 }

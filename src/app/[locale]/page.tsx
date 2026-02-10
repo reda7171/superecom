@@ -1,23 +1,46 @@
-import { getPopularBooks } from '@/lib/db/books'
+import { getPopularBooks, getBestSellerBooks, getBestAuthors } from '@/lib/db/books'
 import { getPopularPacks } from '@/lib/db/packs'
 import { getAllCategoryQuotes } from '@/lib/actions/categories'
+import { getRecentExchangeBooks } from '@/lib/actions/community-market'
 import Header from '@/components/HeaderWithUser'
 import BookCard from '@/components/BookCard'
 import PackCard from '@/components/PackCard'
 import Footer from '@/components/Footer'
 import { Link } from '@/i18n/routing'
 import Image from 'next/image'
-import { ArrowRight, BookOpen, Package, Truck, Shield, Sparkles, Quote } from 'lucide-react'
+import { ArrowRight, BookOpen, Package, Truck, Shield, Sparkles, Quote, TrendingUp, Users, RefreshCw } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations('HomePage');
+
+  return {
+    title: t('seo.Title'),
+    description: t('seo.Description'),
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        'fr': '/fr',
+        'ar': '/ar',
+        'en': '/en',
+      },
+    },
+  }
+}
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations('HomePage');
 
-  const [popularBooks, newBooks, popularPacks, allQuotes] = await Promise.all([
+  const [popularBooks, newBooks, popularPacks, bestSellerBooks, bestAuthors, exchangeBooks, allQuotes] = await Promise.all([
     getPopularBooks(6),
     getPopularBooks(8), // Simuler "nouveautés"
     getPopularPacks(3),
+    getBestSellerBooks(6),
+    getBestAuthors(6),
+    getRecentExchangeBooks(6),
     getAllCategoryQuotes(),
   ])
 
@@ -26,8 +49,24 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     ? allQuotes[Math.floor(Math.random() * allQuotes.length)]
     : null;
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Riwaya',
+    url: 'https://riwaya.com',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://riwaya.com/books?search={search_term_string}',
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <div className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
       {/* ... Hero Section ... */}
       <section className="relative overflow-hidden bg-pixio-cream pt-16 pb-32">
@@ -126,6 +165,60 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
+      {/* Best Seller Books */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between mb-16">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full">
+                <TrendingUp className="w-4 h-4 text-orange-600" />
+                <span className="text-[11px] font-black uppercase text-orange-600 tracking-[0.3em]">
+                  {t('BestSellers.Subtitle')}
+                </span>
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-black tracking-tight">
+                {t('BestSellers.Title')}<span className="text-orange-500">.</span>
+              </h2>
+              <p className="text-lg text-gray-500 font-medium max-w-2xl">
+                {t('BestSellers.Description')}
+              </p>
+            </div>
+            <Link
+              href="/books"
+              className="hidden md:flex items-center gap-2 text-black hover:text-gray-600 font-black text-xs uppercase tracking-widest group"
+            >
+              <span>{t('BestSellers.ViewAll')}</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+          {bestSellerBooks.length === 0 ? (
+            <div className="text-center py-16 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+              <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-400 font-bold text-sm uppercase tracking-wider">
+                {t('BestSellers.NoData')}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-8 gap-y-16">
+              {bestSellerBooks.map((book: any, idx: number) => (
+                <div key={book.id} className="relative group">
+                  {idx < 3 && (
+                    <div className="absolute -top-3 -right-3 z-10 w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white text-xs font-black shadow-lg">
+                      #{idx + 1}
+                    </div>
+                  )}
+                  <BookCard
+                    {...book}
+                    variant={idx === 0 ? 'featured' : 'default'}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Inspirational Quote Section */}
       {randomQuote && (
         <section className="py-32 bg-pixio-cream relative overflow-hidden">
@@ -166,10 +259,97 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {popularPacks.map((pack) => (
+            {popularPacks.map((pack: any) => (
               <PackCard key={pack.id} {...pack} />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Best Authors */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between mb-16">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full">
+                <Users className="w-4 h-4 text-indigo-600" />
+                <span className="text-[11px] font-black uppercase text-indigo-600 tracking-[0.3em]">
+                  {t('BestAuthors.Subtitle')}
+                </span>
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-black tracking-tight">
+                {t('BestAuthors.Title')}<span className="text-indigo-500">.</span>
+              </h2>
+              <p className="text-lg text-gray-500 font-medium max-w-2xl">
+                {t('BestAuthors.Description')}
+              </p>
+            </div>
+          </div>
+
+          {bestAuthors.length === 0 ? (
+            <div className="text-center py-16 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+              <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-400 font-bold text-sm uppercase tracking-wider">
+                {t('BestAuthors.NoData')}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {bestAuthors.map((author: any, idx: number) => (
+                <Link
+                  key={author.author}
+                  href={`/books?search=${encodeURIComponent(author.author)}`}
+                  className="group relative bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-8 hover:shadow-2xl transition-all duration-500 border-2 border-indigo-100 hover:border-indigo-500"
+                >
+                  {/* Rank Badge */}
+                  <div className="absolute -top-4 -right-4 w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-black text-lg shadow-lg group-hover:scale-110 transition-transform">
+                    #{idx + 1}
+                  </div>
+
+                  {/* Author Image */}
+                  {author.sampleBook?.image && (
+                    <div className="relative w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-white shadow-xl group-hover:scale-110 transition-transform">
+                      <Image
+                        src={author.sampleBook.image}
+                        alt={author.author}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                  )}
+
+                  {/* Author Name */}
+                  <h3 className="text-xl font-black text-black text-center mb-4 group-hover:text-indigo-600 transition-colors">
+                    {author.author}
+                  </h3>
+
+                  {/* Stats */}
+                  <div className="flex items-center justify-center gap-6 mb-4">
+                    <div className="text-center">
+                      <p className="text-3xl font-black text-indigo-600">{author.totalSold}</p>
+                      <p className="text-[10px] font-black uppercase text-gray-400 tracking-wider">
+                        {t('BestAuthors.BooksSold')}
+                      </p>
+                    </div>
+                    <div className="w-px h-12 bg-gray-200"></div>
+                    <div className="text-center">
+                      <p className="text-3xl font-black text-purple-600">{author.bookCount}</p>
+                      <p className="text-[10px] font-black uppercase text-gray-400 tracking-wider">
+                        {author.bookCount > 1 ? t('BestAuthors.BooksPlural') : t('BestAuthors.BookSingular')}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <div className="flex items-center justify-center gap-2 text-indigo-600 font-black text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span>{t('BestAuthors.ViewBooks')}</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -193,7 +373,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-16">
-            {newBooks.map((book, idx) => (
+            {newBooks.map((book: any, idx: number) => (
               <BookCard
                 key={book.id}
                 {...book}
@@ -201,6 +381,150 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Books for Exchange */}
+      <section className="py-24 bg-gradient-to-br from-green-50 to-teal-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between mb-16">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-teal-100 rounded-full">
+                <RefreshCw className="w-4 h-4 text-green-600" />
+                <span className="text-[11px] font-black uppercase text-green-600 tracking-[0.3em]">
+                  {t('ExchangeBooks.Subtitle')}
+                </span>
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-black tracking-tight">
+                {t('ExchangeBooks.Title')}<span className="text-green-500">.</span>
+              </h2>
+              <p className="text-lg text-gray-500 font-medium max-w-2xl">
+                {t('ExchangeBooks.Description')}
+              </p>
+            </div>
+            <Link
+              href="/community/market"
+              className="hidden md:flex items-center gap-2 text-black hover:text-green-600 font-black text-xs uppercase tracking-widest group"
+            >
+              <span>{t('ExchangeBooks.ViewAll')}</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+          {exchangeBooks.length === 0 ? (
+            <div className="text-center py-16 bg-white/50 rounded-3xl border-2 border-dashed border-green-200">
+              <RefreshCw className="w-16 h-16 text-green-300 mx-auto mb-4" />
+              <p className="text-gray-400 font-bold text-sm uppercase tracking-wider mb-4">
+                {t('ExchangeBooks.NoData')}
+              </p>
+              <Link
+                href="/community/login"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-black text-xs uppercase tracking-widest rounded-full hover:bg-green-700 transition-all"
+              >
+                <span>{t('ExchangeBooks.JoinCommunity')}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {exchangeBooks.map((book: any) => (
+                  <Link
+                    key={book.id}
+                    href={`/community/market/${book.id}`}
+                    className="group relative bg-white rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 border-2 border-green-100 hover:border-green-500"
+                  >
+                    {/* Book Image */}
+                    <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden">
+                      {book.image ? (
+                        <Image
+                          src={book.image}
+                          alt={book.title}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-700"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-teal-100">
+                          <BookOpen className="w-20 h-20 text-green-300" />
+                        </div>
+                      )}
+
+                      {/* Condition Badge */}
+                      <div className="absolute top-4 right-4 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-[9px] font-black uppercase tracking-wider text-green-600 border border-green-200">
+                        {book.condition}
+                      </div>
+                    </div>
+
+                    {/* Book Info */}
+                    <div className="p-6">
+                      <h3 className="text-lg font-black text-black mb-1 line-clamp-2 group-hover:text-green-600 transition-colors">
+                        {book.title}
+                      </h3>
+                      <p className="text-sm text-gray-400 font-bold italic mb-4">
+                        {book.author}
+                      </p>
+
+                      {/* Owner Info */}
+                      <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center overflow-hidden">
+                          {book.owner?.image ? (
+                            <Image
+                              src={book.owner.image}
+                              alt={book.owner.fullName}
+                              width={32}
+                              height={32}
+                              className="object-cover"
+                              unoptimized
+                            />
+                          ) : (
+                            <span className="text-green-600 font-black text-xs">
+                              {book.owner?.fullName?.[0]}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-grow">
+                          <p className="text-xs font-bold text-gray-600 truncate">
+                            {book.owner?.fullName}
+                          </p>
+                          <p className="text-[10px] text-gray-400 font-bold">
+                            {book.owner?.city}
+                          </p>
+                        </div>
+                        {book.owner?.rating > 0 && (
+                          <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
+                            <Sparkles className="w-3 h-3 text-yellow-600 fill-yellow-600" />
+                            <span className="text-xs font-black text-yellow-600">
+                              {book.owner.rating.toFixed(1)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Exchange Type */}
+                      <div className="mt-4 flex items-center gap-2">
+                        <RefreshCw className="w-4 h-4 text-green-600" />
+                        <span className="text-xs font-black text-green-600 uppercase tracking-wider">
+                          {book.exchangeType}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* View More Button */}
+              <div className="flex justify-center mt-12">
+                <Link
+                  href="/community/market"
+                  className="group inline-flex items-center gap-4 px-12 py-6 bg-green-600 text-white font-black text-xs uppercase tracking-widest rounded-full hover:bg-green-700 transition-all shadow-2xl hover:scale-105"
+                >
+                  <span>{t('ExchangeBooks.ViewMore')}</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </section>
 

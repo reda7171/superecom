@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { createReview } from '@/lib/actions/reviews'
 import { Star, Send, Loader2, CheckCircle2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useUIStore } from '@/store/ui'
 
 export default function ReviewForm({ bookId }: { bookId: string }) {
     const [rating, setRating] = useState(5)
@@ -12,6 +13,7 @@ export default function ReviewForm({ bookId }: { bookId: string }) {
     const [isSuccess, setIsSuccess] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const t = useTranslations('Review')
+    const { showNotification } = useUIStore()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -31,8 +33,10 @@ export default function ReviewForm({ bookId }: { bookId: string }) {
 
         if (res.success) {
             setIsSuccess(true)
+            showNotification(t('SuccessNotification'), 'success')
         } else {
             setError(res.error)
+            showNotification(res.error || t('ErrorNotification'), 'error')
         }
     }
 

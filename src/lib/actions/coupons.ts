@@ -3,6 +3,8 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { verifyAdmin } from './auth'
+import { createAuditLog } from './audit'
 
 const CouponSchema = z.object({
     code: z.string().min(3, 'Le code doit contenir au moins 3 caractères').toUpperCase(),
@@ -14,13 +16,19 @@ const CouponSchema = z.object({
 })
 
 export async function getCoupons() {
-    return prisma.coupon.findMany({
-        orderBy: { createdAt: 'desc' }
-    })
+    try {
+        await verifyAdmin()
+        return prisma.coupon.findMany({
+            orderBy: { createdAt: 'desc' }
+        })
+    } catch (error) {
+        return []
+    }
 }
 
 export async function createCoupon(data: z.infer<typeof CouponSchema>) {
     try {
+        await verifyAdmin()
         const validated = CouponSchema.parse(data)
 
         await prisma.coupon.create({
@@ -39,16 +47,18 @@ export async function createCoupon(data: z.infer<typeof CouponSchema>) {
 
 export async function deleteCoupon(id: string) {
     try {
+        await verifyAdmin()
         await prisma.coupon.delete({ where: { id } })
         revalidatePath('/admin/coupons')
         return { success: true }
-    } catch (error) {
-        return { success: false, error: 'Erreur lors de la suppression' }
+    } catch (error: any) {
+        return { success: false, error: error.message || 'Erreur lors de la suppression' }
     }
 }
 
 export async function validateCoupon(code: string, cartTotal: number) {
     try {
+        // Publicly accessible for checkout
         const coupon = await prisma.coupon.findUnique({
             where: { code: code.toUpperCase(), isActive: true }
         })

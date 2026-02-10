@@ -7,6 +7,22 @@ import BookCard from '@/components/BookCard'
 import { Filter, SlidersHorizontal, Quote, Banknote, Globe } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 import { getTranslations } from 'next-intl/server'
+import { Metadata } from 'next'
+
+export async function generateMetadata({ searchParams }: { searchParams: Promise<SearchParams> }): Promise<Metadata> {
+    const params = await searchParams
+    const tCommon = await getTranslations('Common')
+    const tCats = await getTranslations('Categories')
+    const tBooksPage = await getTranslations('BooksPage')
+
+    const categoryName = params.category ? String(tCats(params.category as any)) : null
+    const title = categoryName ? `${categoryName} | Riwaya` : String(tBooksPage('Title')) + ' | Riwaya'
+
+    return {
+        title,
+        description: `Explorez notre collection de livres ${categoryName ? `en ${categoryName}` : 'de développement personnel et business'} sur Riwaya. Livraison disponible dans tout le Maroc.`,
+    }
+}
 
 interface SearchParams {
     category?: string
@@ -52,7 +68,13 @@ export default async function BooksPage({
 
             {/* Page Header */}
             <div className="bg-pixio-beige pt-20 pb-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-black">
+                    {/* Breadcrumbs */}
+                    <div className="flex items-center justify-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-8">
+                        <Link href="/" className="hover:text-black transition-colors">{tCommon('Home')}</Link>
+                        <span className="text-gray-200">/</span>
+                        <span className="text-black">{tBooksPage('Title')}</span>
+                    </div>
                     <h1 className="text-6xl font-black text-black mb-6 tracking-tighter">{tBooksPage('Title')}<span className="text-gray-300">.</span></h1>
                     <p className="text-[10px] uppercase font-black tracking-[0.4em] text-gray-400 mb-10">
                         {tBooksPage('ItemsAvailable', { count: books.length })}

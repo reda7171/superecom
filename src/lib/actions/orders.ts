@@ -1,18 +1,42 @@
+'use server'
+
 import { prisma } from '@/lib/prisma'
 import { cookies } from 'next/headers'
+import { getCommunityUser } from './community-auth'
+import { verifyAdmin } from './auth'
+import { z } from 'zod'
+
+const OrderSchema = z.object({
+    fullName: z.string().min(1, 'Nom complet requis'),
+    email: z.string().email('Email invalide'),
+    phone: z.string().min(8, 'Téléphone invalide'),
+    address: z.string().min(5, 'Adresse trop courte'),
+    city: z.string().min(1, 'Ville requise'),
+    comment: z.string().optional(),
+    items: z.array(z.object({
+        productId: z.string().uuid(),
+        quantity: z.number().int().positive(),
+        type: z.enum(['BOOK', 'PACK']),
+        price: z.number().positive()
+    })).min(1, 'Panier vide'),
+    couponCode: z.string().optional()
+})
 
 export async function getOrders() {
     const cookieStore = await cookies()
     const userEmail = cookieStore.get('userEmail')?.value
+    const user = await getCommunityUser()
 
-    if (!userEmail) {
+    const emailToUse = user ? user.email : userEmail
+
+    if (!emailToUse) {
         return null
     }
 
     try {
-        const orders = await prisma.order.findMany({
+        const orders = await (prisma.order as any).findMany({
             where: {
-                email: userEmail
+                email: emailToUse
             },
             include: {
                 items: {
@@ -21,7 +45,7 @@ export async function getOrders() {
                             select: {
                                 id: true,
                                 title: true,
-                                coverImage: true,
+                                image: true,
                             }
                         },
                         pack: {
@@ -38,8 +62,133 @@ export async function getOrders() {
             }
         })
 
-        return orders
+        return orders as any[]
     } catch (error) {
         return []
+    }
+}
+
+export async function createOrder(input: z.infer<typeof OrderSchema>) {
+    try {
+        // OWASP A03: Injection / Validation
+        const data = OrderSchema.parse(input)
+
+        // Calcul du total côté serveur pour sécurité
+        let subtotal = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+        let shippingFees = 30 // Frais de livraison fixes (ex: 30 MAD)
+        let total = subtotal + shippingFees
+
+        // Création commande transactionnelle
+        const order = await prisma.$transaction(async (tx) => {
+            // Créer la commande
+            const newOrder = await (tx.order as any).create({
+                data: {
+                    fullName: data.fullName,
+                    email: data.email,
+                    phone: data.phone,
+                    address: data.address,
+                    city: data.city,
+                    comment: data.comment,
+                    subtotal: subtotal,
+                    shippingFees: shippingFees,
+                    total: total,
+                    couponCode: data.couponCode,
+                    status: 'PENDING',
+                    paymentMethod: 'COD', // Cash On Delivery
+                    items: {
+                        create: data.items.map(item => ({
+                            type: item.type,
+                            bookId: item.type === 'BOOK' ? item.productId : null,
+                            packId: item.type === 'PACK' ? item.productId : null,
+                            quantity: item.quantity,
+                            price: item.price
+                        }))
+                    }
+                }
+            })
+
+            // Mettre à jour le stock des livres
+            for (const item of data.items) {
+                if (item.type === 'BOOK') {
+                    await tx.book.update({
+                        where: { id: item.productId },
+                        data: { stock: { decrement: item.quantity } }
+                    })
+                }
+            }
+
+            return newOrder
+        })
+
+        // Sauvegarder l'email dans un cookie pour le suivi invité
+        const cookieStore = await cookies()
+        if (!cookieStore.get('userEmail')) {
+            cookieStore.set('userEmail', data.email, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                maxAge: 60 * 60 * 24 * 30 // 30 jours 
+            })
+        }
+
+        return { success: true, orderId: order.id }
+
+    } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            return { success: false, error: error.issues[0].message }
+        }
+        console.error('Erreur createOrder:', error)
+        return { success: false, error: "Une erreur est survenue lors de la commande." }
+    }
+}
+
+export async function getOrderById(orderId: string) {
+    try {
+        const order = await (prisma.order as any).findUnique({
+            where: {
+                id: orderId
+            },
+            include: {
+                items: {
+                    include: {
+                        book: true,
+                        pack: true
+                    }
+                }
+            }
+        })
+        return order
+    } catch (error) {
+        console.error('Error fetching order:', error)
+        return null
+    }
+}
+
+export async function getOrderStats() {
+    try {
+        await verifyAdmin() // OWASP A01: Broken Access Control
+
+        const stats = await prisma.order.groupBy({
+            by: ['status'],
+            _count: {
+                id: true
+            }
+        })
+
+        const counts = stats.reduce((acc, curr) => {
+            acc[curr.status] = curr._count.id
+            return acc
+        }, {} as Record<string, number>)
+
+        return {
+            PENDING: counts.PENDING || 0,
+            CONFIRMED: counts.CONFIRMED || 0,
+            SHIPPED: counts.SHIPPED || 0,
+            DELIVERED: counts.DELIVERED || 0,
+            CANCELLED: counts.CANCELLED || 0
+        }
+    } catch (error: any) {
+        console.error('Error fetching order stats:', error)
+        return null
     }
 }

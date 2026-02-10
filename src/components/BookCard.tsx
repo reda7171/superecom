@@ -33,17 +33,17 @@ export default function BookCard({
     const isCompact = variant === 'compact'
     const isFeatured = variant === 'featured'
     const addItem = useCartStore((state) => state.addItem)
-    const openCart = useUIStore((state) => state.openCart)
+    const { openCart, showNotification } = useUIStore()
 
     return (
-        <div className={`group relative bg-white rounded-[2rem] overflow-hidden transition-all duration-500 border border-gray-100/50 hover:border-black shadow-sm hover:shadow-2xl ${isFeatured ? 'scale-105 z-10 border-black shadow-xl' : ''}`}>
+        <div className={`group relative bg-white rounded-[2rem] overflow-hidden transition-all duration-500 border border-gray-100/50 hover:border-black shadow-sm hover:shadow-2xl h-full flex flex-col ${isFeatured ? 'scale-105 z-10 border-black shadow-xl' : ''}`}>
             {/* Image Container */}
             <Link href={`/books/${id}`} className="block relative">
                 <div className={`relative bg-pixio-cream overflow-hidden ${isCompact ? 'aspect-[3/4]' : isFeatured ? 'aspect-[4/5]' : 'aspect-square'
                     }`}>
                     <Image
                         src={image}
-                        alt={title}
+                        alt={`${title} - Livre par ${author}`}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-700"
                         sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
@@ -87,7 +87,7 @@ export default function BookCard({
             </Link>
 
             {/* Content */}
-            <div className={`text-center flex flex-col items-center ${isCompact ? 'p-4' : 'p-6'}`}>
+            <div className={`text-center flex flex-col items-center flex-grow ${isCompact ? 'p-4' : 'p-6'}`}>
                 <Link href={`/books/${id}`} className="block w-full">
                     <h3 className={`font-black text-black tracking-tighter line-clamp-2 transition-colors ${isCompact ? 'text-sm mb-1 uppercase' : isFeatured ? 'text-xl mb-2' : 'text-base mb-1.5'
                         }`}>
@@ -99,7 +99,7 @@ export default function BookCard({
                 </Link>
 
                 {/* Price & Action */}
-                <div className="mt-4 flex flex-col items-center gap-4 w-full">
+                <div className="mt-auto flex flex-col items-center gap-4 w-full">
                     <p className={`font-black text-black leading-none ${isCompact ? 'text-base' : isFeatured ? 'text-2xl' : 'text-xl'
                         }`}>
                         {price} <span className="text-[10px] font-black text-gray-400">MAD</span>
@@ -115,14 +115,20 @@ export default function BookCard({
                                 }`}
                             onClick={(e) => {
                                 e.preventDefault()
-                                addItem({
-                                    type: 'BOOK',
-                                    id,
-                                    title,
-                                    price,
-                                    image,
-                                })
-                                openCart()
+                                try {
+                                    addItem({
+                                        type: 'BOOK',
+                                        id,
+                                        title,
+                                        price,
+                                        image,
+                                    })
+                                    openCart()
+                                    showNotification(t('AddedToCartSuccess'), 'success')
+                                } catch (error) {
+                                    console.error('Failed to add book to cart:', error)
+                                    showNotification(t('AddedToCartError'), 'error')
+                                }
                             }}
                         >
                             <span>{t('AddToCart')}</span>

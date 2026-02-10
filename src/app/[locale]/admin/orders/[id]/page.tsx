@@ -1,4 +1,4 @@
-import { getOrderById } from '@/lib/actions/orders'
+import { getOrderById } from '@/lib/actions/admin-orders'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -52,9 +52,9 @@ export default async function OrderDetailsPage({
                                 return (
                                     <div key={item.id} className="p-6 flex gap-4">
                                         <div className="relative w-20 h-28 bg-gray-50 rounded-lg overflow-hidden shrink-0 border border-gray-100">
-                                            {product?.image ? (
+                                            {item.book?.image ? (
                                                 <Image
-                                                    src={product.image}
+                                                    src={item.book.image}
                                                     alt="Produit"
                                                     fill
                                                     className="object-cover"

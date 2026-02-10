@@ -69,7 +69,6 @@ export default function LoginPage() {
                                     id="email"
                                     name="email"
                                     required
-                                    defaultValue="admin@riwaya.com"
                                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="admin@riwaya.com"
                                 />
@@ -90,7 +89,6 @@ export default function LoginPage() {
                                     id="password"
                                     name="password"
                                     required
-                                    defaultValue="admin123"
                                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="••••••••"
                                 />
@@ -107,14 +105,7 @@ export default function LoginPage() {
                         </button>
                     </form>
 
-                    {/* Info */}
-                    <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                        <p className="text-xs text-blue-800">
-                            <strong>Identifiants par défaut :</strong><br />
-                            Email: admin@riwaya.com<br />
-                            Mot de passe: admin123
-                        </p>
-                    </div>
+
                 </div>
 
                 {/* Footer */}

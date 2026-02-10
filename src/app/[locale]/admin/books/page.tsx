@@ -1,6 +1,6 @@
 import { getBooks } from '@/lib/db/books'
 import Link from 'next/link'
-import { Plus } from 'lucide-react'
+import { Plus, Upload } from 'lucide-react'
 import BooksTable from './BooksTable'
 
 export default async function BooksPage() {
@@ -16,13 +16,22 @@ export default async function BooksPage() {
                         Gérez votre catalogue de livres
                     </p>
                 </div>
-                <Link
-                    href="/admin/books/new"
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                    <Plus className="w-5 h-5 mr-2" />
-                    Ajouter un livre
-                </Link>
+                <div className="flex items-center gap-3">
+                    <Link
+                        href="/admin/books/bulk-import"
+                        className="inline-flex items-center px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                        <Upload className="w-5 h-5 mr-2" />
+                        Importer
+                    </Link>
+                    <Link
+                        href="/admin/books/new"
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        <Plus className="w-5 h-5 mr-2" />
+                        Ajouter un livre
+                    </Link>
+                </div>
             </div>
 
             {/* Stats Cards */}

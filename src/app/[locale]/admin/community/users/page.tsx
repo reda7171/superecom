@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { getAllUsers } from '@/lib/actions/admin-community'
 import { ArrowLeft, Star, BookOpen, Repeat, Coins } from 'lucide-react'
 import Link from 'next/link'
+import UserModerationButton from '@/components/admin/UserModerationButton'
 
 export default async function AdminUsersPage({
     searchParams
@@ -34,25 +35,37 @@ export default async function AdminUsersPage({
 
             {/* Users Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {data.users.map((user) => (
+                {data.users.map((user: any) => (
                     <div key={user.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
                         {/* User Info */}
-                        <div className="flex items-start gap-4 mb-6">
-                            {user.image ? (
-                                <img src={user.image} alt={user.fullName || ''} className="w-16 h-16 rounded-full object-cover" />
-                            ) : (
-                                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                                    <span className="text-2xl font-black text-gray-400">
-                                        {user.fullName?.charAt(0) || user.email.charAt(0).toUpperCase()}
-                                    </span>
-                                </div>
-                            )}
-                            <div className="flex-grow min-w-0">
-                                <h3 className="font-black text-lg text-black truncate">{user.fullName || 'Sans nom'}</h3>
-                                <p className="text-sm text-gray-500 truncate">{user.email}</p>
-                                {user.city && (
-                                    <p className="text-xs text-gray-400 mt-1">📍 {user.city}</p>
+                        <div className="flex items-start justify-between mb-6 gap-2">
+                            <div className="flex items-start gap-3 min-w-0">
+                                {user.image ? (
+                                    <img src={user.image} alt={user.fullName || ''} className="w-12 h-12 rounded-full object-cover shrink-0" />
+                                ) : (
+                                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
+                                        <span className="text-xl font-black text-gray-400">
+                                            {user.fullName?.charAt(0) || user.email.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
                                 )}
+                                <div className="min-w-0">
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="font-black text-base text-black truncate">{user.fullName || 'Sans nom'}</h3>
+                                        {user.isBanned && (
+                                            <span className="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-black uppercase rounded-full shrink-0">
+                                                Banni
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                    {user.city && (
+                                        <p className="text-[10px] text-gray-400 mt-0.5">📍 {user.city}</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="shrink-0">
+                                <UserModerationButton userId={user.id} isBanned={user.isBanned} />
                             </div>
                         </div>
 
@@ -63,14 +76,14 @@ export default async function AdminUsersPage({
                                     <Star className="w-4 h-4 text-yellow-500" />
                                     <span className="text-xs font-bold text-gray-500">Note</span>
                                 </div>
-                                <p className="text-lg font-black text-black">{user.rating.toFixed(1)}</p>
+                                <p className="text-lg font-black text-black">{(user.rating || 5).toFixed(1)}</p>
                             </div>
                             <div className="bg-gray-50 rounded-xl p-3">
                                 <div className="flex items-center gap-2 mb-1">
                                     <Coins className="w-4 h-4 text-purple-500" />
                                     <span className="text-xs font-bold text-gray-500">Crédits</span>
                                 </div>
-                                <p className="text-lg font-black text-black">{user.credits}</p>
+                                <p className="text-lg font-black text-black">{user.credits || 0}</p>
                             </div>
                         </div>
 
@@ -81,21 +94,21 @@ export default async function AdminUsersPage({
                                     <BookOpen className="w-4 h-4" />
                                     <span className="font-bold">Livres</span>
                                 </div>
-                                <span className="font-black text-black">{user._count.ownedBooks}</span>
+                                <span className="font-black text-black">{user._count?.ownedBooks || 0}</span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
                                 <div className="flex items-center gap-2 text-gray-600">
                                     <Repeat className="w-4 h-4" />
-                                    <span className="font-bold">Échanges envoyés</span>
+                                    <span className="font-bold">Exchanges envoyés</span>
                                 </div>
-                                <span className="font-black text-black">{user._count.sentExchanges}</span>
+                                <span className="font-black text-black">{user._count?.sentExchanges || 0}</span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
                                 <div className="flex items-center gap-2 text-gray-600">
                                     <Repeat className="w-4 h-4" />
-                                    <span className="font-bold">Échanges reçus</span>
+                                    <span className="font-bold">Exchanges reçus</span>
                                 </div>
-                                <span className="font-black text-black">{user._count.receivedExchanges}</span>
+                                <span className="font-black text-black">{user._count?.receivedExchanges || 0}</span>
                             </div>
                         </div>
 

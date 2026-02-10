@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 import Image from 'next/image'
 import { Edit, Trash2, Eye, EyeOff } from 'lucide-react'
 import { deletePack, togglePackStatus } from '@/lib/actions/packs'
@@ -126,8 +126,8 @@ export default function PacksTable({ packs }: { packs: Pack[] }) {
                                     onClick={() => handleToggleStatus(pack.id, pack.active)}
                                     disabled={loading === pack.id}
                                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${pack.active
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-gray-100 text-gray-800'
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-gray-100 text-gray-800'
                                         } hover:opacity-80`}
                                 >
                                     {pack.active ? (

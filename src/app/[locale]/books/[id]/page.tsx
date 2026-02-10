@@ -52,6 +52,7 @@ export default async function BookDetailPage({
     const { id, locale } = await params
     const tBook = await getTranslations('BookDetail');
     const tCommon = await getTranslations('Common');
+    const tNav = await getTranslations('Navigation');
 
     const book = await getBookById(id)
 
@@ -117,9 +118,9 @@ export default async function BookDetailPage({
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-32">
                     {/* Breadcrumb */}
                     <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 mb-12">
-                        <Link href="/" className="hover:text-black transition-colors">Home</Link>
+                        <Link href="/" className="hover:text-black transition-colors">{tNav('Home')}</Link>
                         <span className="text-gray-200">/</span>
-                        <Link href="/books" className="hover:text-black transition-colors">Library</Link>
+                        <Link href="/books" className="hover:text-black transition-colors">{tNav('Books')}</Link>
                         <span className="text-gray-200">/</span>
                         <span className="text-black">{book.title}</span>
                     </div>

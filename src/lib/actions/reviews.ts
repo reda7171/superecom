@@ -3,6 +3,8 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { verifyAdmin } from './auth'
+import { createAuditLog } from './audit'
 
 const ReviewSchema = z.object({
     bookId: z.string().uuid(),
@@ -30,6 +32,7 @@ export async function createReview(data: z.infer<typeof ReviewSchema>) {
 }
 
 export async function getBookReviews(bookId: string) {
+    // Public action for product pages
     return prisma.review.findMany({
         where: { bookId, isApproved: true },
         orderBy: { createdAt: 'desc' }
@@ -37,33 +40,40 @@ export async function getBookReviews(bookId: string) {
 }
 
 export async function getPendingReviews() {
-    return prisma.review.findMany({
-        where: { isApproved: false },
-        include: { book: true },
-        orderBy: { createdAt: 'desc' }
-    })
+    try {
+        await verifyAdmin()
+        return prisma.review.findMany({
+            where: { isApproved: false },
+            include: { book: true },
+            orderBy: { createdAt: 'desc' }
+        })
+    } catch (error) {
+        return []
+    }
 }
 
 export async function approveReview(id: string) {
     try {
+        await verifyAdmin()
         await prisma.review.update({
             where: { id },
             data: { isApproved: true }
         })
         revalidatePath('/admin/reviews')
         return { success: true }
-    } catch (error) {
-        return { success: false, error: 'Erreur lors de l\'approbation' }
+    } catch (error: any) {
+        return { success: false, error: error.message || 'Erreur lors de l\'approbation' }
     }
 }
 
 export async function deleteReview(id: string) {
     try {
+        await verifyAdmin()
         await prisma.review.delete({ where: { id } })
         revalidatePath('/admin/reviews')
         return { success: true }
-    } catch (error) {
-        return { success: false, error: 'Erreur lors de la suppression' }
+    } catch (error: any) {
+        return { success: false, error: error.message || 'Erreur lors de la suppression' }
     }
 }
 
@@ -72,6 +82,7 @@ export async function deleteReview(id: string) {
  */
 export async function getAllReviews(filter?: 'all' | 'approved' | 'pending') {
     try {
+        await verifyAdmin()
         const reviews = await prisma.review.findMany({
             where: filter === 'approved'
                 ? { isApproved: true }
@@ -104,6 +115,7 @@ export async function getAllReviews(filter?: 'all' | 'approved' | 'pending') {
  */
 export async function getBookAverageRating(bookId: string) {
     try {
+        // Public action
         const result = await prisma.review.aggregate({
             where: {
                 bookId,
@@ -132,6 +144,7 @@ export async function getBookAverageRating(bookId: string) {
  */
 export async function getReviewsStats() {
     try {
+        await verifyAdmin()
         const [total, approved, pending] = await Promise.all([
             prisma.review.count(),
             prisma.review.count({ where: { isApproved: true } }),

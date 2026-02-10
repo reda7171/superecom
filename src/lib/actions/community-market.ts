@@ -78,3 +78,31 @@ export async function getExchangeBookDetails(bookId: string) {
         return null
     }
 }
+
+// Fonction pour récupérer les livres d'échange récents pour la page d'accueil
+export async function getRecentExchangeBooks(limit = 6) {
+    try {
+        const books = await prisma.exchangeBook.findMany({
+            where: {
+                status: 'AVAILABLE',
+            },
+            include: {
+                owner: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        city: true,
+                        rating: true,
+                        image: true,
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+        })
+
+        return books
+    } catch (error) {
+        return []
+    }
+}

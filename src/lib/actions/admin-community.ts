@@ -1,23 +1,14 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { getCommunityUser } from './community-auth'
 import { revalidatePath } from 'next/cache'
-
-// Vérifier si l'utilisateur est admin
-async function isAdmin() {
-    const user = await getCommunityUser()
-    if (!user || user.role !== 'ADMIN') {
-        return false
-    }
-    return true
-}
+import { verifyAdmin } from './auth'
 
 // Statistiques du dashboard
 export async function getAdminStats() {
-    if (!await isAdmin()) return null
-
     try {
+        await verifyAdmin()
+
         const [
             totalUsers,
             totalBooks,
@@ -25,37 +16,75 @@ export async function getAdminStats() {
             pendingExchanges,
             acceptedExchanges,
             rejectedExchanges,
+            completedExchanges,
             totalRatings,
             totalMessages
         ] = await Promise.all([
             prisma.user.count(),
-            prisma.exchangeBook.count(),
-            prisma.exchange.count(),
-            prisma.exchange.count({ where: { status: 'PENDING' } }),
-            prisma.exchange.count({ where: { status: 'ACCEPTED' } }),
-            prisma.exchange.count({ where: { status: 'REJECTED' } }),
-            prisma.rating.count(),
-            prisma.message.count()
+            (prisma as any).exchangeBook.count(),
+            (prisma as any).exchange.count(),
+            (prisma as any).exchange.count({ where: { status: 'PENDING' } }),
+            (prisma as any).exchange.count({ where: { status: 'ACCEPTED' } }),
+            (prisma as any).exchange.count({ where: { status: 'REJECTED' } }),
+            (prisma as any).exchange.count({ where: { status: 'COMPLETED' } }),
+            (prisma as any).rating.count(),
+            (prisma as any).message.count()
         ])
 
+        // Top rated users
+        const topRatedUsers = await (prisma as any).user.findMany({
+            take: 5,
+            orderBy: { rating: 'desc' },
+            where: {
+                rating: { gt: 0 },
+                role: 'USER' as any
+            },
+            select: { id: true, fullName: true, image: true, rating: true, city: true }
+        })
+
         // Échanges récents
-        const recentExchanges = await prisma.exchange.findMany({
+        const recentExchanges = await (prisma as any).exchange.findMany({
             take: 5,
             orderBy: { createdAt: 'desc' },
             include: {
-                requester: { select: { fullName: true, email: true } },
-                responder: { select: { fullName: true, email: true } },
+                requester: { select: { fullName: true, email: true, image: true } },
+                responder: { select: { fullName: true, email: true, image: true } },
                 bookRequested: { select: { title: true } }
             }
         })
 
         // Livres récents
-        const recentBooks = await prisma.exchangeBook.findMany({
+        const recentBooks = await (prisma as any).exchangeBook.findMany({
             take: 5,
             orderBy: { createdAt: 'desc' },
             include: {
                 owner: { select: { fullName: true, email: true } }
             }
+        })
+
+        // Exchanges par jour (7 derniers jours)
+        const sevenDaysAgo = new Date()
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+        const dailyExchanges = await (prisma as any).exchange.groupBy({
+            by: ['createdAt'],
+            where: {
+                createdAt: { gte: sevenDaysAgo }
+            },
+            _count: { id: true }
+        })
+
+        // Formater les données pour le chart
+        const exchangeChartData = Array.from({ length: 7 }).map((_, i) => {
+            const date = new Date()
+            date.setDate(date.getDate() - (6 - i))
+            const dateStr = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+
+            const count = (dailyExchanges as any[]).filter((e: any) =>
+                new Date(e.createdAt).toDateString() === date.toDateString()
+            ).reduce((acc: number, curr: any) => acc + curr._count.id, 0)
+
+            return { name: dateStr, value: count }
         })
 
         return {
@@ -67,8 +96,11 @@ export async function getAdminStats() {
             rejectedExchanges,
             totalRatings,
             totalMessages,
+            completedExchanges,
+            topRatedUsers,
             recentExchanges,
-            recentBooks
+            recentBooks,
+            exchangeChartData
         }
     } catch (error) {
         return null
@@ -81,13 +113,13 @@ export async function getAllExchanges(filters?: {
     search?: string
     page?: number
 }) {
-    if (!await isAdmin()) return null
-
-    const page = filters?.page || 1
-    const perPage = 20
-    const skip = (page - 1) * perPage
-
     try {
+        await verifyAdmin()
+
+        const page = filters?.page || 1
+        const perPage = 20
+        const skip = (page - 1) * perPage
+
         const where: any = {}
 
         if (filters?.status && filters.status !== 'ALL') {
@@ -95,7 +127,7 @@ export async function getAllExchanges(filters?: {
         }
 
         const [exchanges, total] = await Promise.all([
-            prisma.exchange.findMany({
+            (prisma as any).exchange.findMany({
                 where,
                 skip,
                 take: perPage,
@@ -104,10 +136,11 @@ export async function getAllExchanges(filters?: {
                     requester: { select: { id: true, fullName: true, email: true, image: true } },
                     responder: { select: { id: true, fullName: true, email: true, image: true } },
                     bookRequested: { select: { title: true, author: true, image: true } },
-                    bookOffered: { select: { title: true, author: true, image: true } }
+                    bookOffered: { select: { title: true, author: true, image: true } },
+                    rating: true
                 }
             }),
-            prisma.exchange.count({ where })
+            (prisma as any).exchange.count({ where })
         ])
 
         return {
@@ -123,14 +156,14 @@ export async function getAllExchanges(filters?: {
 
 // Liste de tous les utilisateurs
 export async function getAllUsers(page = 1) {
-    if (!await isAdmin()) return null
-
-    const perPage = 20
-    const skip = (page - 1) * perPage
-
     try {
+        await verifyAdmin()
+
+        const perPage = 20
+        const skip = (page - 1) * perPage
+
         const [users, total] = await Promise.all([
-            prisma.user.findMany({
+            (prisma as any).user.findMany({
                 skip,
                 take: perPage,
                 orderBy: { createdAt: 'desc' },
@@ -142,6 +175,7 @@ export async function getAllUsers(page = 1) {
                     rating: true,
                     credits: true,
                     image: true,
+                    isBanned: true,
                     createdAt: true,
                     _count: {
                         select: {
@@ -152,7 +186,7 @@ export async function getAllUsers(page = 1) {
                     }
                 }
             }),
-            prisma.user.count()
+            (prisma as any).user.count()
         ])
 
         return {
@@ -172,13 +206,13 @@ export async function getAllBooks(filters?: {
     search?: string
     page?: number
 }) {
-    if (!await isAdmin()) return null
-
-    const page = filters?.page || 1
-    const perPage = 20
-    const skip = (page - 1) * perPage
-
     try {
+        await verifyAdmin()
+
+        const page = filters?.page || 1
+        const perPage = 20
+        const skip = (page - 1) * perPage
+
         const where: any = {}
 
         if (filters?.status && filters.status !== 'ALL') {
@@ -193,7 +227,7 @@ export async function getAllBooks(filters?: {
         }
 
         const [books, total] = await Promise.all([
-            prisma.exchangeBook.findMany({
+            (prisma as any).exchangeBook.findMany({
                 where,
                 skip,
                 take: perPage,
@@ -202,7 +236,7 @@ export async function getAllBooks(filters?: {
                     owner: { select: { fullName: true, email: true } }
                 }
             }),
-            prisma.exchangeBook.count({ where })
+            (prisma as any).exchangeBook.count({ where })
         ])
 
         return {
@@ -218,50 +252,70 @@ export async function getAllBooks(filters?: {
 
 // Supprimer un échange
 export async function deleteExchange(exchangeId: string) {
-    if (!await isAdmin()) return { success: false, error: "Non autorisé" }
-
     try {
-        await prisma.exchange.delete({
+        await verifyAdmin()
+
+        await (prisma as any).exchange.delete({
             where: { id: exchangeId }
         })
 
         revalidatePath('/admin/exchanges')
         return { success: true }
-    } catch (error) {
-        return { success: false, error: "Erreur lors de la suppression" }
+    } catch (error: any) {
+        return { success: false, error: error.message || "Erreur lors de la suppression" }
     }
 }
 
 // Supprimer un livre
 export async function deleteBook(bookId: string) {
-    if (!await isAdmin()) return { success: false, error: "Non autorisé" }
-
     try {
-        await prisma.exchangeBook.delete({
+        await verifyAdmin()
+
+        await (prisma as any).exchangeBook.delete({
             where: { id: bookId }
         })
 
         revalidatePath('/admin/books')
         return { success: true }
-    } catch (error) {
-        return { success: false, error: "Erreur lors de la suppression" }
+    } catch (error: any) {
+        return { success: false, error: error.message || "Erreur lors de la suppression" }
     }
 }
 
-// Bannir un utilisateur (désactiver son compte)
+// Bannir/Débannir un utilisateur
 export async function toggleUserStatus(userId: string) {
-    if (!await isAdmin()) return { success: false, error: "Non autorisé" }
-
     try {
-        // Pour l'instant, on peut juste supprimer tous ses livres disponibles
-        await prisma.exchangeBook.updateMany({
-            where: { ownerId: userId, status: 'AVAILABLE' },
-            data: { status: 'EXCHANGED' } // Marquer comme échangé pour les cacher
+        await verifyAdmin()
+
+        const user = await (prisma as any).user.findUnique({
+            where: { id: userId },
+            select: { isBanned: true }
         })
 
-        revalidatePath('/admin/users')
-        return { success: true }
-    } catch (error) {
-        return { success: false, error: "Erreur" }
+        if (!user) return { success: false, error: "Utilisateur non trouvé" }
+
+        await (prisma as any).user.update({
+            where: { id: userId },
+            data: { isBanned: !user.isBanned }
+        })
+
+        if (!user.isBanned) {
+            // Devient banni (false -> true)
+            await (prisma as any).exchangeBook.updateMany({
+                where: { ownerId: userId, status: 'AVAILABLE' },
+                data: { status: 'HIDDEN' }
+            })
+        } else {
+            // Devient débanni (true -> false)
+            await (prisma as any).exchangeBook.updateMany({
+                where: { ownerId: userId, status: 'HIDDEN' },
+                data: { status: 'AVAILABLE' }
+            })
+        }
+
+        revalidatePath('/admin/community/users')
+        return { success: true, isBanned: !user.isBanned }
+    } catch (error: any) {
+        return { success: false, error: error.message || "Erreur" }
     }
 }

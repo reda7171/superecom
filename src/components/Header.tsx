@@ -25,15 +25,15 @@ export default function Header({ user, notificationDropdown }: HeaderProps = { u
     const t = useTranslations('Navigation')
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const { isCartOpen, openCart, closeCart } = useUIStore()
+    const totalItems = useCartStore((state) => state.items.reduce((total, item) => total + item.quantity, 0))
     const [mounted, setMounted] = useState(false)
-    const getTotalItems = useCartStore((state) => state.getTotalItems)
 
     // Éviter les problèmes d'hydratation
     useEffect(() => {
         setMounted(true)
     }, [])
 
-    const totalItems = mounted ? getTotalItems() : 0
+    const displayItems = mounted ? totalItems : 0
 
     return (
         <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
@@ -104,9 +104,9 @@ export default function Header({ user, notificationDropdown }: HeaderProps = { u
                         <button onClick={openCart} className="relative group">
                             <div className="w-10 h-10 border-2 border-transparent group-hover:border-black rounded-full flex items-center justify-center transition-all">
                                 <ShoppingCart className="w-6 h-6 text-gray-900" />
-                                {totalItems > 0 && (
+                                {displayItems > 0 && (
                                     <span className="absolute -top-0.5 -right-0.5 bg-black text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center">
-                                        {totalItems}
+                                        {displayItems}
                                     </span>
                                 )}
                             </div>

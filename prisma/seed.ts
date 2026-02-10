@@ -243,6 +243,150 @@ async function main() {
     console.log(`📦 Pack créé: ${pack.name}`)
   }
 
+  // 4. Création de commandes pour alimenter les statistiques de ventes
+  console.log('💰 Création des commandes de test...')
+
+  const packs = await prisma.pack.findMany()
+
+  const ordersData = [
+    {
+      fullName: 'Mohammed Alami',
+      phone: '+212612345678',
+      address: '15 Rue Hassan II',
+      city: 'Casablanca',
+      status: 'DELIVERED',
+      items: [
+        { bookId: books[0].id, quantity: 3, price: books[0].price }, // Atomic Habits
+        { bookId: books[4].id, quantity: 2, price: books[4].price }, // Père Riche
+      ]
+    },
+    {
+      fullName: 'Fatima Zahra',
+      phone: '+212623456789',
+      address: '22 Avenue Mohammed V',
+      city: 'Rabat',
+      status: 'DELIVERED',
+      items: [
+        { bookId: books[0].id, quantity: 2, price: books[0].price }, // Atomic Habits
+        { bookId: books[1].id, quantity: 1, price: books[1].price }, // Pouvoir moment présent
+      ]
+    },
+    {
+      fullName: 'Youssef El Fassi',
+      phone: '+212634567890',
+      address: '8 Rue de Fès',
+      city: 'Marrakech',
+      status: 'DELIVERED',
+      items: [
+        { bookId: books[4].id, quantity: 4, price: books[4].price }, // Père Riche
+        { bookId: books[6].id, quantity: 1, price: books[6].price }, // Semaine 4h
+      ]
+    },
+    {
+      fullName: 'Amina Bennani',
+      phone: '+212645678901',
+      address: '45 Boulevard Zerktouni',
+      city: 'Casablanca',
+      status: 'DELIVERED',
+      items: [
+        { bookId: books[2].id, quantity: 5, price: books[2].price }, // 4 accords Toltèques
+        { bookId: books[0].id, quantity: 1, price: books[0].price }, // Atomic Habits
+      ]
+    },
+    {
+      fullName: 'Omar Tazi',
+      phone: '+212656789012',
+      address: '12 Rue Liberté',
+      city: 'Tanger',
+      status: 'DELIVERED',
+      items: [
+        { bookId: books[2].id, quantity: 3, price: books[2].price }, // 4 accords Toltèques
+        { bookId: books[3].id, quantity: 2, price: books[3].price }, // Miracle Morning
+      ]
+    },
+    {
+      fullName: 'Zineb Amrani',
+      phone: '+212667890123',
+      address: '33 Avenue Hassan',
+      city: 'Fès',
+      status: 'DELIVERED',
+      items: [
+        { bookId: books[1].id, quantity: 4, price: books[1].price }, // Pouvoir moment présent
+        { bookId: books[2].id, quantity: 2, price: books[2].price }, // 4 accords Toltèques
+      ]
+    },
+    {
+      fullName: 'Karim Senhaji',
+      phone: '+212678901234',
+      address: '7 Rue Agadir',
+      city: 'Agadir',
+      status: 'DELIVERED',
+      items: [
+        { bookId: books[4].id, quantity: 1, price: books[4].price }, // Père Riche
+        { bookId: books[5].id, quantity: 3, price: books[5].price }, // Think & Grow Rich
+      ]
+    },
+    {
+      fullName: 'Laila Idrissi',
+      phone: '+212689012345',
+      address: '18 Boulevard Moulay',
+      city: 'Rabat',
+      status: 'DELIVERED',
+      items: [
+        { bookId: books[0].id, quantity: 2, price: books[0].price }, // Atomic Habits
+        { packId: packs[0]?.id, quantity: 1, price: packs[0]?.price || 0 }, // Pack Transformation
+      ]
+    },
+    {
+      fullName: 'Mehdi Berrada',
+      phone: '+212690123456',
+      address: '25 Rue Oujda',
+      city: 'Oujda',
+      status: 'SHIPPED',
+      items: [
+        { bookId: books[3].id, quantity: 4, price: books[3].price }, // Miracle Morning
+        { bookId: books[1].id, quantity: 1, price: books[1].price }, // Pouvoir moment présent
+      ]
+    },
+    {
+      fullName: 'Sophia El Amrani',
+      phone: '+212601234567',
+      address: '50 Avenue de France',
+      city: 'Casablanca',
+      status: 'CONFIRMED',
+      items: [
+        { bookId: books[2].id, quantity: 1, price: books[2].price }, // 4 accords Toltèques
+        { packId: packs[1]?.id, quantity: 1, price: packs[1]?.price || 0 }, // Pack Entrepreneur
+      ]
+    }
+  ]
+
+  for (const orderData of ordersData) {
+    const totalAmount = orderData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+
+    await prisma.order.create({
+      data: {
+        fullName: orderData.fullName,
+        phone: orderData.phone,
+        address: orderData.address,
+        city: orderData.city,
+        total: totalAmount,
+        status: orderData.status as any,
+        items: {
+          create: orderData.items.map(item => ({
+            type: item.bookId ? 'BOOK' : 'PACK',
+            bookId: item.bookId,
+            packId: item.packId,
+            quantity: item.quantity,
+            price: item.price * item.quantity
+          }))
+        }
+      }
+    })
+  }
+
+  console.log(`✅ ${ordersData.length} commandes créées avec succès`)
+
   console.log('✅ Seeding terminé avec succès !')
 }
 

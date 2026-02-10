@@ -5,6 +5,7 @@ import { Link } from '@/i18n/routing'
 import { User, Settings, Package, LogOut, ChevronDown } from 'lucide-react'
 import { logout } from '@/lib/actions/community-auth'
 import { useRouter } from 'next/navigation'
+import { useUIStore } from '@/store/ui'
 
 interface UserDropdownProps {
     user?: {
@@ -37,9 +38,12 @@ export default function UserDropdown({ user }: UserDropdownProps) {
         }
     }, [isOpen])
 
+    const { showNotification } = useUIStore()
+
     async function handleLogout() {
         setLoggingOut(true)
         await logout()
+        showNotification('Déconnexion réussie', 'info')
         router.push('/community/login')
         router.refresh()
     }

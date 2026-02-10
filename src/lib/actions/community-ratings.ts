@@ -30,7 +30,7 @@ export async function createRating(formData: FormData) {
 
     try {
         // Vérifier que l'échange existe et est complété
-        const exchange = await prisma.exchange.findUnique({
+        const exchange = await (prisma as any).exchange.findUnique({
             where: { id: data.exchangeId },
             include: {
                 requester: true,
@@ -42,8 +42,8 @@ export async function createRating(formData: FormData) {
             return { success: false, error: "Échange introuvable" }
         }
 
-        if (exchange.status !== 'ACCEPTED') {
-            return { success: false, error: "L'échange doit être accepté pour être évalué" }
+        if (exchange.status !== 'COMPLETED') {
+            return { success: false, error: "L'échange doit être terminé pour être évalué" }
         }
 
         // Vérifier que l'utilisateur fait partie de l'échange
@@ -57,7 +57,7 @@ export async function createRating(formData: FormData) {
             : exchange.requesterId
 
         // Vérifier qu'une évaluation n'existe pas déjà
-        const existingRating = await prisma.rating.findUnique({
+        const existingRating = await (prisma as any).rating.findUnique({
             where: { exchangeId: data.exchangeId }
         })
 
@@ -66,7 +66,7 @@ export async function createRating(formData: FormData) {
         }
 
         // Créer l'évaluation
-        const rating = await prisma.rating.create({
+        const rating = await (prisma as any).rating.create({
             data: {
                 exchangeId: data.exchangeId,
                 fromUserId: user.id,
@@ -77,13 +77,13 @@ export async function createRating(formData: FormData) {
         })
 
         // Mettre à jour la note moyenne de l'utilisateur évalué
-        const userRatings = await prisma.rating.findMany({
+        const userRatings = await (prisma as any).rating.findMany({
             where: { toUserId }
         })
 
-        const averageRating = userRatings.reduce((sum, r) => sum + r.rating, 0) / userRatings.length
+        const averageRating = userRatings.reduce((sum: number, r: any) => sum + r.rating, 0) / userRatings.length
 
-        await prisma.user.update({
+        await (prisma as any).user.update({
             where: { id: toUserId },
             data: { rating: averageRating }
         })
@@ -93,11 +93,12 @@ export async function createRating(formData: FormData) {
             userId: toUserId,
             type: 'RATING_RECEIVED',
             title: 'Nouvelle évaluation',
-            message: `${user.fullName} vous a donné ${data.rating} étoile${data.rating > 1 ? 's' : ''}`,
+            message: `${(user as any).fullName} vous a donné ${data.rating} étoile${data.rating > 1 ? 's' : ''}`,
             link: `/community`
         })
 
         revalidatePath('/community/exchanges')
+        revalidatePath('/community')
         return { success: true, rating }
     } catch (error: any) {
         return { success: false, error: error.message || "Erreur lors de la création de l'évaluation" }
@@ -110,16 +111,16 @@ export async function canRateExchange(exchangeId: string) {
     if (!user) return false
 
     try {
-        const exchange = await prisma.exchange.findUnique({
+        const exchange = await (prisma as any).exchange.findUnique({
             where: { id: exchangeId }
         })
 
         if (!exchange) return false
-        if (exchange.status !== 'ACCEPTED') return false
+        if (exchange.status !== 'COMPLETED') return false
         if (exchange.requesterId !== user.id && exchange.responderId !== user.id) return false
 
         // Vérifier qu'une évaluation n'existe pas déjà
-        const existingRating = await prisma.rating.findUnique({
+        const existingRating = await (prisma as any).rating.findUnique({
             where: { exchangeId }
         })
 
@@ -132,7 +133,7 @@ export async function canRateExchange(exchangeId: string) {
 // Récupérer les évaluations d'un utilisateur
 export async function getUserRatings(userId: string) {
     try {
-        const ratings = await prisma.rating.findMany({
+        const ratings = await (prisma as any).rating.findMany({
             where: { toUserId: userId },
             include: {
                 fromUser: {

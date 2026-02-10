@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { cookies } from 'next/headers'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
+import { createAuditLog } from './audit'
 
 const LoginSchema = z.object({
     email: z.string().email('Email invalide'),
@@ -56,6 +57,21 @@ export async function login(email: string, password: string): Promise<LoginResul
             path: '/',
         })
 
+        // Stocker l'email pour l'audit (non sensible)
+        cookieStore.set('admin-email', user.email, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7,
+            path: '/',
+        })
+
+        await createAuditLog({
+            action: 'LOGIN',
+            entity: 'AUTH',
+            details: `Connexion réussie: ${user.email}`
+        })
+
         return {
             success: true,
             redirect: '/admin',
@@ -81,8 +97,13 @@ export async function login(email: string, password: string): Promise<LoginResul
  * Déconnexion admin
  */
 export async function logout() {
+    await createAuditLog({
+        action: 'LOGOUT',
+        entity: 'AUTH'
+    })
     const cookieStore = await cookies()
     cookieStore.delete('admin-token')
+    cookieStore.delete('admin-email')
 }
 
 /**
@@ -93,3 +114,15 @@ export async function isAuthenticated(): Promise<boolean> {
     const token = cookieStore.get('admin-token')
     return !!token
 }
+
+/**
+ * Assurer que l'utilisateur est un admin (lance une erreur sinon)
+ * À utiliser au début des Server Actions sensibles
+ */
+export async function verifyAdmin() {
+    const isAuth = await isAuthenticated()
+    if (!isAuth) {
+        throw new Error('Non autorisé - Accès administrateur requis')
+    }
+}
+

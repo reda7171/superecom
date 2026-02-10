@@ -28,15 +28,15 @@ interface PackCardProps {
 export default function PackCard({
     id,
     name,
-    description,
     price,
     image,
     books,
 }: PackCardProps) {
     const t = useTranslations('Packs')
+    const tCommon = useTranslations('Common')
     const addItem = useCartStore((state) => state.addItem)
-    const openCart = useUIStore((state) => state.openCart)
-    const totalOriginalPrice = books.reduce((sum, pb) => sum + pb.book.price, 0)
+    const { openCart, showNotification } = useUIStore()
+    const totalOriginalPrice = books.reduce((sum: number, pb: any) => sum + pb.book.price, 0)
     const savings = totalOriginalPrice - price
     const savingsPercent = Math.round((savings / totalOriginalPrice) * 100)
 
@@ -78,7 +78,7 @@ export default function PackCard({
                     {image ? (
                         <Image
                             src={image}
-                            alt={name}
+                            alt={`Pack ${name} - Riwaya Selection`}
                             fill
                             className="object-cover group-hover:scale-110 transition-transform duration-700"
                             unoptimized
@@ -86,11 +86,11 @@ export default function PackCard({
                     ) : (
                         <div className="absolute inset-0 flex items-center justify-center bg-pixio-yellow/30 p-8">
                             <div className="grid grid-cols-2 gap-3 transform group-hover:scale-105 transition-transform">
-                                {books.slice(0, 4).map((pb, idx) => (
+                                {books.slice(0, 4).map((pb: any, idx: number) => (
                                     <div key={pb.book.id} className={`relative w-20 h-28 rounded-xl overflow-hidden shadow-2xl border-2 border-white ${idx % 2 === 0 ? '-rotate-6' : 'rotate-6'}`}>
                                         <Image
                                             src={pb.book.image}
-                                            alt={pb.book.title}
+                                            alt={`${pb.book.title} - Inclus dans le pack ${name}`}
                                             fill
                                             className="object-cover"
                                             unoptimized
@@ -137,15 +137,21 @@ export default function PackCard({
                         className="w-full flex items-center justify-center gap-3 bg-black text-white font-black text-xs uppercase tracking-[0.2em] py-5 px-6 rounded-full hover:bg-gray-800 active:scale-95 transition-all shadow-xl hover:shadow-black/20 group/btn"
                         onClick={(e) => {
                             e.preventDefault()
-                            addItem({
-                                type: 'PACK',
-                                id,
-                                title: name,
-                                price,
-                                image: image || books[0]?.book.image || '/images/placeholder-pack.jpg',
-                                booksCount: books.length
-                            })
-                            openCart()
+                            try {
+                                addItem({
+                                    type: 'PACK',
+                                    id,
+                                    title: name,
+                                    price,
+                                    image: image || (books.length > 0 ? books[0].book.image : '/images/placeholder-pack.jpg'),
+                                    booksCount: books.length
+                                })
+                                openCart()
+                                showNotification(tCommon('AddedToCartSuccess'), 'success')
+                            } catch (error) {
+                                console.error('Failed to add pack to cart:', error)
+                                showNotification(tCommon('AddedToCartError'), 'error')
+                            }
                         }}
                     >
                         <span>{t('AddSelection')}</span>

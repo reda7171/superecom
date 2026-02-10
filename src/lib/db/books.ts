@@ -122,3 +122,113 @@ export async function checkBookAvailability(bookId: string, quantity: number) {
 
     return { available: true }
 }
+
+/**
+ * Récupère les livres best-sellers (les plus vendus)
+ */
+export async function getBestSellerBooks(limit = 6) {
+    // Récupérer les livres les plus vendus via OrderItem
+    const topBooks = await prisma.orderItem.groupBy({
+        by: ['bookId'],
+        where: {
+            type: 'BOOK',
+            bookId: { not: null }
+        },
+        _sum: {
+            quantity: true
+        },
+        orderBy: {
+            _sum: {
+                quantity: 'desc'
+            }
+        },
+        take: limit
+    })
+
+    // Récupérer les détails des livres
+    const booksWithDetails = await Promise.all(
+        topBooks.map(async (item) => {
+            const book = await prisma.book.findUnique({
+                where: { id: item.bookId! }
+            })
+            return book
+        })
+    )
+
+    // Filtrer les null et retourner
+    return booksWithDetails.filter((book): book is NonNullable<typeof book> => book !== null && book.active)
+}
+
+/**
+ * Récupère les meilleurs auteurs (les plus vendus)
+ */
+export async function getBestAuthors(limit = 6) {
+    // Récupérer tous les livres vendus avec leurs quantités
+    const soldBooks = await prisma.orderItem.groupBy({
+        by: ['bookId'],
+        where: {
+            type: 'BOOK',
+            bookId: { not: null }
+        },
+        _sum: {
+            quantity: true
+        }
+    })
+
+    // Récupérer les détails des livres
+    const booksWithSales = await Promise.all(
+        soldBooks.map(async (item) => {
+            const book = await prisma.book.findUnique({
+                where: { id: item.bookId! },
+                select: { author: true, image: true }
+            })
+            return {
+                author: book?.author,
+                image: book?.image,
+                totalSold: item._sum.quantity || 0
+            }
+        })
+    )
+
+    // Grouper par auteur et calculer le total des ventes
+    const authorStats = booksWithSales.reduce((acc: any[], curr) => {
+        if (!curr.author) return acc
+
+        const existing = acc.find(a => a.author === curr.author)
+        if (existing) {
+            existing.totalSold += curr.totalSold
+            existing.bookCount += 1
+        } else {
+            acc.push({
+                author: curr.author,
+                totalSold: curr.totalSold,
+                bookCount: 1,
+                image: curr.image
+            })
+        }
+        return acc
+    }, [])
+
+    // Trier par total de ventes et limiter
+    const topAuthors = authorStats
+        .sort((a, b) => b.totalSold - a.totalSold)
+        .slice(0, limit)
+
+    // Récupérer un livre exemple pour chaque auteur
+    const authorsWithBooks = await Promise.all(
+        topAuthors.map(async (author) => {
+            const book = await prisma.book.findFirst({
+                where: {
+                    author: author.author,
+                    active: true
+                }
+            })
+            return {
+                ...author,
+                sampleBook: book
+            }
+        })
+    )
+
+    return authorsWithBooks.filter(a => a.sampleBook !== null)
+}

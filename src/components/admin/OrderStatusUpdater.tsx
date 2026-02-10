@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { updateOrderStatus } from '@/lib/actions/orders'
+import { updateOrderStatus } from '@/lib/actions/admin-orders'
 import { useRouter } from 'next/navigation'
 import { Check, ChevronDown } from 'lucide-react'
 

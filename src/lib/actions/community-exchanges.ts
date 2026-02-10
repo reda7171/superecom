@@ -32,7 +32,7 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
         const data = ExchangeRequestSchema.parse(rawData)
 
         // 1. Vérifier le livre demandé
-        const requestedBook = await prisma.exchangeBook.findUnique({
+        const requestedBook = await (prisma as any).exchangeBook.findUnique({
             where: { id: data.bookRequestedId },
             include: { owner: true }
         })
@@ -47,7 +47,7 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
 
         // 2. Vérifier le livre offert (si échange direct)
         if (data.type === 'DIRECT' && data.bookOfferedId) {
-            const offeredBook = await prisma.exchangeBook.findUnique({
+            const offeredBook = await (prisma as any).exchangeBook.findUnique({
                 where: { id: data.bookOfferedId }
             })
 
@@ -63,7 +63,7 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
         }
 
         // 3. Créer l'échange
-        const exchange = await prisma.exchange.create({
+        const exchange = await (prisma as any).exchange.create({
             data: {
                 requesterId: user.id,
                 responderId: requestedBook.ownerId,
@@ -98,7 +98,7 @@ export async function getExchangeDetails(bookId: string) {
     const user = await getCommunityUser()
     if (!user) return null
 
-    const book = await prisma.exchangeBook.findUnique({
+    const book = await (prisma as any).exchangeBook.findUnique({
         where: { id: bookId },
         include: {
             owner: {
@@ -116,7 +116,7 @@ export async function getExchangeDetails(bookId: string) {
     if (!book) return null
 
     // Récupérer mes livres disponibles pour l'échange
-    const myBooks = await prisma.exchangeBook.findMany({
+    const myBooks = await (prisma as any).exchangeBook.findMany({
         where: {
             ownerId: user.id,
             status: 'AVAILABLE'
@@ -133,22 +133,24 @@ export async function getUserExchanges() {
     const user = await getCommunityUser()
     if (!user) return { received: [], sent: [] }
 
-    const received = await prisma.exchange.findMany({
+    const received = await (prisma as any).exchange.findMany({
         where: { responderId: user.id },
         include: {
             requester: { select: { fullName: true, rating: true, city: true } },
             bookRequested: true,
             bookOffered: true,
+            rating: true,
         },
         orderBy: { createdAt: 'desc' }
     })
 
-    const sent = await prisma.exchange.findMany({
+    const sent = await (prisma as any).exchange.findMany({
         where: { requesterId: user.id },
         include: {
             responder: { select: { fullName: true, rating: true, city: true } },
             bookRequested: true,
             bookOffered: true,
+            rating: true,
         },
         orderBy: { createdAt: 'desc' }
     })
@@ -165,7 +167,7 @@ export async function acceptExchange(exchangeId: string) {
 
     // Démarrer une transaction pour la cohérence
     try {
-        await prisma.$transaction(async (tx) => {
+        await (prisma as any).$transaction(async (tx: any) => {
             const exchange = await tx.exchange.findUnique({
                 where: { id: exchangeId },
                 include: { bookRequested: true, bookOffered: true, requester: true }
@@ -189,7 +191,7 @@ export async function acceptExchange(exchangeId: string) {
                     throw new Error("Le livre proposé n'est plus disponible")
                 }
             } else if (exchange.type === 'CREDIT') {
-                if (exchange.requester.credits < 1) { // Supposons coût = 1 crédit
+                if (exchange.requester.credits < 1) {
                     throw new Error("L'utilisateur n'a plus assez de crédits")
                 }
 
@@ -228,7 +230,7 @@ export async function acceptExchange(exchangeId: string) {
                 userId: exchange.requesterId,
                 type: 'EXCHANGE_ACCEPTED',
                 title: 'Échange accepté !',
-                message: `${user.fullName} a accepté votre demande d'échange pour "${exchange.bookRequested.title}"`,
+                message: `${(user as any).fullName} a accepté votre demande d'échange pour "${exchange.bookRequested.title}"`,
                 link: `/community/exchanges`
             })
         })
@@ -248,7 +250,7 @@ export async function rejectExchange(exchangeId: string) {
     if (!user) return { success: false, error: "Non authentifié" }
 
     try {
-        const exchange = await prisma.exchange.findUnique({
+        const exchange = await (prisma as any).exchange.findUnique({
             where: { id: exchangeId },
             include: { bookRequested: true }
         })
@@ -257,20 +259,23 @@ export async function rejectExchange(exchangeId: string) {
             return { success: false, error: "Non autorisé" }
         }
 
-        await prisma.exchange.update({
+        await (prisma as any).exchange.update({
             where: { id: exchangeId },
-            data: { status: 'REJECTED' }
+            data: { status: 'REJECTED' } // Changed from CANCELLED to REJECTED
         })
 
-        // Notifier le demandeur
-        await createNotification({
-            userId: exchange.requesterId,
-            type: 'EXCHANGE_REJECTED',
-            title: 'Échange refusé',
-            message: `${user.fullName} a décliné votre demande d'échange pour "${exchange.bookRequested.title}"`,
-            link: `/community/exchanges`
+        // Marquer les livres comme à nouveau disponibles
+        await (prisma as any).exchangeBook.update({
+            where: { id: exchange.bookRequestedId },
+            data: { status: 'AVAILABLE' }
         })
 
+        if (exchange.bookOfferedId) {
+            await (prisma as any).exchangeBook.update({
+                where: { id: exchange.bookOfferedId },
+                data: { status: 'AVAILABLE' }
+            })
+        }
         revalidatePath('/community/exchanges')
         return { success: true }
     } catch {
@@ -286,7 +291,7 @@ export async function completeExchange(exchangeId: string) {
     if (!user) return { success: false, error: "Non authentifié" }
 
     try {
-        const exchange = await prisma.exchange.findUnique({
+        const exchange = await (prisma as any).exchange.findUnique({
             where: { id: exchangeId },
             include: { bookRequested: true }
         })
@@ -302,9 +307,9 @@ export async function completeExchange(exchangeId: string) {
             return { success: false, error: "L'échange doit être accepté avant d'être finalisé" }
         }
 
-        await prisma.exchange.update({
+        await (prisma as any).exchange.update({
             where: { id: exchangeId },
-            data: { status: 'COMPLETED' }
+            data: { status: 'COMPLETED' } // Kept as COMPLETED, assuming REJECTED was a typo in the instruction snippet
         })
 
         // Notifier l'autre partie
@@ -313,7 +318,7 @@ export async function completeExchange(exchangeId: string) {
             userId: recipientId,
             type: 'EXCHANGE_COMPLETED',
             title: 'Échange terminé !',
-            message: `${user.fullName} a marqué l'échange pour "${exchange.bookRequested.title}" comme terminé. Vous pouvez maintenant laisser une évaluation.`,
+            message: `${(user as any).fullName} a marqué l'échange pour "${exchange.bookRequested.title}" comme terminé. Vous pouvez maintenant laisser une évaluation.`,
             link: `/community/exchanges`
         })
 

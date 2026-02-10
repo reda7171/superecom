@@ -3,9 +3,12 @@
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
+import { verifyAdmin } from './auth'
 
 export async function uploadBookImage(formData: FormData) {
     try {
+        await verifyAdmin() // OWASP A01: Broken Access Control
+
         const file = formData.get('image') as File
 
         if (!file) {
@@ -33,7 +36,9 @@ export async function uploadBookImage(formData: FormData) {
         // Générer un nom de fichier unique
         const timestamp = Date.now()
         const randomString = Math.random().toString(36).substring(2, 15)
-        const extension = file.name.split('.').pop()
+
+        // Sécurisation de l'extension (ne pas faire confiance au file.name)
+        const extension = file.type.split('/')[1] === 'jpeg' ? 'jpg' : file.type.split('/')[1]
         const filename = `book_${timestamp}_${randomString}.${extension}`
 
         // Convertir le fichier en buffer et sauvegarder
@@ -49,13 +54,15 @@ export async function uploadBookImage(formData: FormData) {
         return { success: true, imageUrl }
     } catch (error: any) {
         console.error('Upload error:', error)
-        return { success: false, error: "Erreur lors de l'upload de l'image" }
+        return { success: false, error: error.message || "Erreur lors de l'upload de l'image" }
     }
 }
 
 // Fonction pour supprimer une image
 export async function deleteBookImage(imageUrl: string) {
     try {
+        await verifyAdmin() // OWASP A01: Broken Access Control
+
         if (!imageUrl || !imageUrl.startsWith('/uploads/books/')) {
             return { success: false, error: "URL d'image invalide" }
         }
@@ -68,7 +75,7 @@ export async function deleteBookImage(imageUrl: string) {
         }
 
         return { success: true }
-    } catch (error) {
-        return { success: false, error: "Erreur lors de la suppression de l'image" }
+    } catch (error: any) {
+        return { success: false, error: error.message || "Erreur lors de la suppression de l'image" }
     }
 }

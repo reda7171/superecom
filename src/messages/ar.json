@@ -31,6 +31,32 @@
             "Title": "أحدث الوصولات",
             "ViewAll": "عرض الكل"
         },
+        "BestSellers": {
+            "Subtitle": "الأعلى تقييماً",
+            "Title": "الأكثر مبيعاً",
+            "Description": "اكتشف الكتب التي يحبها قراؤنا أكثر من غيرها. مفضلات مثبتة غيّرت آلاف الأرواح.",
+            "ViewAll": "عرض الكل",
+            "NoData": "لا توجد بيانات مبيعات حتى الآن"
+        },
+        "BestAuthors": {
+            "Subtitle": "مؤلفون مميّزون",
+            "Title": "أفضل المؤلفين",
+            "Description": "تعرّف على المؤلفين الذين أسرت أعمالهم قراءنا. اكتشف أشهر عناوينهم.",
+            "BooksSold": "مباع",
+            "BookSingular": "كتاب",
+            "BooksPlural": "كتب",
+            "ViewBooks": "عرض الكتب",
+            "NoData": "لا توجد بيانات مؤلفين حتى الآن"
+        },
+        "ExchangeBooks": {
+            "Subtitle": "المجتمع",
+            "Title": "كتب للتبادل",
+            "Description": "اكتشف الكتب المتاحة للتبادل من مجتمعنا. شارك وتبادل وتواصل مع القراء الآخرين.",
+            "ViewAll": "عرض الكل",
+            "ViewMore": "عرض المزيد من الكتب",
+            "NoData": "لا توجد كتب للتبادل متاحة حتى الآن",
+            "JoinCommunity": "انضم للمجتمع"
+        },
         "CTA": {
             "TitlePart1": "جاهز لقراءتك",
             "TitlePart2": "المقبلة؟",
@@ -51,7 +77,16 @@
         "About": "عن ريواية",
         "Contact": "اتصل بنا",
         "Terms": "شروط الخدمة",
-        "Privacy": "سياسة الخصوصية"
+        "Privacy": "سياسة الخصوصية",
+        "Slogan": "معرفة منسقة بعناية للعقل المعاصر. توصيل لجميع أنحاء المغرب.",
+        "Navigation": "التنقل",
+        "Support": "الدعم",
+        "Shipping": "الشحن",
+        "Returns": "المرتجعات",
+        "Journal": "المجلة",
+        "NewsletterText": "انضم إلى نشرتنا الإخبارية للحصول على مختارات حصرية.",
+        "Join": "انضمام",
+        "Rights": "جميع الحقوق محفوظة."
     },
     "Common": {
         "Loading": "جاري التحميل...",
@@ -105,10 +140,12 @@
     },
     "Contact": {
         "Title": "اتصل بنا",
-        "Subtitle": "ابقى على تواصل",
+        "Subtitle": "لنكن على اتصال",
+        "GetInTouch": "تواصل معنا",
+        "LoveToHear": "نود أن نسمع منك.",
         "Form": {
             "Name": "الاسم الكامل",
-            "Email": "البريد الإلكتروني",
+            "Email": "عنوان البريد الإلكتروني",
             "Message": "رسالتك",
             "Submit": "إرسال الرسالة",
             "Sending": "جاري الإرسال..."
@@ -117,7 +154,9 @@
             "Email": "البريد الإلكتروني",
             "Phone": "الهاتف",
             "Address": "العنوان",
-            "Hours": "ساعات العمل"
+            "Location": "الدار البيضاء، المغرب",
+            "Hours": "ساعات العمل",
+            "HoursValue": "الاثنين - الجمعة: 9:00 - 18:00"
         }
     },
     "BookDetail": {
@@ -198,6 +237,17 @@
             "CityRequired": "المدينة مطلوبة",
             "AddressRequired": "العنوان مطلوب",
             "UnexpectedError": "حدث خطأ غير متوقع"
+        },
+        "Success": {
+            "OrderConfirmed": "تم تأكيد الطلب",
+            "ThankYou": "شكراً {name}، اختياراتك قيد التحضير.",
+            "OrderReference": "مرجع الطلب",
+            "OrderDate": "تاريخ الطلب",
+            "TotalPaid": "الإجمالي عند الاستلام",
+            "NextSteps": "الخطوات القادمة",
+            "AgentContact": "سيتصل بك وكيلنا خلال 24 ساعة للتأكيد.",
+            "PrepareAmount": "يرجى تجهيز المبلغ المحدد عند الاستلام.",
+            "BackHome": "العودة للرئيسية"
         }
     },
     "Review": {
@@ -401,8 +451,71 @@
             "Stats": {
                 "Books": "الكتب",
                 "Exchanges": "التبادلات",
-                "Credits": "الأرصدة"
+                "Credits": "النقاط"
+            }
+        },
+        "Ratings": {
+            "Title": "تقييم التبادل",
+            "Subtitle": "كيف كانت تجربتك مع هذا المستخدم؟",
+            "Label": "تقييمك",
+            "CommentLabel": "تعليق (اختياري)",
+            "Placeholder": "شارك مزيداً من التفاصيل حول التبادل...",
+            "Submit": "إرسال التقييم",
+            "Success": "شكراً لتعليقك!",
+            "Button": "تقييم الآن"
+        }
+    },
+    "PacksPage": {
+        "Title": "باقات ترويجية",
+        "Subtitle": "وفر ما يصل إلى 30% من خلال اختيار مجموعاتنا المختارة بعناية. أدب منتقى للعقول المستنيرة.",
+        "NoCollections": "لا توجد مجموعات حالياً",
+        "Curating": "يتم تجهيز وصولات جديدة حالياً.",
+        "Benefits": {
+            "HighSavings": {
+                "Title": "توفير كبير",
+                "Desc": "خصم يصل إلى 30% من السعر الفردي"
+            },
+            "CuratedMix": {
+                "Title": "مزيج مختار",
+                "Desc": "مختارات من خبراء محليين"
+            },
+            "ExpressPack": {
+                "Title": "باقة سريعة",
+                "Desc": "كل المجلدات في شحنة واحدة"
             }
         }
+    },
+    "PackDetail": {
+        "BackToBundles": "العودة للباقات",
+        "VolumeSelection": "اختيار {count} مجلدات",
+        "SavingsOff": "خصم -{amount} درهم",
+        "BundleContent": "محتوى الباقة",
+        "GlobalShip": "شحن شامل للمغرب",
+        "SecureCOD": "الدفع عند الاستلام",
+        "VolumesInCollection": "المجلدات في هذه المجموعة"
+    },
+    "CartPage": {
+        "Title": "الأرشيف",
+        "CollectionCount": "{count} مجموعات",
+        "EmptyTitle": "الأرشيف الخاص بك فارغ",
+        "EmptyDesc": "يبدو أنك لم تختر أي مجلدات بعد. استكشف مختاراتنا لبدء مجموعتك.",
+        "BrowseLibrary": "تصفح المكتبة",
+        "ViewBundles": "عرض الباقات",
+        "BundleBadge": "باقة",
+        "ItemUnit": "عنصر",
+        "VolumesIncluded": "يتضمن {count} مجلدات",
+        "DeleteItem": "حذف العنصر",
+        "ClearSelection": "مسح كل المختارات",
+        "SummaryTitle": "ملخص الأرشيف",
+        "Items": "العناصر",
+        "Shipping": "الشحن",
+        "FreeShip": "شحن مجاني",
+        "FreeShippingAd": "بقي <span class=\"text-black\">{amount} درهم</span> فقط للحصول على <span class=\"text-black\">شحن عالمي مجاني</span>.",
+        "TotalValue": "القيمة الإجمالية",
+        "TaxesNote": "تم حساب الضرائب ديناميكياً",
+        "BeginCheckout": "إتمام الطلب",
+        "ContinueShopping": "متابعة الاختيار",
+        "Secure": "آمن",
+        "FastShip": "شحن سريع"
     }
 }

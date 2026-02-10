@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { createExchangeRequest } from '@/lib/actions/community-exchanges'
 import { ArrowLeft, BookOpen, Loader2, Coins, RefreshCw } from 'lucide-react'
 import { Link } from '@/i18n/routing'
+import ReportButton from './ReportButton'
 
 interface ExchangeFormProps {
     details: {
@@ -76,6 +77,8 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
                         <span className="font-bold text-sm">{book.owner.fullName}</span>
                     </div>
                 </div>
+
+                <ReportButton targetBookId={book.id} targetUserId={book.owner.id} />
             </div>
 
             {/* Right: Offer Form */}

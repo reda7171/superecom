@@ -10,6 +10,10 @@
             "EditorsChoice": "Choix de l'éditeur",
             "Select": "SÉLECTIONNER"
         },
+        "seo": {
+            "Title": "Riwaya | Digital Literature Curators & Book Bundles",
+            "Description": "Riwaya est votre destination premium pour les livres de développement personnel, business et philosophie au Maroc. Livraison partout au royaume."
+        },
         "Features": {
             "ShippingTitle": "Livraison Express",
             "ShippingDesc": "Couverture partout au Maroc en un temps record.",
@@ -31,6 +35,32 @@
             "Title": "Derniers Arrivages",
             "ViewAll": "Tout voir"
         },
+        "BestSellers": {
+            "Subtitle": "Les Mieux Notés",
+            "Title": "Meilleures Ventes",
+            "Description": "Découvrez les livres que nos lecteurs adorent le plus. Des favoris éprouvés qui ont transformé des milliers de vies.",
+            "ViewAll": "Tout voir",
+            "NoData": "Aucune donnée de vente pour le moment"
+        },
+        "BestAuthors": {
+            "Subtitle": "Auteurs Vedettes",
+            "Title": "Meilleurs Auteurs",
+            "Description": "Rencontrez les auteurs dont les œuvres ont captivé nos lecteurs. Découvrez leurs titres les plus populaires.",
+            "BooksSold": "Vendus",
+            "BookSingular": "Livre",
+            "BooksPlural": "Livres",
+            "ViewBooks": "Voir les livres",
+            "NoData": "Aucune donnée d'auteur pour le moment"
+        },
+        "ExchangeBooks": {
+            "Subtitle": "Communauté",
+            "Title": "Livres à Échanger",
+            "Description": "Découvrez les livres disponibles à l'échange dans notre communauté. Partagez, échangez et connectez avec d'autres lecteurs.",
+            "ViewAll": "Tout voir",
+            "ViewMore": "Voir Plus de Livres",
+            "NoData": "Aucun livre d'échange disponible pour le moment",
+            "JoinCommunity": "Rejoindre la Communauté"
+        },
         "CTA": {
             "TitlePart1": "Prêt pour votre",
             "TitlePart2": "prochaine lecture ?",
@@ -51,15 +81,25 @@
         "About": "À propos",
         "Contact": "Contact",
         "Terms": "Conditions d'utilisation",
-        "Privacy": "Politique de confidentialité"
+        "Privacy": "Politique de confidentialité",
+        "Slogan": "Des connaissances soigneusement sélectionnées pour l'esprit moderne. Livraison partout au Maroc.",
+        "Navigation": "Navigation",
+        "Support": "Support",
+        "Shipping": "Livraison",
+        "Returns": "Retours",
+        "Journal": "Journal",
+        "NewsletterText": "Rejoignez notre newsletter pour des sélections exclusives.",
+        "Join": "Rejoindre",
+        "Rights": "Tous droits réservés."
     },
     "Common": {
-        "Loading": "Chargement...",
+        "AddedToCartSuccess": "Article ajouté au panier avec succès !",
+        "AddedToCartError": "Erreur lors de l'ajout au panier. Veuillez réessayer.",
+        "BuyNow": "Acheter maintenant",
         "Price": "Prix",
         "AddToCart": "Ajouter au panier",
         "OutOfStock": "Rupture de stock",
         "Remaining": "restants",
-        "By": "Par",
         "BestSeller": "Meilleure Vente"
     },
     "Packs": {
@@ -106,6 +146,8 @@
     "Contact": {
         "Title": "Contactez-nous",
         "Subtitle": "Restons en contact",
+        "GetInTouch": "Contactez-nous",
+        "LoveToHear": "Nous serions ravis de vous entendre.",
         "Form": {
             "Name": "Nom complet",
             "Email": "Adresse Email",
@@ -117,7 +159,9 @@
             "Email": "Email",
             "Phone": "Téléphone",
             "Address": "Adresse",
-            "Hours": "Heures d'ouverture"
+            "Location": "Casablanca, Maroc",
+            "Hours": "Heures d'ouverture",
+            "HoursValue": "Lun - Ven: 9:00 - 18:00"
         }
     },
     "BookDetail": {
@@ -198,6 +242,17 @@
             "CityRequired": "La ville est requise",
             "AddressRequired": "L'adresse est requise",
             "UnexpectedError": "Une erreur inattendue est survenue"
+        },
+        "Success": {
+            "OrderConfirmed": "Commande Confirmée",
+            "ThankYou": "Merci {name}, votre sélection est en cours de préparation.",
+            "OrderReference": "Référence Commande",
+            "OrderDate": "Date de Commande",
+            "TotalPaid": "Total à Payer (COD)",
+            "NextSteps": "Prochaines Étapes",
+            "AgentContact": "Un agent vous contactera sous 24h pour confirmation.",
+            "PrepareAmount": "Préparez le montant exact pour la livraison.",
+            "BackHome": "Retour à l'accueil"
         }
     },
     "Review": {
@@ -402,6 +457,69 @@
                 "Exchanges": "Échanges",
                 "Credits": "Crédits"
             }
+        },
+        "Ratings": {
+            "Title": "Évaluer l'échange",
+            "Subtitle": "Comment s'est passée votre expérience ?",
+            "Label": "Votre note",
+            "CommentLabel": "Commentaire (optionnel)",
+            "Placeholder": "Donnez plus de détails sur l'échange...",
+            "Submit": "Envoyer l'évaluation",
+            "Success": "Merci pour votre retour !",
+            "Button": "Évaluer"
         }
+    },
+    "PacksPage": {
+        "Title": "Packs Promotionnels",
+        "Subtitle": "Économisez jusqu'à 30% en choisissant nos collections de livres soignées. Une littérature sélectionnée pour les esprits universels.",
+        "NoCollections": "Aucune collection trouvée",
+        "Curating": "De nouveaux arrivages sont en cours de préparation.",
+        "Benefits": {
+            "HighSavings": {
+                "Title": "Grandes Économies",
+                "Desc": "Jusqu'à 30% de réduction sur le prix unitaire"
+            },
+            "CuratedMix": {
+                "Title": "Sélection Soignée",
+                "Desc": "Choisie par des experts locaux"
+            },
+            "ExpressPack": {
+                "Title": "Pack Express",
+                "Desc": "Tous les volumes en une seule livraison"
+            }
+        }
+    },
+    "PackDetail": {
+        "BackToBundles": "Retour aux packs",
+        "VolumeSelection": "Sélection de {count} Volumes",
+        "SavingsOff": "-{amount} MAD DE RÉDUCTION",
+        "BundleContent": "Contenu du Pack",
+        "GlobalShip": "Envoi partout au Maroc",
+        "SecureCOD": "Paiement à la livraison",
+        "VolumesInCollection": "Volumes dans cette Collection"
+    },
+    "CartPage": {
+        "Title": "Archive",
+        "CollectionCount": "{count} Collections",
+        "EmptyTitle": "Votre archive est vide",
+        "EmptyDesc": "Il semble que vous n'ayez pas encore sélectionné de volumes. Explorez nos sélections pour commencer votre collection.",
+        "BrowseLibrary": "Parcourir la Librairie",
+        "ViewBundles": "Voir les Packs",
+        "BundleBadge": "PACK",
+        "ItemUnit": "article",
+        "VolumesIncluded": "{count} volumes inclus",
+        "DeleteItem": "Supprimer l'article",
+        "ClearSelection": "Vider toute la sélection",
+        "SummaryTitle": "Résumé de l'Archive",
+        "Items": "Articles",
+        "Shipping": "Livraison",
+        "FreeShip": "Livraison Gratuite",
+        "FreeShippingAd": "Plus que <span class=\"text-black\">{amount} MAD</span> pour la <span class=\"text-black\">LIVRAISON GRATUITE PARTOUT</span>.",
+        "TotalValue": "Valeur Totale",
+        "TaxesNote": "Taxes calculées dynamiquement",
+        "BeginCheckout": "Passer à la commande",
+        "ContinueShopping": "Continuer la sélection",
+        "Secure": "Sécurisé",
+        "FastShip": "Envoi Rapide"
     }
 }

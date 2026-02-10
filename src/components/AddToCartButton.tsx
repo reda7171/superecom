@@ -2,6 +2,7 @@
 
 import { ShoppingCart } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
+import { useUIStore } from '@/store/ui'
 import { useTranslations } from 'next-intl'
 
 interface AddToCartButtonProps {
@@ -22,6 +23,8 @@ export default function AddToCartButton({
     className = ''
 }: AddToCartButtonProps) {
     const addItem = useCartStore((state) => state.addItem)
+    const openCart = useUIStore((state) => state.openCart)
+    const showNotification = useUIStore((state) => state.showNotification)
     const t = useTranslations('Common');
 
     return (
@@ -31,13 +34,21 @@ export default function AddToCartButton({
                 : 'bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-50'
                 } py-4 px-8 ${className}`}
             onClick={() => {
-                addItem({
-                    type: product.type,
-                    id: product.id,
-                    title: product.title,
-                    price: product.price,
-                    image: product.image,
-                })
+                try {
+                    console.log('Adding product to cart:', product.id)
+                    addItem({
+                        type: product.type,
+                        id: product.id,
+                        title: product.title,
+                        price: product.price,
+                        image: product.image,
+                    })
+                    openCart()
+                    showNotification(t('AddedToCartSuccess'), 'success')
+                } catch (error) {
+                    console.error('Failed to add to cart:', error)
+                    showNotification(t('AddedToCartError'), 'error')
+                }
             }}
         >
             <ShoppingCart className="w-6 h-6 rtl:flip" />

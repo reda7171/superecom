@@ -1,4 +1,4 @@
-import Header from '@/components/HeaderWithUser'
+import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { Mail, Phone, MapPin, Send } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
@@ -26,8 +26,8 @@ export default async function ContactPage() {
                     {/* Contact Info */}
                     <div className="bg-black text-white rounded-[2.5rem] p-10 md:p-14 shadow-2xl flex flex-col justify-between space-y-12">
                         <div>
-                            <h3 className="text-3xl font-black text-white mb-2">Get in touch</h3>
-                            <p className="text-gray-400 font-medium">We'd love to hear from you.</p>
+                            <h3 className="text-3xl font-black text-white mb-2">{t('GetInTouch')}</h3>
+                            <p className="text-gray-400 font-medium">{t('LoveToHear')}</p>
                         </div>
 
                         <div className="space-y-8">
@@ -55,14 +55,14 @@ export default async function ContactPage() {
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1">{t('Info.Address')}</p>
-                                    <p className="text-lg font-bold">Casablanca, Morocco</p>
+                                    <p className="text-lg font-bold">{t('Info.Location')}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="pt-10 border-t border-white/10">
                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">{t('Info.Hours')}</p>
-                            <p className="font-bold text-gray-300">Mon - Fri: 9:00 - 18:00</p>
+                            <p className="font-bold text-gray-300">{t('Info.HoursValue')}</p>
                         </div>
                     </div>
 

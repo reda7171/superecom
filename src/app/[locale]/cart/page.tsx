@@ -3,15 +3,16 @@
 import { useCartStore } from '@/store/cart'
 import Header from '@/components/HeaderWithUser'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 import { ArrowRight, Minus, Plus, Trash2, ShoppingCart, Shield, Truck } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import AddToCartButton from '@/components/AddToCartButton'
 import Footer from '@/components/Footer'
+import { useTranslations } from 'next-intl'
 
 export default function CartPage() {
     const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, clearCart } = useCartStore()
     const [mounted, setMounted] = useState(false)
+    const t = useTranslations('CartPage')
 
     useEffect(() => {
         setMounted(true)
@@ -31,10 +32,10 @@ export default function CartPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 pb-40">
                 <div className="flex items-center justify-between mb-16 px-4">
                     <h1 className="text-6xl font-black tracking-tighter flex items-center gap-6">
-                        Archive<span className="text-gray-200">.</span>
+                        {t('Title')}<span className="text-gray-200">.</span>
                     </h1>
                     <div className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">
-                        {totalItems} Collections
+                        {t('CollectionCount', { count: totalItems })}
                     </div>
                 </div>
 
@@ -43,23 +44,22 @@ export default function CartPage() {
                         <div className="w-32 h-32 bg-pixio-cream rounded-full flex items-center justify-center mx-auto mb-10 transition-transform hover:scale-110">
                             <ShoppingCart className="w-12 h-12 text-gray-300" />
                         </div>
-                        <h2 className="text-3xl font-black mb-6 tracking-tighter">Your archive is empty<span className="text-gray-200">.</span></h2>
+                        <h2 className="text-3xl font-black mb-6 tracking-tighter">{t('EmptyTitle')}<span className="text-gray-200">.</span></h2>
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-16 max-w-sm mx-auto leading-loose">
-                            It seems you haven't curated any volumes yet.
-                            Explore our selects to start your collection.
+                            {t('EmptyDesc')}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6 justify-center">
                             <Link
                                 href="/books"
                                 className="px-12 py-6 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-gray-800 transition-all shadow-xl"
                             >
-                                Browse Library
+                                {t('BrowseLibrary')}
                             </Link>
                             <Link
                                 href="/packs"
                                 className="px-12 py-6 bg-white text-black border-2 border-black/5 text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:border-black transition-all"
                             >
-                                View Bundles
+                                {t('ViewBundles')}
                             </Link>
                         </div>
                     </div>
@@ -84,7 +84,7 @@ export default function CartPage() {
                                         {item.type === 'PACK' && (
                                             <div className="absolute top-3 left-3">
                                                 <span className="px-3 py-1 bg-black text-white text-[8px] font-black uppercase tracking-widest rounded-full">
-                                                    BUNDLE
+                                                    {t('BundleBadge')}
                                                 </span>
                                             </div>
                                         )}
@@ -103,11 +103,11 @@ export default function CartPage() {
                                             </div>
                                             <div className="flex items-center gap-4 mb-8">
                                                 <span className="text-[10px] font-black uppercase tracking-widest bg-pixio-cream px-4 py-2 rounded-xl text-black">
-                                                    {item.price} MAD / item
+                                                    {item.price} MAD / {t('ItemUnit')}
                                                 </span>
                                                 {item.booksCount && (
                                                     <span className="text-[9px] font-black uppercase tracking-widest text-gray-300">
-                                                        {item.booksCount} volumes included
+                                                        {t('VolumesIncluded', { count: item.booksCount })}
                                                     </span>
                                                 )}
                                             </div>
@@ -139,7 +139,7 @@ export default function CartPage() {
                                                 className="flex items-center gap-2 text-gray-300 hover:text-red-500 text-[10px] font-black uppercase tracking-widest px-6 py-3 transition-colors rounded-full hover:bg-red-50"
                                             >
                                                 <Trash2 className="w-4 h-4" />
-                                                <span className="hidden sm:inline">Delete item</span>
+                                                <span className="hidden sm:inline">{t('DeleteItem')}</span>
                                             </button>
                                         </div>
                                     </div>
@@ -152,7 +152,7 @@ export default function CartPage() {
                                     className="text-gray-200 hover:text-black text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-4 px-10 py-5 transition-all rounded-full hover:bg-white"
                                 >
                                     <Trash2 className="w-3 h-3" />
-                                    Clear all selects
+                                    {t('ClearSelection')}
                                 </button>
                             </div>
                         </div>
@@ -161,19 +161,19 @@ export default function CartPage() {
                         <div className="lg:col-span-1">
                             <div className="bg-white rounded-[3rem] p-12 shadow-2xl shadow-black/5 border border-gray-50 sticky top-32">
                                 <h2 className="text-sm font-black uppercase tracking-[0.3em] mb-10 pb-6 border-b border-gray-50">
-                                    Archive Summary
+                                    {t('SummaryTitle')}
                                 </h2>
 
                                 <div className="space-y-6 mb-12">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Items ({totalItems})</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">{t('Items')} ({totalItems})</span>
                                         <span className="text-xs font-black uppercase tracking-widest">{totalPrice} MAD</span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Shipping</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">{t('Shipping')}</span>
                                         {shippingFee === 0 ? (
                                             <span className="text-[10px] font-black uppercase tracking-widest text-white bg-black px-4 py-2 rounded-full shadow-lg">
-                                                Free Ship
+                                                {t('FreeShip')}
                                             </span>
                                         ) : (
                                             <span className="text-xs font-black uppercase tracking-widest">{shippingFee} MAD</span>
@@ -182,9 +182,8 @@ export default function CartPage() {
 
                                     {totalPrice < 500 && (
                                         <div className="bg-pixio-cream/50 p-8 rounded-[2rem] border border-gray-50">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-6 leading-relaxed">
-                                                Only <span className="text-black">{500 - totalPrice} MAD</span> more for <span className="text-black">FREE WORLDWIDE SHIP</span>.
-                                            </p>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-6 leading-relaxed"
+                                                dangerouslySetInnerHTML={{ __html: t.raw('FreeShippingAd').replace('{amount}', (500 - totalPrice).toString()) }} />
                                             <div className="w-full bg-white h-2 rounded-full overflow-hidden shadow-inner">
                                                 <div
                                                     className="bg-black h-full rounded-full transition-all duration-1000"
@@ -197,17 +196,17 @@ export default function CartPage() {
 
                                 <div className="border-t border-gray-50 pt-8 mb-12">
                                     <div className="flex justify-between items-baseline mb-2">
-                                        <span className="text-xs font-black uppercase tracking-[0.3em]">Total Value</span>
+                                        <span className="text-xs font-black uppercase tracking-[0.3em]">{t('TotalValue')}</span>
                                         <span className="text-5xl font-black tracking-tighter">{finalTotal} MAD</span>
                                     </div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-gray-200 text-right">Taxes dynamic calculated</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-gray-200 text-right">{t('TaxesNote')}</p>
                                 </div>
 
                                 <Link
                                     href="/checkout"
                                     className="w-full h-24 flex items-center justify-center gap-6 bg-black text-white text-[12px] font-black uppercase tracking-[0.4em] rounded-full hover:bg-gray-800 transition-all shadow-2xl hover:shadow-black/20 group active:scale-95 mb-10"
                                 >
-                                    <span>Begin Checkout</span>
+                                    <span>{t('BeginCheckout')}</span>
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                                 </Link>
 
@@ -215,17 +214,17 @@ export default function CartPage() {
                                     href="/books"
                                     className="w-full text-center block text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 hover:text-black transition-colors"
                                 >
-                                    Continue curating
+                                    {t('ContinueShopping')}
                                 </Link>
 
                                 <div className="mt-16 flex items-center justify-center gap-8 text-gray-200">
                                     <div className="flex items-center gap-3 text-[8px] font-black uppercase tracking-[0.2em]">
                                         <Shield className="w-4 h-4" />
-                                        Secure
+                                        {t('Secure')}
                                     </div>
                                     <div className="flex items-center gap-3 text-[8px] font-black uppercase tracking-[0.2em]">
                                         <Truck className="w-4 h-4" />
-                                        Fast Ship
+                                        {t('FastShip')}
                                     </div>
                                 </div>
                             </div>

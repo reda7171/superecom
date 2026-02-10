@@ -69,6 +69,7 @@ model User {
   email     String   @unique
   password  String   // Hashé avec bcrypt
   role      UserRole @default(ADMIN)
+  isBanned  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -91,6 +92,8 @@ model User {
   notifications     Notification[]
   ratingsGiven      Rating[]       @relation("RatingsGiven")
   ratingsReceived   Rating[]       @relation("RatingsReceived")
+  reportsGiven      Report[]       @relation("ReportsGiven")
+  reportsReceived   Report[]       @relation("ReportsReceived")
 
   @@map("users")
 }
@@ -170,10 +173,13 @@ model Order {
   comment   String?     @db.Text
   
   // Informations commande
-  total     Float       @db.Double
-  discount  Float       @default(0) @db.Double
-  couponCode String?    @db.VarChar(50)
-  status    OrderStatus @default(PENDING)
+  total         Float       @db.Double
+  subtotal      Float?      @db.Double
+  shippingFees  Float       @default(0) @db.Double
+  discount      Float       @default(0) @db.Double
+  couponCode    String?     @db.VarChar(50)
+  status        OrderStatus @default(PENDING)
+  paymentMethod String      @default("COD") @db.VarChar(50) // COD, etc.
   
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -293,6 +299,7 @@ model ExchangeBook {
   owner       User          @relation("OwnedBooks", fields: [ownerId], references: [id], onDelete: Cascade)
   offeredIn   Exchange[]    @relation("BookOffered")
   requestedIn Exchange[]    @relation("BookRequested")
+  reports     Report[]
 
   @@index([ownerId])
   @@index([status])
@@ -325,6 +332,7 @@ model Exchange {
   bookOffered     ExchangeBook?  @relation("BookOffered", fields: [bookOfferedId], references: [id])
   bookRequested   ExchangeBook   @relation("BookRequested", fields: [bookRequestedId], references: [id])
   chat            Chat?
+  rating          Rating?
 
   @@index([requesterId])
   @@index([responderId])
@@ -398,9 +406,11 @@ model Rating {
   createdAt  DateTime @default(now())
   
   // Relations
+  exchange   Exchange @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
   fromUser   User     @relation("RatingsGiven", fields: [fromUserId], references: [id])
   toUser     User     @relation("RatingsReceived", fields: [toUserId], references: [id])
   
+  @@index([exchangeId])
   @@index([fromUserId])
   @@index([toUserId])
   @@map("ratings")
@@ -413,4 +423,47 @@ enum NotificationType {
   NEW_MESSAGE
   EXCHANGE_COMPLETED
   RATING_RECEIVED
+}
+
+// Signalements
+model Report {
+  id          String   @id @default(uuid())
+  reason      String   // Raison du signalement (spam, inappropriate, etc.)
+  details     String?  @db.Text
+  status      String   @default("PENDING") // PENDING, RESOLVED, DISMISSED
+  
+  reporterId  String
+  reporter    User     @relation("ReportsGiven", fields: [reporterId], references: [id])
+  
+  // Cibles possibles (l'un d'eux doit être rempli)
+  targetUserId String?
+  targetUser   User?   @relation("ReportsReceived", fields: [targetUserId], references: [id])
+  
+  targetBookId String?
+  targetBook   ExchangeBook? @relation(fields: [targetBookId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([reporterId])
+  @@index([targetUserId])
+  @@index([targetBookId])
+  @@index([status])
+  @@map("reports")
+}
+
+// Journal d'Audit
+model AuditLog {
+  id        String   @id @default(uuid())
+  adminId   String?  // Email de l'admin concerné
+  action    String   // CREATE, UPDATE, DELETE, TOGGLE, LOGIN, etc.
+  entity    String   // BOOK, PACK, ORDER, COUPON, etc.
+  entityId  String?  // ID de l'objet concerné
+  details   String?  @db.Text // Informations supplémentaires (ex: JSON des changements)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([adminId])
+  @@index([entity])
+  @@map("audit_logs")
 }

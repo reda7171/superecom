@@ -4,11 +4,16 @@ import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import { Package, Calendar, MapPin, Phone, CreditCard } from 'lucide-react'
 
-export default async function OrdersPage() {
+export default async function OrdersPage({
+    params
+}: {
+    params: Promise<{ locale: string }>
+}) {
+    const { locale } = await params
     const orders = await getOrders()
 
     if (!orders) {
-        redirect('/login')
+        redirect(`/${locale}/community/login`)
     }
 
     return (
@@ -47,8 +52,8 @@ export default async function OrdersPage() {
                                                 Commande #{order.id.slice(0, 8)}
                                             </h3>
                                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${order.status === 'CONFIRMED' ? 'bg-green-100 text-green-700' :
-                                                    order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
-                                                        'bg-yellow-100 text-yellow-700'
+                                                order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
+                                                    'bg-yellow-100 text-yellow-700'
                                                 }`}>
                                                 {order.status === 'CONFIRMED' ? 'Confirmée' :
                                                     order.status === 'CANCELLED' ? 'Annulée' :
@@ -76,9 +81,9 @@ export default async function OrdersPage() {
                                     {order.items?.map((item: any) => (
                                         <div key={item.id} className="flex items-center gap-4">
                                             <div className="w-16 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0">
-                                                {item.book?.coverImage && (
+                                                {item.book?.image && (
                                                     <img
-                                                        src={item.book.coverImage}
+                                                        src={item.book.image}
                                                         alt={item.book.title}
                                                         className="w-full h-full object-cover"
                                                     />

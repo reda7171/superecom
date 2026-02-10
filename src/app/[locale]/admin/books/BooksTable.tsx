@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 import { Edit, Trash2, Eye, EyeOff } from 'lucide-react'
 import { deleteBook, toggleBookStatus } from '@/lib/actions/books'
 
@@ -117,8 +117,8 @@ export default function BooksTable({ books }: { books: Book[] }) {
                                     onClick={() => handleToggleStatus(book.id, book.active)}
                                     disabled={loading === book.id}
                                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${book.active
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-gray-100 text-gray-800'
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-gray-100 text-gray-800'
                                         } hover:opacity-80 transition-opacity`}
                                 >
                                     {book.active ? (
