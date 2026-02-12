@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save } from 'lucide-react'
 import { getBookById, updateBook, type BookInput } from '@/lib/actions/books'
+import ImageInput from '@/components/admin/ImageInput'
 
 export default function EditBookPage({ params }: { params: Promise<{ id: string, locale: string }> }) {
     const router = useRouter()
@@ -40,6 +41,34 @@ export default function EditBookPage({ params }: { params: Promise<{ id: string,
 
         const formData = new FormData(e.currentTarget)
 
+        // Gérer l'image (URL ou fichier uploadé)
+        let imageUrl = formData.get('image') as string
+        const imageFile = formData.get('imageFile') as File
+
+        // Si un fichier est uploadé, le sauvegarder
+        if (imageFile && imageFile.size > 0) {
+            try {
+                const uploadFormData = new FormData()
+                uploadFormData.append('file', imageFile)
+
+                const uploadResponse = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: uploadFormData
+                })
+
+                if (!uploadResponse.ok) {
+                    throw new Error('Erreur lors de l\'upload de l\'image')
+                }
+
+                const uploadResult = await uploadResponse.json()
+                imageUrl = uploadResult.url
+            } catch (err) {
+                setError('Erreur lors de l\'upload de l\'image')
+                setLoading(false)
+                return
+            }
+        }
+
         const input: BookInput = {
             title: formData.get('title') as string,
             author: formData.get('author') as string,
@@ -47,7 +76,7 @@ export default function EditBookPage({ params }: { params: Promise<{ id: string,
             isbn: formData.get('isbn') as string || undefined,
             price: parseFloat(formData.get('price') as string),
             stock: parseInt(formData.get('stock') as string),
-            image: formData.get('image') as string,
+            image: imageUrl,
             category: formData.get('category') as string || undefined,
         }
 
@@ -222,23 +251,12 @@ export default function EditBookPage({ params }: { params: Promise<{ id: string,
                         </select>
                     </div>
 
-                    {/* Image URL */}
+                    {/* Image URL ou Upload */}
                     <div className="md:col-span-2">
-                        <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                            URL de l'image <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Image <span className="text-red-500">*</span>
                         </label>
-                        <input
-                            type="url"
-                            id="image"
-                            name="image"
-                            required
-                            defaultValue={book.image}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="https://example.com/image.jpg ou /images/books/book.jpg"
-                        />
-                        <p className="mt-1 text-xs text-gray-500">
-                            URL complète ou chemin relatif (ex: /images/books/atomic-habits.jpg)
-                        </p>
+                        <ImageInput defaultValue={book.image} bookTitle={book.title} />
                     </div>
 
                     {/* Description */}

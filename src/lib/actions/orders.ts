@@ -3,8 +3,9 @@
 import { prisma } from '@/lib/prisma'
 import { cookies } from 'next/headers'
 import { getCommunityUser } from './community-auth'
-import { verifyAdmin } from './auth'
+import { verifyAdmin, isAuthenticated } from './auth'
 import { z } from 'zod'
+import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
 
 const OrderSchema = z.object({
     fullName: z.string().min(1, 'Nom complet requis'),
@@ -69,6 +70,13 @@ export async function getOrders() {
 }
 
 export async function createOrder(input: z.infer<typeof OrderSchema>) {
+    const ip = await getIpIdentifier()
+    const limiter = await rateLimit(`order_${ip}`, { limit: 3, windowMs: 60000 }) // 3 commandes par minute max
+
+    if (!limiter.success) {
+        return { success: false, error: "Trop de commandes. Veuillez patienter une minute." }
+    }
+
     try {
         // OWASP A03: Injection / Validation
         const data = OrderSchema.parse(input)
@@ -142,6 +150,8 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
     }
 }
 
+// ... existing code ...
+
 export async function getOrderById(orderId: string) {
     try {
         const order = await (prisma.order as any).findUnique({
@@ -157,6 +167,24 @@ export async function getOrderById(orderId: string) {
                 }
             }
         })
+
+        if (!order) return null
+
+        // OWASP A01: Broken Access Control
+        // Seul l'admin ou le propriétaire de la commande peut voir les détails
+        const isAdmin = await isAuthenticated()
+        if (!isAdmin) {
+            const cookieStore = await cookies()
+            const guestEmail = cookieStore.get('userEmail')?.value
+            const communityUser = await getCommunityUser()
+            const emailToCheck = communityUser?.email || guestEmail
+
+            if (order.email !== emailToCheck) {
+                console.warn(`[SECURITY] Tentative d'accès non autorisé à la commande ${orderId}`)
+                return null
+            }
+        }
+
         return order
     } catch (error) {
         console.error('Error fetching order:', error)

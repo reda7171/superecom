@@ -1,0 +1,83 @@
+
+> riwaya@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 4.1s
+  Skipping validation of types
+  Collecting page data using 19 workers ...
+  Generating static pages using 19 workers (0/9) ...
+  Generating static pages using 19 workers (2/9) 
+  Generating static pages using 19 workers (4/9) 
+  Generating static pages using 19 workers (6/9) 
+✓ Generating static pages using 19 workers (9/9) in 345.8ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/about
+├ ƒ /[locale]/admin
+├ ƒ /[locale]/admin/analytics
+├ ƒ /[locale]/admin/audit
+├ ƒ /[locale]/admin/books
+├ ƒ /[locale]/admin/books/[id]/edit
+├ ƒ /[locale]/admin/books/bulk-import
+├ ƒ /[locale]/admin/books/new
+├ ƒ /[locale]/admin/community
+├ ƒ /[locale]/admin/community/books
+├ ƒ /[locale]/admin/community/exchanges
+├ ƒ /[locale]/admin/community/users
+├ ƒ /[locale]/admin/coupons
+├ ƒ /[locale]/admin/customers
+├ ƒ /[locale]/admin/exchanges
+├ ƒ /[locale]/admin/exchanges/[id]
+├ ƒ /[locale]/admin/login
+├ ƒ /[locale]/admin/marketing
+├ ƒ /[locale]/admin/orders
+├ ƒ /[locale]/admin/orders/[id]
+├ ƒ /[locale]/admin/packs
+├ ƒ /[locale]/admin/packs/[id]/edit
+├ ƒ /[locale]/admin/packs/new
+├ ƒ /[locale]/admin/reports
+├ ƒ /[locale]/admin/reviews
+├ ƒ /[locale]/books
+├ ƒ /[locale]/books/[id]
+├ ƒ /[locale]/cart
+├ ƒ /[locale]/checkout
+├ ƒ /[locale]/checkout/success/[orderId]
+├ ƒ /[locale]/community
+├ ƒ /[locale]/community/books/new
+├ ƒ /[locale]/community/exchange/request/[bookId]
+├ ƒ /[locale]/community/exchanges
+├ ƒ /[locale]/community/exchanges/[id]/chat
+├ ƒ /[locale]/community/login
+├ ƒ /[locale]/community/market
+├ ƒ /[locale]/community/notifications
+├ ƒ /[locale]/community/profile/edit
+├ ƒ /[locale]/community/register
+├ ƒ /[locale]/contact
+├ ƒ /[locale]/faq
+├ ƒ /[locale]/orders
+├ ƒ /[locale]/packs
+├ ƒ /[locale]/packs/[id]
+├ ƒ /[locale]/returns
+├ ƒ /[locale]/tracking
+├ ƒ /[locale]/wishlist
+├ ƒ /admin/reviews
+├ ƒ /api/notifications/delete
+├ ƒ /api/notifications/mark-all-read
+├ ƒ /api/notifications/mark-read
+├ ○ /robots.txt
+└ ○ /sitemap.xml
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

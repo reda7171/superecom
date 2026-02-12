@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import { Trash2, Loader2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
+import { useTranslations } from 'next-intl'
 
 export default function DeleteNotificationButton({ notificationId }: { notificationId: string }) {
+    const t = useTranslations('Community.Notifications')
     const [loading, setLoading] = useState(false)
     const router = useRouter()
 
@@ -32,7 +34,7 @@ export default function DeleteNotificationButton({ notificationId }: { notificat
             onClick={handleDelete}
             disabled={loading}
             className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all disabled:opacity-50"
-            title="Supprimer"
+            title={t('Delete')}
         >
             {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

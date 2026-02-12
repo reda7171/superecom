@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useTransition } from 'react'
 import { useRouter, usePathname } from '@/i18n/routing'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -24,11 +24,21 @@ function useDebounce<T>(value: T, delay: number): T {
     return debouncedValue
 }
 
-export default function MarketFiltersClient() {
+interface MarketFiltersProps {
+    onPendingChange?: (isPending: boolean) => void
+}
+
+export default function MarketFiltersClient({ onPendingChange }: MarketFiltersProps) {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
     const t = useTranslations('Community.Market')
+    const [isPending, startTransition] = useTransition()
+
+    // Notify parent of pending state
+    useEffect(() => {
+        onPendingChange?.(isPending)
+    }, [isPending, onPendingChange])
 
     const [search, setSearch] = useState(searchParams.get('search') || '')
     const [city, setCity] = useState(searchParams.get('city') || '')
@@ -52,7 +62,14 @@ export default function MarketFiltersClient() {
             params.delete('city')
         }
 
-        router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+        const newQuery = params.toString()
+        const currentQuery = searchParams.toString()
+
+        if (newQuery !== currentQuery) {
+            startTransition(() => {
+                router.replace(`${pathname}?${newQuery}`, { scroll: false })
+            })
+        }
     }, [debouncedSearch, debouncedCity, pathname, router, searchParams])
 
     return (
@@ -64,8 +81,13 @@ export default function MarketFiltersClient() {
                     placeholder={t('SearchPlaceholder')}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-white border border-gray-100 rounded-2xl shadow-sm focus:border-black focus:ring-0 outline-none transition-all font-bold text-sm"
+                    className="w-full pl-12 pr-12 py-4 bg-white border border-gray-100 rounded-2xl shadow-sm focus:border-black focus:ring-0 outline-none transition-all font-bold text-sm"
                 />
+                {isPending && (
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                        <Loader2 className="w-5 h-5 text-black animate-spin" />
+                    </div>
+                )}
             </div>
             <div className="w-full md:w-64 relative">
                 <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" />

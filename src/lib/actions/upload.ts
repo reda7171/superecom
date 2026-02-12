@@ -63,7 +63,7 @@ export async function deleteBookImage(imageUrl: string) {
     try {
         await verifyAdmin() // OWASP A01: Broken Access Control
 
-        if (!imageUrl || !imageUrl.startsWith('/uploads/books/')) {
+        if (!imageUrl || (!imageUrl.startsWith('/uploads/books/') && !imageUrl.startsWith('/uploads/posts/'))) {
             return { success: false, error: "URL d'image invalide" }
         }
 
@@ -77,5 +77,50 @@ export async function deleteBookImage(imageUrl: string) {
         return { success: true }
     } catch (error: any) {
         return { success: false, error: error.message || "Erreur lors de la suppression de l'image" }
+    }
+}
+
+export async function uploadPostImage(formData: FormData) {
+    try {
+        await verifyAdmin()
+
+        const file = formData.get('image') as File
+
+        if (!file) {
+            return { success: false, error: "Aucune image fournie" }
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+        if (!allowedTypes.includes(file.type)) {
+            return { success: false, error: "Format d'image non supporté. Utilisez JPG, PNG ou WebP" }
+        }
+
+        const maxSize = 5 * 1024 * 1024 // 5MB
+        if (file.size > maxSize) {
+            return { success: false, error: "L'image est trop volumineuse. Maximum 5MB" }
+        }
+
+        const uploadDir = join(process.cwd(), 'public', 'uploads', 'posts')
+        if (!existsSync(uploadDir)) {
+            await mkdir(uploadDir, { recursive: true })
+        }
+
+        const timestamp = Date.now()
+        const randomString = Math.random().toString(36).substring(2, 15)
+        const extension = file.type.split('/')[1] === 'jpeg' ? 'jpg' : file.type.split('/')[1]
+        const filename = `post_${timestamp}_${randomString}.${extension}`
+
+        const bytes = await file.arrayBuffer()
+        const buffer = Buffer.from(bytes)
+        const filepath = join(uploadDir, filename)
+
+        await writeFile(filepath, buffer)
+
+        const imageUrl = `/uploads/posts/${filename}`
+
+        return { success: true, imageUrl }
+    } catch (error: any) {
+        console.error('Upload error:', error)
+        return { success: false, error: error.message || "Erreur lors de l'upload de l'image" }
     }
 }

@@ -74,7 +74,7 @@ export default async function ReviewsAdminPage({
                     <span className="text-xs font-black uppercase tracking-widest text-gray-400">Filtrer :</span>
                     <div className="flex gap-2">
                         <a
-                            href="/admin/reviews"
+                            href="/fr/admin/reviews"
                             className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${filter === 'all'
                                 ? 'bg-black text-white'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -83,7 +83,7 @@ export default async function ReviewsAdminPage({
                             Tous ({stats.total})
                         </a>
                         <a
-                            href="/admin/reviews?filter=pending"
+                            href="/fr/admin/reviews?filter=pending"
                             className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${filter === 'pending'
                                 ? 'bg-orange-600 text-white'
                                 : 'bg-orange-100 text-orange-600 hover:bg-orange-200'
@@ -92,7 +92,7 @@ export default async function ReviewsAdminPage({
                             En Attente ({stats.pending})
                         </a>
                         <a
-                            href="/admin/reviews?filter=approved"
+                            href="/fr/admin/reviews?filter=approved"
                             className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${filter === 'approved'
                                 ? 'bg-green-600 text-white'
                                 : 'bg-green-100 text-green-600 hover:bg-green-200'

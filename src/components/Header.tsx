@@ -19,9 +19,14 @@ interface HeaderProps {
         image?: string | null
     } | null
     notificationDropdown?: React.ReactNode
+    navigation?: {
+        id: string
+        label: string
+        url: string
+    }[]
 }
 
-export default function Header({ user, notificationDropdown }: HeaderProps = { user: null }) {
+export default function Header({ user, notificationDropdown, navigation }: HeaderProps = { user: null }) {
     const t = useTranslations('Navigation')
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const { isCartOpen, openCart, closeCart } = useUIStore()
@@ -34,6 +39,18 @@ export default function Header({ user, notificationDropdown }: HeaderProps = { u
     }, [])
 
     const displayItems = mounted ? totalItems : 0
+
+    const defaultNavItems = [
+        { href: '/books', label: t('Books') },
+        { href: '/packs', label: t('Packs') },
+        { href: '/community/market', label: t('Community') },
+        { href: '/blog', label: t('Journal') },
+        { href: '/', label: t('Home') },
+    ]
+
+    const navItems = navigation && navigation.length > 0
+        ? navigation.map(item => ({ href: item.url, label: item.label }))
+        : defaultNavItems
 
     return (
         <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
@@ -51,34 +68,16 @@ export default function Header({ user, notificationDropdown }: HeaderProps = { u
 
                     {/* Desktop Navigation - Elegant & Clean */}
                     <nav className="hidden lg:flex items-center space-x-10">
-                        <Link
-                            href="/books"
-                            className="text-gray-900 hover:text-black font-black text-[13px] uppercase tracking-widest transition-colors relative group"
-                        >
-                            {t('Books')}
-                            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-black group-hover:w-4 transition-all duration-300" />
-                        </Link>
-                        <Link
-                            href="/packs"
-                            className="text-gray-900 hover:text-black font-black text-[13px] uppercase tracking-widest transition-colors relative group"
-                        >
-                            {t('Packs')}
-                            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-black group-hover:w-4 transition-all duration-300" />
-                        </Link>
-                        <Link
-                            href="/community/market"
-                            className="text-gray-900 hover:text-black font-black text-[13px] uppercase tracking-widest transition-colors relative group"
-                        >
-                            {t('Community')}
-                            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-black group-hover:w-4 transition-all duration-300" />
-                        </Link>
-                        <Link
-                            href="/"
-                            className="text-gray-900 hover:text-black font-black text-[13px] uppercase tracking-widest transition-colors relative group"
-                        >
-                            {t('Home')}
-                            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-black group-hover:w-4 transition-all duration-300" />
-                        </Link>
+                        {navItems.map((item, idx) => (
+                            <Link
+                                key={idx}
+                                href={item.href}
+                                className="text-gray-900 hover:text-black font-black text-[13px] uppercase tracking-widest transition-colors relative group"
+                            >
+                                {item.label}
+                                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-black group-hover:w-4 transition-all duration-300" />
+                            </Link>
+                        ))}
                     </nav>
 
                     {/* Predictive Search - Large & Modern */}
@@ -130,34 +129,16 @@ export default function Header({ user, notificationDropdown }: HeaderProps = { u
                 {mobileMenuOpen && (
                     <div className="md:hidden py-4 border-t border-gray-200">
                         <nav className="flex flex-col space-y-3">
-                            <Link
-                                href="/books"
-                                className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                {t('Books')}
-                            </Link>
-                            <Link
-                                href="/packs"
-                                className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                {t('Packs')}
-                            </Link>
-                            <Link
-                                href="/community/market"
-                                className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                {t('Community')}
-                            </Link>
-                            <Link
-                                href="/"
-                                className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                {t('Home')}
-                            </Link>
+                            {navItems.map((item, idx) => (
+                                <Link
+                                    key={idx}
+                                    href={item.href}
+                                    className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    {item.label}
+                                </Link>
+                            ))}
                             <div className="px-4 py-2">
                                 <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg">
                                     <Search className="w-4 h-4 text-gray-600" />

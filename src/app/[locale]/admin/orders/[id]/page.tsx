@@ -2,8 +2,9 @@ import { getOrderById } from '@/lib/actions/admin-orders'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, User, Phone, MapPin, Calendar, Clock, Package, ShoppingBag } from 'lucide-react'
+import { ArrowLeft, User, Phone, MapPin, Calendar, Clock, Package, ShoppingBag, Truck } from 'lucide-react'
 import OrderStatusUpdater from '@/components/admin/OrderStatusUpdater'
+import DeliverySyncButton from '@/components/admin/DeliverySyncButton'
 
 export default async function OrderDetailsPage({
     params,
@@ -137,6 +138,19 @@ export default async function OrderDetailsPage({
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Livraison Olivraison */}
+                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 overflow-hidden">
+                        <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <Truck className="w-5 h-5 text-gray-400" />
+                            Expédition
+                        </h2>
+                        <DeliverySyncButton
+                            orderId={order.id}
+                            trackingID={(order as any).trackingID}
+                            deliveryStatus={(order as any).deliveryStatus}
+                        />
                     </div>
 
                     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">

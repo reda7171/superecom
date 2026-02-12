@@ -1,5 +1,5 @@
 import { Link } from '@/i18n/routing'
-import { BookOpen, MapPin, User, Star } from 'lucide-react'
+import { BookOpen, MapPin, User, Star, Sparkles } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 // ... interfaces remain same ...
@@ -23,7 +23,7 @@ interface MarketBook {
     owner?: MarketUser | null
 }
 
-export default function MarketBookCard({ book }: { book: MarketBook }) {
+export default function MarketBookCard({ book, isSmartMatch }: { book: MarketBook; isSmartMatch?: boolean }) {
     const t = useTranslations('Community.Market')
     const tbf = useTranslations('Community.BookForm')
 
@@ -59,7 +59,7 @@ export default function MarketBookCard({ book }: { book: MarketBook }) {
             </div>
 
             {/* Book Image */}
-            <div className="aspect-[2/3] bg-gray-50 rounded-2xl mb-4 overflow-hidden relative shadow-inner group-hover:shadow-md transition-shadow">
+            <Link href={`/community/market/${book.id}`} className="block aspect-[2/3] bg-gray-50 rounded-2xl mb-4 overflow-hidden relative shadow-inner group-hover:shadow-md transition-shadow">
                 {book.image ? (
                     <img src={book.image} alt={book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
@@ -69,23 +69,32 @@ export default function MarketBookCard({ book }: { book: MarketBook }) {
                 )}
 
                 {/* Condition Badge */}
-                <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-white/20 shadow-lg">
-                    {tbf(`Conditions.${book.condition}`)}
+                <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+                    <div className="bg-black/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-white/20 shadow-lg">
+                        {tbf(`Conditions.${book.condition}`)}
+                    </div>
+                    {isSmartMatch && (
+                        <div className="bg-amber-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1 shadow-lg animate-pulse">
+                            <Sparkles className="w-2.5 h-2.5" /> {t('Mutual')}
+                        </div>
+                    )}
                 </div>
-            </div>
+            </Link>
 
             {/* Book Info */}
             <div className="flex-grow flex flex-col justify-between">
                 <div>
-                    <h3 className="font-black text-lg text-black leading-tight mb-1 line-clamp-2 group-hover:text-amber-600 transition-colors" title={book.title}>
-                        {book.title}
-                    </h3>
+                    <Link href={`/community/market/${book.id}`}>
+                        <h3 className="font-black text-lg text-black leading-tight mb-1 line-clamp-2 group-hover:text-amber-600 transition-colors" title={book.title}>
+                            {book.title}
+                        </h3>
+                    </Link>
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 line-clamp-1">{book.author}</p>
                 </div>
 
                 <Link
-                    href={`/community/exchange/request/${book.id}`}
-                    className="w-full bg-black text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-center shadow-lg hover:bg-gray-800 active:scale-95 transition-all group-hover:translate-y-0 translate-y-2 opacity-0 group-hover:opacity-100 duration-300"
+                    href={`/community/market/${book.id}`}
+                    className="w-full bg-black text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-center shadow-lg hover:bg-gray-800 active:scale-95 transition-all"
                 >
                     {t('Request')}
                 </Link>

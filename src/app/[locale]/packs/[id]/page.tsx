@@ -59,26 +59,52 @@ export default async function PackDetailPage({
     const savingsPercent = Math.round((savings / totalOriginalPrice) * 100)
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.com'
-    const jsonLd = {
-        '@context': 'https://schema.org',
-        '@type': 'Product',
-        name: pack.name,
-        description: pack.description || `Pack de ${pack.books.length} livres sélectionné par Riwaya.`,
-        image: pack.image || pack.books[0]?.book.image,
-        offers: {
-            '@type': 'Offer',
-            price: pack.price,
-            priceCurrency: 'MAD',
-            availability: 'https://schema.org/InStock',
-            url: `${baseUrl}/packs/${pack.id}`,
+    const jsonLd = [
+        {
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: pack.name,
+            description: pack.description || `Pack de ${pack.books.length} livres sélectionné par Riwaya.`,
+            image: pack.image || pack.books[0]?.book.image,
+            offers: {
+                '@type': 'Offer',
+                price: pack.price,
+                priceCurrency: 'MAD',
+                availability: 'https://schema.org/InStock',
+                url: `${baseUrl}/packs/${pack.id}`,
+            },
         },
-    }
+        {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+                {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Accueil',
+                    item: baseUrl
+                },
+                {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Packs',
+                    item: `${baseUrl}/packs`
+                },
+                {
+                    '@type': 'ListItem',
+                    position: 3,
+                    name: pack.name,
+                    item: `${baseUrl}/packs/${pack.id}`
+                }
+            ]
+        }
+    ]
 
     return (
         <>
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
             />
             <div className="min-h-screen bg-pixio-cream">
                 <Header />

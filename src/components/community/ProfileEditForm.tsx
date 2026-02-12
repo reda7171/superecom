@@ -27,6 +27,7 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
     const [success, setSuccess] = useState(false)
     const t = useTranslations('Community.Profile')
     const tc = useTranslations('Community')
+    const tcmn = useTranslations('Common')
 
     const [selectedImage, setSelectedImage] = useState(user.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.fullName}`)
     const [customImage, setCustomImage] = useState('')
@@ -49,7 +50,7 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                 router.refresh()
             }, 1000)
         } else {
-            setError(res.error || "Erreur inconnue")
+            setError(res.error || tcmn('Errors.UnexpectedError'))
             setLoading(false)
         }
     }
@@ -92,7 +93,7 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                     <div className="w-full max-w-sm flex gap-2">
                         <input
                             type="url"
-                            placeholder="URL personnalisée..."
+                            placeholder={t('CustomUrl')}
                             value={customImage}
                             onChange={(e) => setCustomImage(e.target.value)}
                             className="flex-1 px-4 py-2 bg-gray-50 rounded-xl text-xs font-bold outline-none border-2 border-transparent focus:bg-white focus:border-black transition-all"
@@ -102,7 +103,7 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                             onClick={() => customImage && setSelectedImage(customImage)}
                             className="bg-black text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase"
                         >
-                            Appliquer
+                            {t('Apply')}
                         </button>
                     </div>
                 </div>
@@ -149,7 +150,7 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
 
                 {/* Bio */}
                 <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Biographie</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('BioLabel')}</label>
                     <div className="relative">
                         <FileText className="absolute left-4 top-4 w-5 h-5 text-gray-300" />
                         <textarea
@@ -157,14 +158,14 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                             defaultValue={user.bio || ''}
                             rows={3}
                             className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black resize-none"
-                            placeholder="..."
+                            placeholder={t('BioPlaceholder')}
                         />
                     </div>
                 </div>
 
                 {/* Réseaux Sociaux */}
                 <div className="space-y-4 pt-4 border-t border-gray-100">
-                    <h3 className="text-sm font-black uppercase tracking-widest text-black">Socials</h3>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-black">{t('Socials')}</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="relative">

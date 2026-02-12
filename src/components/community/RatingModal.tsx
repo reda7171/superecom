@@ -14,6 +14,7 @@ interface RatingModalProps {
 
 export default function RatingModal({ exchangeId, isOpen, onClose }: RatingModalProps) {
     const t = useTranslations('Community.Ratings')
+    const tcmn = useTranslations('Common')
     const router = useRouter()
     const [rating, setRating] = useState(5)
     const [comment, setComment] = useState('')
@@ -38,7 +39,7 @@ export default function RatingModal({ exchangeId, isOpen, onClose }: RatingModal
             router.refresh()
             onClose()
         } else {
-            setError(res.error || 'An error occurred')
+            setError(res.error || tcmn('Errors.UnexpectedError'))
             setLoading(null as any)
         }
     }
@@ -73,8 +74,8 @@ export default function RatingModal({ exchangeId, isOpen, onClose }: RatingModal
                                 >
                                     <Star
                                         className={`w-10 h-10 transition-all duration-300 ${star <= rating
-                                                ? 'text-yellow-400 fill-yellow-400 scale-110'
-                                                : 'text-gray-200 group-hover:text-yellow-200'
+                                            ? 'text-yellow-400 fill-yellow-400 scale-110'
+                                            : 'text-gray-200 group-hover:text-yellow-200'
                                             }`}
                                     />
                                 </button>

@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { getCommunityUser } from '@/lib/actions/community-auth'
+import { getCommunityUser, checkExchangeEligibility } from '@/lib/actions/community-auth'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createNotification } from './community-notifications'
@@ -11,6 +11,9 @@ const ExchangeRequestSchema = z.object({
     bookOfferedId: z.string().uuid().optional(), // Optionnel si crédit
     message: z.string().optional(),
     type: z.enum(['DIRECT', 'CREDIT']),
+    deliveryMethod: z.enum(['MEETUP', 'SHIPPING', 'LOCKER']).optional(),
+    meetingPoint: z.string().optional(),
+    meetingDate: z.string().optional(),
 })
 
 export type ExchangeResult =
@@ -26,6 +29,9 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
         bookOfferedId: formData.get('bookOfferedId') || undefined,
         message: formData.get('message'),
         type: formData.get('type') || 'DIRECT',
+        deliveryMethod: formData.get('deliveryMethod') || undefined,
+        meetingPoint: formData.get('meetingPoint') || undefined,
+        meetingDate: formData.get('meetingDate') || undefined,
     }
 
     try {
@@ -43,6 +49,12 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
 
         if (requestedBook.ownerId === user.id) {
             return { success: false, error: "Vous ne pouvez pas échanger votre propre livre" }
+        }
+
+        // 3. Vérifier l'éligibilité (Au moins une commande effectuée)
+        const isEligible = await checkExchangeEligibility(user)
+        if (!isEligible) {
+            return { success: false, error: "Vous devez avoir effectué au moins une commande sur Riwaya pour accéder au système d'échange." }
         }
 
         // 2. Vérifier le livre offert (si échange direct)
@@ -72,6 +84,9 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
                 type: data.type as 'DIRECT' | 'CREDIT',
                 message: data.message || '',
                 status: 'PENDING',
+                deliveryMethod: data.deliveryMethod || null,
+                meetingPoint: data.meetingPoint || null,
+                meetingDate: data.meetingDate ? new Date(data.meetingDate) : null,
             }
         })
 
@@ -123,7 +138,10 @@ export async function getExchangeDetails(bookId: string) {
         }
     })
 
-    return { book, myBooks, currentUser: user }
+    // Vérifier l'éligibilité
+    const isEligible = await checkExchangeEligibility(user)
+
+    return { book, myBooks, currentUser: user, isEligible }
 }
 
 /**

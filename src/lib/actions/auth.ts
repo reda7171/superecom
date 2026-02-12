@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { createAuditLog } from './audit'
+import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
 
 const LoginSchema = z.object({
     email: z.string().email('Email invalide'),
@@ -19,6 +20,13 @@ export type LoginResult =
  * Connexion admin
  */
 export async function login(email: string, password: string): Promise<LoginResult> {
+    const ip = await getIpIdentifier()
+    const limiter = await rateLimit(`login_${ip}`, { limit: 5, windowMs: 15 * 60 * 1000 }) // 5 essais par 15 min
+
+    if (!limiter.success) {
+        return { success: false, error: "Trop de tentatives. Veuillez réessayer dans 15 minutes." }
+    }
+
     try {
         const validatedData = LoginSchema.parse({ email, password })
 
@@ -107,12 +115,30 @@ export async function logout() {
 }
 
 /**
- * Vérifier si l'utilisateur est authentifié
+ * Vérifier si l'utilisateur est authentifié avec une validation basique du token
  */
 export async function isAuthenticated(): Promise<boolean> {
     const cookieStore = await cookies()
-    const token = cookieStore.get('admin-token')
-    return !!token
+    const token = cookieStore.get('admin-token')?.value
+
+    if (!token) return false
+
+    try {
+        // Décodage du token (format base64(userId:timestamp))
+        const decoded = Buffer.from(token, 'base64').toString('ascii')
+        const [userId, timestamp] = decoded.split(':')
+
+        if (!userId || !timestamp) return false
+
+        // Vérifier si le token a moins de 7 jours (sécurité supplémentaire)
+        const tokenTime = parseInt(timestamp)
+        const sevenDays = 7 * 24 * 60 * 60 * 1000
+        if (Date.now() - tokenTime > sevenDays) return false
+
+        return true
+    } catch (e) {
+        return false
+    }
 }
 
 /**
@@ -123,6 +149,21 @@ export async function verifyAdmin() {
     const isAuth = await isAuthenticated()
     if (!isAuth) {
         throw new Error('Non autorisé - Accès administrateur requis')
+    }
+}
+
+export async function getAdminUser() {
+    const cookieStore = await cookies()
+    const token = cookieStore.get('admin-token')?.value
+
+    if (!token) return null
+
+    try {
+        const decoded = Buffer.from(token, 'base64').toString('ascii')
+        const [userId] = decoded.split(':')
+        return userId
+    } catch {
+        return null
     }
 }
 

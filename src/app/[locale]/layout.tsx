@@ -6,6 +6,8 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import Toaster from '@/components/Toaster';
+import InstallPrompt from '@/components/InstallPrompt';
+import WhatsAppButton from '@/components/WhatsAppButton';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -34,7 +36,26 @@ export const metadata: Metadata = {
     title: "Riwaya | Digital Literature Curators",
     description: "Hand-picked books and bundles for the modern mind.",
   },
-  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
+  alternates: {
+    canonical: 'https://riwaya.com',
+    languages: {
+      'fr-MA': 'https://riwaya.com/fr',
+      'ar-MA': 'https://riwaya.com/ar',
+      'en-MA': 'https://riwaya.com/en',
+    },
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Riwaya',
+  },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#000000',
 };
 
 export default async function LocaleLayout({
@@ -58,10 +79,59 @@ export default async function LocaleLayout({
       <body
         className={`${outfit.variable} font-sans antialiased bg-white`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Riwaya',
+              url: 'https://riwaya.com',
+              logo: 'https://riwaya.com/globe.svg',
+              sameAs: [
+                'https://facebook.com/riwaya',
+                'https://instagram.com/riwaya',
+                'https://twitter.com/riwaya'
+              ],
+              contactPoint: {
+                '@type': 'ContactPoint',
+                telephone: '+212-600-000000',
+                contactType: 'customer service',
+                areaServed: 'MA',
+                availableLanguage: ['en', 'fr', 'ar']
+              },
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Casablanca',
+                addressCountry: 'MA'
+              }
+            })
+          }}
+        />
         <NextIntlClientProvider messages={messages}>
           {children}
           <Toaster />
+          <InstallPrompt />
+          <WhatsAppButton />
         </NextIntlClientProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').then(
+                    function(registration) {
+                      console.log('Service Worker registration successful with scope: ', registration.scope);
+                    },
+                    function(err) {
+                      console.log('Service Worker registration failed: ', err);
+                    }
+                  );
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );

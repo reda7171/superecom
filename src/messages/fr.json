@@ -65,6 +65,34 @@
             "TitlePart1": "Prêt pour votre",
             "TitlePart2": "prochaine lecture ?",
             "Button": "Démarrer maintenant"
+        },
+        "QuickSearches": {
+            "Title": "Recherches Rapides",
+            "Searches": [
+                "Développement personnel",
+                "Stratégie d'entreprise",
+                "Classiques philosophie",
+                "Guides productivité",
+                "Livres leadership",
+                "Best-sellers psychologie",
+                "Entrepreneuriat",
+                "Finance personnelle",
+                "Méditation pleine conscience",
+                "Histoires de succès",
+                "Communication efficace",
+                "Gestion du temps"
+            ]
+        },
+        "Trust": {
+            "Badge": "Nos Chiffres",
+            "Title": "Une Plateforme de Confiance",
+            "Description": "Rejoignez des milliers de lecteurs qui nous font confiance pour leurs découvertes littéraires au Maroc.",
+            "Items": {
+                "Books": "Volumes disponibles",
+                "Cities": "Villes couvertes",
+                "Readers": "Lecteurs satisfaits",
+                "Exchanges": "Échanges réussis"
+            }
         }
     },
     "Navigation": {
@@ -75,7 +103,18 @@
         "Cart": "Panier",
         "Login": "Connexion",
         "Admin": "Admin",
-        "Search": "Rechercher des livres..."
+        "Search": "Rechercher des livres...",
+        "Journal": "Journal",
+        "UserMenu": {
+            "Profile": "Mon Profil",
+            "ReadingList": "Mes Lectures",
+            "Orders": "Mes Commandes",
+            "Settings": "Paramètres",
+            "Logout": "Déconnexion",
+            "LogoutLoading": "Déconnexion...",
+            "LogoutSuccess": "Déconnexion réussie",
+            "DefaultUser": "Utilisateur"
+        }
     },
     "Footer": {
         "About": "À propos",
@@ -90,7 +129,8 @@
         "Journal": "Journal",
         "NewsletterText": "Rejoignez notre newsletter pour des sélections exclusives.",
         "Join": "Rejoindre",
-        "Rights": "Tous droits réservés."
+        "Rights": "Tous droits réservés.",
+        "BackToTop": "Revenir en haut"
     },
     "Common": {
         "AddedToCartSuccess": "Article ajouté au panier avec succès !",
@@ -100,7 +140,21 @@
         "AddToCart": "Ajouter au panier",
         "OutOfStock": "Rupture de stock",
         "Remaining": "restants",
-        "BestSeller": "Meilleure Vente"
+        "BestSeller": "Meilleure Vente",
+        "By": "Par",
+        "Errors": {
+            "UnexpectedError": "Une erreur inattendue est survenue",
+            "ImageUploadError": "Erreur lors de l'envoi de l'image"
+        },
+        "ImageUpload": {
+            "Label": "Photo du livre",
+            "Placeholder": "Cliquez ou glissez une image",
+            "Instructions": "JPG, PNG ou WebP (max 5MB)",
+            "Button": "Choisir une image",
+            "Alt": "Aperçu",
+            "FormatError": "Format non supporté. Utilisez JPG, PNG ou WebP",
+            "SizeError": "Image trop volumineuse. Maximum 5MB"
+        }
     },
     "Packs": {
         "Save": "Économisez",
@@ -232,6 +286,7 @@
         "CompletePurchase": "Confirmer la commande",
         "Processing": "Traitement...",
         "FastDelivery": "Livraison rapide <br /> sous 24-48h.",
+        "OrderSuccess": "Commande réussie !",
         "Errors": {
             "FirstNameRequired": "Le prénom est requis",
             "LastNameRequired": "Le nom est requis",
@@ -292,6 +347,8 @@
         "Romans & Fiction": "Romans & Fiction",
         "Religion": "Religion",
         "Organisation": "Organisation",
+        "Philosophie": "Philosophie",
+        "Productivité": "Productivité",
         "All": "Toutes les catégories"
     },
     "BooksPage": {
@@ -361,6 +418,7 @@
         "Password": "Mot de passe",
         "City": "Ville",
         "CityPlaceholder": "Casablanca, Rabat...",
+        "ChooseCity": "Sélectionnez une ville",
         "RegisterButton": "S'inscrire",
         "LoginButton": "Se connecter",
         "NoAccount": "Pas encore de compte ?",
@@ -369,17 +427,41 @@
         "AddBook": "Proposer un livre",
         "Credits": "Crédits",
         "ExchangesLabel": "Échanges",
+        "Dashboard": {
+            "RestrictedAccess": "Accès restreint aux échanges",
+            "EligibilityDesc": "Vous devez avoir effectué au moins une commande sur notre boutique pour pouvoir ajouter des livres ou faire des demandes d'échange dans la communauté.",
+            "BrowseShop": "Parcourir la boutique",
+            "EditProfile": "Modifier le profil",
+            "Logout": "Déconnexion",
+            "ExploreMarketTitle": "Explorer le Marketplace",
+            "ExploreMarketDesc": "Découvrez les livres disponibles",
+            "ExploreMarketLong": "Parcourez la bibliothèque commune et trouvez votre prochain livre à échanger.",
+            "ManageExchangesTitle": "Mes Échanges",
+            "ManageExchangesDesc": "Gérez vos demandes",
+            "ManageExchangesLong": "Consultez et répondez aux demandes d'échange en attente.",
+            "ManageBook": "Gérer",
+            "EmptyLibraryTitle": "Votre bibliothèque est vide",
+            "EmptyLibraryDesc": "Ajoutez les livres que vous souhaitez échanger pour gagner des crédits ou recevoir d'autres livres.",
+            "StartAdding": "Commencer"
+        },
         "BookForm": {
+            "FormTitle": "Ajouter un livre",
             "Title": "Titre du livre",
             "Author": "Auteur",
             "Condition": "État",
             "Description": "Description (optionnel)",
             "Isbn": "ISBN (optionnel)",
             "Submit": "Ajouter à ma bibliothèque",
+            "EligibilityError": "Vous devez avoir effectué au moins une commande sur Riwaya pour ajouter un livre au système d'échange.",
             "Conditions": {
                 "NEW": "Neuf",
                 "GOOD": "Bon état",
                 "USED": "Usé / Acceptable"
+            },
+            "Status": {
+                "AVAILABLE": "Disponible",
+                "EXCHANGED": "Échangé",
+                "PRIVATE": "Privé"
             }
         },
         "Market": {
@@ -395,7 +477,15 @@
             "Owner": "Propriétaire",
             "Request": "Demander l'échange",
             "AllCities": "Toutes les villes",
-            "Filter": "Filtrer"
+            "Filter": "Filtrer",
+            "MatchesForYou": "Matches pour vous",
+            "BasedOnWishlist": "Basé sur votre wishlist",
+            "AllBooks": "Tous les livres",
+            "TryFilters": "Essayez de modifier vos filtres. La communauté ajoute des livres chaque jour !",
+            "Mutual": "Match Mutuel",
+            "DescriptionTitle": "Résumé de l'ouvrage",
+            "MemberSince": "Membre depuis",
+            "SecurityNotice": "Échange sécurisé garanti par Riwaya. Aucune commission."
         },
         "Exchange": {
             "Title": "Proposer un échange",
@@ -407,14 +497,40 @@
             "Message": "Message (optionnel)",
             "Submit": "Envoyer la demande",
             "Success": "Demande envoyée avec succès !",
-            "BackToMarket": "Retour au marché"
+            "BackToMarket": "Retour au marché",
+            "NewExchange": "Nouvel Échange",
+            "BookToBook": "Livre contre Livre",
+            "BookToBookDesc": "Échangez ce livre contre l'un des vôtres.",
+            "CreditsDesc": "Utilisez vos points pour obtenir ce livre.",
+            "Balance": "Solde : {count} crédits",
+            "NoBooksAvailable": "Vous n'avez aucun livre disponible.",
+            "AddOneFirst": "Ajoutez-en un d'abord.",
+            "TotalCost": "Coût : 1 crédit Riwaya",
+            "InsufficientBalance": "Solde insuffisant",
+            "DeliveryMethods": "Modalités de remise",
+            "Meetup": "Main à main",
+            "Shipping": "Livraison",
+            "Relay": "Point Relais",
+            "SuggestedMeetingPoint": "Lieu suggéré",
+            "MeetingPointPlaceholder": "ex: Gare de Casa Voyageurs",
+            "SuggestedMeetingTime": "Heure souhaitée",
+            "MessagePlaceholder": "Dites quelques mots sur l'échange...",
+            "EligibilityNote": "* Éligibilité requise : Au moins une commande passée sur Riwaya.",
+            "SelectPlaceholder": "Choisir un livre..."
         },
         "Exchanges": {
             "Title": "Mes Échanges",
-            "Received": "Reçus",
-            "Sent": "Envoyés",
+            "Subtitle": "Gérez vos demandes d'échange reçues et suivez l'état de vos propositions.",
+            "Received": "Reçues",
+            "Sent": "Envoyées",
+            "Requests": "{count} demande{count, plural, =0 {} one {} other {s}}",
             "EmptyReceived": "Aucune demande reçue pour le moment.",
             "EmptySent": "Vous n'avez envoyé aucune demande.",
+            "ExploreMarket": "Explorer le marché",
+            "Requested": "Demandé",
+            "Offered": "Offert",
+            "Credits": "Crédits",
+            "RateExchange": "Évaluer l'échange",
             "Status": {
                 "PENDING": "En attente",
                 "ACCEPTED": "Accepté",
@@ -436,7 +552,8 @@
             "MarkAllRead": "Tout marquer comme lu",
             "Empty": "Aucune notification",
             "All": "Voir toutes les notifications",
-            "Loading": "Chargement des notifications..."
+            "Loading": "Chargement des notifications...",
+            "Delete": "Supprimer"
         },
         "Chat": {
             "Title": "Discussion",
@@ -452,6 +569,11 @@
             "Updating": "Mise à jour...",
             "Success": "Profil mis à jour avec succès",
             "Photo": "Photo de profil",
+            "BioLabel": "Biographie",
+            "BioPlaceholder": "Parlez-nous de vous...",
+            "CustomUrl": "URL personnalisée...",
+            "Apply": "Appliquer",
+            "Socials": "Réseaux Sociaux",
             "Stats": {
                 "Books": "Livres",
                 "Exchanges": "Échanges",
@@ -467,6 +589,33 @@
             "Submit": "Envoyer l'évaluation",
             "Success": "Merci pour votre retour !",
             "Button": "Évaluer"
+        },
+        "Report": {
+            "ButtonLabel": "Signaler ce contenu",
+            "Title": "Signaler",
+            "Subtitle": "Aidez-nous à garder la communauté sûre.",
+            "ReasonLabel": "Raison",
+            "DetailsLabel": "Détails (optionnel)",
+            "PlaceholderReason": "Choisir une raison...",
+            "PlaceholderDetails": "Dites-nous en plus...",
+            "Submit": "Envoyer le signalement",
+            "Success": "Signalement envoyé",
+            "Reasons": {
+                "SPAM": "Spam / Publicité",
+                "INAPPROPRIATE": "Contenu inapproprié",
+                "FRAUD": "Fraude / Arnaque",
+                "OTHER": "Autre"
+            }
+        },
+        "Wishlist": {
+            "Title": "Ma Wishlist",
+            "Subtitle": "Livres que je recherche",
+            "Empty": "Votre wishlist est vide.",
+            "MatchingNote": "Ajoutez des livres pour activer le matching",
+            "AddBook": "Ajouter à ma wishlist",
+            "BookTitle": "Titre du livre",
+            "Author": "Auteur (optionnel)",
+            "Success": "Livre ajouté à votre wishlist"
         }
     },
     "PacksPage": {
@@ -521,5 +670,13 @@
         "ContinueShopping": "Continuer la sélection",
         "Secure": "Sécurisé",
         "FastShip": "Envoi Rapide"
+    },
+    "Blog": {
+        "Badge": "Journal",
+        "Title": "Riwaya.Mag",
+        "Subtitle": "Inspiration, Culture & Idées pour l'esprit moderne",
+        "NoPosts": "Aucun article publié pour le moment.",
+        "ComingSoon": "Revenez bientôt pour découvrir nos prochaines publications.",
+        "ReadArticle": "Lire l'article"
     }
 }

@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { acceptExchange, rejectExchange, completeExchange } from '@/lib/actions/community-exchanges'
 import { Link, useRouter } from '@/i18n/routing'
 import { useTranslations } from 'next-intl'
 import { BookOpen, Check, X, Clock, CheckCircle, Loader2, RefreshCw, Coins, MessageSquare, Flag, Star } from 'lucide-react'
 import RatingModal from './RatingModal'
+
+import { useUIStore } from '@/store/ui'
 
 interface Exchange {
     id: string
@@ -27,18 +29,23 @@ interface ExchangesListProps {
 
 export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
     const router = useRouter()
+    const { showNotification } = useUIStore()
     const [loading, setLoading] = useState<string | null>(null)
     const [ratingModalOpen, setRatingModalOpen] = useState(false)
     const [ratingExchangeId, setRatingExchangeId] = useState<string | null>(null)
     const t = useTranslations('Community.Exchanges')
+    const [isPending, startTransition] = useTransition()
 
     async function handleAccept(exchangeId: string) {
         setLoading(exchangeId)
         const res = await acceptExchange(exchangeId)
         if (res.success) {
-            router.refresh()
+            showNotification(t('Status.ACCEPTED'), 'success')
+            startTransition(() => {
+                router.refresh()
+            })
         } else {
-            alert(res.error)
+            showNotification(res.error || "Error", 'error')
         }
         setLoading(null)
     }
@@ -48,9 +55,12 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
         setLoading(exchangeId)
         const res = await rejectExchange(exchangeId)
         if (res.success) {
-            router.refresh()
+            showNotification(t('Status.REJECTED'), 'success')
+            startTransition(() => {
+                router.refresh()
+            })
         } else {
-            alert(res.error)
+            showNotification(res.error || "Error", 'error')
         }
         setLoading(null)
     }
@@ -60,9 +70,12 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
         setLoading(exchangeId)
         const res = await completeExchange(exchangeId)
         if (res.success) {
-            router.refresh()
+            showNotification(t('Status.COMPLETED'), 'success')
+            startTransition(() => {
+                router.refresh()
+            })
         } else {
-            alert(res.error)
+            showNotification(res.error || "Error", 'error')
         }
         setLoading(null)
     }
@@ -97,7 +110,7 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
                     href="/community/market"
                     className="text-black font-black uppercase tracking-widest text-[10px] hover:underline"
                 >
-                    Explorer le marché →
+                    {t('ExploreMarket')} →
                 </Link>
             </div>
         )
@@ -150,7 +163,7 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
                                         )}
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Demandé</p>
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{t('Requested')}</p>
                                         <p className="text-xs font-black text-black truncate">{exchange.bookRequested.title}</p>
                                     </div>
                                 </div>
@@ -173,7 +186,7 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
                                             )}
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Offert</p>
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{t('Offered')}</p>
                                             <p className="text-xs font-black text-black truncate">{exchange.bookOffered?.title}</p>
                                         </div>
                                     </div>
@@ -183,8 +196,8 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
                                             <Coins className="w-5 h-5 text-yellow-600" />
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Offert</p>
-                                            <p className="text-xs font-black text-black">Crédits</p>
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{t('Offered')}</p>
+                                            <p className="text-xs font-black text-black">{t('Credits')}</p>
                                         </div>
                                     </div>
                                 )}
@@ -269,13 +282,15 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
                                 ) : (
                                     <button
                                         onClick={() => {
-                                            setRatingExchangeId(exchange.id)
-                                            setRatingModalOpen(true)
+                                            startTransition(() => {
+                                                setRatingExchangeId(exchange.id)
+                                                setRatingModalOpen(true)
+                                            })
                                         }}
                                         className="w-full bg-yellow-400 text-black py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-yellow-500 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg shadow-yellow-100"
                                     >
                                         <Star className="w-4 h-4" />
-                                        Évaluer l'échange
+                                        {t('RateExchange')}
                                     </button>
                                 )}
                             </div>

@@ -33,7 +33,7 @@ export async function getMarketBooks(filters: MarketFilters = {}) {
     }
 
     try {
-        const books = await prisma.exchangeBook.findMany({
+        const books = await (prisma as any).exchangeBook.findMany({
             where,
             include: {
                 owner: {
@@ -58,7 +58,7 @@ export async function getMarketBooks(filters: MarketFilters = {}) {
 
 export async function getExchangeBookDetails(bookId: string) {
     try {
-        const book = await prisma.exchangeBook.findUnique({
+        const book = await (prisma as any).exchangeBook.findUnique({
             where: { id: bookId },
             include: {
                 owner: {
@@ -82,7 +82,7 @@ export async function getExchangeBookDetails(bookId: string) {
 // Fonction pour récupérer les livres d'échange récents pour la page d'accueil
 export async function getRecentExchangeBooks(limit = 6) {
     try {
-        const books = await prisma.exchangeBook.findMany({
+        const books = await (prisma as any).exchangeBook.findMany({
             where: {
                 status: 'AVAILABLE',
             },
@@ -103,6 +103,59 @@ export async function getRecentExchangeBooks(limit = 6) {
 
         return books
     } catch (error) {
+        return []
+    }
+}
+// Smart matching logic: Find users who have what I want AND want what I have
+export async function getSmartMatches() {
+    const user = await getCommunityUser()
+    if (!user) return []
+
+    try {
+        // 1. Ma wishlist
+        const myWishlist = await (prisma as any).wishlist.findMany({
+            where: { userId: user.id }
+        })
+        const wishlistTitles = myWishlist.map((w: any) => w.title.toLowerCase())
+
+        // 2. Mes livres
+        const myBooks = await (prisma as any).exchangeBook.findMany({
+            where: { ownerId: user.id, status: 'AVAILABLE' }
+        })
+        const myTitles = myBooks.map((b: any) => b.title.toLowerCase())
+
+        if (wishlistTitles.length === 0) return []
+
+        // 3. Trouver des livres qui matchent ma wishlist
+        const matchingBooks = await (prisma as any).exchangeBook.findMany({
+            where: {
+                status: 'AVAILABLE',
+                ownerId: { not: user.id },
+                OR: wishlistTitles.map((title: string) => ({
+                    title: { contains: title }
+                }))
+            },
+            include: {
+                owner: {
+                    include: {
+                        wishlist: true
+                    }
+                }
+            },
+            take: 20
+        })
+
+        // 4. Filtrer pour ne garder que ceux où le propriétaire veut un de mes livres
+        const smartMatches = matchingBooks.filter((book: any) => {
+            const ownerWishlist = (book.owner as any).wishlist || []
+            return ownerWishlist.some((w: any) =>
+                myTitles.some((myTitle: any) => myTitle.includes(w.title.toLowerCase()) || w.title.toLowerCase().includes(myTitle))
+            )
+        })
+
+        return smartMatches
+    } catch (error) {
+        console.error('Error fetching smart matches:', error)
         return []
     }
 }

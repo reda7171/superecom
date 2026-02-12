@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import { Check, Loader2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
+import { useTranslations } from 'next-intl'
 
 export default function MarkAllReadButton() {
+    const t = useTranslations('Community.Notifications')
     const [loading, setLoading] = useState(false)
     const router = useRouter()
 
@@ -36,7 +38,7 @@ export default function MarkAllReadButton() {
             ) : (
                 <Check className="w-4 h-4" />
             )}
-            Tout marquer comme lu
+            {t('MarkAllRead')}
         </button>
     )
 }

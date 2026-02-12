@@ -102,7 +102,7 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
                 showNotification(t('OrderSuccess'), 'success')
                 router.push(`/checkout/success/${result.orderId}`)
             } else {
-                setError(result.error || "Une erreur est survenue")
+                setError(result.error || t('Errors.UnexpectedError'))
                 showNotification(result.error || t('Errors.UnexpectedError'), 'error')
             }
         } catch (e: any) {

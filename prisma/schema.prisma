@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  engineType = "binary"
+  provider   = "prisma-client-js"
+  // engineType = "binary"
 }
 
 datasource db {
@@ -41,11 +41,11 @@ enum CouponType {
 model CategoryConfig {
   id             String    @id @default(uuid())
   name           String    @unique
-  badge          String?   // PROMO | NEW | HOT | etc.
-  badgeColor     String?   // hex code or tailwind class
+  badge          String? // PROMO | NEW | HOT | etc.
+  badgeColor     String? // hex code or tailwind class
   badgeExpiresAt DateTime? // Date d'expiration pour le badge
   quote          String?   @db.Text
-  quoteSource    String?   // L'auteur ou le livre
+  quoteSource    String? // L'auteur ou le livre
   isPinned       Boolean   @default(false)
   updatedAt      DateTime  @updatedAt
 }
@@ -59,7 +59,7 @@ model SearchLog {
 
 model BadgeClick {
   id        String   @id @default(uuid())
-  badge     String   // PROMO, NEW, HOTEL, etc.
+  badge     String // PROMO, NEW, HOTEL, etc.
   category  String
   createdAt DateTime @default(now())
 }
@@ -67,22 +67,23 @@ model BadgeClick {
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
-  password  String   // Hashé avec bcrypt
+  password  String // Hashé avec bcrypt
   role      UserRole @default(ADMIN)
   isBanned  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Exchange Profile (Community)
-  fullName  String?  @db.VarChar(255)
-  city      String?  @db.VarChar(100)
-  credits   Int      @default(10) // Monnaie d'échange
-  rating    Float    @default(5.0)
-  image     String?  @db.VarChar(500)
-  bio       String?  @db.Text
-  instagram String?  @db.VarChar(100)
-  facebook  String?  @db.VarChar(100)
-  twitter   String?  @db.VarChar(100)
+  fullName  String? @db.VarChar(255)
+  city      String? @db.VarChar(100)
+  credits   Int     @default(10) // Monnaie d'échange
+  rating    Float   @default(5.0)
+  image     String? @db.VarChar(500)
+  bio       String? @db.Text
+  instagram String? @db.VarChar(100)
+  facebook  String? @db.VarChar(100)
+  twitter   String? @db.VarChar(100)
+  phone     String? @db.VarChar(20)
 
   // Relations
   ownedBooks        ExchangeBook[] @relation("OwnedBooks")
@@ -94,31 +95,35 @@ model User {
   ratingsReceived   Rating[]       @relation("RatingsReceived")
   reportsGiven      Report[]       @relation("ReportsGiven")
   reportsReceived   Report[]       @relation("ReportsReceived")
+  wishlist          Wishlist[]
+  readingList       ReadingList[]
+  posts             Post[]
 
   @@map("users")
 }
 
 // Livre
 model Book {
-  id          String      @id @default(uuid())
-  title       String      @db.VarChar(255)
-  author      String      @db.VarChar(255)
-  description String      @db.Text
-  isbn        String?     @unique @db.VarChar(20)
-  price         Float       @db.Double
-  originalPrice Float?      @db.Double
-  stock         Int         @default(0)
-  image         String      @db.VarChar(500)
-  category    String?     @db.VarChar(100)
-  language    String      @default("fr") @db.VarChar(10)
-  active      Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  
+  id            String   @id @default(uuid())
+  title         String   @db.VarChar(255)
+  author        String   @db.VarChar(255)
+  description   String   @db.Text
+  isbn          String?  @unique @db.VarChar(20)
+  price         Float    @db.Double
+  originalPrice Float?   @db.Double
+  stock         Int      @default(0)
+  image         String   @db.VarChar(500)
+  category      String?  @db.VarChar(100)
+  language      String   @default("fr") @db.VarChar(10)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
   // Relations
   packBooks  PackBook[]
   orderItems OrderItem[]
   reviews    Review[]
+  readingLists ReadingList[]
 
   @@index([category])
   @@index([active])
@@ -127,15 +132,15 @@ model Book {
 
 // Pack de livres (Offre groupée)
 model Pack {
-  id          String      @id @default(uuid())
-  name        String      @db.VarChar(255)
-  description String?     @db.Text
-  price       Float       @db.Double
-  image       String?     @db.VarChar(500)
-  active      Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  price       Float    @db.Double
+  image       String?  @db.VarChar(500)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
   // Relations
   books      PackBook[]
   orderItems OrderItem[]
@@ -149,7 +154,7 @@ model PackBook {
   id     String @id @default(uuid())
   packId String
   bookId String
-  
+
   // Relations
   pack Pack @relation(fields: [packId], references: [id], onDelete: Cascade)
   book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
@@ -162,16 +167,16 @@ model PackBook {
 
 // Commande (COD - Cash On Delivery)
 model Order {
-  id        String      @id @default(uuid())
-  
+  id String @id @default(uuid())
+
   // Informations client
-  fullName  String      @db.VarChar(255)
-  email     String?     @db.VarChar(255) // Optional pour compatibilité, mais requis par le front
-  phone     String      @db.VarChar(20)
-  address   String      @db.VarChar(500)
-  city      String      @db.VarChar(100)
-  comment   String?     @db.Text
-  
+  fullName String  @db.VarChar(255)
+  email    String? @db.VarChar(255) // Optional pour compatibilité, mais requis par le front
+  phone    String  @db.VarChar(20)
+  address  String  @db.VarChar(500)
+  city     String  @db.VarChar(100)
+  comment  String? @db.Text
+
   // Informations commande
   total         Float       @db.Double
   subtotal      Float?      @db.Double
@@ -180,10 +185,17 @@ model Order {
   couponCode    String?     @db.VarChar(50)
   status        OrderStatus @default(PENDING)
   paymentMethod String      @default("COD") @db.VarChar(50) // COD, etc.
-  
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Intégration Livraison (Olivraison)
+  trackingID      String? @db.VarChar(100)
+  deliveryStatus  String? @db.VarChar(100) // Statut retourné par l'API
+  deliveryLabel   String? @db.Text         // Sticker/Label URL ou base64
+  deliverySyncAt  DateTime?                // Dernière synchronisation
+
+
   // Relations
   items OrderItem[]
 
@@ -200,15 +212,15 @@ model OrderItem {
   type     OrderItemType // BOOK ou PACK
   quantity Int           @default(1)
   price    Float         @db.Double // Prix au moment de l'achat
-  
+
   // Relations optionnelles (un seul des deux sera rempli selon le type)
   bookId String?
   packId String?
-  
+
   // Relations
-  order Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  book  Book?  @relation(fields: [bookId], references: [id], onDelete: SetNull)
-  pack  Pack?  @relation(fields: [packId], references: [id], onDelete: SetNull)
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  book  Book? @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  pack  Pack? @relation(fields: [packId], references: [id], onDelete: SetNull)
 
   @@index([orderId])
   @@index([bookId])
@@ -218,28 +230,28 @@ model OrderItem {
 
 // Code Promo
 model Coupon {
-  id          String     @id @default(uuid())
-  code        String     @unique @db.VarChar(50)
-  discount    Float      @db.Double // Valeur numérique
-  type        CouponType @default(PERCENTAGE)
-  minAmount   Float?     @db.Double
-  isActive    Boolean    @default(true)
-  expiresAt   DateTime?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id        String     @id @default(uuid())
+  code      String     @unique @db.VarChar(50)
+  discount  Float      @db.Double // Valeur numérique
+  type      CouponType @default(PERCENTAGE)
+  minAmount Float?     @db.Double
+  isActive  Boolean    @default(true)
+  expiresAt DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@map("coupons")
 }
 
 // Avis Clients
 model Review {
-  id        String   @id @default(uuid())
-  bookId    String
-  fullName  String   @db.VarChar(255)
-  rating    Int      @default(5)
-  comment   String   @db.Text
-  isApproved Boolean @default(false)
-  createdAt DateTime @default(now())
+  id         String   @id @default(uuid())
+  bookId     String
+  fullName   String   @db.VarChar(255)
+  rating     Int      @default(5)
+  comment    String   @db.Text
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
   // Relations
   book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
@@ -260,26 +272,26 @@ enum ExchangeType {
 }
 
 enum ExchangeStatus {
-  PENDING         // En attente
-  ACCEPTED        // Accepté par le vendeur (en attente de livraison)
-  REJECTED        // Refusé
-  COUNTER_OFFER   // Contre-proposition (future)
-  IN_PROGRESS     // Livraison en cours / RDV fixé
-  COMPLETED       // Terminé (livres échangés)
-  CANCELLED       // Annulé
+  PENDING // En attente
+  ACCEPTED // Accepté par le vendeur (en attente de livraison)
+  REJECTED // Refusé
+  COUNTER_OFFER // Contre-proposition (future)
+  IN_PROGRESS // Livraison en cours / RDV fixé
+  COMPLETED // Terminé (livres échangés)
+  CANCELLED // Annulé
 }
 
 enum BookCondition {
-  NEW     // Comme neuf
-  GOOD    // Bon état
-  USED    // Occasion (traces d'usure)
+  NEW // Comme neuf
+  GOOD // Bon état
+  USED // Occasion (traces d'usure)
 }
 
 // Livre dédié à l'échange (séparé du catalogue de vente)
 model ExchangeBook {
-  id          String        @id @default(uuid())
-  ownerId     String
-  
+  id      String @id @default(uuid())
+  ownerId String
+
   title       String
   author      String
   isbn        String?
@@ -287,18 +299,18 @@ model ExchangeBook {
   description String?       @db.Text
   image       String?
   language    String        @default("fr")
-  
+
   // Préférences d'échange
   exchangeType ExchangeType @default(DIRECT) // Ce que le propriétaire accepte
-  
-  status      String        @default("AVAILABLE") // AVAILABLE, PENDING, EXCHANGED
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+
+  status    String   @default("AVAILABLE") // AVAILABLE, PENDING, EXCHANGED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  owner       User          @relation("OwnedBooks", fields: [ownerId], references: [id], onDelete: Cascade)
-  offeredIn   Exchange[]    @relation("BookOffered")
-  requestedIn Exchange[]    @relation("BookRequested")
+  owner       User       @relation("OwnedBooks", fields: [ownerId], references: [id], onDelete: Cascade)
+  offeredIn   Exchange[] @relation("BookOffered")
+  requestedIn Exchange[] @relation("BookRequested")
   reports     Report[]
 
   @@index([ownerId])
@@ -308,31 +320,36 @@ model ExchangeBook {
 
 // Transaction d'échange
 model Exchange {
-  id              String         @id @default(uuid())
-  
-  requesterId     String
-  responderId     String
-  
-  bookOfferedId   String?        // Null si échange contre crédits
+  id String @id @default(uuid())
+
+  requesterId String
+  responderId String
+
+  bookOfferedId   String? // Null si échange contre crédits
   bookRequestedId String
-  
-  type            ExchangeType   @default(DIRECT)
-  status          ExchangeStatus @default(PENDING)
-  
-  creditsAmount   Int?           // Montant crédits si applicable
-  message         String?        @db.Text // Message initial
-  
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+
+  type   ExchangeType   @default(DIRECT)
+  status ExchangeStatus @default(PENDING)
+
+  creditsAmount Int? // Montant crédits si applicable
+  message       String? @db.Text // Message initial
+
+  // Delivery/Meeting Details
+  deliveryMethod String? // MEETUP, SHIPPING, LOCKER
+  meetingPoint   String?   @db.VarChar(255)
+  meetingDate    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  requester       User           @relation("SentExchanges", fields: [requesterId], references: [id])
-  responder       User           @relation("ReceivedExchanges", fields: [responderId], references: [id])
-  
-  bookOffered     ExchangeBook?  @relation("BookOffered", fields: [bookOfferedId], references: [id])
-  bookRequested   ExchangeBook   @relation("BookRequested", fields: [bookRequestedId], references: [id])
-  chat            Chat?
-  rating          Rating?
+  requester User @relation("SentExchanges", fields: [requesterId], references: [id])
+  responder User @relation("ReceivedExchanges", fields: [responderId], references: [id])
+
+  bookOffered   ExchangeBook? @relation("BookOffered", fields: [bookOfferedId], references: [id])
+  bookRequested ExchangeBook  @relation("BookRequested", fields: [bookRequestedId], references: [id])
+  chat          Chat?
+  rating        Rating?
 
   @@index([requesterId])
   @@index([responderId])
@@ -342,33 +359,33 @@ model Exchange {
 
 // Chat entre utilisateurs pour un échange
 model Chat {
-  id         String    @id @default(uuid())
-  exchangeId String    @unique
-  
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  
+  id         String @id @default(uuid())
+  exchangeId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  exchange   Exchange  @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
-  messages   Message[]
-  
+  exchange Exchange  @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
+  messages Message[]
+
   @@map("chats")
 }
 
 // Messages dans un chat
 model Message {
-  id        String   @id @default(uuid())
-  chatId    String
-  senderId  String
-  content   String   @db.Text
-  read      Boolean  @default(false)
-  
+  id       String  @id @default(uuid())
+  chatId   String
+  senderId String
+  content  String  @db.Text
+  read     Boolean @default(false)
+
   createdAt DateTime @default(now())
-  
+
   // Relations
-  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  sender    User     @relation(fields: [senderId], references: [id])
-  
+  chat   Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  sender User @relation(fields: [senderId], references: [id])
+
   @@index([chatId])
   @@index([senderId])
   @@map("messages")
@@ -376,19 +393,19 @@ model Message {
 
 // Notifications utilisateur
 model Notification {
-  id        String           @id @default(uuid())
-  userId    String
-  type      NotificationType
-  title     String           @db.VarChar(255)
-  message   String           @db.Text
-  link      String?          @db.VarChar(500)
-  read      Boolean          @default(false)
-  
-  createdAt DateTime         @default(now())
-  
+  id      String           @id @default(uuid())
+  userId  String
+  type    NotificationType
+  title   String           @db.VarChar(255)
+  message String           @db.Text
+  link    String?          @db.VarChar(500)
+  read    Boolean          @default(false)
+
+  createdAt DateTime @default(now())
+
   // Relations
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([read])
   @@map("notifications")
@@ -396,20 +413,20 @@ model Notification {
 
 // Évaluations après échange
 model Rating {
-  id         String   @id @default(uuid())
-  exchangeId String   @unique
+  id         String  @id @default(uuid())
+  exchangeId String  @unique
   fromUserId String
   toUserId   String
-  rating     Int      // 1-5
-  comment    String?  @db.Text
-  
-  createdAt  DateTime @default(now())
-  
+  rating     Int // 1-5
+  comment    String? @db.Text
+
+  createdAt DateTime @default(now())
+
   // Relations
-  exchange   Exchange @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
-  fromUser   User     @relation("RatingsGiven", fields: [fromUserId], references: [id])
-  toUser     User     @relation("RatingsReceived", fields: [toUserId], references: [id])
-  
+  exchange Exchange @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
+  fromUser User     @relation("RatingsGiven", fields: [fromUserId], references: [id])
+  toUser   User     @relation("RatingsReceived", fields: [toUserId], references: [id])
+
   @@index([exchangeId])
   @@index([fromUserId])
   @@index([toUserId])
@@ -427,23 +444,23 @@ enum NotificationType {
 
 // Signalements
 model Report {
-  id          String   @id @default(uuid())
-  reason      String   // Raison du signalement (spam, inappropriate, etc.)
-  details     String?  @db.Text
-  status      String   @default("PENDING") // PENDING, RESOLVED, DISMISSED
-  
-  reporterId  String
-  reporter    User     @relation("ReportsGiven", fields: [reporterId], references: [id])
-  
+  id      String  @id @default(uuid())
+  reason  String // Raison du signalement (spam, inappropriate, etc.)
+  details String? @db.Text
+  status  String  @default("PENDING") // PENDING, RESOLVED, DISMISSED
+
+  reporterId String
+  reporter   User   @relation("ReportsGiven", fields: [reporterId], references: [id])
+
   // Cibles possibles (l'un d'eux doit être rempli)
   targetUserId String?
   targetUser   User?   @relation("ReportsReceived", fields: [targetUserId], references: [id])
-  
+
   targetBookId String?
   targetBook   ExchangeBook? @relation(fields: [targetBookId], references: [id])
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([reporterId])
   @@index([targetUserId])
@@ -452,13 +469,27 @@ model Report {
   @@map("reports")
 }
 
+// Wishlist (Livres recherchés par l'utilisateur pour le matching)
+model Wishlist {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title     String
+  author    String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("wishlists")
+}
+
 // Journal d'Audit
 model AuditLog {
   id        String   @id @default(uuid())
-  adminId   String?  // Email de l'admin concerné
-  action    String   // CREATE, UPDATE, DELETE, TOGGLE, LOGIN, etc.
-  entity    String   // BOOK, PACK, ORDER, COUPON, etc.
-  entityId  String?  // ID de l'objet concerné
+  adminId   String? // Email de l'admin concerné
+  action    String // CREATE, UPDATE, DELETE, TOGGLE, LOGIN, etc.
+  entity    String // BOOK, PACK, ORDER, COUPON, etc.
+  entityId  String? // ID de l'objet concerné
   details   String?  @db.Text // Informations supplémentaires (ex: JSON des changements)
   createdAt DateTime @default(now())
 
@@ -466,4 +497,107 @@ model AuditLog {
   @@index([adminId])
   @@index([entity])
   @@map("audit_logs")
+}
+
+// Menu Management
+model Menu {
+  id        String     @id @default(uuid())
+  slug      String     @unique // e.g. "header", "footer_company", "footer_resources"
+  name      String     // e.g. "Main Header"
+  isActive  Boolean    @default(true) // Activer/désactiver le menu
+  items     MenuItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("menus")
+}
+
+model MenuItem {
+  id        String   @id @default(uuid())
+  menuId    String
+  parentId  String?  // Copied Self-relation for nested menus
+  label     String   // Display text
+  url       String   // Link URL
+  order     Int      @default(0)
+  target    String?  // "_blank", etc.
+  icon      String?  // Icon name if needed
+  isActive  Boolean  @default(true)
+  
+  menu      Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  parent    MenuItem? @relation("MenuHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children  MenuItem[] @relation("MenuHierarchy")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([menuId])
+  @@index([parentId])
+  @@map("menu_items")
+}
+
+// ============================================
+// READING TRACKER
+// ============================================
+
+enum ReadingStatus {
+  TO_READ
+  READING
+  COMPLETED
+  ON_HOLD
+  DROPPED
+}
+
+model ReadingList {
+  id        String        @id @default(uuid())
+  userId    String
+  
+  // Peut être lié à un livre de notre base OU un livre externe/custom
+  bookId    String?       
+  book      Book?         @relation(fields: [bookId], references: [id])
+  
+  // Champs personnalisables (copiés si bookId existe, ou remplis manuellement)
+  title     String
+  author    String
+  cover     String?
+  totalPages Int           @default(0)
+  
+  // Progression
+  currentPage Int          @default(0)
+  status      ReadingStatus @default(TO_READ)
+  
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@map("reading_list")
+}
+
+// ============================================
+// BLOG SYSTEM
+// ============================================
+
+model Post {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  title       String
+  excerpt     String?  @db.Text
+  content     String   @db.LongText // LongText for extensive content
+  coverImage  String?
+  authorId    String
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author      User     @relation(fields: [authorId], references: [id])
+
+  @@index([slug])
+  @@index([published])
+  @@map("posts")
 }

@@ -10,6 +10,7 @@ import { MOROCCO_CITIES } from '@/lib/constants/cities'
 export default function RegisterForm() {
     const t = useTranslations('Community')
     const tm = useTranslations('Community.Market')
+    const tcmn = useTranslations('Common')
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
@@ -27,7 +28,7 @@ export default function RegisterForm() {
             router.push('/community')
             router.refresh()
         } else {
-            setError(res.error || "An error occurred")
+            setError(res.error || tcmn('Errors.UnexpectedError'))
             setLoading(false)
         }
     }
@@ -80,7 +81,7 @@ export default function RegisterForm() {
                                 defaultValue=""
                                 className="w-full px-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black appearance-none cursor-pointer"
                             >
-                                <option value="" disabled>Sélectionnez une ville</option>
+                                <option value="" disabled>{t('ChooseCity')}</option>
                                 {MOROCCO_CITIES.map((city) => (
                                     <option key={city} value={city}>{city}</option>
                                 ))}

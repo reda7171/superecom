@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { getCommunityUser } from '@/lib/actions/community-auth'
+import { getCommunityUser, checkExchangeEligibility } from '@/lib/actions/community-auth'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
@@ -21,6 +21,12 @@ export type BookResult =
 export async function addExchangeBook(formData: FormData): Promise<BookResult> {
     const user = await getCommunityUser()
     if (!user) return { success: false, error: "Vous devez être connecté" }
+
+    // Vérifier l'éligibilité
+    const isEligible = await checkExchangeEligibility(user)
+    if (!isEligible) {
+        return { success: false, error: "Vous devez avoir effectué au moins une commande sur Riwaya pour accéder au système d'échange." }
+    }
 
     const rawData = {
         title: formData.get('title'),

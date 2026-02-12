@@ -19,6 +19,7 @@
     "setup": "npm run docker:up && timeout /t 10 && npm run prisma:migrate && npm run prisma:seed"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^18.0.1",
     "@prisma/client": "^6.2.1",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
@@ -33,6 +34,9 @@
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
     "recharts": "^3.7.0",
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-html": "^16.0.1",
     "tailwind-merge": "^3.4.0",
     "xlsx": "^0.18.5",
     "zod": "^4.3.6",

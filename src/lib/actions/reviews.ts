@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { verifyAdmin } from './auth'
 import { createAuditLog } from './audit'
+import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
 
 const ReviewSchema = z.object({
     bookId: z.string().uuid(),
@@ -14,6 +15,13 @@ const ReviewSchema = z.object({
 })
 
 export async function createReview(data: z.infer<typeof ReviewSchema>) {
+    const ip = await getIpIdentifier()
+    const limiter = await rateLimit(`review_${ip}`, { limit: 2, windowMs: 60000 }) // 2 avis par minute max
+
+    if (!limiter.success) {
+        return { success: false, error: "Trop de commentaires. Veuillez patienter une minute." }
+    }
+
     try {
         const validated = ReviewSchema.parse(data)
 

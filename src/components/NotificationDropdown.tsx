@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Bell, X, Check, Trash2 } from 'lucide-react'
 import { Link, useRouter } from '@/i18n/routing'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 
 interface Notification {
     id: string
@@ -26,8 +26,8 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
     const [unreadCount, setUnreadCount] = useState(initialUnreadCount)
     const dropdownRef = useRef<HTMLDivElement>(null)
     const router = useRouter()
-
-    // Fermer au clic extérieur
+    const locale = useLocale()
+    const t = useTranslations('Community.Notifications')
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -120,7 +120,6 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
         }
     }
 
-    const t = useTranslations('Community.Notifications')
 
     return (
         <div className="relative" ref={dropdownRef}>
@@ -139,7 +138,7 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="absolute right-0 top-full mt-2 w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="fixed left-4 right-4 top-24 w-auto md:absolute md:right-0 md:left-auto md:top-full md:w-96 md:mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                     {/* Header */}
                     <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                         <h3 className="font-black text-lg text-black">{t('Title')}</h3>
@@ -191,7 +190,7 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
                                                 {notification.message}
                                             </p>
                                             <p className="text-xs text-gray-400">
-                                                {new Date(notification.createdAt).toLocaleDateString('fr-FR', {
+                                                {new Date(notification.createdAt).toLocaleDateString(locale, {
                                                     day: 'numeric',
                                                     month: 'short',
                                                     hour: '2-digit',

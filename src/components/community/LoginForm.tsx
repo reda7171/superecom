@@ -8,6 +8,7 @@ import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginForm() {
     const t = useTranslations('Community')
+    const tcmn = useTranslations('Common')
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
@@ -25,7 +26,7 @@ export default function LoginForm() {
             router.push('/community')
             router.refresh()
         } else {
-            setError(res.error || "An error occurred")
+            setError(res.error || tcmn('Errors.UnexpectedError'))
             setLoading(false)
         }
     }

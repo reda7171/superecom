@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Link } from '@/i18n/routing'
-import { User, Settings, Package, LogOut, ChevronDown } from 'lucide-react'
+import { User, Settings, Package, LogOut, ChevronDown, BookOpen } from 'lucide-react'
 import { logout } from '@/lib/actions/community-auth'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui'
 
 interface UserDropdownProps {
@@ -20,6 +21,7 @@ export default function UserDropdown({ user }: UserDropdownProps) {
     const [loggingOut, setLoggingOut] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
     const router = useRouter()
+    const t = useTranslations('Navigation')
 
     // Fermer le dropdown si on clique à l'extérieur
     useEffect(() => {
@@ -43,7 +45,7 @@ export default function UserDropdown({ user }: UserDropdownProps) {
     async function handleLogout() {
         setLoggingOut(true)
         await logout()
-        showNotification('Déconnexion réussie', 'info')
+        showNotification(t('UserMenu.LogoutSuccess'), 'info')
         router.push('/community/login')
         router.refresh()
     }
@@ -84,7 +86,7 @@ export default function UserDropdown({ user }: UserDropdownProps) {
                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                     {/* User Info */}
                     <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-black text-black truncate">{user.fullName || 'Utilisateur'}</p>
+                        <p className="text-sm font-black text-black truncate">{user.fullName || t('UserMenu.DefaultUser')}</p>
                         <p className="text-xs text-gray-400 truncate">{user.email}</p>
                     </div>
 
@@ -98,7 +100,18 @@ export default function UserDropdown({ user }: UserDropdownProps) {
                             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-black transition-colors">
                                 <User className="w-4 h-4 text-gray-600 group-hover:text-white" />
                             </div>
-                            <span className="text-sm font-bold text-gray-700 group-hover:text-black">Mon Profil</span>
+                            <span className="text-sm font-bold text-gray-700 group-hover:text-black">{t('UserMenu.Profile')}</span>
+                        </Link>
+
+                        <Link
+                            href="/community/reading-list"
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors group"
+                        >
+                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-black transition-colors">
+                                <BookOpen className="w-4 h-4 text-gray-600 group-hover:text-white" />
+                            </div>
+                            <span className="text-sm font-bold text-gray-700 group-hover:text-black">{t('UserMenu.ReadingList')}</span>
                         </Link>
 
                         <Link
@@ -109,7 +122,7 @@ export default function UserDropdown({ user }: UserDropdownProps) {
                             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-black transition-colors">
                                 <Package className="w-4 h-4 text-gray-600 group-hover:text-white" />
                             </div>
-                            <span className="text-sm font-bold text-gray-700 group-hover:text-black">Mes Commandes</span>
+                            <span className="text-sm font-bold text-gray-700 group-hover:text-black">{t('UserMenu.Orders')}</span>
                         </Link>
 
                         <Link
@@ -120,7 +133,7 @@ export default function UserDropdown({ user }: UserDropdownProps) {
                             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-black transition-colors">
                                 <Settings className="w-4 h-4 text-gray-600 group-hover:text-white" />
                             </div>
-                            <span className="text-sm font-bold text-gray-700 group-hover:text-black">Paramètres</span>
+                            <span className="text-sm font-bold text-gray-700 group-hover:text-black">{t('UserMenu.Settings')}</span>
                         </Link>
                     </div>
 
@@ -135,7 +148,7 @@ export default function UserDropdown({ user }: UserDropdownProps) {
                                 <LogOut className="w-4 h-4 text-gray-600 group-hover:text-white" />
                             </div>
                             <span className="text-sm font-bold text-gray-700 group-hover:text-red-600">
-                                {loggingOut ? 'Déconnexion...' : 'Déconnexion'}
+                                {loggingOut ? t('UserMenu.LogoutLoading') : t('UserMenu.Logout')}
                             </span>
                         </button>
                     </div>

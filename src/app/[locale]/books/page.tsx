@@ -4,6 +4,7 @@ import { parsePriceFilter } from '@/lib/utils/search'
 import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import BookCard from '@/components/BookCard'
+import InfiniteBookList from '@/components/InfiniteBookList'
 import { Filter, SlidersHorizontal, Quote, Banknote, Globe } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 import { getTranslations } from 'next-intl/server'
@@ -38,7 +39,8 @@ export default async function BooksPage({
     const params = await searchParams
     const tCommon = await getTranslations('Common');
     const tCats = await getTranslations('Categories');
-    const tBooksPage = await getTranslations('BooksPage'); // Assuming you might have a dedicated namespace or use Common
+    const tBooksPage = await getTranslations('BooksPage');
+    const tNav = await getTranslations('Navigation');
 
     // Parser le prix dans la recherche si elle existe
     const priceFilter = params.search ? parsePriceFilter(params.search) : { minPrice: undefined, maxPrice: undefined, cleanQuery: params.search };
@@ -71,7 +73,7 @@ export default async function BooksPage({
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-black">
                     {/* Breadcrumbs */}
                     <div className="flex items-center justify-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-8">
-                        <Link href="/" className="hover:text-black transition-colors">{tCommon('Home')}</Link>
+                        <Link href="/" className="hover:text-black transition-colors">{tNav('Home')}</Link>
                         <span className="text-gray-200">/</span>
                         <span className="text-black">{tBooksPage('Title')}</span>
                     </div>
@@ -298,12 +300,20 @@ export default async function BooksPage({
                                     </p>
                                 </div>
 
-                                {/* Grid */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-10">
-                                    {books.map((book) => (
-                                        <BookCard key={book.id} {...book} />
-                                    ))}
-                                </div>
+                                {/* Grid with Infinite Scroll */}
+                                <InfiniteBookList
+                                    initialBooks={books}
+                                    initialFilters={{
+                                        category: params.category,
+                                        search: priceFilter.cleanQuery,
+                                        minPrice: priceFilter.minPrice,
+                                        maxPrice: priceFilter.maxPrice,
+                                        active: true,
+                                        language: params.language,
+                                        page: 1,
+                                        limit: 12
+                                    }}
+                                />
                             </>
                         )}
                     </div>

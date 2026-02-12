@@ -3,6 +3,8 @@
 import { useState, useRef } from 'react'
 import { Upload, X, Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
+import { useUIStore } from '@/store/ui'
 
 interface ImageUploadProps {
     onImageSelect: (file: File) => void
@@ -11,6 +13,8 @@ interface ImageUploadProps {
 }
 
 export default function ImageUpload({ onImageSelect, currentImage, onRemove }: ImageUploadProps) {
+    const t = useTranslations('Common.ImageUpload')
+    const { showNotification } = useUIStore()
     const [preview, setPreview] = useState<string | null>(currentImage || null)
     const [isDragging, setIsDragging] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -21,13 +25,13 @@ export default function ImageUpload({ onImageSelect, currentImage, onRemove }: I
         // Vérifier le type
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
         if (!allowedTypes.includes(file.type)) {
-            alert('Format non supporté. Utilisez JPG, PNG ou WebP')
+            showNotification(t('FormatError'), 'error')
             return
         }
 
         // Vérifier la taille (5MB max)
         if (file.size > 5 * 1024 * 1024) {
-            alert('Image trop volumineuse. Maximum 5MB')
+            showNotification(t('SizeError'), 'error')
             return
         }
 
@@ -74,14 +78,14 @@ export default function ImageUpload({ onImageSelect, currentImage, onRemove }: I
     return (
         <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
-                Photo du livre
+                {t('Label')}
             </label>
 
             {preview ? (
                 <div className="relative w-full aspect-[3/4] max-w-xs mx-auto bg-gray-100 rounded-2xl overflow-hidden group">
                     <Image
                         src={preview}
-                        alt="Aperçu"
+                        alt={t('Alt')}
                         fill
                         className="object-cover"
                         unoptimized={preview.startsWith('data:')}
@@ -101,8 +105,8 @@ export default function ImageUpload({ onImageSelect, currentImage, onRemove }: I
                     onDragLeave={handleDragLeave}
                     onClick={() => fileInputRef.current?.click()}
                     className={`w-full aspect-[3/4] max-w-xs mx-auto border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-4 cursor-pointer transition-all ${isDragging
-                            ? 'border-black bg-gray-50 scale-105'
-                            : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                        ? 'border-black bg-gray-50 scale-105'
+                        : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                         }`}
                 >
                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
@@ -110,15 +114,15 @@ export default function ImageUpload({ onImageSelect, currentImage, onRemove }: I
                     </div>
                     <div className="text-center px-4">
                         <p className="font-black text-sm text-gray-700 mb-1">
-                            Cliquez ou glissez une image
+                            {t('Placeholder')}
                         </p>
                         <p className="text-xs text-gray-400 font-bold">
-                            JPG, PNG ou WebP (max 5MB)
+                            {t('Instructions')}
                         </p>
                     </div>
                     <div className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-xl text-xs font-bold">
                         <Upload className="w-4 h-4" />
-                        Choisir une image
+                        {t('Button')}
                     </div>
                 </div>
             )}

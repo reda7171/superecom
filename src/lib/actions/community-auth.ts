@@ -155,3 +155,26 @@ export async function getCommunityUser() {
         return null
     }
 }
+
+/**
+ * Vérifie si un utilisateur community est éligible au système d'échange
+ * Règle: Avoir passé au moins une commande (basé sur l'email ou le téléphone)
+ */
+export async function checkExchangeEligibility(user: any): Promise<boolean> {
+    if (!user) return false
+    if (user.role === 'ADMIN') return true
+
+    const conditions: any[] = []
+    if (user.email) conditions.push({ email: user.email })
+    if (user.phone) conditions.push({ phone: user.phone })
+
+    if (conditions.length === 0) return false
+
+    const orderCount = await prisma.order.count({
+        where: {
+            OR: conditions
+        }
+    })
+
+    return orderCount > 0
+}

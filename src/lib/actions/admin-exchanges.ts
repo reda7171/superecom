@@ -75,7 +75,6 @@ export async function getExchangeById(id: string) {
                         id: true,
                         fullName: true,
                         email: true,
-                        phone: true,
                         city: true,
                         rating: true,
                         image: true,
@@ -86,7 +85,6 @@ export async function getExchangeById(id: string) {
                         id: true,
                         fullName: true,
                         email: true,
-                        phone: true,
                         city: true,
                         rating: true,
                         image: true,
@@ -244,5 +242,78 @@ export async function getExchangeStats() {
             completed: 0,
             cancelled: 0,
         }
+    }
+}
+
+/**
+ * Créer un échange depuis l'admin
+ */
+export async function createAdminExchange(data: {
+    requesterId: string
+    responderId: string
+    bookRequestedId: string
+    bookOfferedId?: string
+    type: 'DIRECT' | 'CREDIT'
+    creditsAmount?: number
+    message?: string
+}) {
+    try {
+        await verifyAdmin()
+
+        const exchange = await (prisma as any).exchange.create({
+            data: {
+                ...data,
+                status: 'PENDING'
+            }
+        })
+
+        // Marquer les livres comme PENDING
+        await (prisma as any).exchangeBook.update({
+            where: { id: data.bookRequestedId },
+            data: { status: 'PENDING' }
+        })
+
+        if (data.bookOfferedId) {
+            await (prisma as any).exchangeBook.update({
+                where: { id: data.bookOfferedId },
+                data: { status: 'PENDING' }
+            })
+        }
+
+        revalidatePath('/admin/exchanges')
+        return { success: true, id: exchange.id }
+    } catch (error: any) {
+        console.error('Erreur création échange:', error)
+        return { success: false, error: error.message }
+    }
+}
+
+/**
+ * Récupérer les utilisateurs pour le formulaire
+ */
+export async function getEligibleUsers() {
+    try {
+        await verifyAdmin()
+        return await (prisma as any).user.findMany({
+            where: { role: 'USER' },
+            select: { id: true, fullName: true, email: true }
+        })
+    } catch (error) {
+        return []
+    }
+}
+
+/**
+ * Récupérer les livres d'un utilisateur
+ */
+export async function getUserExchangeBooks(userId: string) {
+    try {
+        await verifyAdmin()
+        return await (prisma as any).exchangeBook.findMany({
+            where: { ownerId: userId, status: 'AVAILABLE' },
+            select: { id: true, title: true, author: true }
+        })
+    } catch (error) {
+        return []
     }
 }

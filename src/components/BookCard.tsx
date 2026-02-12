@@ -7,6 +7,7 @@ import { useCartStore } from '@/store/cart'
 import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui'
 import WishlistButton from '@/components/WishlistButton'
+import AddToReadingListButton from '@/components/AddToReadingListButton'
 
 interface BookCardProps {
     id: string
@@ -50,11 +51,17 @@ export default function BookCard({
                         unoptimized
                     />
 
-                    {/* Wishlist Button */}
-                    <div className="absolute top-4 right-4 z-20">
+                    {/* Action Buttons */}
+                    <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
                         <WishlistButton
                             item={{ id, title, price, image, type: 'BOOK', slug: `/books/${id}`, author }}
                             className="bg-white/80 backdrop-blur-sm hover:bg-white shadow-sm"
+                        />
+                        <AddToReadingListButton
+                            bookId={id}
+                            title={title}
+                            author={author}
+                            cover={image}
                         />
                     </div>
 

@@ -80,36 +80,62 @@ export default async function BookDetailPage({
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.com'
     const imageUrl = book.image.startsWith('http') ? book.image : `${baseUrl}${book.image}`
 
-    const jsonLd = {
-        '@context': 'https://schema.org',
-        '@type': 'Book',
-        name: book.title,
-        author: {
-            '@type': 'Person',
-            name: book.author,
+    const jsonLd = [
+        {
+            '@context': 'https://schema.org',
+            '@type': 'Book',
+            name: book.title,
+            author: {
+                '@type': 'Person',
+                name: book.author,
+            },
+            image: imageUrl,
+            description: book.description,
+            isbn: book.isbn,
+            offers: {
+                '@type': 'Offer',
+                price: book.price,
+                priceCurrency: 'MAD',
+                availability: book.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                url: `${baseUrl}/books/${book.id}`,
+            },
+            aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: averageRating || 5,
+                reviewCount: reviewCount || 1,
+            },
         },
-        image: imageUrl,
-        description: book.description,
-        isbn: book.isbn,
-        offers: {
-            '@type': 'Offer',
-            price: book.price,
-            priceCurrency: 'MAD',
-            availability: book.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-            url: `${baseUrl}/books/${book.id}`,
-        },
-        aggregateRating: {
-            '@type': 'AggregateRating',
-            ratingValue: averageRating || 5,
-            reviewCount: reviewCount || 1,
-        },
-    }
+        {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+                {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Accueil',
+                    item: baseUrl
+                },
+                {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Livres',
+                    item: `${baseUrl}/books`
+                },
+                {
+                    '@type': 'ListItem',
+                    position: 3,
+                    name: book.title,
+                    item: `${baseUrl}/books/${book.id}`
+                }
+            ]
+        }
+    ]
 
     return (
         <>
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
             />
             <div className="min-h-screen bg-pixio-cream">
 

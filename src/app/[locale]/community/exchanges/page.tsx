@@ -5,6 +5,7 @@ import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import ExchangesList from '@/components/community/ExchangesList'
 import { Inbox, Send } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
 export default async function ExchangesPage() {
     const user = await getCommunityUser()
@@ -14,6 +15,7 @@ export default async function ExchangesPage() {
     }
 
     const { received, sent } = await getUserExchanges()
+    const t = await getTranslations('Community.Exchanges')
 
     return (
         <div className="min-h-screen bg-pixio-cream flex flex-col">
@@ -22,10 +24,10 @@ export default async function ExchangesPage() {
             <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-32 w-full">
                 <div className="mb-12">
                     <h1 className="text-4xl lg:text-5xl font-black text-black tracking-tighter mb-4 uppercase">
-                        Mes Échanges
+                        {t('Title')}
                     </h1>
                     <p className="text-gray-500 font-medium">
-                        Gérez vos demandes d'échange reçues et suivez l'état de vos propositions.
+                        {t('Subtitle')}
                     </p>
                 </div>
 
@@ -37,9 +39,9 @@ export default async function ExchangesPage() {
                                 <Inbox className="w-6 h-6 text-white" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-black tracking-tight">Reçues</h2>
+                                <h2 className="text-2xl font-black text-black tracking-tight">{t('Received')}</h2>
                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                                    {received.length} demande{received.length > 1 ? 's' : ''}
+                                    {t('Requests', { count: received.length })}
                                 </p>
                             </div>
                         </div>
@@ -53,9 +55,9 @@ export default async function ExchangesPage() {
                                 <Send className="w-6 h-6 text-black" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-black tracking-tight">Envoyées</h2>
+                                <h2 className="text-2xl font-black text-black tracking-tight">{t('Sent')}</h2>
                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                                    {sent.length} demande{sent.length > 1 ? 's' : ''}
+                                    {t('Requests', { count: sent.length })}
                                 </p>
                             </div>
                         </div>

@@ -113,7 +113,14 @@ export default async function AdminOrdersPage({
                             orders.map((order) => (
                                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-black text-gray-900">#{order.id.slice(0, 8)}</div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="text-sm font-black text-gray-900">#{order.id.slice(0, 8)}</div>
+                                            {(order as any).trackingID && (
+                                                <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center" title={`Expédié: ${(order as any).trackingID}`}>
+                                                    <Search className="w-2.5 h-2.5 text-blue-600" />
+                                                </div>
+                                            )}
+                                        </div>
                                         <div className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleString('fr-FR')}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">

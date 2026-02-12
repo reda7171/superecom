@@ -21,6 +21,7 @@ export const dynamic = 'force-dynamic'
 export default async function PacksPage() {
     const packs = await getPacks()
     const t = await getTranslations('PacksPage')
+    const tNav = await getTranslations('Navigation')
 
     return (
         <div className="min-h-screen bg-pixio-cream">
@@ -31,7 +32,7 @@ export default async function PacksPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-black">
                     {/* Breadcrumbs */}
                     <div className="flex items-center justify-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-8">
-                        <Link href="/" className="hover:text-black transition-colors">ACCUEIL</Link>
+                        <Link href="/" className="hover:text-black transition-colors">{tNav('Home')}</Link>
                         <span className="text-gray-200">/</span>
                         <span className="text-black">{t('Title')}</span>
                     </div>

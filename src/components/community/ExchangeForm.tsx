@@ -1,10 +1,10 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createExchangeRequest } from '@/lib/actions/community-exchanges'
-import { ArrowLeft, BookOpen, Loader2, Coins, RefreshCw } from 'lucide-react'
+import { ArrowLeft, BookOpen, Loader2, Coins, RefreshCw, Sparkles } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 import ReportButton from './ReportButton'
 
@@ -13,13 +13,16 @@ interface ExchangeFormProps {
         book: any
         myBooks: any[]
         currentUser: any
+        isEligible: boolean
     }
 }
 
 export default function ExchangeForm({ details }: ExchangeFormProps) {
     const t = useTranslations('Community.Exchange')
     const tc = useTranslations('Community')
+    const tcmn = useTranslations('Common')
     const router = useRouter()
+    const [isPending, startTransition] = useTransition()
 
     // State
     const [submitting, setSubmitting] = useState(false)
@@ -28,8 +31,21 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
     // Form state
     const [type, setType] = useState<'DIRECT' | 'CREDIT'>('DIRECT')
     const [selectedBook, setSelectedBook] = useState<string>('')
+    const [deliveryMethod, setDeliveryMethod] = useState<'MEETUP' | 'SHIPPING' | 'LOCKER'>('MEETUP')
 
-    const { book, myBooks, currentUser } = details
+    const { book, myBooks, currentUser, isEligible } = details
+
+    const handleTypeChange = (newType: 'DIRECT' | 'CREDIT') => {
+        startTransition(() => {
+            setType(newType)
+        })
+    }
+
+    const handleDeliveryChange = (newMethod: 'MEETUP' | 'SHIPPING' | 'LOCKER') => {
+        startTransition(() => {
+            setDeliveryMethod(newMethod)
+        })
+    }
 
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -49,137 +65,230 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
     }
 
     return (
-        <div className="w-full max-w-4xl bg-white rounded-[2.5rem] shadow-xl shadow-black/5 border border-gray-100 overflow-hidden flex flex-col lg:flex-row">
+        <div className="w-full max-w-5xl bg-white rounded-[3rem] shadow-2xl shadow-black/10 border border-gray-100 overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
+            {/* Left: Book to Request - Side Panel Look */}
+            <div className="lg:w-[35%] bg-black text-white p-12 flex flex-col items-center text-center relative overflow-hidden">
+                {/* Decorative Glow */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-pixio-yellow/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
 
-            {/* Left: Book to Request */}
-            <div className="lg:w-1/3 bg-gray-50 p-10 flex flex-col items-center text-center border-b lg:border-b-0 lg:border-r border-gray-100 relative">
-                <Link href="/community/market" className="absolute top-6 left-6 p-2 hover:bg-white rounded-full transition-colors">
-                    <ArrowLeft className="w-5 h-5" />
+                <Link href={`/community/market/${book.id}`} className="absolute top-8 left-8 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all group">
+                    <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                 </Link>
 
-                <div className="w-32 h-44 bg-white rounded-xl shadow-md mb-6 flex items-center justify-center overflow-hidden">
-                    {book.image ? (
-                        <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
-                    ) : (
-                        <BookOpen className="w-10 h-10 text-gray-300" />
-                    )}
+                <div className="relative mt-8 mb-10 group">
+                    <div className="absolute inset-0 bg-pixio-yellow rounded-2xl rotate-6 scale-105 opacity-50 blur-sm group-hover:rotate-12 transition-transform"></div>
+                    <div className="relative w-40 h-56 bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border-2 border-white/20">
+                        {book.image ? (
+                            <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+                        ) : (
+                            <BookOpen className="w-12 h-12 text-gray-700" />
+                        )}
+                    </div>
                 </div>
 
-                <h2 className="text-xl font-black text-black leading-tight mb-2">{book.title}</h2>
-                <p className="text-sm font-bold text-gray-400 mb-6">{book.author}</p>
+                <div className="space-y-3 mb-10">
+                    <h2 className="text-2xl font-black tracking-tight leading-tight">{book.title}</h2>
+                    <p className="text-lg font-medium text-gray-400 italic">{tcmn('By')} {book.author}</p>
+                </div>
 
-                <div className="mt-auto pt-6 border-t border-gray-200 w-full">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">{t('Subtitle')}</p>
-                    <div className="flex items-center justify-center gap-2">
-                        <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-black text-xs">
+                <div className="mt-auto pt-10 border-t border-white/10 w-full">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 mb-4">{t('Subtitle')}</p>
+                    <div className="flex flex-col items-center gap-3">
+                        <div className="w-12 h-12 bg-pixio-yellow text-black rounded-full flex items-center justify-center font-black text-lg border-2 border-white/20 shadow-lg">
                             {book.owner.fullName?.[0]}
                         </div>
-                        <span className="font-bold text-sm">{book.owner.fullName}</span>
+                        <span className="font-black text-sm tracking-tight">{book.owner.fullName}</span>
                     </div>
                 </div>
 
-                <ReportButton targetBookId={book.id} targetUserId={book.owner.id} />
+                <div className="mt-8">
+                    <ReportButton targetBookId={book.id} targetUserId={book.owner.id} />
+                </div>
             </div>
 
-            {/* Right: Offer Form */}
-            <div className="lg:w-2/3 p-10">
-                <h1 className="text-3xl font-black text-black tracking-tighter mb-8">{t('Title')}</h1>
-
-                <form onSubmit={onSubmit} className="space-y-8">
-                    <input type="hidden" name="bookRequestedId" value={book.id} />
-
-                    {/* Exchange Type Selection */}
-                    <div className="space-y-4">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('YourOffer')}</label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <button
-                                type="button"
-                                onClick={() => setType('DIRECT')}
-                                className={`p-4 rounded-2xl border-2 text-left transition-all ${type === 'DIRECT' ? 'border-black bg-black text-white' : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
-                                    }`}
-                            >
-                                <div className="flex items-center gap-2 mb-2">
-                                    <RefreshCw className="w-5 h-5" />
-                                    <span className="font-black text-xs uppercase tracking-widest">{t('BookToBook')}</span>
-                                </div>
-                                <p className="text-xs opacity-80 leading-relaxed">{t('BookToBookDesc')}</p>
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={() => setType('CREDIT')}
-                                className={`p-4 rounded-2xl border-2 text-left transition-all ${type === 'CREDIT' ? 'border-black bg-black text-white' : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
-                                    }`}
-                            >
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Coins className="w-5 h-5" />
-                                    <span className="font-black text-xs uppercase tracking-widest">{tc('Credits')}</span>
-                                </div>
-                                <p className="text-xs opacity-80 leading-relaxed">{t('CreditsDesc')} (Solde: {currentUser.credits})</p>
-                            </button>
+            {/* Right: Offer Form - Clean & Spaced */}
+            <div className="lg:w-[65%] p-12 lg:p-16 bg-white relative">
+                <div className="max-w-xl mx-auto">
+                    <div className="mb-12">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-pixio-yellow/20 text-black border border-pixio-yellow/30 rounded-full text-[9px] font-black uppercase tracking-[0.3em] mb-4">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                            <span>{t('NewExchange')}</span>
                         </div>
-                        <input type="hidden" name="type" value={type} />
+                        <h1 className="text-4xl lg:text-5xl font-black text-black tracking-tighter uppercase">{t('Title')}</h1>
                     </div>
 
-                    {/* Dynamic Content based on Type */}
-                    {type === 'DIRECT' ? (
-                        <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('SelectBook')}</label>
-                            <div className="relative">
-                                <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
-                                <select
-                                    name="bookOfferedId"
-                                    required
-                                    value={selectedBook}
-                                    onChange={(e) => setSelectedBook(e.target.value)}
-                                    className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black appearance-none"
+                    <form onSubmit={onSubmit} className="space-y-10">
+                        <input type="hidden" name="bookRequestedId" value={book.id} />
+
+                        {/* Exchange Type Selection */}
+                        <div className="space-y-6">
+                            <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 ml-1">{t('YourOffer')}</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <button
+                                    type="button"
+                                    onClick={() => handleTypeChange('DIRECT')}
+                                    className={`p-6 rounded-[2rem] border-2 text-left transition-all duration-500 ${type === 'DIRECT'
+                                        ? 'border-black bg-black text-white shadow-xl translate-y-[-4px]'
+                                        : 'border-gray-100 bg-gray-50/50 text-gray-400 hover:border-gray-200 hover:bg-white'
+                                        }`}
                                 >
-                                    <option value="" disabled>{tc('SelectPlaceholder')}</option>
-                                    {myBooks.map((b: any) => (
-                                        <option key={b.id} value={b.id}>{b.title} ({b.author})</option>
-                                    ))}
-                                </select>
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className={`p-2 rounded-xl ${type === 'DIRECT' ? 'bg-white/10' : 'bg-white'}`}>
+                                            <RefreshCw className={`w-5 h-5 ${type === 'DIRECT' ? 'text-pixio-yellow' : 'text-gray-400'}`} />
+                                        </div>
+                                        <span className="font-black text-xs uppercase tracking-widest">{t('BookToBook')}</span>
+                                    </div>
+                                    <p className="text-xs opacity-70 leading-relaxed font-medium">{t('BookToBookDesc')}</p>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => handleTypeChange('CREDIT')}
+                                    className={`p-6 rounded-[2rem] border-2 text-left transition-all duration-500 ${type === 'CREDIT'
+                                        ? 'border-black bg-black text-white shadow-xl translate-y-[-4px]'
+                                        : 'border-gray-100 bg-gray-50/50 text-gray-400 hover:border-gray-200 hover:bg-white'
+                                        }`}
+                                >
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className={`p-2 rounded-xl ${type === 'CREDIT' ? 'bg-white/10' : 'bg-white'}`}>
+                                            <Coins className={`w-5 h-5 ${type === 'CREDIT' ? 'text-pixio-yellow' : 'text-gray-400'}`} />
+                                        </div>
+                                        <span className="font-black text-xs uppercase tracking-widest">{tc('Credits')}</span>
+                                    </div>
+                                    <p className="text-xs opacity-70 leading-relaxed font-medium">{t('CreditsDesc')} ({t('Balance', { count: currentUser.credits })})</p>
+                                </button>
                             </div>
-                            {myBooks.length === 0 && (
-                                <p className="text-red-500 text-xs font-bold mt-2">Vous n'avez aucun livre disponible. <Link href="/community/books/new" className="underline">Ajoutez-en un d'abord.</Link></p>
-                            )}
+                            <input type="hidden" name="type" value={type} />
                         </div>
-                    ) : (
-                        <div className="p-6 bg-yellow-50 rounded-2xl border border-yellow-100 animate-in fade-in slide-in-from-top-4 duration-300">
-                            <p className="text-yellow-800 text-sm font-bold flex items-center gap-2">
-                                <Coins className="w-4 h-4" /> Coût estimé : 1 crédit
+
+                        {/* Dynamic Content based on Type */}
+                        {type === 'DIRECT' ? (
+                            <div className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 ml-1">{t('SelectBook')}</label>
+                                <div className="relative group/select">
+                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                                        <BookOpen className="w-4 h-4 text-black" />
+                                    </div>
+                                    <select
+                                        name="bookOfferedId"
+                                        required
+                                        value={selectedBook}
+                                        onChange={(e) => setSelectedBook(e.target.value)}
+                                        className="w-full pl-16 pr-8 py-5 bg-gray-50/80 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-black text-black appearance-none text-sm group-hover/select:bg-gray-100/50"
+                                    >
+                                        <option value="" disabled>{t('SelectPlaceholder')}</option>
+                                        {myBooks.map((b: any) => (
+                                            <option key={b.id} value={b.id}>{b.title} — {b.author}</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        <ArrowLeft className="w-4 h-4 text-gray-400 rotate-[-90deg]" />
+                                    </div>
+                                </div>
+                                {myBooks.length === 0 && (
+                                    <p className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-3 bg-red-50 p-4 rounded-xl border border-red-100">
+                                        {t('NoBooksAvailable')} <Link href="/community/books/new" className="underline text-black">{t('AddOneFirst')}</Link>
+                                    </p>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="p-8 bg-pixio-yellow/10 rounded-[2rem] border-2 border-dashed border-pixio-yellow/40 animate-in fade-in slide-in-from-top-4 duration-500 flex items-center gap-6">
+                                <div className="w-16 h-16 bg-pixio-yellow rounded-2xl flex items-center justify-center shadow-lg">
+                                    <Coins className="w-8 h-8 text-black" />
+                                </div>
+                                <div>
+                                    <p className="text-black text-lg font-black tracking-tight">{t('TotalCost')}</p>
+                                    <p className="text-gray-500 text-xs font-bold mt-1">{t('Balance', { count: currentUser.credits })}</p>
+                                </div>
+                                {currentUser.credits < 1 && (
+                                    <div className="ml-auto text-red-500 text-[10px] font-black uppercase tracking-widest">{t('InsufficientBalance')}</div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Delivery Method Selector */}
+                        <div className="space-y-6">
+                            <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 ml-1">{t('DeliveryMethods')}</label>
+                            <div className="flex flex-wrap gap-3">
+                                {['MEETUP', 'SHIPPING', 'LOCKER'].map((m) => (
+                                    <button
+                                        key={m}
+                                        type="button"
+                                        onClick={() => handleDeliveryChange(m as any)}
+                                        className={`px-6 py-3 rounded-full border-2 text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-300 ${deliveryMethod === m
+                                            ? 'border-black bg-black text-white shadow-xl scale-105'
+                                            : 'border-gray-100 bg-gray-50/50 text-gray-400 hover:border-gray-200'
+                                            }`}
+                                    >
+                                        {m === 'MEETUP' ? t('Meetup') : m === 'SHIPPING' ? t('Shipping') : t('Relay')}
+                                    </button>
+                                ))}
+                            </div>
+                            <input type="hidden" name="deliveryMethod" value={deliveryMethod} />
+                        </div>
+
+                        {/* Contextual Inputs based on Delivery */}
+                        {deliveryMethod === 'MEETUP' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-8 bg-gray-50/50 rounded-[2.5rem] border border-gray-100 animate-in zoom-in-95 duration-500">
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 ml-1">{t('SuggestedMeetingPoint')}</label>
+                                    <input
+                                        name="meetingPoint"
+                                        placeholder={t('MeetingPointPlaceholder')}
+                                        className="w-full px-6 py-4 bg-white border-2 border-transparent rounded-2xl focus:border-black outline-none transition-all font-bold text-sm shadow-sm"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 ml-1">{t('SuggestedMeetingTime')}</label>
+                                    <input
+                                        name="meetingDate"
+                                        type="datetime-local"
+                                        className="w-full px-6 py-4 bg-white border-2 border-transparent rounded-2xl focus:border-black outline-none transition-all font-bold text-sm shadow-sm"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Message */}
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 ml-1">{t('Message')}</label>
+                            <textarea
+                                name="message"
+                                rows={4}
+                                className="w-full p-6 bg-gray-50/80 border-2 border-transparent rounded-[2rem] focus:bg-white focus:border-black outline-none transition-all font-bold text-black resize-none text-sm placeholder:text-gray-300"
+                                placeholder={t('MessagePlaceholder')}
+                            />
+                        </div>
+
+                        {error && (
+                            <div className="p-6 bg-red-50 text-red-500 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center border-2 border-dashed border-red-200 animate-bounce">
+                                {error}
+                            </div>
+                        )}
+
+                        <button
+                            type="submit"
+                            disabled={submitting || !isEligible || (type === 'DIRECT' && !selectedBook) || (type === 'CREDIT' && currentUser.credits < 1)}
+                            className="group relative w-full h-20 bg-black text-white rounded-[2rem] overflow-hidden shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100"
+                        >
+                            <div className="absolute inset-0 bg-pixio-yellow translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                            <div className="relative flex items-center justify-center gap-4 text-xs font-black uppercase tracking-[0.5em] group-hover:text-black transition-colors">
+                                {submitting ? <Loader2 className="w-6 h-6 animate-spin" /> : (
+                                    <>
+                                        <span>{t('Submit')}</span>
+                                        <ArrowLeft className="w-5 h-5 rotate-180" />
+                                    </>
+                                )}
+                            </div>
+                        </button>
+
+                        {!isEligible && (
+                            <p className="text-center text-[9px] font-black uppercase tracking-widest text-red-400 px-8">
+                                {t('EligibilityNote')}
                             </p>
-                            {currentUser.credits < 1 && (
-                                <p className="text-red-500 text-xs font-bold mt-2">Solde insuffisant.</p>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Message */}
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('Message')}</label>
-                        <textarea
-                            name="message"
-                            rows={3}
-                            className="w-full p-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black resize-none"
-                            placeholder={t('MessagePlaceholder')}
-                        />
-                    </div>
-
-                    {error && (
-                        <div className="p-4 bg-red-50 text-red-500 rounded-xl text-sm font-bold text-center">
-                            {error}
-                        </div>
-                    )}
-
-                    <button
-                        type="submit"
-                        disabled={submitting || (type === 'DIRECT' && !selectedBook) || (type === 'CREDIT' && currentUser.credits < 1)}
-                        className="w-full bg-black text-white font-black py-5 rounded-2xl shadow-lg hover:bg-gray-800 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
-                    >
-                        {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : t('Submit')}
-                    </button>
-                </form>
+                        )}
+                    </form>
+                </div>
             </div>
         </div>
     )

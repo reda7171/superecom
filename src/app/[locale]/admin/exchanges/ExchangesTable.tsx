@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 import Image from 'next/image'
-import { Eye, XCircle, BookOpen, User } from 'lucide-react'
+import { Eye, XCircle, BookOpen, User, ArrowRight } from 'lucide-react'
 import { cancelExchange } from '@/lib/actions/admin-exchanges'
 import { useRouter } from 'next/navigation'
 

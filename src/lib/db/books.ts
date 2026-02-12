@@ -10,12 +10,18 @@ export interface BookFilters {
     search?: string
     active?: boolean
     language?: string
+    page?: number
+    limit?: number
 }
 
 /**
  * Récupère tous les livres avec filtres optionnels
  */
 export async function getBooks(filters?: BookFilters) {
+    const page = filters?.page || 1
+    const limit = filters?.limit || 12
+    const skip = (page - 1) * limit
+
     const where: Prisma.BookWhereInput = {
         active: filters?.active ?? true,
     }
@@ -41,16 +47,15 @@ export async function getBooks(filters?: BookFilters) {
         }
     }
 
-    // Récupération des livres
-    let books = await prisma.book.findMany({
-        where,
-        orderBy: {
-            createdAt: 'desc',
-        },
-    })
-
-    // Recherche fuzzy par titre ou auteur si nécessaire
+    // Si recherche fuzzy, on doit tout récupérer pour trier
     if (filters?.search) {
+        let books = await prisma.book.findMany({
+            where,
+            orderBy: {
+                createdAt: 'desc',
+            },
+        })
+
         const fuseOptions = {
             keys: [
                 { name: 'title', weight: 1.0 },
@@ -61,8 +66,21 @@ export async function getBooks(filters?: BookFilters) {
             ignoreLocation: true
         }
         const fuse = new Fuse(books, fuseOptions)
-        books = fuse.search(filters.search).map(res => res.item)
+        const results = fuse.search(filters.search).map(res => res.item)
+
+        // Pagination manuelle après recherche
+        return results.slice(skip, skip + limit)
     }
+
+    // Récupération des livres avec pagination SQL
+    const books = await prisma.book.findMany({
+        where,
+        orderBy: {
+            createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+    })
 
     return books
 }

@@ -1,6 +1,6 @@
+import { Link } from '@/i18n/routing'
 import { getExchangeById } from '@/lib/actions/admin-exchanges'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, User, Phone, MapPin, Calendar, BookOpen, Repeat } from 'lucide-react'
 import ExchangeStatusUpdater from '@/components/admin/ExchangeStatusUpdater'
@@ -23,27 +23,27 @@ export default async function ExchangeDetailsPage({
             <div className="mb-8">
                 <Link
                     href="/admin/exchanges"
-                    className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+                    className="inline-flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-black mb-6 transition-colors"
                 >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    <ArrowLeft className="w-3 h-3 mr-2" />
                     Retour à la liste
                 </Link>
 
                 <div className="flex items-center justify-between">
                     <div>
-                        <div className="flex items-center gap-3">
-                            <h1 className="text-3xl font-bold text-gray-900">
-                                Échange #{exchange.id.slice(0, 8)}
+                        <div className="flex items-center gap-4">
+                            <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase">
+                                Échange <span className="text-gray-400">#</span>{exchange.id.slice(0, 8)}
                             </h1>
-                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${exchange.type === 'DIRECT'
-                                ? 'bg-purple-100 text-purple-800'
-                                : 'bg-orange-100 text-orange-800'
-                                }`}>
+                            <span className={`px-4 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest ${exchange.type === 'DIRECT'
+                                ? 'bg-purple-100 text-purple-700'
+                                : 'bg-orange-100 text-orange-700'
+                                } shadow-sm`}>
                                 {exchange.type === 'DIRECT' ? 'Direct' : 'Crédit'}
                             </span>
                         </div>
-                        <p className="mt-2 text-sm text-gray-600 flex items-center">
-                            <Calendar className="w-4 h-4 mr-2" />
+                        <p className="mt-3 text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center">
+                            <Calendar className="w-3 h-3 mr-2" />
                             Créé le {new Date(exchange.createdAt).toLocaleString('fr-FR')}
                         </p>
                     </div>

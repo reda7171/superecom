@@ -7,6 +7,8 @@ import { verifyAdmin } from '@/lib/actions/auth'
 import { createAuditLog } from './audit'
 
 // Schéma de validation pour un livre
+import { getBooks as getBooksDb, BookFilters } from '@/lib/db/books'
+
 const BookSchema = z.object({
     title: z.string().min(1, 'Le titre est requis'),
     author: z.string().min(1, 'L\'auteur est requis'),
@@ -215,5 +217,18 @@ export async function toggleBookStatus(
             success: false,
             error: error.message || 'Impossible de changer le statut du livre',
         }
+    }
+}
+
+/**
+ * Récupérer les livres avec pagination pour le client (Server Action)
+ */
+export async function fetchBooks(filters: BookFilters) {
+    try {
+        const books = await getBooksDb(filters)
+        return { success: true, data: books }
+    } catch (error) {
+        console.error('Error fetching books:', error)
+        return { success: false, error: 'Failed to fetch books', data: [] }
     }
 }

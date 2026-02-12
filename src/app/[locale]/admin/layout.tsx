@@ -15,22 +15,26 @@ import {
     ShieldCheck,
     Ticket,
     MessageSquare,
-    BarChart3
+    BarChart3,
+    GripVertical,
+    FileText
 } from 'lucide-react'
 
 const navigation = [
-    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'Livres', href: '/admin/books', icon: BookOpen },
-    { name: 'Packs', href: '/admin/packs', icon: Package },
-    { name: 'Commandes', href: '/admin/orders', icon: ShoppingCart },
-    { name: 'Clients', href: '/admin/customers', icon: Users },
-    { name: 'Echanges', href: '/admin/exchanges', icon: Repeat },
-    { name: 'Community', href: '/admin/community', icon: Users }, // Changed icon to Users for community generally
-    { name: 'Signalements', href: '/admin/reports', icon: AlertCircle },
-    { name: 'Avis', href: '/admin/reviews', icon: MessageSquare },
-    { name: 'Coupons', href: '/admin/coupons', icon: Ticket },
-    { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-    { name: 'Audit Log', href: '/admin/audit', icon: ShieldCheck },
+    { name: 'Dashboard', href: '/fr/admin', icon: LayoutDashboard },
+    { name: 'Articles', href: '/fr/admin/posts', icon: FileText },
+    { name: 'Livres', href: '/fr/admin/books', icon: BookOpen },
+    { name: 'Packs', href: '/fr/admin/packs', icon: Package },
+    { name: 'Commandes', href: '/fr/admin/orders', icon: ShoppingCart },
+    { name: 'Clients', href: '/fr/admin/customers', icon: Users },
+    { name: 'Echanges', href: '/fr/admin/exchanges', icon: Repeat },
+    { name: 'Community', href: '/fr/admin/community', icon: Users },
+    { name: 'Signalements', href: '/fr/admin/reports', icon: AlertCircle },
+    { name: 'Avis', href: '/fr/admin/reviews', icon: MessageSquare },
+    { name: 'Coupons', href: '/fr/admin/coupons', icon: Ticket },
+    { name: 'Analytics', href: '/fr/admin/analytics', icon: BarChart3 },
+    { name: 'Menus', href: '/fr/admin/menus', icon: GripVertical },
+    { name: 'Audit Log', href: '/fr/admin/audit', icon: ShieldCheck },
 ]
 
 import OrderNotifications from '@/components/admin/OrderNotifications'

@@ -1,40 +1,84 @@
 import { PrismaClient } from '@prisma/client'
 import 'dotenv/config'
 import bcrypt from 'bcryptjs'
+import { blogPosts } from './blog-posts'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Début du seeding...')
+  console.log('🌱 Début du seeding complet...')
 
-  // Nettoyage de la base de données
+  // Nettoyage
+  console.log('🧹 Nettoyage de la base de données...')
+
   await prisma.orderItem.deleteMany()
   await prisma.order.deleteMany()
   await prisma.packBook.deleteMany()
   await prisma.pack.deleteMany()
+  await prisma.review.deleteMany()
+  await prisma.exchange.deleteMany()
+  await prisma.exchangeBook.deleteMany()
+  await prisma.wishlist.deleteMany()
+  await prisma.coupon.deleteMany()
   await prisma.book.deleteMany()
+  await prisma.menuItem.deleteMany()
+  await prisma.menu.deleteMany()
+  await prisma.post.deleteMany()
   await prisma.user.deleteMany()
 
-  console.log('🧹 Base de données nettoyée')
 
-  // 1. Création de l'Admin
+  console.log('✅ Base de données nettoyée')
+
+  // 1. UTILISATEURS
+  console.log('\n👤 Création des utilisateurs...')
+
   const hashedPassword = await bcrypt.hash('admin123', 10)
-  await prisma.user.create({
+  const admin = await prisma.user.create({
     data: {
       email: 'admin@riwaya.com',
       password: hashedPassword,
       role: 'ADMIN',
+      fullName: 'Admin Riwaya',
+      city: 'Casablanca',
+      credits: 100,
+      rating: 5.0
     },
   })
-  console.log('👤 Admin créé (admin@riwaya.com / admin123)')
 
-  // 2. Création des Livres
+  // Utilisateurs communauté
+  const communityUsersData = [
+    { email: 'sara@example.com', fullName: 'Sara Benali', city: 'Casablanca', credits: 30 },
+    { email: 'karim@example.com', fullName: 'Karim Idrissi', city: 'Rabat', credits: 20 },
+    { email: 'laila@example.com', fullName: 'Laila Amrani', city: 'Marrakech', credits: 15 },
+    { email: 'mehdi@example.com', fullName: 'Mehdi Tazi', city: 'Tanger', credits: 25 },
+  ]
+
+  const communityUsers = []
+  for (const userData of communityUsersData) {
+    const hashedPass = await bcrypt.hash('password123', 10)
+    const user = await prisma.user.create({
+      data: {
+        email: userData.email,
+        password: hashedPass,
+        role: 'USER',
+        fullName: userData.fullName,
+        city: userData.city,
+        credits: userData.credits,
+        rating: 4.5
+      }
+    })
+    communityUsers.push(user)
+  }
+  console.log(`✅ ${1 + communityUsers.length} utilisateurs créés`)
+
+  // 2. LIVRES
+  console.log('\n📚 Création des livres...')
+
   const booksData = [
-    // Développement Personnel
     {
       title: 'Atomic Habits',
       author: 'James Clear',
-      description: 'Un guide facile et éprouvé pour créer de bonnes habitudes et se débarrasser des mauvaises. Ce livre transformera votre façon de voir le progrès et le succès.',
+      description: 'Un guide facile et éprouvé pour créer de bonnes habitudes et se débarrasser des mauvaises.',
       price: 180,
       stock: 50,
       category: 'Développement Personnel',
@@ -44,7 +88,7 @@ async function main() {
     {
       title: 'Le pouvoir du moment présent',
       author: 'Eckhart Tolle',
-      description: 'Ce livre est un guide d\'éveil spirituel qui a inspiré des millions de lecteurs à travers le monde. Apprenez à vivre l\'instant présent.',
+      description: 'Ce livre est un guide d\'éveil spirituel qui a inspiré des millions de lecteurs.',
       price: 150,
       stock: 30,
       category: 'Développement Personnel',
@@ -54,7 +98,7 @@ async function main() {
     {
       title: 'Les 4 accords Toltèques',
       author: 'Don Miguel Ruiz',
-      description: 'Découvrez la voie de la liberté personnelle à travers la sagesse ancestrale des Toltèques. Quatre règles de vie pour transformer votre existence.',
+      description: 'Découvrez la voie de la liberté personnelle à travers la sagesse ancestrale des Toltèques.',
       price: 120,
       stock: 35,
       category: 'Développement Personnel',
@@ -64,29 +108,27 @@ async function main() {
     {
       title: 'Miracle Morning',
       author: 'Hal Elrod',
-      description: 'Offrez-vous un supplément de vie ! Découvrez comment une routine matinale peut transformer radicalement votre vie avant 8h du matin.',
+      description: 'Découvrez comment une routine matinale peut transformer radicalement votre vie.',
       price: 160,
       stock: 25,
       category: 'Développement Personnel',
       image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=600',
       language: 'fr'
     },
-
-    // Business & Finance
     {
       title: 'Père Riche, Père Pauvre',
       author: 'Robert Kiyosaki',
-      description: 'Ce que les gens riches enseignent à leurs enfants à propos de l\'argent - et que ne font pas les gens pauvres et de la classe moyenne !',
+      description: 'Ce que les gens riches enseignent à leurs enfants à propos de l\'argent.',
       price: 170,
       stock: 45,
       category: 'Business & Finance',
-      image: 'https://images.unsplash.com/photo-1554774853-719586f8c277?auto=format&fit=crop&q=80&w=600',
+      image: 'https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?auto=format&fit=crop&q=80&w=600',
       language: 'fr'
     },
     {
       title: 'Think and Grow Rich',
       author: 'Napoleon Hill',
-      description: 'The masterpiece by Napoleon Hill. This book teaches you how to use the power of your mind to acquire wealth.',
+      description: 'The masterpiece by Napoleon Hill.',
       price: 140,
       stock: 40,
       category: 'Business & Finance',
@@ -96,88 +138,122 @@ async function main() {
     {
       title: 'La semaine de 4 heures',
       author: 'Tim Ferriss',
-      description: 'Travaillez moins, gagnez plus et vivez mieux ! Le livre culte pour les entrepreneurs et ceux qui veulent changer de vie.',
+      description: 'Travaillez moins, gagnez plus et vivez mieux !',
       price: 200,
       stock: 15,
       category: 'Business & Finance',
-      image: 'https://images.unsplash.com/photo-1555449918-7b9613583569?auto=format&fit=crop&q=80&w=600',
+      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=600',
       language: 'fr'
     },
-
-    // Psychologie
-    {
-      title: 'L\'intelligence émotionnelle',
-      author: 'Daniel Goleman',
-      description: 'Pourquoi l\'intelligence émotionnelle peut compter plus que le QI. Apprenez à maîtriser vos émotions pour réussir.',
-      price: 190,
-      stock: 20,
-      category: 'Psychologie',
-      image: 'https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?auto=format&fit=crop&q=80&w=600',
-      language: 'fr'
-    },
-    {
-      title: 'Thinking, Fast and Slow',
-      author: 'Daniel Kahneman',
-      description: ' The two systems that drive the way we think. System 1 is fast, intuitive, and emotional; System 2 is slower, more deliberative, and more logical.',
-      price: 220,
-      stock: 10,
-      category: 'Psychologie',
-      image: 'https://images.unsplash.com/photo-1555252554-e69ea2388042?auto=format&fit=crop&q=80&w=600',
-      language: 'en'
-    },
-
-    // Fiction & Romans
     {
       title: 'L\'Alchimiste',
       author: 'Paulo Coelho',
-      description: 'Un conte philosophique qui a marqué des générations. L\'histoire de Santiago, un jeune berger andalou, à la recherche de sa légende personnelle.',
+      description: 'Un conte philosophique qui a marqué des générations.',
       price: 130,
-      stock: 60,
+      stock: 100,
       category: 'Romans & Fiction',
-      image: 'https://images.unsplash.com/photo-1518373714866-3f1479826059?auto=format&fit=crop&q=80&w=600',
+      image: 'https://images.unsplash.com/photo-1633477189729-9290b3261d0a?auto=format&fit=crop&q=80&w=800',
       language: 'fr'
     },
     {
-      title: '1984',
-      author: 'George Orwell',
-      description: 'Le chef-d\'œuvre de la dystopie. Big Brother vous regarde dans ce roman saisissant d\'actualité.',
+      title: 'قواعد العشق الأربعون',
+      author: 'إليف شافاق',
+      description: 'رواية عن جلال الدين الرومي وشمس التبريزي، تستعرض قواعد العشق والحياة.',
+      price: 140,
+      stock: 45,
+      category: 'Romans & Fiction',
+      image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=600',
+      language: 'ar'
+    },
+    {
+      title: 'النبي',
+      author: 'جبران خليل جبران',
+      description: 'كتاب فلسفي يضم مقالات شعرية تتناول مواضيع الحياة المختلفة بلسان المصطفى.',
       price: 110,
-      stock: 55,
-      category: 'Romans & Fiction',
-      image: 'https://images.unsplash.com/photo-1531988042232-c555f697be4d?auto=format&fit=crop&q=80&w=600',
-      language: 'fr'
+      stock: 40,
+      category: 'Philosophie',
+      image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=600',
+      language: 'ar'
     },
     {
-      title: 'The Little Prince',
-      author: 'Antoine de Saint-Exupéry',
-      description: 'A poetic and philosophical tale. A story for children and grown-ups alike.',
-      price: 90,
-      stock: 70,
+      title: 'قوة عقلك الباطن',
+      author: 'جوزيف ميرفي',
+      description: 'كيفية استخدام عقلك الباطن لتحقيق النجاح والسعادة في حياتك.',
+      price: 160,
+      stock: 35,
+      category: 'Développement Personnel',
+      image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600',
+      language: 'ar'
+    },
+    {
+      title: 'موسم الهجرة إلى الشمال',
+      author: 'الطيب صالح',
+      description: 'إحدى أهم الروايات في الأدب العربي المعاصر، تتناول صدام الحضارات.',
+      price: 125,
+      stock: 20,
       category: 'Romans & Fiction',
-      image: 'https://images.unsplash.com/photo-1633477189729-9290b3261d0a?auto=format&fit=crop&q=80&w=600',
+      image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600',
+      language: 'ar'
+    },
+    {
+      title: '48 قانوناً للقوة',
+      author: 'روبرت غرين',
+      description: 'كتاب يستعرض قوانين القوة وتاريخ النفوذ وكيفية التعامل مع الصراعات البشرية.',
+      price: 210,
+      stock: 25,
+      category: 'Business & Finance',
+      image: 'https://images.unsplash.com/photo-1621360841011-cb2aab44c20f?auto=format&fit=crop&q=80&w=600',
+      language: 'ar'
+    },
+    {
+      title: 'The Psychology of Money',
+      author: 'Morgan Housel',
+      description: 'Timeless lessons on wealth, greed, and happiness doing well with money.',
+      price: 195,
+      stock: 40,
+      category: 'Business & Finance',
+      image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600',
       language: 'en'
     },
-
-    // Religion
     {
-      title: 'الرحيق المختوم',
-      author: 'صفي الرحمن المباركفوري',
-      description: 'بحث في السيرة النبوية على صاحبها أفضل الصلاة والسلام.',
-      price: 240,
-      stock: 15,
-      category: 'Religion',
-      image: 'https://images.unsplash.com/photo-1576766453916-2d6d8ee82780?auto=format&fit=crop&q=80&w=600',
-      language: 'ar'
+      title: 'The Subtle Art of Not Giving a F*ck',
+      author: 'Mark Manson',
+      description: 'A counterintuitive approach to living a good life.',
+      price: 175,
+      stock: 35,
+      category: 'Développement Personnel',
+      image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=600',
+      language: 'en'
     },
     {
-      title: 'لا تحزن',
-      author: 'عائض القرني',
-      description: 'كتاب يدعو إلى التفاؤل ونبذ اليأس.',
-      price: 180,
-      stock: 40,
-      category: 'Religion',
-      image: 'https://images.unsplash.com/photo-1519791883288-dc8bd696e667?auto=format&fit=crop&q=80&w=600',
-      language: 'ar'
+      title: 'Deep Work',
+      author: 'Cal Newport',
+      description: 'Rules for focused success in a distracted world.',
+      price: 185,
+      stock: 28,
+      category: 'Productivité',
+      image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=600',
+      language: 'en'
+    },
+    {
+      title: 'Zero to One',
+      author: 'Peter Thiel',
+      description: 'Notes on Startups, or How to Build the Future.',
+      price: 220,
+      stock: 20,
+      category: 'Business & Finance',
+      image: 'https://images.unsplash.com/photo-1621360841011-cb2aab44c20f?auto=format&fit=crop&q=80&w=600',
+      language: 'en'
+    },
+    {
+      title: 'The 5 AM Club',
+      author: 'Robin Sharma',
+      description: 'Own your morning. Elevate your life.',
+      price: 165,
+      stock: 45,
+      category: 'Développement Personnel',
+      image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=600',
+      language: 'en'
     },
   ]
 
@@ -185,214 +261,248 @@ async function main() {
   for (const book of booksData) {
     const createdBook = await prisma.book.create({ data: book })
     books.push(createdBook)
-    console.log(`📚 Livre créé: ${book.title}`)
   }
+  console.log(`✅ ${books.length} livres créés`)
 
-  // 3. Création des Packs
-  const packsData = [
-    {
+  // 3. PACKS
+  console.log('\n📦 Création des packs...')
+
+  const pack1 = await prisma.pack.create({
+    data: {
       name: 'Pack Mindset Ultime',
-      description: 'Les indispensables pour forger un mental d\'acier et atteindre vos objectifs. Ce pack combine les meilleures stratégies de productivité et de psychologie.',
-      price: 450, // Valeur: 180+150+120 = 450 -> 450 (Pas de réduc ici ? Ajoutons une réduc) -> Mettons 399
-      bookIndices: [0, 1, 2], // Atomic Habits, Moment Présent, 4 Accords
+      description: 'Les indispensables pour forger un mental d\'acier.',
+      price: 399,
       image: 'https://images.unsplash.com/photo-1524578271613-d550eacf6090?auto=format&fit=crop&q=80&w=600',
-    },
-    {
-      name: 'Pack Entrepreneur Succès',
-      description: 'La boîte à outils complète pour lancer et faire croître votre business. De l\'état d\'esprit à la gestion financière.',
-      price: 450, // Valeur: 170+140+200 = 510
-      bookIndices: [4, 5, 6], // Père Riche, Réfléchissez, Semaine 4h
-      image: 'https://images.unsplash.com/photo-1664575602276-acd073f104c1?auto=format&fit=crop&q=80&w=600',
-    },
-    {
-      name: 'Pack Sagesse & Spiritualité',
-      description: 'Retrouvez la paix intérieure et connectez-vous à l\'essentiel avec cette sélection d\'ouvrages profonds.',
-      price: 380, // Valeur: 240+180 = 420
-      bookIndices: [12, 13], // Sira, Ne sois pas triste
-      image: 'https://images.unsplash.com/photo-1507473885765-e6ed051b783c?auto=format&fit=crop&q=80&w=600',
-    },
-    {
-      name: 'Pack Lecture Détente',
-      description: 'Évadez-vous avec ces classiques incontournables. Idéal pour les week-ends tranquilles.',
-      price: 290, // Valeur: 130+110+90 = 330
-      bookIndices: [9, 10, 11], // Alchimiste, 1984, Petit Prince
-      image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=600',
-    },
-  ]
-
-  for (const packData of packsData) {
-    const packBooks = packData.bookIndices.map(index => books[index])
-
-    // Calcul automatique d'un prix attractif si je ne l'ai pas bien mis (mais j'ai mis des prix fixes)
-    // Ici j'utilise les prix définis dans packsData
-
-    const pack = await prisma.pack.create({
-      data: {
-        name: packData.name,
-        description: packData.description,
-        price: packData.price,
-        image: packData.image,
-        active: true,
-        books: {
-          create: packBooks.map(book => ({
-            bookId: book.id
-          }))
-        }
+      active: true,
+      books: {
+        create: [
+          { bookId: books[0].id },
+          { bookId: books[1].id },
+          { bookId: books[2].id }
+        ]
       }
-    })
-    console.log(`📦 Pack créé: ${pack.name}`)
-  }
+    }
+  })
 
-  // 4. Création de commandes pour alimenter les statistiques de ventes
-  console.log('💰 Création des commandes de test...')
+  const pack2 = await prisma.pack.create({
+    data: {
+      name: 'Pack Entrepreneur Succès',
+      description: 'La boîte à outils complète pour lancer votre business.',
+      price: 450,
+      image: 'https://images.unsplash.com/photo-1664575602276-acd073f104c1?auto=format&fit=crop&q=80&w=600',
+      active: true,
+      books: {
+        create: [
+          { bookId: books[4].id },
+          { bookId: books[5].id },
+          { bookId: books[6].id }
+        ]
+      }
+    }
+  })
+  console.log('✅ 2 packs créés')
 
-  const packs = await prisma.pack.findMany()
+  // 4. COMMANDES
+  console.log('\n💰 Création des commandes...')
 
-  const ordersData = [
-    {
+  await prisma.order.create({
+    data: {
       fullName: 'Mohammed Alami',
       phone: '+212612345678',
       address: '15 Rue Hassan II',
       city: 'Casablanca',
+      total: 180 * 3 + 170 * 2,
       status: 'DELIVERED',
-      items: [
-        { bookId: books[0].id, quantity: 3, price: books[0].price }, // Atomic Habits
-        { bookId: books[4].id, quantity: 2, price: books[4].price }, // Père Riche
-      ]
-    },
-    {
+      items: {
+        create: [
+          { type: 'BOOK', bookId: books[0].id, quantity: 3, price: 180 * 3 },
+          { type: 'BOOK', bookId: books[4].id, quantity: 2, price: 170 * 2 }
+        ]
+      }
+    }
+  })
+
+  await prisma.order.create({
+    data: {
       fullName: 'Fatima Zahra',
       phone: '+212623456789',
       address: '22 Avenue Mohammed V',
       city: 'Rabat',
+      total: 180 * 2 + 150,
       status: 'DELIVERED',
-      items: [
-        { bookId: books[0].id, quantity: 2, price: books[0].price }, // Atomic Habits
-        { bookId: books[1].id, quantity: 1, price: books[1].price }, // Pouvoir moment présent
-      ]
-    },
-    {
+      items: {
+        create: [
+          { type: 'BOOK', bookId: books[0].id, quantity: 2, price: 180 * 2 },
+          { type: 'BOOK', bookId: books[1].id, quantity: 1, price: 150 }
+        ]
+      }
+    }
+  })
+
+  await prisma.order.create({
+    data: {
       fullName: 'Youssef El Fassi',
       phone: '+212634567890',
       address: '8 Rue de Fès',
       city: 'Marrakech',
+      total: 170 * 4 + 200,
       status: 'DELIVERED',
-      items: [
-        { bookId: books[4].id, quantity: 4, price: books[4].price }, // Père Riche
-        { bookId: books[6].id, quantity: 1, price: books[6].price }, // Semaine 4h
-      ]
+      items: {
+        create: [
+          { type: 'BOOK', bookId: books[4].id, quantity: 4, price: 170 * 4 },
+          { type: 'BOOK', bookId: books[6].id, quantity: 1, price: 200 }
+        ]
+      }
+    }
+  })
+  console.log('✅ 3 commandes créées')
+
+  // 5. LIVRES D'ÉCHANGE
+  console.log('\n🔄 Création des livres d\'échange...')
+
+  await prisma.exchangeBook.create({
+    data: {
+      title: 'Sapiens',
+      author: 'Yuval Noah Harari',
+      condition: 'GOOD',
+      exchangeType: 'DIRECT',
+      ownerId: communityUsers[0].id,
+      status: 'AVAILABLE',
+      image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=400'
+    }
+  })
+
+  await prisma.exchangeBook.create({
+    data: {
+      title: 'Homo Deus',
+      author: 'Yuval Noah Harari',
+      condition: 'NEW',
+      exchangeType: 'GIVEAWAY',
+      ownerId: communityUsers[1].id,
+      status: 'AVAILABLE',
+      image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=400'
+    }
+  })
+  console.log('✅ 2 livres d\'échange créés')
+
+  // 6. AVIS
+  console.log('\n⭐ Création des avis...')
+
+  const reviews = [
+    {
+      bookId: books[0].id,
+      fullName: 'Ahmed Bennani',
+      rating: 5,
+      comment: 'Excellent livre ! M\'a vraiment aidé à changer mes habitudes.',
+      isApproved: true
     },
     {
-      fullName: 'Amina Bennani',
-      phone: '+212645678901',
-      address: '45 Boulevard Zerktouni',
-      city: 'Casablanca',
-      status: 'DELIVERED',
-      items: [
-        { bookId: books[2].id, quantity: 5, price: books[2].price }, // 4 accords Toltèques
-        { bookId: books[0].id, quantity: 1, price: books[0].price }, // Atomic Habits
-      ]
+      bookId: books[0].id,
+      fullName: 'Zineb Alami',
+      rating: 5,
+      comment: 'Très inspirant et pratique. Je le recommande vivement.',
+      isApproved: true
     },
     {
-      fullName: 'Omar Tazi',
-      phone: '+212656789012',
-      address: '12 Rue Liberté',
-      city: 'Tanger',
-      status: 'DELIVERED',
-      items: [
-        { bookId: books[2].id, quantity: 3, price: books[2].price }, // 4 accords Toltèques
-        { bookId: books[3].id, quantity: 2, price: books[3].price }, // Miracle Morning
-      ]
+      bookId: books[4].id,
+      fullName: 'Fatima Zahra',
+      rating: 5,
+      comment: 'Un classique indispensable pour comprendre l\'argent !',
+      isApproved: true
     },
     {
-      fullName: 'Zineb Amrani',
-      phone: '+212667890123',
-      address: '33 Avenue Hassan',
-      city: 'Fès',
-      status: 'DELIVERED',
-      items: [
-        { bookId: books[1].id, quantity: 4, price: books[1].price }, // Pouvoir moment présent
-        { bookId: books[2].id, quantity: 2, price: books[2].price }, // 4 accords Toltèques
-      ]
+      bookId: books[8].id, // قواعد العشق الأربعون
+      fullName: 'Yassine Mansouri',
+      rating: 5,
+      comment: 'رواية رائعة جداً، تأخذك في رحلة روحية لا تنسى.',
+      isApproved: true
     },
     {
-      fullName: 'Karim Senhaji',
-      phone: '+212678901234',
-      address: '7 Rue Agadir',
-      city: 'Agadir',
-      status: 'DELIVERED',
-      items: [
-        { bookId: books[4].id, quantity: 1, price: books[4].price }, // Père Riche
-        { bookId: books[5].id, quantity: 3, price: books[5].price }, // Think & Grow Rich
-      ]
+      bookId: books[10].id, // قوة عقلك الباطن
+      fullName: 'Laila Tazi',
+      rating: 4,
+      comment: 'كتاب مفيد جداً لتغيير طريقة التفكير السلبية.',
+      isApproved: true
     },
     {
-      fullName: 'Laila Idrissi',
-      phone: '+212689012345',
-      address: '18 Boulevard Moulay',
-      city: 'Rabat',
-      status: 'DELIVERED',
-      items: [
-        { bookId: books[0].id, quantity: 2, price: books[0].price }, // Atomic Habits
-        { packId: packs[0]?.id, quantity: 1, price: packs[0]?.price || 0 }, // Pack Transformation
-      ]
+      bookId: books[13].id, // The Psychology of Money
+      fullName: 'John Smith',
+      rating: 5,
+      comment: 'Best book on finance I have ever read. Simple and profound.',
+      isApproved: true
     },
     {
-      fullName: 'Mehdi Berrada',
-      phone: '+212690123456',
-      address: '25 Rue Oujda',
-      city: 'Oujda',
-      status: 'SHIPPED',
-      items: [
-        { bookId: books[3].id, quantity: 4, price: books[3].price }, // Miracle Morning
-        { bookId: books[1].id, quantity: 1, price: books[1].price }, // Pouvoir moment présent
-      ]
+      bookId: books[14].id, // The Subtle Art
+      fullName: 'Sarah Wilson',
+      rating: 4,
+      comment: 'Refreshingly honest and funny. A great perspective on life.',
+      isApproved: true
     },
     {
-      fullName: 'Sophia El Amrani',
-      phone: '+212601234567',
-      address: '50 Avenue de France',
-      city: 'Casablanca',
-      status: 'CONFIRMED',
-      items: [
-        { bookId: books[2].id, quantity: 1, price: books[2].price }, // 4 accords Toltèques
-        { packId: packs[1]?.id, quantity: 1, price: packs[1]?.price || 0 }, // Pack Entrepreneur
-      ]
+      bookId: books[7].id, // L'Alchimiste
+      fullName: 'Marc Dubois',
+      rating: 5,
+      comment: 'Un chef-d\'œuvre absolu. À lire au moins une fois dans sa vie.',
+      isApproved: true
     }
   ]
 
-  for (const orderData of ordersData) {
-    const totalAmount = orderData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  for (const review of reviews) {
+    await prisma.review.create({ data: review })
+  }
+  console.log(`✅ ${reviews.length} avis créés`)
 
-    await prisma.order.create({
+  // 7. COUPONS
+  console.log('\n🎟️ Création des coupons...')
+
+  await prisma.coupon.create({
+    data: {
+      code: 'WELCOME10',
+      discount: 10,
+      type: 'PERCENTAGE',
+      isActive: true,
+      expiresAt: new Date('2026-12-31')
+    }
+  })
+
+  await prisma.coupon.create({
+    data: {
+      code: 'SUMMER50',
+      discount: 50,
+      type: 'FIXED_AMOUNT',
+      isActive: true,
+      expiresAt: new Date('2026-08-31')
+    }
+  })
+  console.log('✅ 2 coupons créés')
+
+  // 8. ARTICLES DE BLOG
+  console.log('\n📝 Création des articles de blog...')
+
+  for (const post of blogPosts) {
+    await prisma.post.create({
       data: {
-        fullName: orderData.fullName,
-        phone: orderData.phone,
-        address: orderData.address,
-        city: orderData.city,
-        total: totalAmount,
-        status: orderData.status as any,
-        items: {
-          create: orderData.items.map(item => ({
-            type: item.bookId ? 'BOOK' : 'PACK',
-            bookId: item.bookId,
-            packId: item.packId,
-            quantity: item.quantity,
-            price: item.price * item.quantity
-          }))
-        }
+        ...post,
+        authorId: admin.id
       }
     })
   }
+  console.log(`✅ ${blogPosts.length} articles de blog créés`)
 
-  console.log(`✅ ${ordersData.length} commandes créées avec succès`)
-
-  console.log('✅ Seeding terminé avec succès !')
+  console.log('\n🎉 Seeding terminé avec succès !')
+  console.log('\n📊 Résumé:')
+  console.log(`   - ${books.length} livres`)
+  console.log('   - 2 packs')
+  console.log('   - 3 commandes')
+  console.log(`   - ${1 + communityUsers.length} utilisateurs`)
+  console.log('   - 2 livres d\'échange')
+  console.log('   - 3 avis')
+  console.log('   - 2 coupons')
 }
 
 main()
   .catch((e) => {
-    console.error(e)
+    console.error('❌ Erreur:', e)
     process.exit(1)
   })
   .finally(async () => {

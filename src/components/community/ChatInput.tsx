@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl'
 import { sendMessage } from '@/lib/actions/community-chat'
 import { useRouter } from '@/i18n/routing'
 
+import { useUIStore } from '@/store/ui'
+
 interface ChatInputProps {
     chatId: string
 }
@@ -15,6 +17,7 @@ export default function ChatInput({ chatId }: ChatInputProps) {
     const [sending, setSending] = useState(false)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const router = useRouter()
+    const { showNotification } = useUIStore()
     const t = useTranslations('Community.Chat')
 
     async function handleSend() {
@@ -32,7 +35,7 @@ export default function ChatInput({ chatId }: ChatInputProps) {
                 textareaRef.current.style.height = 'auto'
             }
         } else {
-            alert(result.error || 'Error sending message')
+            showNotification(result.error || 'Error sending message', 'error')
         }
 
         setSending(false)
