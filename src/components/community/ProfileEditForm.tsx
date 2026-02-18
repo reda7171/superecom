@@ -4,12 +4,14 @@ import { useState } from 'react'
 import { useRouter } from '@/i18n/routing'
 import { useTranslations } from 'next-intl'
 import { updateProfile } from '@/lib/actions/community-user'
-import { User, MapPin, Loader2, Save, Image as ImageIcon, RefreshCw, Instagram, Facebook, Twitter, FileText } from 'lucide-react'
+import { User, MapPin, Loader2, Save, RefreshCw, Instagram, Facebook, Twitter, FileText, Plus } from 'lucide-react'
 import { MOROCCO_CITIES } from '@/lib/constants/cities'
 
 interface UserProps {
     fullName: string
     city: string
+    address?: string | null
+    neighborhood?: string | null
     email: string
     image?: string | null
     bio?: string | null
@@ -31,6 +33,8 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
 
     const [selectedImage, setSelectedImage] = useState(user.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.fullName}`)
     const [customImage, setCustomImage] = useState('')
+    const [imageFile, setImageFile] = useState<File | null>(null)
+    const [previewImage, setPreviewImage] = useState<string | null>(null)
 
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -39,7 +43,11 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
         setSuccess(false)
 
         const formData = new FormData(e.currentTarget)
-        formData.set('image', selectedImage)
+        if (imageFile) {
+            formData.set('image', imageFile)
+        } else {
+            formData.set('image', selectedImage)
+        }
 
         const res = await updateProfile(formData)
 
@@ -67,11 +75,49 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
             <form onSubmit={onSubmit} className="space-y-8">
                 {/* Avatar Section */}
                 <div className="flex flex-col items-center mb-8">
-                    <div className="relative w-32 h-32 mb-4 group cursor-pointer" onClick={generateRandomAvatar}>
-                        <div className="w-full h-full rounded-full overflow-hidden border-4 border-gray-100 shadow-md bg-gray-50">
-                            <img src={selectedImage} alt="Avatar" className="w-full h-full object-cover" />
+                    <div className="relative w-32 h-32 mb-4 group cursor-pointer">
+                        <div
+                            className="w-full h-full rounded-full overflow-hidden border-4 border-gray-100 shadow-md bg-gray-50 relative"
+                            onClick={() => document.getElementById('avatar-upload')?.click()}
+                        >
+                            <img src={previewImage || selectedImage} alt="Avatar" className="w-full h-full object-cover" />
                         </div>
-                        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+
+                        <input
+                            type="file"
+                            id="avatar-upload"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0]
+                                if (file) {
+                                    // Preview
+                                    const reader = new FileReader()
+                                    reader.onloadend = () => {
+                                        setPreviewImage(reader.result as string)
+                                    }
+                                    reader.readAsDataURL(file)
+                                    // Store file
+                                    setImageFile(file)
+                                    // Reset other inputs
+                                    setCustomImage('')
+                                    setSelectedImage('')
+                                }
+                            }}
+                        />
+
+                        {/* Plus Button for Upload */}
+                        <div
+                            className="absolute bottom-1 right-1 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-all z-10"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                document.getElementById('avatar-upload')?.click()
+                            }}
+                        >
+                            <Plus className="w-4 h-4 text-white" />
+                        </div>
+
+                        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                             <RefreshCw className="w-8 h-8 text-white" />
                         </div>
                     </div>
@@ -81,11 +127,17 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                             <button
                                 key={seed}
                                 type="button"
-                                onClick={() => setSelectedImage(`https://api.dicebear.com/7.x/notionists/svg?seed=${seed}`)}
-                                className={`w-8 h-8 rounded-full border-2 overflow-hidden transition-all ${selectedImage.includes(seed) ? 'border-black scale-110 shadow-lg' : 'border-gray-200 hover:border-gray-400'
+                                onClick={() => {
+                                    const url = `https://api.dicebear.com/7.x/notionists/svg?seed=${seed}`;
+                                    setSelectedImage(url);
+                                    setPreviewImage(null);
+                                    setImageFile(null);
+                                    setCustomImage('');
+                                }}
+                                className={`w-8 h-8 rounded-full border-2 overflow-hidden transition-all ${selectedImage.includes(seed) && !previewImage ? 'border-black scale-110 shadow-lg' : 'border-gray-200 hover:border-gray-400'
                                     }`}
                             >
-                                <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${seed}`} alt={seed} />
+                                <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${seed}`} alt={seed} className="w-full h-full object-cover" />
                             </button>
                         ))}
                     </div>
@@ -95,12 +147,28 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                             type="url"
                             placeholder={t('CustomUrl')}
                             value={customImage}
-                            onChange={(e) => setCustomImage(e.target.value)}
+                            onChange={(e) => {
+                                setCustomImage(e.target.value);
+                                if (e.target.value) {
+                                    setSelectedImage(e.target.value);
+                                    setPreviewImage(null);
+                                    setImageFile(null);
+                                }
+                            }}
                             className="flex-1 px-4 py-2 bg-gray-50 rounded-xl text-xs font-bold outline-none border-2 border-transparent focus:bg-white focus:border-black transition-all"
                         />
+                        {/* Removed Apply button as Input onChange handles it for preview, but strictly speaking we kept it in original. 
+                             Let's keep the Apply button logic if desired, but user wants smooth Experience. 
+                             I will keep the button but make it update main state. */}
                         <button
                             type="button"
-                            onClick={() => customImage && setSelectedImage(customImage)}
+                            onClick={() => {
+                                if (customImage) {
+                                    setSelectedImage(customImage);
+                                    setPreviewImage(null);
+                                    setImageFile(null);
+                                }
+                            }}
                             className="bg-black text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase"
                         >
                             {t('Apply')}
@@ -144,6 +212,36 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Quartier */}
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('NeighborhoodLabel')}</label>
+                        <div className="relative">
+                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
+                            <input
+                                name="neighborhood"
+                                defaultValue={user.neighborhood || ''}
+                                placeholder={t('NeighborhoodPlaceholder')}
+                                className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Adresse */}
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('AddressLabel')}</label>
+                        <div className="relative">
+                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
+                            <input
+                                name="address"
+                                defaultValue={user.address || ''}
+                                placeholder={t('AddressPlaceholder')}
+                                className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
+                            />
                         </div>
                     </div>
                 </div>

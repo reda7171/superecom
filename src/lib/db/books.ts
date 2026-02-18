@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import Fuse from 'fuse.js'
+import { getCached, generateCacheKey } from '@/lib/cache'
 
 // Types pour les filtres
 export interface BookFilters {
@@ -10,6 +11,7 @@ export interface BookFilters {
     search?: string
     active?: boolean
     language?: string
+    author?: string
     page?: number
     limit?: number
 }
@@ -34,6 +36,11 @@ export async function getBooks(filters?: BookFilters) {
     // Filtre par langue
     if (filters?.language && filters.language !== 'all') {
         where.language = filters.language
+    }
+
+    // Filtre par auteur
+    if (filters?.author) {
+        where.author = filters.author
     }
 
     // Filtre par prix
@@ -95,30 +102,42 @@ export async function getBookById(id: string) {
 }
 
 /**
- * Récupère les catégories uniques de livres
+ * Récupère les catégories uniques de livres (avec cache)
  */
 export async function getBookCategories() {
-    const books = await prisma.book.findMany({
-        where: { active: true },
-        select: { category: true },
-        distinct: ['category'],
-    })
+    return getCached(
+        'book:categories',
+        async () => {
+            const books = await prisma.book.findMany({
+                where: { active: true },
+                select: { category: true },
+                distinct: ['category'],
+            })
 
-    return books
-        .map((b: { category: string | null }) => b.category)
-        .filter((c: string | null): c is string => c !== null)
-        .sort()
+            return books
+                .map((b: { category: string | null }) => b.category)
+                .filter((c: string | null): c is string => c !== null)
+                .sort()
+        },
+        600 // Cache 10 minutes
+    )
 }
 
 /**
- * Récupère les livres populaires (les plus en stock)
+ * Récupère les livres populaires (avec cache)
  */
 export async function getPopularBooks(limit = 6) {
-    return prisma.book.findMany({
-        where: { active: true },
-        orderBy: { stock: 'desc' },
-        take: limit,
-    })
+    return getCached(
+        `book:popular:${limit}`,
+        async () => {
+            return prisma.book.findMany({
+                where: { active: true },
+                orderBy: { stock: 'desc' },
+                take: limit,
+            })
+        },
+        300 // Cache 5 minutes
+    )
 }
 
 /**

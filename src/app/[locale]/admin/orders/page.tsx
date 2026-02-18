@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import { Search, Filter, Eye } from 'lucide-react'
 import Link from 'next/link'
 import ExportOrdersButton from '@/components/admin/ExportOrdersButton'
+import { isAuthenticated } from '@/lib/actions/auth'
+import { redirect } from 'next/navigation'
 
 async function getOrders(status?: string) {
     return prisma.order.findMany({
@@ -18,13 +20,20 @@ async function getOrders(status?: string) {
     })
 }
 
-export default async function AdminOrdersPage({
-    searchParams,
-}: {
+export default async function AdminOrdersPage(props: {
+    params: Promise<{ locale: string }>
     searchParams: Promise<{ status?: string }>
 }) {
-    const params = await searchParams
-    const orders = await getOrders(params.status)
+    const params = await props.params
+    const { locale } = params
+    const searchParams = await props.searchParams
+
+    const isAuth = await isAuthenticated()
+    if (!isAuth) {
+        redirect(`/${locale}/admin/login`)
+    }
+
+    const orders = await getOrders(searchParams.status)
 
     const statusColors = {
         PENDING: 'bg-yellow-100 text-yellow-800',
@@ -58,8 +67,8 @@ export default async function AdminOrdersPage({
                         {Object.entries(statusLabels).map(([key, label]) => (
                             <Link
                                 key={key}
-                                href={`/admin/orders${params.status === key ? '' : `?status=${key}`}`}
-                                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${params.status === key
+                                href={`/${locale}/admin/orders${searchParams.status === key ? '' : `?status=${key}`}`}
+                                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${searchParams.status === key
                                     ? 'bg-blue-600 text-white'
                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                     }`}
@@ -67,9 +76,9 @@ export default async function AdminOrdersPage({
                                 {label}
                             </Link>
                         ))}
-                        {params.status && (
+                        {searchParams.status && (
                             <Link
-                                href="/admin/orders"
+                                href={`/${locale}/admin/orders`}
                                 className="px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100"
                             >
                                 Réinitialiser
@@ -143,7 +152,7 @@ export default async function AdminOrdersPage({
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right">
                                         <Link
-                                            href={`/admin/orders/${order.id}`}
+                                            href={`/${locale}/admin/orders/${order.id}`}
                                             className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-900 font-bold text-sm bg-blue-50 px-3 py-1 rounded-lg transition-colors"
                                         >
                                             <Eye className="w-4 h-4" />

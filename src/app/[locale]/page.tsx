@@ -2,12 +2,13 @@ import { getPopularBooks, getBestSellerBooks, getBestAuthors } from '@/lib/db/bo
 import { getPopularPacks } from '@/lib/db/packs'
 import { getAllCategoryQuotes } from '@/lib/actions/categories'
 import { getRecentExchangeBooks } from '@/lib/actions/community-market'
-import Header from '@/components/HeaderWithUser'
+import HeaderWithUser from '@/components/HeaderWithUser'
 import BookCard from '@/components/BookCard'
 import PackCard from '@/components/PackCard'
 import TrustSection from '@/components/TrustSection'
 import ScrollReveal from '@/components/ScrollReveal'
 import Footer from '@/components/Footer'
+import AdvancedSearchSection from '@/components/AdvancedSearchSection'
 import { Link } from '@/i18n/routing'
 import Image from 'next/image'
 import { ArrowRight, BookOpen, Package, Truck, Shield, Sparkles, Quote, TrendingUp, Users, RefreshCw } from 'lucide-react'
@@ -30,6 +31,20 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         'en': '/en',
       },
     },
+    openGraph: {
+      type: 'website',
+      locale: locale === 'ar' ? 'ar_MA' : locale === 'en' ? 'en_MA' : 'fr_MA',
+      url: `https://riwaya.com/${locale}`,
+      siteName: 'Riwaya',
+      images: [
+        {
+          url: 'https://riwaya.com/og-image.jpg',
+          width: 1200,
+          height: 630,
+          alt: 'Riwaya - Librairie en ligne au Maroc',
+        },
+      ],
+    },
   }
 }
 
@@ -37,43 +52,144 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   const t = await getTranslations('HomePage');
 
-  const [popularBooks, newBooks, popularPacks, bestSellerBooks, bestAuthors, exchangeBooks, allQuotes, totalBooks, totalUsers, totalExchanges] = await Promise.all([
-    getPopularBooks(6),
-    getPopularBooks(8), // Simuler "nouveautés"
+  // Optimisation: Regrouper les queries similaires et utiliser le cache
+  const [popularBooks, popularPacks, bestSellerBooks, bestAuthors, exchangeBooks, allQuotes, stats] = await Promise.all([
+    getPopularBooks(8), // Réutilisé pour "nouveautés" (slice)
     getPopularPacks(3),
     getBestSellerBooks(6),
     getBestAuthors(4),
     getRecentExchangeBooks(6),
     getAllCategoryQuotes(),
-    prisma.book.count({ where: { active: true } }),
-    prisma.user.count({ where: { role: 'USER' } }),
-    prisma.exchange.count({ where: { status: 'COMPLETED' } }),
+    // Optimisation: Une seule query pour tous les stats
+    prisma.$transaction([
+      prisma.book.count({ where: { active: true } }),
+      prisma.user.count({ where: { role: 'USER' } }),
+      prisma.exchange.count({ where: { status: 'COMPLETED' } }),
+    ])
   ])
 
-  // Choisir une citation au hasard
+  const [totalBooks, totalUsers, totalExchanges] = stats
+  const newBooks = popularBooks.slice(0, 6) // Réutiliser au lieu de refetch
+
+  // Choisir une citation de manière déterministe (éviter hydration error)
   const randomQuote = allQuotes.length > 0
-    ? allQuotes[Math.floor(Math.random() * allQuotes.length)]
+    ? allQuotes[Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % allQuotes.length]
     : null;
 
+  // Structured Data pour SEO
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: 'Riwaya',
-    url: 'https://riwaya.com',
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: 'https://riwaya.com/books?search={search_term_string}',
-      'query-input': 'required name=search_term_string',
-    },
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': 'https://riwaya.com/#organization',
+        name: 'Riwaya',
+        url: 'https://riwaya.com',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://riwaya.com/logo.png',
+          width: 512,
+          height: 512,
+        },
+        sameAs: [
+          'https://instagram.com/itsmereda1',
+          'https://facebook.com/riwaya',
+          'https://twitter.com/riwaya_ma',
+        ],
+        contactPoint: {
+          '@type': 'ContactPoint',
+          contactType: 'Customer Service',
+          telephone: '+212-XXX-XXXXXX',
+          areaServed: 'MA',
+          availableLanguage: ['French', 'Arabic', 'English'],
+        },
+      },
+      {
+        '@type': 'LocalBusiness',
+        '@id': 'https://riwaya.com/#localbusiness',
+        name: 'Riwaya',
+        image: 'https://riwaya.com/og-image.jpg',
+        url: 'https://riwaya.com',
+        telephone: '+212-XXX-XXXXXX',
+        priceRange: '50 MAD - 500 MAD',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Casablanca',
+          addressLocality: 'Casablanca',
+          addressRegion: 'Grand Casablanca',
+          postalCode: '20000',
+          addressCountry: 'MA',
+        },
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: 33.5731,
+          longitude: -7.5898,
+        },
+        openingHoursSpecification: {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          opens: '09:00',
+          closes: '22:00',
+        },
+        paymentAccepted: 'Cash on Delivery',
+        currenciesAccepted: 'MAD',
+      },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://riwaya.com/#website',
+        url: 'https://riwaya.com',
+        name: 'Riwaya',
+        description: 'Librairie en ligne au Maroc - Achetez et échangez des livres',
+        publisher: {
+          '@id': 'https://riwaya.com/#organization',
+        },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: 'https://riwaya.com/books?search={search_term_string}',
+          },
+          'query-input': 'required name=search_term_string',
+        },
+        inLanguage: ['fr-MA', 'ar-MA', 'en-MA'],
+      },
+      {
+        '@type': 'ItemList',
+        '@id': 'https://riwaya.com/#products',
+        name: 'Livres disponibles',
+        numberOfItems: totalBooks,
+        itemListElement: popularBooks.slice(0, 5).map((book, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          item: {
+            '@type': 'Book',
+            '@id': `https://riwaya.com/books/${book.id}`,
+            name: book.title,
+            author: {
+              '@type': 'Person',
+              name: book.author,
+            },
+            image: book.image,
+            offers: {
+              '@type': 'Offer',
+              price: book.price,
+              priceCurrency: 'MAD',
+              availability: book.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+              seller: {
+                '@id': 'https://riwaya.com/#organization',
+              },
+            },
+          },
+        })),
+      },
+    ],
   };
 
+
   return (
-    <div className="min-h-screen bg-white">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <Header />
+    <main className="min-h-screen bg-white">
+
+      <HeaderWithUser />
       {/* ... Hero Section ... */}
       <section className="relative overflow-hidden bg-pixio-cream pt-16 pb-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -187,10 +303,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </div>
             <Link
               href="/books"
-              className="flex items-center gap-2 text-black hover:text-gray-600 font-black text-xs uppercase tracking-widest group px-6 py-3 border-2 border-black rounded-full transition-all hover:bg-black hover:text-white"
+              className="group flex items-center gap-4 bg-pixio-cream px-6 py-3 rounded-full border border-gray-100 hover:border-black transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-xl"
             >
-              <span>{t('BestSellers.ViewAll')}</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <span className="text-xs font-black uppercase tracking-widest text-black">{t('BestSellers.ViewAll')}</span>
+              <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white group-hover:translate-x-1 transition-transform">
+                <ArrowRight className="w-4 h-4" />
+              </div>
             </Link>
           </ScrollReveal>
 
@@ -405,10 +523,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </div>
             <Link
               href="/books"
-              className="flex items-center gap-2 text-black hover:text-gray-600 font-black text-xs uppercase tracking-widest group px-6 py-3 border-2 border-black rounded-full transition-all hover:bg-black hover:text-white"
+              className="group flex items-center gap-4 bg-pixio-cream px-6 py-3 rounded-full border border-gray-100 hover:border-black transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-xl"
             >
-              <span>{t('NewArrivals.ViewAll')}</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <span className="text-xs font-black uppercase tracking-widest text-black">{t('NewArrivals.ViewAll')}</span>
+              <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white group-hover:translate-x-1 transition-transform">
+                <ArrowRight className="w-4 h-4" />
+              </div>
             </Link>
           </ScrollReveal>
 
@@ -445,10 +565,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </div>
             <Link
               href="/community/market"
-              className="group flex items-center gap-4 px-10 py-4 bg-green-600 text-white font-black text-xs uppercase tracking-widest rounded-full hover:bg-green-700 transition-all shadow-xl hover:-translate-y-1"
+              className="group flex items-center gap-4 bg-white px-6 py-3 rounded-full border border-green-100 hover:border-green-600 transition-all duration-300 hover:-translate-y-1 shadow-xl hover:shadow-2xl"
             >
-              <span>{t('ExchangeBooks.ViewAll')}</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <span className="text-xs font-black uppercase tracking-widest text-green-600">{t('ExchangeBooks.ViewAll')}</span>
+              <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white group-hover:translate-x-1 transition-transform">
+                <ArrowRight className="w-4 h-4" />
+              </div>
             </Link>
           </ScrollReveal>
 
@@ -588,37 +710,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </ScrollReveal>
       </section>
 
-      {/* Quick Searches Section */}
-      <section className="py-16 bg-pixio-cream">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollReveal delay={100} className="text-center mb-12">
-            <div className="inline-flex items-center gap-3 px-6 py-2 bg-white border border-gray-100 rounded-full shadow-sm mb-4">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600">
-                {t('QuickSearches.Title')}
-              </span>
-            </div>
-          </ScrollReveal>
-
-          <div className="flex flex-wrap justify-center gap-3">
-            {(t.raw('QuickSearches.Searches') as string[]).map((search, index) => (
-              <ScrollReveal key={index} delay={index * 50} animation="animate-reveal-up" className="inline-block">
-                <Link
-                  href={`/books?search=${encodeURIComponent(search)}`}
-                  className="group inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-gray-50 border border-gray-100 rounded-full text-xs font-medium text-gray-700 hover:text-black transition-all hover:shadow-md hover:scale-105"
-                >
-                  <svg className="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                  <span className="tracking-wide">{search}</span>
-                </Link>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Advanced Search Section */}
+      <AdvancedSearchSection />
 
       <Footer />
-    </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+    </main>
   )
 }

@@ -5,9 +5,11 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import { Suspense } from 'react'
 import Toaster from '@/components/Toaster';
-import InstallPrompt from '@/components/InstallPrompt';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import PixelTracker from '@/components/PixelTracker'
+import FacebookPixel from '@/components/FacebookPixel'
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -18,23 +20,82 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: {
     template: "%s | Riwaya",
-    default: "Riwaya | Digital Literature Curators & Book Bundles",
+    default: "Riwaya | Librairie en Ligne au Maroc - Livres, Packs & Échange de Livres",
   },
-  description: "Explore our hand-picked collection of masterpieces in personal growth, business, and philosophy. Quality books and curated bundles delivered across Morocco.",
-  keywords: ["livres", "books", "Morocco", "Maroc", "personal growth", "business books", "philosophy", "book bundles", "packs de livres", "Riwaya"],
-  authors: [{ name: "Riwaya Team" }],
+  description: "Découvrez Riwaya, la librairie en ligne n°1 au Maroc. Achetez des livres de développement personnel, business, philosophie et romans. Échangez vos livres avec notre communauté. Livraison rapide partout au Maroc, paiement à la livraison.",
+  keywords: [
+    // Mots-clés principaux
+    "livres maroc", "librairie en ligne maroc", "achat livres maroc", "riwaya",
+    // Villes principales
+    "librairie casablanca", "librairie rabat", "librairie marrakech", "librairie tanger",
+    "livres casablanca", "livres rabat", "acheter livres maroc",
+    // Catégories
+    "développement personnel maroc", "livres business maroc", "philosophie maroc",
+    "romans maroc", "psychologie maroc", "productivité maroc",
+    // Services
+    "packs de livres", "échange de livres maroc", "livraison livres maroc",
+    "paiement à la livraison", "COD maroc", "livraison gratuite livres",
+    // Langues
+    "livres français maroc", "livres anglais maroc", "livres arabe maroc",
+    // Long-tail
+    "où acheter des livres au maroc", "meilleure librairie maroc",
+    "livres pas cher maroc", "livres occasion maroc"
+  ],
+  authors: [{ name: "Riwaya Team", url: "https://riwaya.com" }],
+  creator: "Riwaya",
+  publisher: "Riwaya",
+  applicationName: "Riwaya",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
-    title: "Riwaya | Digital Literature Curators",
-    description: "Explore our hand-picked collection of masterpieces in personal growth, business, and philosophy.",
+    title: "Riwaya | Librairie en Ligne au Maroc - Livres & Échange",
+    description: "La meilleure sélection de livres au Maroc. Achetez, échangez et découvrez des milliers de livres. Livraison rapide et paiement à la livraison.",
     url: "https://riwaya.com",
     siteName: "Riwaya",
-    locale: "fr_FR",
+    locale: "fr_MA",
+    alternateLocale: ["ar_MA", "en_MA"],
     type: "website",
+    images: [
+      {
+        url: 'https://riwaya.com/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Riwaya - Librairie en ligne au Maroc',
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Riwaya | Digital Literature Curators",
-    description: "Hand-picked books and bundles for the modern mind.",
+    title: "Riwaya | Livres & Packs au Maroc",
+    description: "Découvrez nos collections exclusives de livres. Livraison rapide partout au Maroc.",
+    creator: "@riwaya_ma",
+    images: ["https://riwaya.com/twitter-image.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
+  category: 'books',
+  verification: {
+    google: 'verification_token',
+    yandex: 'yandex_verification',
+    yahoo: 'yahoo_verification',
   },
   alternates: {
     canonical: 'https://riwaya.com',
@@ -43,11 +104,6 @@ export const metadata: Metadata = {
       'ar-MA': 'https://riwaya.com/ar',
       'en-MA': 'https://riwaya.com/en',
     },
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'Riwaya',
   },
 };
 
@@ -111,27 +167,12 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           {children}
           <Toaster />
-          <InstallPrompt />
           <WhatsAppButton />
+          <Suspense fallback={null}>
+            <PixelTracker />
+            <FacebookPixel />
+          </Suspense>
         </NextIntlClientProvider>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').then(
-                    function(registration) {
-                      console.log('Service Worker registration successful with scope: ', registration.scope);
-                    },
-                    function(err) {
-                      console.log('Service Worker registration failed: ', err);
-                    }
-                  );
-                });
-              }
-            `,
-          }}
-        />
       </body>
     </html>
   );

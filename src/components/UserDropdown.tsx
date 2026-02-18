@@ -7,6 +7,7 @@ import { logout } from '@/lib/actions/community-auth'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui'
+import { useReadingListStore } from '@/store/reading-list'
 
 interface UserDropdownProps {
     user?: {
@@ -22,6 +23,13 @@ export default function UserDropdown({ user }: UserDropdownProps) {
     const dropdownRef = useRef<HTMLDivElement>(null)
     const router = useRouter()
     const t = useTranslations('Navigation')
+    const [mounted, setMounted] = useState(false)
+    const readingList = useReadingListStore((state) => state.items)
+
+    useEffect(() => {
+        setMounted(true)
+        useReadingListStore.persist.rehydrate()
+    }, [])
 
     // Fermer le dropdown si on clique à l'extérieur
     useEffect(() => {
@@ -111,7 +119,17 @@ export default function UserDropdown({ user }: UserDropdownProps) {
                             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-black transition-colors">
                                 <BookOpen className="w-4 h-4 text-gray-600 group-hover:text-white" />
                             </div>
-                            <span className="text-sm font-bold text-gray-700 group-hover:text-black">{t('UserMenu.ReadingList')}</span>
+                            <div className="flex flex-col">
+                                <span className="text-sm font-bold text-gray-700 group-hover:text-black">{t('UserMenu.ReadingList')}</span>
+                                {mounted && readingList.length > 0 && (
+                                    <span className="text-[10px] text-gray-400 font-medium">
+                                        {t('UserMenu.ReadingProgress', {
+                                            completed: readingList.filter(i => i.status === 'COMPLETED').length,
+                                            total: readingList.length
+                                        })}
+                                    </span>
+                                )}
+                            </div>
                         </Link>
 
                         <Link

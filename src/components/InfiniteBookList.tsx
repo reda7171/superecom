@@ -82,7 +82,7 @@ export default function InfiniteBookList({ initialBooks, initialFilters }: Infin
                     {loading && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-10">
                             {[1, 2, 3].map((i) => (
-                                <div key={i} className="bg-white rounded-[2rem] overflow-hidden border border-gray-100/50 shadow-sm h-full flex flex-col p-4 animate-pulse">
+                                <div key={i} className="bg-white rounded-[2rem] overflow-hidden border border-gray-100/50 shadow-sm h-full flex flex-col p-4 animate-pulse lg:animate-none">
                                     <div className="aspect-square bg-gray-100 rounded-[1.5rem] mb-6"></div>
                                     <div className="space-y-3 px-2">
                                         <div className="h-4 bg-gray-100 rounded-full w-3/4 mx-auto"></div>

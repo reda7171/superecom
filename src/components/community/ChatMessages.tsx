@@ -65,10 +65,10 @@ export default function ChatMessages({ messages, chatId, userId }: ChatMessagesP
                                 <img
                                     src={message.sender.image}
                                     alt={message.sender.fullName || ''}
-                                    className="w-10 h-10 rounded-full object-cover shrink-0"
+                                    className="w-10 h-10 rounded-full object-cover shrink-0 pointer-events-none cursor-default"
                                 />
                             ) : (
-                                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center shrink-0 pointer-events-none cursor-default">
                                     <span className="text-sm font-black text-gray-600">
                                         {message.sender.fullName?.charAt(0) || '?'}
                                     </span>
@@ -81,7 +81,7 @@ export default function ChatMessages({ messages, chatId, userId }: ChatMessagesP
                         {/* Message Bubble */}
                         <div className={`flex flex-col ${isCurrentUser ? 'items-end' : 'items-start'} max-w-[85%] md:max-w-[70%]`}>
                             {showAvatar && (
-                                <span className="text-[10px] font-black text-gray-400 mb-1 px-2 uppercase tracking-widest">
+                                <span className="text-[10px] font-black text-gray-400 mb-1 px-2 uppercase tracking-widest pointer-events-none cursor-default">
                                     {message.sender.fullName || 'User'}
                                 </span>
                             )}

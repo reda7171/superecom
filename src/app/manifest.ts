@@ -1,24 +1,35 @@
-import { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Riwaya - La Bibliothèque Commune',
+        name: 'Riwaya - Librairie en Ligne au Maroc',
         short_name: 'Riwaya',
-        description: 'Plateforme de vente et d\'échange de livres au Maroc.',
+        description: 'Découvrez et achetez des livres au Maroc. Livraison rapide et paiement à la livraison.',
         start_url: '/',
         display: 'standalone',
-        background_color: '#FBF8F3', // pixio-cream
-        theme_color: '#000000',
+        background_color: '#0a0a0a',
+        theme_color: '#FFD700',
+        orientation: 'portrait-primary',
+        categories: ['books', 'shopping', 'education'],
+        lang: 'fr-MA',
+        dir: 'auto',
         icons: [
             {
-                src: '/globe.svg', // Placeholder
-                sizes: '192x192',
-                type: 'image/svg+xml',
+                src: '/favicon.ico',
+                sizes: 'any',
+                type: 'image/x-icon',
             },
             {
-                src: '/globe.svg', // Placeholder
+                src: '/icon-192.png',
+                sizes: '192x192',
+                type: 'image/png',
+                purpose: 'maskable',
+            },
+            {
+                src: '/icon-512.png',
                 sizes: '512x512',
-                type: 'image/svg+xml',
+                type: 'image/png',
+                purpose: 'any',
             },
         ],
     }

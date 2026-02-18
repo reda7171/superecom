@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Bell, X, Check, Trash2 } from 'lucide-react'
 import { Link, useRouter } from '@/i18n/routing'
 import { useTranslations, useLocale } from 'next-intl'
+import { markNotificationAsRead, markAllNotificationsAsRead, deleteNotification as deleteNotificationAction } from '@/lib/actions/community-notifications'
 
 interface Notification {
     id: string
@@ -46,13 +47,9 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
 
     async function markAsRead(notificationId: string) {
         try {
-            const response = await fetch('/api/notifications/mark-read', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ notificationId })
-            })
+            const result = await markNotificationAsRead(notificationId)
 
-            if (response.ok) {
+            if (result.success) {
                 setNotifications(prev => prev.map(n =>
                     n.id === notificationId ? { ...n, read: true } : n
                 ))
@@ -65,11 +62,9 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
 
     async function markAllAsRead() {
         try {
-            const response = await fetch('/api/notifications/mark-all-read', {
-                method: 'POST'
-            })
+            const result = await markAllNotificationsAsRead()
 
-            if (response.ok) {
+            if (result.success) {
                 setNotifications(prev => prev.map(n => ({ ...n, read: true })))
                 setUnreadCount(0)
             }
@@ -80,13 +75,9 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
 
     async function deleteNotification(notificationId: string) {
         try {
-            const response = await fetch('/api/notifications/delete', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ notificationId })
-            })
+            const result = await deleteNotificationAction(notificationId)
 
-            if (response.ok) {
+            if (result.success) {
                 const wasUnread = notifications.find(n => n.id === notificationId)?.read === false
                 setNotifications(prev => prev.filter(n => n.id !== notificationId))
                 if (wasUnread) {
@@ -98,9 +89,9 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
         }
     }
 
-    function handleNotificationClick(notification: Notification) {
+    async function handleNotificationClick(notification: Notification) {
         if (!notification.read) {
-            markAsRead(notification.id)
+            await markAsRead(notification.id)
         }
         if (notification.link) {
             setIsOpen(false)
@@ -145,7 +136,7 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
                         {unreadCount > 0 && (
                             <button
                                 onClick={markAllAsRead}
-                                className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
                             >
                                 <Check className="w-4 h-4" />
                                 {t('MarkAllRead')}
@@ -164,7 +155,7 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
                             notifications.map((notification) => (
                                 <div
                                     key={notification.id}
-                                    className={`px-6 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors group ${!notification.read ? 'bg-blue-50/30' : ''
+                                    className={`px-6 py-4 border-b border-gray-50 hover:bg-gray-50 transition-colors group ${!notification.read ? 'bg-emerald-50/30' : ''
                                         }`}
                                 >
                                     <div className="flex items-start gap-3">
@@ -183,7 +174,7 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
                                                     {notification.title}
                                                 </h4>
                                                 {!notification.read && (
-                                                    <span className="w-2 h-2 bg-blue-500 rounded-full shrink-0 mt-1"></span>
+                                                    <span className="w-2 h-2 bg-emerald-500 rounded-full shrink-0 mt-1"></span>
                                                 )}
                                             </div>
                                             <p className="text-xs text-gray-600 mb-2 line-clamp-2">
@@ -221,7 +212,7 @@ export default function NotificationDropdown({ initialNotifications, unreadCount
                             <Link
                                 href="/community/notifications"
                                 onClick={() => setIsOpen(false)}
-                                className="text-xs font-bold text-blue-600 hover:text-blue-700 block text-center"
+                                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 block text-center"
                             >
                                 {t('All')} →
                             </Link>

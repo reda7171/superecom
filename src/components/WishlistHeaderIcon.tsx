@@ -10,13 +10,12 @@ export function WishlistHeaderIcon() {
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
-        // Hydratation faite par le store si configurée, sinon manuelle ici si besoin
         setMounted(true)
     }, [])
 
     if (!mounted) {
         return (
-            <div className="relative group p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <div className="p-2 opacity-20">
                 <Heart className="w-5 h-5 text-gray-900" />
             </div>
         )

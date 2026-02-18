@@ -10,6 +10,24 @@
             "EditorsChoice": "Choix de l'éditeur",
             "Select": "SÉLECTIONNER"
         },
+        "SearchSection": {
+            "Badge": "Recherche",
+            "TitlePart1": "Trouvez votre",
+            "TitlePart2": "prochaine lecture.",
+            "Description": "Utilisez notre recherche avancée pour filtrer par titre, auteur ou budget.",
+            "Placeholder": "Rechercher un livre, un mot-clé...",
+            "MoreFilters": "Plus de filtres",
+            "HideFilters": "Masquer les filtres",
+            "Filters": {
+                "Title": "Titre",
+                "TitlePlaceholder": "Ex: Alchimiste",
+                "Author": "Auteur",
+                "AuthorPlaceholder": "Ex: Paulo Coelho",
+                "MinPrice": "Prix Min (MAD)",
+                "MaxPrice": "Prix Max (MAD)"
+            },
+            "Submit": "Lancer la recherche"
+        },
         "seo": {
             "Title": "Riwaya | Digital Literature Curators & Book Bundles",
             "Description": "Riwaya est votre destination premium pour les livres de développement personnel, business et philosophie au Maroc. Livraison partout au royaume."
@@ -108,6 +126,7 @@
         "UserMenu": {
             "Profile": "Mon Profil",
             "ReadingList": "Mes Lectures",
+            "ReadingProgress": "{completed} / {total} livres",
             "Orders": "Mes Commandes",
             "Settings": "Paramètres",
             "Logout": "Déconnexion",
@@ -130,17 +149,21 @@
         "NewsletterText": "Rejoignez notre newsletter pour des sélections exclusives.",
         "Join": "Rejoindre",
         "Rights": "Tous droits réservés.",
-        "BackToTop": "Revenir en haut"
+        "BackToTop": "Revenir en haut",
+        "DevelopedBy": "Développé par <name>Reda</name>"
     },
     "Common": {
         "AddedToCartSuccess": "Article ajouté au panier avec succès !",
+        "AddedToReadingList": "Ajouté à mes lectures !",
         "AddedToCartError": "Erreur lors de l'ajout au panier. Veuillez réessayer.",
         "BuyNow": "Acheter maintenant",
         "Price": "Prix",
         "AddToCart": "Ajouter au panier",
         "OutOfStock": "Rupture de stock",
         "Remaining": "restants",
-        "BestSeller": "Meilleure Vente",
+        "BestSeller": "Best-seller",
+        "BookCount": "{count, plural, =0 {0 livre} one {1 livre} other {{count} livres}}",
+        "NoResultsDesc": "Aucun livre trouvé pour cet auteur.",
         "By": "Par",
         "Errors": {
             "UnexpectedError": "Une erreur inattendue est survenue",
@@ -330,15 +353,23 @@
         "Clear": "Effacer",
         "PopularThemes": "Thèmes populaires",
         "PopularSearches": "Recherches Populaires",
-        "BookCount": "{count} livre(s)",
-        "Remaining": "restant !",
+        "BookCount": "{count, plural, =0 {Aucun livre} one {1 livre} other {{count} livres}}",
+        "Remaining": "restants",
         "From": "Dès {price} MAD",
         "Suggestions": "Suggestions",
         "By": "Par {author}",
         "NoResultsTitle": "Oups !",
         "NoResultsDesc": "Aucun livre ne correspond à votre recherche.",
         "ViewAll": "Voir tous les résultats",
-        "EndsIn": "Fin dans: {time}"
+        "EndsIn": "Finit dans {time}",
+        "Terminated": "Terminé",
+        "Badges": {
+            "PROMO": "Promo",
+            "NEW": "Nouveau",
+            "HOT": "Brûlant",
+            "TRENDING": "Tendance",
+            "LIVRAISON": "Livraison Offerte"
+        }
     },
     "Categories": {
         "Développement Personnel": "Développement Personnel",
@@ -387,7 +418,15 @@
         "EmptyTitle": "Votre liste est vide",
         "EmptyDesc": "Vous n'avez pas encore ajouté de livres à vos favoris.",
         "ContinueShopping": "Continuer mes achats",
-        "AddToCart": "Ajouter au panier"
+        "AddToCart": "Ajouter au panier",
+        "AddAllToCart": "Tout ajouter au panier",
+        "seo": {
+            "Title": "Mes Favoris | Riwaya - Curateurs de Littérature",
+            "Description": "Retrouvez votre sélection personnelle de livres et packs premium. Organisez vos prochaines lectures sur Riwaya."
+        },
+        "By": "Par {author}",
+        "Quote": "Le livre que l'on attend est celui qui nous change.",
+        "QuoteSubtitle": "Sélection Riwaya · Curateurs de Littérature"
     },
     "Tracking": {
         "Title": "Suivi de Commande",
@@ -427,6 +466,9 @@
         "AddBook": "Proposer un livre",
         "Credits": "Crédits",
         "ExchangesLabel": "Échanges",
+        "TopReaders": "Top Lecteurs",
+        "TopReadersTitle": "Les Plus Grands Lecteurs",
+        "TopReadersSubtitle": "Membres ayant lu le plus de livres cette semaine",
         "Dashboard": {
             "RestrictedAccess": "Accès restreint aux échanges",
             "EligibilityDesc": "Vous devez avoir effectué au moins une commande sur notre boutique pour pouvoir ajouter des livres ou faire des demandes d'échange dans la communauté.",
@@ -460,7 +502,7 @@
             },
             "Status": {
                 "AVAILABLE": "Disponible",
-                "EXCHANGED": "Échangé",
+                "EXCHANGED": "Déjà échangé",
                 "PRIVATE": "Privé"
             }
         },
@@ -485,6 +527,7 @@
             "Mutual": "Match Mutuel",
             "DescriptionTitle": "Résumé de l'ouvrage",
             "MemberSince": "Membre depuis",
+            "Credits": "Crédits",
             "SecurityNotice": "Échange sécurisé garanti par Riwaya. Aucune commission."
         },
         "Exchange": {
@@ -545,7 +588,8 @@
             },
             "ChatButton": "Discuter",
             "FinishButton": "Terminer",
-            "HistoryChat": "Historique Chat"
+            "HistoryChat": "Historique Chat",
+            "MeetingDetails": "Détails de rencontre"
         },
         "Notifications": {
             "Title": "Notifications",
@@ -553,14 +597,50 @@
             "Empty": "Aucune notification",
             "All": "Voir toutes les notifications",
             "Loading": "Chargement des notifications...",
-            "Delete": "Supprimer"
+            "Delete": "Supprimer",
+            "NewMessage": "Nouveau message",
+            "NewMessageDesc": "{user} vous a envoyé un message"
+        },
+        "ReadingList": {
+            "Title": "Ma Liste de Lecture",
+            "Subtitle": "Suivez vos lectures et votre progression, même pour vos livres personnels.",
+            "AddBook": "Ajouter un livre",
+            "Empty": "Votre liste de lecture est vide.",
+            "Status": {
+                "TO_READ": "À lire",
+                "READING": "En cours",
+                "COMPLETED": "Terminé",
+                "DROPPED": "Abandonné",
+                "ON_HOLD": "En pause"
+            },
+            "Stats": {
+                "Library": "Bibliothèque",
+                "Completed": "{count} terminés",
+                "Authors": "Auteurs",
+                "Explored": "Explorés",
+                "TotalVolume": "Volume Total",
+                "PagesAccumulated": "Pages cumulées",
+                "Progress": "Progression",
+                "PagesRead": "{count} pages lues"
+            },
+            "Board": {
+                "Empty": "Vide",
+                "CurrentPage": "Page actuelle :",
+                "Read": "Lire",
+                "MarkFinished": "Marquer comme terminé",
+                "Delete": "Supprimer",
+                "ConfirmDelete": "Êtes-vous sûr ?"
+            }
         },
         "Chat": {
             "Title": "Discussion",
             "Placeholder": "Écrivez votre message...",
             "Send": "Envoyer",
             "Read": "Lu",
-            "SystemMessage": "Début de la conversation concernant"
+            "SystemMessage": "Début de la conversation concernant",
+            "Empty": "Aucun message",
+            "StartConversation": "Envoyez un message pour démarrer la discussion.",
+            "Instructions": "Appuyez sur Entrée pour envoyer votre message."
         },
         "Profile": {
             "Title": "Mon Profil",
@@ -578,7 +658,11 @@
                 "Books": "Livres",
                 "Exchanges": "Échanges",
                 "Credits": "Crédits"
-            }
+            },
+            "AddressLabel": "Adresse de rencontre / Point de repère",
+            "AddressPlaceholder": "Ex: Café Venise, Bd Zerktouni...",
+            "NeighborhoodLabel": "Quartier",
+            "NeighborhoodPlaceholder": "Ex: Maârif, Racine..."
         },
         "Ratings": {
             "Title": "Évaluer l'échange",
@@ -678,5 +762,22 @@
         "NoPosts": "Aucun article publié pour le moment.",
         "ComingSoon": "Revenez bientôt pour découvrir nos prochaines publications.",
         "ReadArticle": "Lire l'article"
+    },
+    "Orders": {
+        "Title": "Mes Commandes",
+        "Subtitle": "Historique de vos achats",
+        "EmptyTitle": "Aucune commande",
+        "EmptyDesc": "Vous n'avez pas encore passé de commande",
+        "OrderNumber": "Commande #",
+        "Quantity": "Quantité:",
+        "DeliveryAddress": "Adresse de livraison",
+        "Contact": "Contact",
+        "TrackingTitle": "Suivi de livraison",
+        "TrackButton": "Suivre",
+        "Status": {
+            "CONFIRMED": "Confirmée",
+            "CANCELLED": "Annulée",
+            "PENDING": "En attente"
+        }
     }
 }

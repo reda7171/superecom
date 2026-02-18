@@ -14,7 +14,7 @@ const BookSchema = z.object({
     author: z.string().min(1, 'L\'auteur est requis'),
     description: z.string().min(10, 'La description doit contenir au moins 10 caractères'),
     isbn: z.string().optional(),
-    price: z.number().positive('Le prix doit être positif'),
+    price: z.number().positive('Le prix doit être supérieur à 0'),
     stock: z.number().int().min(0, 'Le stock ne peut pas être négatif'),
     image: z.string().url('L\'URL de l\'image est invalide'),
     category: z.string().optional(),
@@ -33,6 +33,25 @@ export async function createBook(input: BookInput): Promise<BookResult> {
     try {
         await verifyAdmin()
         const validatedData = BookSchema.parse(input)
+
+        // Vérifier doublons
+        const existing = await prisma.book.findFirst({
+            where: {
+                OR: [
+                    validatedData.isbn ? { isbn: validatedData.isbn } : undefined,
+                    { title: validatedData.title, author: validatedData.author }
+                ].filter(Boolean) as any
+            }
+        })
+
+        if (existing) {
+            return {
+                success: false,
+                error: existing.isbn === validatedData.isbn
+                    ? `Un livre avec l'ISBN ${existing.isbn} existe déjà.`
+                    : `Le livre "${validatedData.title}" par ${validatedData.author} existe déjà.`
+            }
+        }
 
         const book = await prisma.book.create({
             data: {

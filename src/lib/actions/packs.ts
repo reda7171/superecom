@@ -10,7 +10,7 @@ import { createAuditLog } from './audit'
 const PackSchema = z.object({
     name: z.string().min(1, 'Le nom est requis'),
     description: z.string().optional(),
-    price: z.number().positive('Le prix doit être positif'),
+    price: z.number().positive('Le prix doit être supérieur à 0'),
     image: z.string().url('L\'URL de l\'image est invalide').optional(),
     bookIds: z.array(z.string().uuid()).min(1, 'Le pack doit contenir au moins un livre'),
 })
@@ -28,6 +28,18 @@ export async function createPack(input: PackInput): Promise<PackResult> {
     try {
         await verifyAdmin()
         const validatedData = PackSchema.parse(input)
+
+        // Vérifier doublon par nom
+        const existing = await prisma.pack.findFirst({
+            where: { name: validatedData.name }
+        })
+
+        if (existing) {
+            return {
+                success: false,
+                error: `Un pack portant le nom "${validatedData.name}" existe déjà.`
+            }
+        }
 
         const pack = await prisma.pack.create({
             data: {

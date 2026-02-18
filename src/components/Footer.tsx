@@ -28,12 +28,12 @@ export default function Footer() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12 relative">
                 {/* Vertical Social Sidebar */}
-                <div className="absolute ltr:right-4 sm:ltr:right-0 rtl:left-4 sm:rtl:-left-16 top-32 z-10 hidden xl:flex">
+                <div className="absolute ltr:right-4 sm:ltr:-right-16 rtl:left-4 sm:rtl:-left-16 top-32 z-10 hidden xl:flex">
                     <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full py-6 px-3 flex flex-col gap-6 shadow-2xl">
-                        <a href="#" className="text-gray-400 hover:text-white transition-colors hover:scale-110 active:scale-90"><Instagram className="w-5 h-5" /></a>
-                        <a href="#" className="text-gray-400 hover:text-white transition-colors hover:scale-110 active:scale-90"><Linkedin className="w-5 h-5" /></a>
-                        <a href="#" className="text-gray-400 hover:text-white transition-colors hover:scale-110 active:scale-90"><Facebook className="w-5 h-5" /></a>
-                        <a href="#" className="text-gray-400 hover:text-white transition-colors hover:scale-110 active:scale-90"><Twitter className="w-5 h-5" /></a>
+                        <a href="https://instagram.com/riwaya" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors hover:scale-110 active:scale-90"><Instagram className="w-5 h-5" /></a>
+                        <a href="https://linkedin.com/company/riwaya" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors hover:scale-110 active:scale-90"><Linkedin className="w-5 h-5" /></a>
+                        <a href="https://facebook.com/riwaya" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors hover:scale-110 active:scale-90"><Facebook className="w-5 h-5" /></a>
+                        <a href="https://twitter.com/riwaya" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors hover:scale-110 active:scale-90"><Twitter className="w-5 h-5" /></a>
                     </div>
                 </div>
 
@@ -83,14 +83,32 @@ export default function Footer() {
 
                 {/* Mobile Socials */}
                 <div className="flex xl:hidden gap-6 mb-12 justify-center">
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors"><Instagram className="w-5 h-5" /></a>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></a>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors"><Facebook className="w-5 h-5" /></a>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors"><Twitter className="w-5 h-5" /></a>
+                    <a href="https://instagram.com/riwaya" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors"><Instagram className="w-5 h-5" /></a>
+                    <a href="https://linkedin.com/company/riwaya" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></a>
+                    <a href="https://facebook.com/riwaya" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors"><Facebook className="w-5 h-5" /></a>
+                    <a href="https://twitter.com/riwaya" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors"><Twitter className="w-5 h-5" /></a>
                 </div>
 
-                <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-black uppercase tracking-widest text-gray-500">
+                <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-black uppercase tracking-widest text-gray-500 relative">
                     <p>© 2026 riwaya world. {t('Rights')}</p>
+
+                    <div className="md:absolute md:left-1/2 md:-translate-x-1/2 text-center">
+                        <p className="hover:text-white transition-colors cursor-default">
+                            {t.rich('DevelopedBy', {
+                                name: (chunks) => (
+                                    <a
+                                        href="https://instagram.com/itsmereda1"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-white font-bold hover:text-pixio-yellow transition-colors"
+                                    >
+                                        {chunks}
+                                    </a>
+                                )
+                            })}
+                        </p>
+                    </div>
+
                     <div className="flex gap-8">
                         <Link href="/privacy" className="hover:text-white transition-colors">{t('Privacy')}</Link>
                         <Link href="/terms" className="hover:text-white transition-colors">{t('Terms')}</Link>

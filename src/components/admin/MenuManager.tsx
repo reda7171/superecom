@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, GripVertical, Trash2, Edit2, Eye, EyeOff, ExternalLink, ChevronDown, ChevronRight } from 'lucide-react'
 import { createMenu, createMenuItem, deleteMenuItem, updateMenuItem, updateMenuOrder, deleteMenu, updateMenu } from '@/lib/actions/menus'
 import { useRouter } from 'next/navigation'
@@ -18,8 +18,8 @@ type MenuItem = {
 
 type Menu = {
     id: string
+    slug: string
     name: string
-    label: string
     isActive: boolean
     items: MenuItem[]
 }
@@ -28,21 +28,41 @@ export default function MenuManager({ initialMenus }: { initialMenus: Menu[] }) 
     const router = useRouter()
     const [menus, setMenus] = useState<Menu[]>(initialMenus)
     const [selectedMenu, setSelectedMenu] = useState<Menu | null>(initialMenus[0] || null)
+
+    // Synchroniser l'état local avec les données du serveur lors d'un refresh
+    useEffect(() => {
+        setMenus(initialMenus)
+        if (selectedMenu) {
+            // Si un menu est sélectionné, on le met à jour avec les nouvelles données
+            const updatedSelected = initialMenus.find(m => m.id === selectedMenu.id)
+            if (updatedSelected) {
+                setSelectedMenu(updatedSelected)
+            } else {
+                // Si le menu sélectionné n'existe plus (supprimé), on sélectionne le premier ou rien
+                setSelectedMenu(initialMenus[0] || null)
+            }
+        } else if (initialMenus.length > 0) {
+            // S'il n'y avait pas de sélection mais qu'il y a des menus, on sélectionne le premier
+            setSelectedMenu(initialMenus[0])
+        }
+    }, [initialMenus])
     const [showNewMenuForm, setShowNewMenuForm] = useState(false)
     const [showNewItemForm, setShowNewItemForm] = useState(false)
     const [editingItem, setEditingItem] = useState<MenuItem | null>(null)
     const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
 
     // Formulaires
-    const [newMenuData, setNewMenuData] = useState({ name: '', label: '' })
+    const [newMenuData, setNewMenuData] = useState({ slug: '', name: '' })
     const [newItemData, setNewItemData] = useState({ label: '', url: '', parentId: '' })
 
     const handleCreateMenu = async () => {
         const result = await createMenu(newMenuData)
         if (result.success) {
-            setNewMenuData({ name: '', label: '' })
+            setNewMenuData({ slug: '', name: '' })
             setShowNewMenuForm(false)
             router.refresh()
+        } else {
+            alert(`Erreur lors de la création du menu: ${result.error}`)
         }
     }
 
@@ -167,21 +187,24 @@ export default function MenuManager({ initialMenus }: { initialMenus: Menu[] }) 
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => handleToggleActive(item)}
-                                    className={`p-2 rounded-lg transition-colors ${item.isActive ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                                    className={`p-2 rounded-xl transition-all active:scale-90 ${item.isActive ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 shadow-sm shadow-emerald-100/50' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                                    title={item.isActive ? 'Désactiver' : 'Activer'}
                                 >
                                     {item.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                                 </button>
 
                                 <button
                                     onClick={() => setEditingItem(item)}
-                                    className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                                    className="p-2 rounded-xl bg-gray-50 text-gray-600 hover:bg-black hover:text-white transition-all active:scale-90 shadow-sm"
+                                    title="Modifier"
                                 >
                                     <Edit2 className="w-4 h-4" />
                                 </button>
 
                                 <button
                                     onClick={() => handleDeleteItem(item.id)}
-                                    className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                                    className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-500 hover:text-white transition-all active:scale-90 shadow-sm shadow-red-100/50"
+                                    title="Supprimer"
                                 >
                                     <Trash2 className="w-4 h-4" />
                                 </button>
@@ -189,18 +212,31 @@ export default function MenuManager({ initialMenus }: { initialMenus: Menu[] }) 
                         </div>
 
                         {hasChildren && isExpanded && (
-                            <div className="mt-2 pl-6">
+                            <div className="mt-2 pl-6 space-y-2 border-l-2 border-gray-100 ml-6">
                                 {item.children!.map((child, idx) => (
                                     <div key={child.id}>
-                                        {/* Recursive render but without Draggable for simplicity at nested levels for now */}
-                                        <div className={`flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-lg mb-2 ${!child.isActive ? 'opacity-50' : ''}`}>
+                                        <div className={`flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-xl hover:border-emerald-200 transition-all shadow-sm ${!child.isActive ? 'opacity-50' : ''}`}>
+                                            <div className="w-2 h-2 bg-emerald-500 rounded-full shrink-0 shadow-sm shadow-emerald-200" />
                                             <div className="flex-1">
-                                                <div className="font-semibold text-sm text-gray-900">{child.label}</div>
-                                                <div className="text-[9px] font-black uppercase text-gray-400">{child.url}</div>
+                                                <div className="font-bold text-sm text-gray-900 leading-none mb-1">{child.label}</div>
+                                                <div className="text-[9px] font-black uppercase text-gray-400 tracking-wider flex items-center gap-1">
+                                                    <ExternalLink className="w-2.5 h-2.5" />
+                                                    {child.url}
+                                                </div>
                                             </div>
                                             <div className="flex items-center gap-1">
-                                                <button onClick={() => handleToggleActive(child)} className="p-1.5 text-gray-400 hover:text-gray-600"><Eye className="w-3.5 h-3.5" /></button>
-                                                <button onClick={() => handleDeleteItem(child.id)} className="p-1.5 text-red-400 hover:text-red-600"><Trash2 className="w-3.5 h-3.5" /></button>
+                                                <button
+                                                    onClick={() => handleToggleActive(child)}
+                                                    className={`p-1.5 rounded-lg transition-colors ${child.isActive ? 'text-emerald-600 hover:bg-emerald-50' : 'text-gray-400 hover:bg-gray-100'}`}
+                                                >
+                                                    {child.isActive ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteItem(child.id)}
+                                                    className="p-1.5 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -229,27 +265,38 @@ export default function MenuManager({ initialMenus }: { initialMenus: Menu[] }) 
                     </div>
 
                     {showNewMenuForm && (
-                        <div className="mb-4 p-4 bg-gray-50 rounded-lg space-y-3">
-                            <input
-                                type="text"
-                                placeholder="Nom (ex: header)"
-                                value={newMenuData.name}
-                                onChange={(e) => setNewMenuData({ ...newMenuData, name: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Label (ex: Menu Principal)"
-                                value={newMenuData.label}
-                                onChange={(e) => setNewMenuData({ ...newMenuData, label: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-                            />
-                            <button
-                                onClick={handleCreateMenu}
-                                className="w-full px-4 py-2 bg-black text-white rounded-lg text-sm font-black uppercase tracking-widest hover:bg-gray-800"
-                            >
-                                Créer
-                            </button>
+                        <div className="mb-6 p-5 bg-emerald-50/50 rounded-2xl border border-emerald-100 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-800">Nouveau Menu</h3>
+                            <div className="space-y-3">
+                                <input
+                                    type="text"
+                                    placeholder="Nom technique (ex: header)"
+                                    value={newMenuData.slug}
+                                    onChange={(e) => setNewMenuData({ ...newMenuData, slug: e.target.value })}
+                                    className="w-full px-4 py-2.5 bg-white border border-emerald-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Libellé affiché (ex: Menu Principal)"
+                                    value={newMenuData.name}
+                                    onChange={(e) => setNewMenuData({ ...newMenuData, name: e.target.value })}
+                                    className="w-full px-4 py-2.5 bg-white border border-emerald-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition-all shadow-sm"
+                                />
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleCreateMenu}
+                                    className="flex-1 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200/50"
+                                >
+                                    Créer
+                                </button>
+                                <button
+                                    onClick={() => setShowNewMenuForm(false)}
+                                    className="px-4 py-2.5 bg-white text-emerald-600 border border-emerald-100 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 transition-all"
+                                >
+                                    Annuler
+                                </button>
+                            </div>
                         </div>
                     )}
 
@@ -261,7 +308,7 @@ export default function MenuManager({ initialMenus }: { initialMenus: Menu[] }) 
                                 onClick={() => setSelectedMenu(menu)}
                             >
                                 <div className="flex items-center justify-between">
-                                    <div className="font-black text-[11px] uppercase tracking-wider">{menu.label}</div>
+                                    <div className="font-black text-[11px] uppercase tracking-wider">{menu.name}</div>
                                     {!menu.isActive && (
                                         <div className="px-1.5 py-0.5 rounded text-[8px] font-black bg-red-100 text-red-600 uppercase tracking-wider">
                                             OFF
@@ -283,30 +330,32 @@ export default function MenuManager({ initialMenus }: { initialMenus: Menu[] }) 
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                         <div className="flex items-center justify-between mb-6">
                             <div>
-                                <h2 className="text-3xl font-black text-gray-900 uppercase tracking-tighter">{selectedMenu.label}</h2>
+                                <h2 className="text-3xl font-black text-gray-900 uppercase tracking-tighter">{selectedMenu.name}</h2>
                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">
-                                    Identifiant: <code className="bg-gray-100 px-2 py-0.5 rounded text-gray-600">{selectedMenu.name}</code>
+                                    Identifiant: <code className="bg-gray-100 px-2 py-0.5 rounded text-gray-600">{selectedMenu.slug}</code>
                                 </p>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex items-center gap-3">
                                 <button
                                     onClick={() => handleToggleMenu(selectedMenu)}
-                                    className={`p-2.5 rounded-xl transition-colors ${selectedMenu.isActive ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                                    className={`p-3 rounded-2xl transition-all shadow-sm active:scale-95 ${selectedMenu.isActive ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100' : 'bg-gray-50 text-gray-400 hover:bg-gray-100 border border-gray-100'}`}
+                                    title={selectedMenu.isActive ? 'Désactiver le menu' : 'Activer le menu'}
                                 >
                                     {selectedMenu.isActive ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
                                 </button>
                                 <button
                                     onClick={() => setShowNewItemForm(!showNewItemForm)}
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-black text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg hover:shadow-black/20"
+                                    className="flex items-center gap-2 px-6 py-3 bg-black text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl shadow-black/10 active:scale-95"
                                 >
                                     <Plus className="w-4 h-4" />
-                                    Ajouter
+                                    Ajouter un lien
                                 </button>
                                 <button
                                     onClick={() => handleDeleteMenu(selectedMenu.id)}
-                                    className="px-5 py-2.5 bg-red-50 text-red-600 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-100 transition-colors"
+                                    className="p-3 bg-red-50 text-red-600 border border-red-100 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm active:scale-95"
+                                    title="Supprimer le menu"
                                 >
-                                    Supprimer
+                                    <Trash2 className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>

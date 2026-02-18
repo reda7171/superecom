@@ -6,21 +6,23 @@ import { getCommunityUser } from './community-auth'
 import { verifyAdmin, isAuthenticated } from './auth'
 import { z } from 'zod'
 import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
+import { sanitizeInput } from '@/lib/security'
 
 const OrderSchema = z.object({
-    fullName: z.string().min(1, 'Nom complet requis'),
+    fullName: z.string().min(1, 'Nom complet requis').max(100),
     email: z.string().email('Email invalide'),
-    phone: z.string().min(8, 'Téléphone invalide'),
-    address: z.string().min(5, 'Adresse trop courte'),
-    city: z.string().min(1, 'Ville requise'),
-    comment: z.string().optional(),
+    phone: z.string().min(8, 'Téléphone invalide').max(20),
+    address: z.string().min(5, 'Adresse trop courte').max(500),
+    city: z.string().min(1, 'Ville requise').max(100),
+    comment: z.string().max(1000).optional(),
     items: z.array(z.object({
         productId: z.string().uuid(),
-        quantity: z.number().int().positive(),
+        quantity: z.number().int().positive('La quantité doit être supérieure à 0').max(100),
         type: z.enum(['BOOK', 'PACK']),
-        price: z.number().positive()
-    })).min(1, 'Panier vide'),
-    couponCode: z.string().optional()
+        price: z.number().positive('Le prix doit être supérieur à 0').max(100000)
+    })).min(1, 'Panier vide').max(50),
+    couponCode: z.string().max(50).optional(),
+    discount: z.number().optional()
 })
 
 export async function getOrders() {
@@ -78,27 +80,43 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
     }
 
     try {
+        console.log('Incoming order data:', JSON.stringify(input, null, 2))
         // OWASP A03: Injection / Validation
         const data = OrderSchema.parse(input)
 
+        // OWASP A03: Sanitize inputs to prevent XSS
+        const sanitizedData = {
+            ...data,
+            fullName: sanitizeInput(data.fullName),
+            address: sanitizeInput(data.address),
+            city: sanitizeInput(data.city),
+            comment: data.comment ? sanitizeInput(data.comment) : undefined,
+        }
+
         // Calcul du total côté serveur pour sécurité
-        let subtotal = data.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-        let shippingFees = 30 // Frais de livraison fixes (ex: 30 MAD)
-        let total = subtotal + shippingFees
+        let subtotal = sanitizedData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+
+        // Appliquer la réduction si elle est fournie par le client (après validation)
+        let discount = sanitizedData.discount || 0
+
+        // Logique de livraison synchronisée avec le client: Gratuit si > 500 MAD (avant réduction)
+        let shippingFees = subtotal >= 500 ? 0 : 30
+        let total = Math.max(0, subtotal - discount + shippingFees)
 
         // Création commande transactionnelle
         const order = await prisma.$transaction(async (tx) => {
             // Créer la commande
             const newOrder = await (tx.order as any).create({
                 data: {
-                    fullName: data.fullName,
-                    email: data.email,
-                    phone: data.phone,
-                    address: data.address,
-                    city: data.city,
-                    comment: data.comment,
+                    fullName: sanitizedData.fullName,
+                    email: sanitizedData.email,
+                    phone: sanitizedData.phone,
+                    address: sanitizedData.address,
+                    city: sanitizedData.city,
+                    comment: sanitizedData.comment,
                     subtotal: subtotal,
                     shippingFees: shippingFees,
+                    discount: discount,
                     total: total,
                     couponCode: data.couponCode,
                     status: 'PENDING',

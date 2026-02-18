@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
 const WishlistSchema = z.object({
+    bookId: z.string().optional(),
     title: z.string().min(1, 'Le titre est requis'),
     author: z.string().optional(),
 })
@@ -16,13 +17,34 @@ export async function addToWishlist(formData: FormData) {
 
     try {
         const data = WishlistSchema.parse({
+            bookId: formData.get('bookId') || undefined,
             title: formData.get('title'),
             author: formData.get('author') || undefined,
         })
 
+        const user = await getCommunityUser() // Already checked but for TS
+        if (!user) return { success: false, error: "Non connecté" }
+
+        // Vérifier doublon
+        let whereClause: any = { userId: user.id }
+
+        if (data.bookId) {
+            whereClause.bookId = data.bookId
+        } else {
+            whereClause.title = data.title
+            if (data.author) whereClause.author = data.author
+        }
+
+        const existing = await (prisma as any).wishlist.findFirst({
+            where: whereClause
+        })
+
+        if (existing) return { success: true }
+
         await (prisma as any).wishlist.create({
             data: {
                 userId: user.id,
+                bookId: data.bookId,
                 title: data.title,
                 author: data.author
             }
@@ -31,6 +53,7 @@ export async function addToWishlist(formData: FormData) {
         revalidatePath('/community')
         return { success: true }
     } catch (error) {
+        console.error('Add to wishlist error:', error)
         return { success: false, error: "Erreur lors de l'ajout" }
     }
 }
@@ -40,16 +63,32 @@ export async function removeFromWishlist(id: string) {
     if (!user) return { success: false, error: "Non connecté" }
 
     try {
-        await (prisma as any).wishlist.delete({
+        // Support suppression via ID de wishlist OU ID de livre
+        const whereClause: any = { userId: user.id }
+
+        // Si l'ID ressemble à un UUID, on suppose que c'est l'ID de la wishlist
+        // Mais si on passe l'ID du livre, on doit chercher par bookId
+        // Pour être sûr, on essaie de supprimer par ID wishlist d'abord
+
+        // Approche simple: on essaie de supprimer par ID (wishlist) OU par bookId
+        const deleted = await (prisma as any).wishlist.deleteMany({
             where: {
-                id,
-                userId: user.id
+                userId: user.id,
+                OR: [
+                    { id: id },
+                    { bookId: id }
+                ]
             }
         })
+
+        if (deleted.count === 0) {
+            console.log("Nothing deleted for id:", id)
+        }
 
         revalidatePath('/community')
         return { success: true }
     } catch (error) {
+        console.error("Remove from wishlist error:", error)
         return { success: false, error: "Erreur lors de la suppression" }
     }
 }
@@ -61,9 +100,22 @@ export async function getWishlist() {
     try {
         return await (prisma as any).wishlist.findMany({
             where: { userId: user.id },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
+            include: {
+                book: {
+                    select: {
+                        id: true,
+                        title: true,
+                        author: true,
+                        image: true,
+                        price: true,
+                        category: true
+                    }
+                }
+            }
         })
     } catch (error) {
+        console.error('Get wishlist error:', error)
         return []
     }
 }

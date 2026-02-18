@@ -1,73 +1,96 @@
-import createMiddleware from 'next-intl/middleware';
-import { routing } from './i18n/routing';
-import { NextRequest, NextResponse } from 'next/server';
+import createMiddleware from 'next-intl/middleware'
+import { routing } from './i18n/routing'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-const handleI18nRouting = createMiddleware(routing);
+const intlMiddleware = createMiddleware(routing)
 
 export default function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
-
-    // Forcer l'admin à toujours utiliser /fr/admin
-    if (pathname.includes('/admin')) {
-        // Si c'est /ar/admin ou /en/admin, rediriger vers /fr/admin
-        if (pathname.startsWith('/ar/admin') || pathname.startsWith('/en/admin')) {
-            const newPath = pathname.replace(/^\/(ar|en)\/admin/, '/fr/admin');
-            return NextResponse.redirect(new URL(newPath, request.url));
-        }
-        // Si c'est juste /admin sans locale, rediriger vers /fr/admin
-        if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-            const newPath = `/fr${pathname}`;
-            return NextResponse.redirect(new URL(newPath, request.url));
-        }
+    // Rediriger les routes admin en arabe vers le français
+    const pathname = request.nextUrl.pathname
+    if (pathname.startsWith('/ar/admin')) {
+        const newUrl = request.nextUrl.clone()
+        newUrl.pathname = pathname.replace('/ar/admin', '/fr/admin')
+        return NextResponse.redirect(newUrl)
     }
 
-    const response = handleI18nRouting(request);
+    // 1. D'abord exécuter le middleware next-intl pour gérer la locale
+    const response = intlMiddleware(request)
 
-    // Apply strict Content Security Policy
-    const cspHeader = `
-    default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.google-analytics.com https://*.googletagmanager.com;
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    img-src 'self' blob: data: https://*.unsplash.com https://res.cloudinary.com https://lh3.googleusercontent.com;
-    font-src 'self' https://fonts.gstatic.com;
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
-    frame-ancestors 'none';
-    block-all-mixed-content;
-    upgrade-insecure-requests;
-    `
-
+    // 2. Ajouter les headers de sécurité (OWASP)
+    // Content Security Policy (CSP)
     response.headers.set(
         'Content-Security-Policy',
-        cspHeader.replace(/\s{2,}/g, ' ').trim()
-    );
+        [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "img-src 'self' data: https: blob:",
+            "font-src 'self' data: https://fonts.gstatic.com",
+            "connect-src 'self' https://www.google-analytics.com https://vitals.vercel-insights.com",
+            "frame-ancestors 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+        ].join('; ')
+    )
 
-    // X-Frame-Options: Prevent clickjacking
-    response.headers.set('X-Frame-Options', 'DENY');
+    // X-Frame-Options (Clickjacking protection)
+    response.headers.set('X-Frame-Options', 'DENY')
 
-    // X-Content-Type-Options: Prevent MIME sniffing
-    response.headers.set('X-Content-Type-Options', 'nosniff');
+    // X-Content-Type-Options (MIME sniffing protection)
+    response.headers.set('X-Content-Type-Options', 'nosniff')
 
     // Referrer-Policy
-    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
 
     // Permissions-Policy
     response.headers.set(
         'Permissions-Policy',
-        'camera=(), microphone=(), geolocation=(), browsing-topics=()'
-    );
+        'camera=(), microphone=(), geolocation=(self), payment=(self)'
+    )
 
-    // Strict-Transport-Security: Force HTTPS
-    response.headers.set(
-        'Strict-Transport-Security',
-        'max-age=31536000; includeSubDomains; preload'
-    );
+    // X-XSS-Protection (legacy browsers)
+    response.headers.set('X-XSS-Protection', '1; mode=block')
 
-    return response;
+    // Strict-Transport-Security (HSTS)
+    if (request.nextUrl.protocol === 'https:') {
+        response.headers.set(
+            'Strict-Transport-Security',
+            'max-age=31536000; includeSubDomains; preload'
+        )
+    }
+
+    // Remove X-Powered-By header
+    response.headers.delete('X-Powered-By')
+
+    // 3. CSRF Protection for state-changing requests
+    const isStateMutating = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)
+    const isApiRoute = request.nextUrl.pathname.startsWith('/api/')
+
+    if (isStateMutating && isApiRoute) {
+        const origin = request.headers.get('origin')
+        const host = request.headers.get('host')
+
+        // Vérifier que l'origine correspond au host
+        if (origin && !origin.includes(host || '')) {
+            return new NextResponse('CSRF validation failed', { status: 403 })
+        }
+    }
+
+    return response
 }
 
 export const config = {
-    // Matcher générique pour intercepter toutes les routes et gérer la locale
-    matcher: ['/((?!api|_next|.*\\..*).*)']
-};
+    matcher: [
+        // Enable a redirect to a matching locale at the root
+        '/',
+
+        // Set a cookie to remember the previous locale for
+        // all requests that have a locale prefix
+        '/(fr|en|ar)/:path*',
+
+        // Enable redirects that add missing locales
+        // (e.g. `/pathnames` -> `/en/pathnames`)
+        '/((?!_next|_vercel|.*\\..*).*)'
+    ]
+}

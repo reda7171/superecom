@@ -6,6 +6,7 @@ import { register } from '@/lib/actions/community-auth'
 import { Link, useRouter } from '@/i18n/routing'
 import { Loader2, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import { MOROCCO_CITIES } from '@/lib/constants/cities'
+import { fbPixelEvents } from '@/lib/facebook-pixel'
 
 export default function RegisterForm() {
     const t = useTranslations('Community')
@@ -25,6 +26,7 @@ export default function RegisterForm() {
         const res = await register(formData)
 
         if (res.success) {
+            fbPixelEvents.completeRegistration()
             router.push('/community')
             router.refresh()
         } else {

@@ -3,6 +3,8 @@ import { BookOpen, Package, ShoppingCart, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { getBadgeStats } from '@/lib/actions/analytics'
 import DashboardAnalytics from '@/components/admin/DashboardAnalytics'
+import { isAuthenticated } from '@/lib/actions/auth'
+import { redirect } from 'next/navigation'
 
 async function getStats() {
     const [booksCount, packsCount, ordersCount, totalRevenue] = await Promise.all([
@@ -126,7 +128,17 @@ async function getTopPerformers() {
     }
 }
 
-export default async function AdminDashboard() {
+
+
+export default async function AdminDashboard(props: { params: Promise<{ locale: string }> }) {
+    const params = await props.params
+    const { locale } = params
+
+    const isAuth = await isAuthenticated()
+    if (!isAuth) {
+        redirect(`/${locale}/admin/login`)
+    }
+
     const stats = await getStats()
     const recentOrders = await getRecentOrders()
     const lowStockBooks = await getLowStockBooks()

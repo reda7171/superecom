@@ -5,13 +5,21 @@ import Image from 'next/image'
 import { ArrowLeft, User, Phone, MapPin, Calendar, Clock, Package, ShoppingBag, Truck } from 'lucide-react'
 import OrderStatusUpdater from '@/components/admin/OrderStatusUpdater'
 import DeliverySyncButton from '@/components/admin/DeliverySyncButton'
+import { isAuthenticated } from '@/lib/actions/auth'
+import { redirect } from 'next/navigation'
 
 export default async function OrderDetailsPage({
     params,
 }: {
-    params: Promise<{ id: string }>
+    params: Promise<{ id: string; locale: string }>
 }) {
-    const { id } = await params
+    const { id, locale } = await params
+
+    const isAuth = await isAuthenticated()
+    if (!isAuth) {
+        redirect(`/${locale}/admin/login`)
+    }
+
     const order = await getOrderById(id)
 
     if (!order) {
@@ -24,7 +32,7 @@ export default async function OrderDetailsPage({
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1">
                     <Link
-                        href="/admin/orders"
+                        href={`/${locale}/admin/orders`}
                         className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 transition-colors"
                     >
                         <ArrowLeft className="w-4 h-4 mr-1" />

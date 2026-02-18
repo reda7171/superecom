@@ -9,13 +9,14 @@ import { ArrowLeft, Check, Package, Shield, Sparkles, Truck } from 'lucide-react
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { Metadata } from 'next'
+import SetPixelView from '@/components/SetPixelView'
 
 export async function generateMetadata({
     params,
 }: {
-    params: Promise<{ id: string }>
+    params: Promise<{ id: string; locale: string }>
 }): Promise<Metadata> {
-    const { id } = await params
+    const { id, locale } = await params
     const pack = await getPackById(id)
 
     if (!pack) {
@@ -27,14 +28,49 @@ export async function generateMetadata({
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.com'
     const imageUrl = pack.image?.startsWith('http') ? pack.image : (pack.books[0]?.book.image || '')
 
+    const totalOriginalPrice = pack.books.reduce((sum, pb) => sum + pb.book.price, 0)
+    const savings = totalOriginalPrice - pack.price
+    const savingsPercent = Math.round((savings / totalOriginalPrice) * 100)
+
+    const bookTitles = pack.books.map(pb => pb.book.title).join(', ')
+
+    const keywords = [
+        pack.name,
+        `pack ${pack.name}`,
+        'pack de livres maroc',
+        'packs livres',
+        'livres en promotion maroc',
+        `économiser ${savingsPercent}%`,
+        ...pack.books.map(pb => pb.book.title),
+        ...pack.books.map(pb => pb.book.author),
+        'librairie en ligne maroc',
+    ]
+
     return {
-        title: `${pack.name} | Packs Riwaya`,
-        description: pack.description?.slice(0, 160) || `Découvrez le pack ${pack.name} chez Riwaya. Une sélection exclusive de livres au meilleur prix.`,
+        title: `${pack.name} - Pack de ${pack.books.length} Livres | Riwaya`,
+        description: `Achetez le pack "${pack.name}" sur Riwaya. ${pack.books.length} livres sélectionnés : ${bookTitles.slice(0, 100)}... Économisez ${savingsPercent}% (${savings} MAD). Prix: ${pack.price} MAD. Livraison rapide au Maroc.`,
+        keywords,
         openGraph: {
-            title: pack.name,
-            description: pack.description?.slice(0, 160) || `Découvrez le pack ${pack.name} chez Riwaya.`,
+            title: `${pack.name} - Économisez ${savingsPercent}%`,
+            description: pack.description?.slice(0, 160) || `Pack de ${pack.books.length} livres sélectionnés. ${savings} MAD d'économie.`,
             images: imageUrl ? [imageUrl] : [],
             type: 'website',
+            locale: locale === 'ar' ? 'ar_MA' : locale === 'en' ? 'en_MA' : 'fr_MA',
+            url: `${baseUrl}/${locale}/packs/${pack.id}`,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: `${pack.name} - ${savingsPercent}% de réduction`,
+            description: `Pack de ${pack.books.length} livres à ${pack.price} MAD au lieu de ${totalOriginalPrice} MAD`,
+            images: imageUrl ? [imageUrl] : [],
+        },
+        alternates: {
+            canonical: `/${locale}/packs/${pack.id}`,
+            languages: {
+                'fr': `/fr/packs/${pack.id}`,
+                'ar': `/ar/packs/${pack.id}`,
+                'en': `/en/packs/${pack.id}`,
+            },
         },
     }
 }
@@ -62,17 +98,33 @@ export default async function PackDetailPage({
     const jsonLd = [
         {
             '@context': 'https://schema.org',
-            '@type': 'Product',
+            '@type': 'ProductGroup',
             name: pack.name,
             description: pack.description || `Pack de ${pack.books.length} livres sélectionné par Riwaya.`,
             image: pack.image || pack.books[0]?.book.image,
+            brand: {
+                '@type': 'Organization',
+                name: 'Riwaya',
+            },
             offers: {
-                '@type': 'Offer',
-                price: pack.price,
+                '@type': 'AggregateOffer',
                 priceCurrency: 'MAD',
+                lowPrice: pack.price,
+                highPrice: totalOriginalPrice,
+                offerCount: 1,
                 availability: 'https://schema.org/InStock',
                 url: `${baseUrl}/packs/${pack.id}`,
             },
+            hasVariant: pack.books.map((pb) => ({
+                '@type': 'Book',
+                name: pb.book.title,
+                author: {
+                    '@type': 'Person',
+                    name: pb.book.author,
+                },
+                image: pb.book.image,
+                isbn: pb.book.isbn,
+            })),
         },
         {
             '@context': 'https://schema.org',
@@ -107,6 +159,12 @@ export default async function PackDetailPage({
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
             />
             <div className="min-h-screen bg-pixio-cream">
+                <SetPixelView
+                    id={pack.id}
+                    title={pack.name}
+                    price={pack.price}
+                    category="Packs"
+                />
                 <Header />
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-32">

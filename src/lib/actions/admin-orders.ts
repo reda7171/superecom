@@ -6,7 +6,7 @@ import { verifyAdmin } from '@/lib/actions/auth'
 import { createAuditLog } from './audit'
 import { olivraison } from '@/lib/delivery/olivraison'
 
-type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
+import { OrderStatus } from '@prisma/client'
 
 /**
  * Mettre à jour le statut d'une commande
@@ -14,9 +14,20 @@ type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLE
 export async function updateOrderStatus(orderId: string, status: OrderStatus) {
     try {
         await verifyAdmin()
+
+        // Mettre à jour la commande et ajouter à l'historique
         await prisma.order.update({
             where: { id: orderId },
-            data: { status }
+            data: {
+                status,
+                statusHistory: {
+                    create: {
+                        status,
+                        comment: `Statut de la commande mis à jour manuellement par l'administrateur`,
+                        createdBy: 'ADMIN'
+                    }
+                }
+            }
         })
 
         revalidatePath('/admin/orders')
@@ -202,8 +213,8 @@ export async function getOrderShippingLabel(orderId: string) {
 
         const response = await olivraison.getSticker([order.trackingID])
 
-        // La réponse contient une liste, on prend le premier
-        if (response && response[0]) {
+        if (response && response[0] && response[0].stickerFilePath) {
+            console.log('✅ Sticker found:', response[0].stickerFilePath)
             return {
                 success: true,
                 stickerUrl: response[0].stickerFilePath,
@@ -211,7 +222,16 @@ export async function getOrderShippingLabel(orderId: string) {
             }
         }
 
-        throw new Error('Impossible de générer l\'étiquette')
+        console.error('❌ Shipping Label Error for trackingID:', order.trackingID, 'Response:', JSON.stringify(response, null, 2))
+
+        let errorMsg = 'Impossible de générer l\'étiquette'
+        if (!response || response.length === 0) {
+            errorMsg = 'L\'API Olivraison n\'a retourné aucune étiquette. La commande est peut-être trop récente.'
+        } else if (!response[0].stickerFilePath) {
+            errorMsg = 'L\'étiquette n\'est pas encore disponible pour ce colis.'
+        }
+
+        throw new Error(errorMsg)
     } catch (error: any) {
         return { success: false, error: error.message }
     }

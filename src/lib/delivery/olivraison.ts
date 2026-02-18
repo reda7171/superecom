@@ -78,29 +78,52 @@ class OlivraisonService {
         const headers = {
             ...options.headers,
             'Authorization': `Bearer ${this.token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'User-Agent': 'Riwaya-Backend/1.0'
         }
 
-        let response = await fetch(`${BASE_URL}${endpoint}`, { ...options, headers })
+        const url = `${BASE_URL}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`
+
+        console.log(`[Olivraison] 🚀 Request: ${options.method || 'GET'} ${url}`)
+        if (options.body) {
+            console.log(`[Olivraison] 📦 Body:`, options.body)
+        }
+
+        let response = await fetch(url, { ...options, headers })
 
         // Si 401, le token est peut-être expiré, on réessaie une fois après login
         if (response.status === 401) {
+            console.log('[Olivraison] 🔄 Token expired, retrying login...')
             await this.login()
-            response = await fetch(`${BASE_URL}${endpoint}`, {
-                ...options,
-                headers: {
-                    ...headers,
-                    'Authorization': `Bearer ${this.token}`
-                }
-            })
+            headers['Authorization'] = `Bearer ${this.token}`
+            response = await fetch(url, { ...options, headers })
         }
+
+        const contentType = response.headers.get('content-type')
+        const bodyText = await response.text()
 
         if (!response.ok) {
-            const err = await response.json()
-            throw new Error(`Erreur API Olivraison [${endpoint}]: ${err.description || response.statusText}`)
+            console.error(`[Olivraison] ❌ API Error (${response.status}):`, bodyText)
+            let parsedErr
+            try {
+                parsedErr = JSON.parse(bodyText)
+            } catch (e) {
+                parsedErr = { description: bodyText }
+            }
+            throw new Error(`Erreur API Olivraison [${endpoint}]: ${parsedErr.description || parsedErr.message || response.statusText}`)
         }
 
-        return response.json()
+        if (contentType && contentType.includes('application/json')) {
+            try {
+                return JSON.parse(bodyText)
+            } catch (e) {
+                console.warn('[Olivraison] ⚠️ Failed to parse JSON even with application/json header')
+                return bodyText
+            }
+        }
+
+        return bodyText
     }
 
     /**
@@ -131,10 +154,19 @@ class OlivraisonService {
      * Générer le sticker / BL (Sticker/SIP)
      */
     async getSticker(trackingIDs: string[]) {
-        return this.request('/pickup', {
+        const res = await this.request('/pickup', {
             method: 'POST',
             body: JSON.stringify({ packages: trackingIDs })
         })
+        console.log('📄 Olivraison getSticker response:', JSON.stringify(res, null, 2))
+
+        // S'assurer que les liens sont des URLs complètes
+        const items = Array.isArray(res) ? res : (res?.data || res?.results || [])
+        return items.map((item: any) => ({
+            ...item,
+            stickerFilePath: item.stickerFilePath?.startsWith('http') ? item.stickerFilePath : `${BASE_URL}${item.stickerFilePath}`,
+            sipFilePath: item.sipFilePath?.startsWith('http') ? item.sipFilePath : `${BASE_URL}${item.sipFilePath}`
+        }))
     }
 }
 

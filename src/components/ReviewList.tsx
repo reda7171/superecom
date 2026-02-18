@@ -28,7 +28,7 @@ export default function ReviewList({ reviews }: { reviews: Review[] }) {
                 <div key={review.id} className="bg-white p-6 rounded-3xl border border-gray-50 shadow-sm transition-all hover:shadow-md">
                     <div className="flex justify-between items-start mb-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                            <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
                                 <User className="w-5 h-5" />
                             </div>
                             <div>

@@ -10,7 +10,7 @@ import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
 const ReviewSchema = z.object({
     bookId: z.string().uuid(),
     fullName: z.string().min(3, 'Le nom doit contenir au moins 3 caractères'),
-    rating: z.number().min(1).max(5),
+    rating: z.number().min(1, 'La note doit être entre 1 et 5').max(5, 'La note doit être entre 1 et 5'),
     comment: z.string().min(10, 'Le commentaire doit contenir au moins 10 caractères'),
 })
 
@@ -24,6 +24,21 @@ export async function createReview(data: z.infer<typeof ReviewSchema>) {
 
     try {
         const validated = ReviewSchema.parse(data)
+
+        // Vérifier doublon (même nom pour même livre)
+        const existing = await prisma.review.findFirst({
+            where: {
+                bookId: validated.bookId,
+                fullName: validated.fullName
+            }
+        })
+
+        if (existing) {
+            return {
+                success: false,
+                error: "Vous avez déjà envoyé un avis pour ce livre. Merci de votre contribution !"
+            }
+        }
 
         await prisma.review.create({
             data: {

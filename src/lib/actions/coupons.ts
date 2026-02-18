@@ -8,7 +8,7 @@ import { createAuditLog } from './audit'
 
 const CouponSchema = z.object({
     code: z.string().min(3, 'Le code doit contenir au moins 3 caractères').toUpperCase(),
-    discount: z.number().positive('La remise doit être positive'),
+    discount: z.number().positive('La remise doit être supérieure à 0'),
     type: z.enum(['PERCENTAGE', 'FIXED_AMOUNT']),
     minAmount: z.number().optional().nullable(),
     isActive: z.boolean().default(true),

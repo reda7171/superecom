@@ -6,7 +6,7 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, Legend, BarChart, Bar
 } from 'recharts'
-import { AlertTriangle, TrendingUp, Package, Star, FileText } from 'lucide-react'
+import { AlertTriangle, TrendingUp, Package, Star, FileText, MapPin, ShoppingCart } from 'lucide-react'
 import Image from 'next/image'
 import ExportButton from './ExportButton'
 import { exportSalesReport } from '@/lib/actions/export'
@@ -141,6 +141,37 @@ export default function DashboardAnalytics() {
                         </ResponsiveContainer>
                     </div>
                 </div>
+
+                {/* Graphique Ventes par Ville */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
+                    <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+                        <MapPin size={20} className="text-orange-600" />
+                        Évolution des ventes par ville
+                    </h3>
+                    <div className="h-[400px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={data.cityRevenue}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#666' }} />
+                                <Tooltip
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                                    formatter={(value: any) => [`${value.toLocaleString('fr-FR')} MAD`, 'Revenu']}
+                                />
+                                <Legend />
+                                {data.cities.map((city: string, index: number) => (
+                                    <Bar
+                                        key={city}
+                                        dataKey={city}
+                                        fill={COLORS[index % COLORS.length]}
+                                        radius={[4, 4, 0, 0]}
+                                        stackId="a"
+                                    />
+                                ))}
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -167,6 +198,65 @@ export default function DashboardAnalytics() {
                                     </span>
                                 </div>
                             ))
+                        )}
+                    </div>
+                </div>
+
+                {/* Panier Moyen par Ville */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-blue-600">
+                        <ShoppingCart size={20} />
+                        Panier Moyen par Ville
+                    </h3>
+                    <div className="space-y-4">
+                        {data.cityAOV.map((city: any, idx: number) => (
+                            <div key={idx} className="flex items-center justify-between p-3 bg-blue-50/30 rounded-lg border border-blue-50">
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-sm text-gray-800">{city.name}</span>
+                                    <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{city.orders} commandes</span>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm font-black text-blue-600">{city.average.toFixed(0)} MAD</p>
+                                    <div className="w-16 h-1.5 bg-gray-200 rounded-full mt-1 overflow-hidden">
+                                        <div
+                                            className="h-full bg-blue-600 rounded-full"
+                                            style={{ width: `${Math.min(100, (city.average / (data.cityAOV[0]?.average || 1)) * 100)}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Taux de Retour par Ville */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2 text-red-600">
+                        <AlertTriangle size={20} />
+                        Taux de Retour par Ville
+                    </h3>
+                    <div className="space-y-4">
+                        {data.cityReturnRates.map((city: any, idx: number) => (
+                            <div key={idx} className="flex items-center justify-between p-3 bg-red-50/30 rounded-lg border border-red-50">
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-sm text-gray-800">{city.name}</span>
+                                    <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{city.returned} retours / {city.total} total</span>
+                                </div>
+                                <div className="text-right">
+                                    <p className={`text-sm font-black ${city.rate > 15 ? 'text-red-600' : 'text-orange-500'}`}>
+                                        {city.rate.toFixed(1)}%
+                                    </p>
+                                    <div className="w-16 h-1.5 bg-gray-200 rounded-full mt-1 overflow-hidden">
+                                        <div
+                                            className={`h-full rounded-full ${city.rate > 15 ? 'bg-red-600' : 'bg-orange-500'}`}
+                                            style={{ width: `${Math.min(100, city.rate * 3)}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        {data.cityReturnRates.length === 0 && (
+                            <p className="text-xs text-gray-400 italic text-center py-4">Aucun retour enregistré ✨</p>
                         )}
                     </div>
                 </div>

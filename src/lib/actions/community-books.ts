@@ -40,6 +40,20 @@ export async function addExchangeBook(formData: FormData): Promise<BookResult> {
     try {
         const data = BookSchema.parse(rawData)
 
+        // Vérifier doublon (même titre/auteur pour cet utilisateur)
+        const existing = await prisma.exchangeBook.findFirst({
+            where: {
+                ownerId: user.id,
+                title: data.title,
+                author: data.author,
+                status: 'AVAILABLE'
+            }
+        })
+
+        if (existing) {
+            return { success: false, error: "Vous avez déjà ce livre listé comme disponible." }
+        }
+
         const book = await prisma.exchangeBook.create({
             data: {
                 ownerId: user.id,

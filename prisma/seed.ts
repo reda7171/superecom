@@ -476,7 +476,44 @@ async function main() {
   })
   console.log('✅ 2 coupons créés')
 
-  // 8. ARTICLES DE BLOG
+  // 8. MENUS
+  console.log('\n🍔 Création des menus...')
+
+  const headerMenu = await prisma.menu.create({
+    data: {
+      slug: 'header',
+      name: 'Menu Principal',
+      isActive: true,
+      items: {
+        create: [
+          { label: 'LIVRES', url: '/books', order: 0, isActive: true },
+          { label: 'PACKS', url: '/packs', order: 1, isActive: true },
+          { label: 'ECHANGES', url: '/community/market', order: 2, isActive: true },
+          { label: 'JOURNAL', url: '/blog', order: 3, isActive: true },
+          { label: 'ACCUEIL', url: '/', order: 4, isActive: true },
+        ]
+      }
+    }
+  })
+
+  const footerMenu = await prisma.menu.create({
+    data: {
+      slug: 'footer-main',
+      name: 'Pied de page - Principal',
+      isActive: true,
+      items: {
+        create: [
+          { label: 'À propos', url: '/about', order: 0, isActive: true },
+          { label: 'Contact', url: '/contact', order: 1, isActive: true },
+          { label: 'FAQ', url: '/faq', order: 2, isActive: true },
+        ]
+      }
+    }
+  })
+
+  console.log('✅ 2 menus créés')
+
+  // 9. ARTICLES DE BLOG
   console.log('\n📝 Création des articles de blog...')
 
   for (const post of blogPosts) {

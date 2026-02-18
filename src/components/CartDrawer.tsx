@@ -104,13 +104,19 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                     >
                                         {/* Image */}
                                         <div className="relative w-24 h-32 flex-shrink-0 bg-pixio-cream rounded-2xl overflow-hidden border border-gray-50 group-hover:scale-105 transition-transform">
-                                            <Image
-                                                src={item.image}
-                                                alt={item.title}
-                                                fill
-                                                className="object-cover"
-                                                unoptimized
-                                            />
+                                            {item.image && typeof item.image === 'string' && item.image.trim().length > 5 && (item.image.startsWith('http') || item.image.startsWith('/')) ? (
+                                                <Image
+                                                    src={item.image}
+                                                    alt={item.title}
+                                                    fill
+                                                    className="object-cover"
+                                                    unoptimized
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-300">
+                                                    <ShoppingCart className="w-8 h-8" />
+                                                </div>
+                                            )}
                                             {item.type === 'PACK' && (
                                                 <div className="absolute top-2 left-2">
                                                     <span className="px-2 py-0.5 bg-black text-white text-[8px] font-black uppercase tracking-widest rounded-md">

@@ -17,7 +17,7 @@ const AddBookSchema = z.object({
 
 const UpdateProgressSchema = z.object({
     id: z.string(),
-    currentPage: z.number().min(0),
+    currentPage: z.number().min(0, 'La page doit être positive'),
     status: z.nativeEnum(ReadingStatus).optional(),
 })
 
@@ -55,20 +55,54 @@ export async function addToReadingList(data: z.infer<typeof AddBookSchema>) {
 
     try {
         const validated = AddBookSchema.parse(data)
+        const user = await getCommunityUser() // Already checked but for TS
 
+        if (!user) return { success: false, error: 'Vous devez être connecté' }
+
+        // Construction de la clause OR propre
+        const orConditions: any[] = [
+            {
+                title: validated.title,
+                author: validated.author
+            }
+        ]
+
+        if (validated.bookId) {
+            orConditions.push({ bookId: validated.bookId })
+        }
+
+        // Vérifier si déjà présent (doublon)
+        const existing = await prisma.readingList.findFirst({
+            where: {
+                userId: user.id,
+                OR: orConditions
+            }
+        })
+
+        if (existing) {
+            return { success: true, message: 'Déjà dans votre liste' }
+        }
+
+        // Création sans spread direct pour éviter les soucis de type
         await prisma.readingList.create({
             data: {
-                ...validated,
                 userId: user.id,
+                title: validated.title,
+                author: validated.author,
+                totalPages: validated.totalPages,
+                status: validated.status,
+                bookId: validated.bookId,
+                cover: validated.cover,
                 startedAt: validated.status === ReadingStatus.READING ? new Date() : null,
             }
         })
 
         revalidatePath('/community/reading-list')
         return { success: true }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error adding to reading list:', error)
-        return { success: false, error: 'Erreur lors de l\'ajout du livre' }
+        // S'assurer qu'on retourne un objet simple, sans Error object
+        return { success: false, error: 'Erreur lors de l\'ajout du livre: ' + (error.message || 'Inconnue') }
     }
 }
 

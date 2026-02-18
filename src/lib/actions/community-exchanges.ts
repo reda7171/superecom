@@ -304,6 +304,7 @@ export async function rejectExchange(exchangeId: string) {
 /**
  * Finaliser un échange
  */
+// Finaliser un échange & Transférer la propriété
 export async function completeExchange(exchangeId: string) {
     const user = await getCommunityUser()
     if (!user) return { success: false, error: "Non authentifié" }
@@ -311,7 +312,10 @@ export async function completeExchange(exchangeId: string) {
     try {
         const exchange = await (prisma as any).exchange.findUnique({
             where: { id: exchangeId },
-            include: { bookRequested: true }
+            include: {
+                bookRequested: true,
+                bookOffered: true
+            }
         })
 
         if (!exchange) return { success: false, error: "Échange introuvable" }
@@ -325,24 +329,50 @@ export async function completeExchange(exchangeId: string) {
             return { success: false, error: "L'échange doit être accepté avant d'être finalisé" }
         }
 
-        await (prisma as any).exchange.update({
-            where: { id: exchangeId },
-            data: { status: 'COMPLETED' } // Kept as COMPLETED, assuming REJECTED was a typo in the instruction snippet
+        // Transaction de transfert de propriété
+        await (prisma as any).$transaction(async (tx: any) => {
+            // 1. Mettre à jour le statut de l'échange
+            await tx.exchange.update({
+                where: { id: exchangeId },
+                data: { status: 'COMPLETED' }
+            })
+
+            // 2. Transférer le livre demandé (du Responder -> Requester)
+            await tx.exchangeBook.update({
+                where: { id: exchange.bookRequestedId },
+                data: {
+                    ownerId: exchange.requesterId, // Nouveau propriétaire
+                    status: 'EXCHANGED', // Marqué comme échangé
+                }
+            })
+
+            // 3. Transférer le livre offert (du Requester -> Responder) si applicable (Echange DIRECT)
+            if (exchange.bookOfferedId) {
+                await tx.exchangeBook.update({
+                    where: { id: exchange.bookOfferedId },
+                    data: {
+                        ownerId: exchange.responderId, // Nouveau propriétaire
+                        status: 'EXCHANGED',
+                    }
+                })
+            }
+
+            // 4. Notifier l'autre partie
+            const recipientId = exchange.requesterId === user.id ? exchange.responderId : exchange.requesterId
+            await createNotification({
+                userId: recipientId,
+                type: 'EXCHANGE_COMPLETED',
+                title: 'Échange terminé !',
+                message: `${(user as any).fullName} a confirmé la réception et finalisé l'échange. Le livre est maintenant dans votre bibliothèque !`,
+                link: `/community/exchanges`
+            })
         })
 
-        // Notifier l'autre partie
-        const recipientId = exchange.requesterId === user.id ? exchange.responderId : exchange.requesterId
-        await createNotification({
-            userId: recipientId,
-            type: 'EXCHANGE_COMPLETED',
-            title: 'Échange terminé !',
-            message: `${(user as any).fullName} a marqué l'échange pour "${exchange.bookRequested.title}" comme terminé. Vous pouvez maintenant laisser une évaluation.`,
-            link: `/community/exchanges`
-        })
-
+        revalidatePath('/community')
         revalidatePath('/community/exchanges')
         return { success: true }
     } catch (error) {
+        console.error('Erreur completeExchange:', error)
         return { success: false, error: "Erreur lors de la finalisation" }
     }
 }

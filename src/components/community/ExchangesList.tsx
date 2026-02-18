@@ -3,9 +3,12 @@
 import { useState, useTransition } from 'react'
 import { acceptExchange, rejectExchange, completeExchange } from '@/lib/actions/community-exchanges'
 import { Link, useRouter } from '@/i18n/routing'
+import { fbCustomEvents } from '@/lib/facebook-pixel'
 import { useTranslations } from 'next-intl'
 import { BookOpen, Check, X, Clock, CheckCircle, Loader2, RefreshCw, Coins, MessageSquare, Flag, Star } from 'lucide-react'
 import RatingModal from './RatingModal'
+import ConfirmationModal from './ConfirmationModal'
+import DonationModal from './DonationModal'
 
 import { useUIStore } from '@/store/ui'
 
@@ -19,6 +22,9 @@ interface Exchange {
     responder?: { fullName: string | null; rating: number; city: string | null }
     bookRequested: { title: string; author: string; image: string | null }
     bookOffered: { title: string; author: string; image: string | null } | null
+    deliveryMethod?: string | null
+    meetingPoint?: string | null
+    meetingDate?: Date | null
     rating?: any | null
 }
 
@@ -36,6 +42,46 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
     const t = useTranslations('Community.Exchanges')
     const [isPending, startTransition] = useTransition()
 
+    // Confirmation Modal State
+    const [confirmAction, setConfirmAction] = useState<{
+        id: string | null;
+        type: 'REJECT' | 'COMPLETE' | null;
+    }>({ id: null, type: null })
+
+    const [showDonationModal, setShowDonationModal] = useState(false)
+
+    const handleConfirmAction = async () => {
+        const { id, type } = confirmAction
+        if (!id || !type) return
+
+        setLoading(id)
+
+        startTransition(async () => {
+            try {
+                const res = type === 'REJECT' ? await rejectExchange(id) : await completeExchange(id)
+
+                if (res.success) {
+                    showNotification(type === 'REJECT' ? t('Status.REJECTED') : t('Status.COMPLETED'), 'success')
+                    router.refresh()
+
+                    // Show donation modal if exchange completed
+                    if (type === 'COMPLETE') {
+                        fbCustomEvents.exchangeCompleted(id)
+                        setTimeout(() => setShowDonationModal(true), 500)
+                    }
+                } else {
+                    showNotification(res.error || "Error", 'error')
+                }
+            } catch (err) {
+                console.error("Action error:", err)
+                showNotification("Une erreur est survenue", 'error')
+            } finally {
+                setLoading(null)
+                setConfirmAction({ id: null, type: null })
+            }
+        })
+    }
+
     async function handleAccept(exchangeId: string) {
         setLoading(exchangeId)
         const res = await acceptExchange(exchangeId)
@@ -51,33 +97,11 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
     }
 
     async function handleReject(exchangeId: string) {
-        if (!confirm(t('Actions.Reject') + '?')) return
-        setLoading(exchangeId)
-        const res = await rejectExchange(exchangeId)
-        if (res.success) {
-            showNotification(t('Status.REJECTED'), 'success')
-            startTransition(() => {
-                router.refresh()
-            })
-        } else {
-            showNotification(res.error || "Error", 'error')
-        }
-        setLoading(null)
+        setConfirmAction({ id: exchangeId, type: 'REJECT' })
     }
 
     async function handleComplete(exchangeId: string) {
-        if (!confirm(t('FinishButton') + '?')) return
-        setLoading(exchangeId)
-        const res = await completeExchange(exchangeId)
-        if (res.success) {
-            showNotification(t('Status.COMPLETED'), 'success')
-            startTransition(() => {
-                router.refresh()
-            })
-        } else {
-            showNotification(res.error || "Error", 'error')
-        }
-        setLoading(null)
+        setConfirmAction({ id: exchangeId, type: 'COMPLETE' })
     }
 
     const getStatusBadge = (status: string) => {
@@ -118,14 +142,14 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
 
     return (
         <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6">
                 {exchanges.map((exchange) => (
                     <div
                         key={exchange.id}
                         className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden flex flex-col group"
                     >
                         {/* Header: User Info */}
-                        <div className="p-6 border-b border-gray-50 bg-gray-50/50">
+                        <div className="p-4 sm:p-6 border-b border-gray-50 bg-gray-50/50">
                             <div className="flex items-center justify-between mb-4">
                                 {getStatusBadge(exchange.status)}
                                 <span className="text-[10px] font-bold text-gray-400">
@@ -151,7 +175,7 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
                         </div>
 
                         {/* Content: Books */}
-                        <div className="p-6 flex-grow">
+                        <div className="p-4 sm:p-6 flex-grow">
                             <div className="space-y-4">
                                 {/* Requested Book */}
                                 <div className="flex items-center gap-3">
@@ -203,9 +227,37 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
                                 )}
                             </div>
 
+                            {/* Meeting Details */}
+                            {(exchange.meetingPoint || exchange.meetingDate) && (
+                                <div className="mt-6 p-4 bg-pixio-cream/50 rounded-2xl border border-pixio-cream space-y-3">
+                                    <p className="text-[10px] font-black uppercase text-black/40 tracking-widest">{t('MeetingDetails') || 'Détails de rencontre'}</p>
+
+                                    {exchange.meetingPoint && (
+                                        <div className="flex items-center gap-3">
+                                            <Flag className="w-3 h-3 text-black" />
+                                            <p className="text-[11px] font-bold text-black">{exchange.meetingPoint}</p>
+                                        </div>
+                                    )}
+
+                                    {exchange.meetingDate && (
+                                        <div className="flex items-center gap-3">
+                                            <Clock className="w-3 h-3 text-black" />
+                                            <p className="text-[11px] font-bold text-black">
+                                                {new Date(exchange.meetingDate).toLocaleString('fr-FR', {
+                                                    day: 'numeric',
+                                                    month: 'long',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
                             {/* Message Preview */}
                             {exchange.message && (
-                                <div className="mt-6 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                <div className="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
                                     <p className="text-[10px] text-gray-500 italic leading-relaxed">
                                         "{exchange.message}"
                                     </p>
@@ -215,7 +267,7 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
 
                         {/* Actions (Only for Received + Pending) */}
                         {type === 'received' && exchange.status === 'PENDING' && (
-                            <div className="p-6 pt-0 flex gap-3">
+                            <div className="p-4 sm:p-6 pt-0 flex gap-3">
                                 <button
                                     onClick={() => handleReject(exchange.id)}
                                     disabled={loading === exchange.id}
@@ -309,6 +361,25 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
                     }}
                 />
             )}
+
+            <ConfirmationModal
+                isOpen={!!confirmAction.id}
+                title={confirmAction.type === 'REJECT' ? t('Actions.Reject') : t('FinishButton')}
+                message={confirmAction.type === 'REJECT'
+                    ? "Êtes-vous sûr de vouloir refuser cet échange ?"
+                    : "Voulez-vous marquer cet échange comme terminé ?"
+                }
+                variant={confirmAction.type === 'REJECT' ? 'danger' : 'info'}
+                onConfirm={handleConfirmAction}
+                onClose={() => setConfirmAction({ id: null, type: null })}
+                confirmText="Oui"
+                cancelText="Non"
+            />
+
+            <DonationModal
+                isOpen={showDonationModal}
+                onClose={() => setShowDonationModal(false)}
+            />
         </>
     )
 }

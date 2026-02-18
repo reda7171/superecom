@@ -7,6 +7,7 @@ import { Bell, Trash2, CheckCircle, MessageSquare, Repeat, Star, XCircle, Info }
 import Link from 'next/link'
 import DeleteNotificationButton from '@/components/community/DeleteNotificationButton'
 import MarkAllReadButton from '@/components/community/MarkAllReadButton'
+import NotificationLink from '@/components/community/NotificationLink'
 
 export default async function NotificationsPage() {
     const user = await getCommunityUser()
@@ -94,12 +95,14 @@ export default async function NotificationsPage() {
                                         </p>
                                         <div className="flex items-center gap-4">
                                             {notification.link && (
-                                                <Link
-                                                    href={notification.link}
-                                                    className="inline-flex items-center gap-2 bg-black text-white px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest hover:bg-gray-800 transition-all"
+                                                <NotificationLink
+                                                    notificationId={notification.id}
+                                                    link={notification.link}
+                                                    read={notification.read}
+                                                    className="inline-flex items-center gap-2 bg-black text-white px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest hover:bg-gray-800 transition-all disabled:opacity-50"
                                                 >
                                                     Voir les détails
-                                                </Link>
+                                                </NotificationLink>
                                             )}
                                             <DeleteNotificationButton notificationId={notification.id} />
                                         </div>

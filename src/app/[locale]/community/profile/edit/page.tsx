@@ -15,6 +15,8 @@ export default async function ProfileEditPage() {
     const userProps = {
         fullName: user.fullName || '',
         city: user.city || '',
+        address: user.address,
+        neighborhood: user.neighborhood,
         email: user.email,
         image: user.image,
         bio: user.bio,

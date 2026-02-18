@@ -10,6 +10,24 @@
             "EditorsChoice": "ختيار المحرر",
             "Select": "تحديد"
         },
+        "SearchSection": {
+            "Badge": "بحث",
+            "TitlePart1": "اكتشف",
+            "TitlePart2": "كتابك القادم.",
+            "Description": "استخدم بحثنا المتقدم لتصفية النتائج حسب العنوان، المؤلف أو الميزانية.",
+            "Placeholder": "ابحث عن عنوان، اسم مؤلف...",
+            "MoreFilters": "خيارات أكثر",
+            "HideFilters": "إخفاء الخيارات",
+            "Filters": {
+                "Title": "العنوان",
+                "TitlePlaceholder": "مثال: الخيميائي",
+                "Author": "المؤلف",
+                "AuthorPlaceholder": "مثال: باولو كويلو",
+                "MinPrice": "أقل سعر (درهم)",
+                "MaxPrice": "أعلى سعر (درهم)"
+            },
+            "Submit": "ابحث الآن"
+        },
         "seo": {
             "Title": "Riwaya | Digital Literature Curators & Book Bundles",
             "Description": "رواية هي وجهتك المتميزة لكتب تطوير الذات، الأعمال، والفلسفة في المغرب. توصيل لجميع أنحاء المملكة."
@@ -99,20 +117,21 @@
         "Home": "الرئيسية",
         "Books": "الكتب",
         "Packs": "الباقات",
-        "Community": "تبادل",
-        "Cart": "السلة",
-        "Login": "دخول",
-        "Admin": "إدارة",
-        "Search": "ابحث عن الكتب...",
-        "Journal": "الجريدة",
+        "Community": "المجتمع",
+        "Cart": "سلة التسوق",
+        "Login": "تسجيل الدخول",
+        "Admin": "الإدارة",
+        "Search": "ابحث عن كتاب...",
+        "Journal": "المدونة",
         "UserMenu": {
             "Profile": "ملفي الشخصي",
             "ReadingList": "قائمة قراءاتي",
+            "ReadingProgress": "{completed} / {total} كتب",
             "Orders": "طلباتي",
             "Settings": "الإعدادات",
             "Logout": "تسجيل الخروج",
-            "LogoutLoading": "جاري تسجيل الخروج...",
-            "LogoutSuccess": "تم تسجيل الخروج بنجاح",
+            "LogoutLoading": "جاري الخروج...",
+            "LogoutSuccess": "تم تسجيل الخروج",
             "DefaultUser": "مستخدم"
         }
     },
@@ -130,16 +149,22 @@
         "NewsletterText": "انضم إلى نشرتنا الإخبارية للحصول على مختارات حصرية.",
         "Join": "انضمام",
         "Rights": "جميع الحقوق محفوظة.",
-        "BackToTop": "الرجوع للأعلى"
+        "BackToTop": "الرجوع للأعلى",
+        "DevelopedBy": "طُوِّر بواسطة <name>Reda</name>"
     },
     "Common": {
         "Loading": "جاري التحميل...",
         "Price": "السعر",
         "AddToCart": "أضف إلى السلة",
+        "AddedToCartSuccess": "تمت الإضافة إلى السلة بنجاح!",
+        "AddedToCartError": "خطأ في الإضافة إلى السلة",
         "OutOfStock": "نفذت الكمية",
         "Remaining": "متبقي",
         "By": "بواسطة",
         "BestSeller": "الأكثر مبيعاً",
+        "AddedToReadingList": "تمت الإضافة إلى قائمة القراءة",
+        "BookCount": "{count, plural, =0 {لا توجد كتب} one {كتاب واحد} two {كتابان} few {{count} كتب} many {{count} كتاباً} other {{count} كتاب}}",
+        "NoResultsDesc": "لم يتم العثور على كتب لهذا المؤلف.",
         "Errors": {
             "UnexpectedError": "حدث خطأ غير متوقع",
             "ImageUploadError": "خطأ في رفع الصورة"
@@ -328,15 +353,23 @@
         "Clear": "مسح",
         "PopularThemes": "ثيمات شائعة",
         "PopularSearches": "عمليات البحث الشائعة",
-        "BookCount": "{count} كتب",
-        "Remaining": "متبقي!",
+        "BookCount": "{count, plural, =0 {لا توجد كتب} one {كتاب واحد} two {كتابان} few {{count} كتب} many {{count} كتاباً} other {{count} كتاب}}",
+        "Remaining": "متبقية",
         "From": "ابتداء من {price} درهم",
         "Suggestions": "اقتراحات",
         "By": "بقلم {author}",
         "NoResultsTitle": "عذراً!",
         "NoResultsDesc": "لا توجد كتب تطابق بحثك.",
         "ViewAll": "عرض كل النتائج",
-        "EndsIn": "ينتهي في: {time}"
+        "EndsIn": "ينتهي في {time}",
+        "Terminated": "انتهى",
+        "Badges": {
+            "PROMO": "عرض",
+            "NEW": "جديد",
+            "HOT": "مميز",
+            "TRENDING": "رائج",
+            "LIVRAISON": "شحن مجاني"
+        }
     },
     "Categories": {
         "Développement Personnel": "تطوير الذات",
@@ -385,7 +418,15 @@
         "EmptyTitle": "قائمتك فارغة",
         "EmptyDesc": "لم تقم بإضافة أي كتب إلى مفضلاتك بعد.",
         "ContinueShopping": "متابعة التسوق",
-        "AddToCart": "أضف إلى السلة"
+        "AddToCart": "أضف إلى السلة",
+        "AddAllToCart": "أضف الكل إلى السلة",
+        "seo": {
+            "Title": "مفضلاتي | رواية - منسقو الأدب المتميز",
+            "Description": "اكتشف مجموعتك الشخصية من الكتب والباقات المميزة. نظم قراءاتك القادمة على رواية."
+        },
+        "By": "بواسطة {author}",
+        "Quote": "الكتاب الذي ننتظره هو الذي يغيرنا.",
+        "QuoteSubtitle": "مختارات رواية • انتقاء الأدب"
     },
     "Tracking": {
         "Title": "تتبع الطلب",
@@ -425,6 +466,9 @@
         "AddBook": "أضف كتاباً",
         "Credits": "أرصدة",
         "ExchangesLabel": "تبادلات",
+        "TopReaders": "أفضل القراء",
+        "TopReadersTitle": "أفضل القراء",
+        "TopReadersSubtitle": "الأعضاء الأكثر قراءة هذا الأسبوع",
         "Dashboard": {
             "RestrictedAccess": "وصول مقيد للتبادلات",
             "EligibilityDesc": "يجب أن تكون قد قدمت طلباً واحداً على الأقل في متجرنا لتتمكن من إضافة كتب أو تقديم طلبات تبادل في المجتمع.",
@@ -544,7 +588,8 @@
             },
             "ChatButton": "تحدث",
             "FinishButton": "إنهاء",
-            "HistoryChat": "سجل الدردشة"
+            "HistoryChat": "سجل الدردشة",
+            "MeetingDetails": "تفاصيل اللقاء"
         },
         "Notifications": {
             "Title": "التنبيهات",
@@ -552,14 +597,50 @@
             "Empty": "لا توجد تنبيهات",
             "All": "عرض كل التنبيهات",
             "Loading": "جاري تحميل التنبيهات...",
-            "Delete": "حذف"
+            "Delete": "حذف",
+            "NewMessage": "رسالة جديدة",
+            "NewMessageDesc": "{user} أرسل لك رسالة"
+        },
+        "ReadingList": {
+            "Title": "قائمة قراءاتي",
+            "Subtitle": "تتبع قراءاتك وتقدمك، حتى لكتبك الشخصية.",
+            "AddBook": "أضف كتاباً",
+            "Empty": "قائمة قراءاتك فارغة.",
+            "Status": {
+                "TO_READ": "سأقرأ",
+                "READING": "أقرأ حالياً",
+                "COMPLETED": "مكتمل",
+                "DROPPED": "مهمل",
+                "ON_HOLD": "معلق"
+            },
+            "Stats": {
+                "Library": "المكتبة",
+                "Completed": "{count} مكتمل",
+                "Authors": "المؤلفون",
+                "Explored": "تم استكشافهم",
+                "TotalVolume": "إجمالي الحجم",
+                "PagesAccumulated": "صفحات مجمعة",
+                "Progress": "التقدم",
+                "PagesRead": "{count} صفحة مقروءة"
+            },
+            "Board": {
+                "Empty": "فارغ",
+                "CurrentPage": "الصفحة الحالية:",
+                "Read": "قراءة",
+                "MarkFinished": "تحديد كمقروء",
+                "Delete": "حذف",
+                "ConfirmDelete": "هل أنت متأكد؟"
+            }
         },
         "Chat": {
             "Title": "المحادثة",
             "Placeholder": "اكتب رسالتك...",
             "Send": "إرسال",
             "Read": "تمت القراءة",
-            "SystemMessage": "بداية المحادثة بخصوص"
+            "SystemMessage": "بداية المحادثة بخصوص",
+            "Empty": "لا توجد رسائل",
+            "StartConversation": "أرسل رسالة لبدء المحادثة.",
+            "Instructions": "اضغط على Enter لإرسال رسالتك."
         },
         "Profile": {
             "Title": "ملفي الشخصي",
@@ -577,7 +658,11 @@
                 "Books": "الكتب",
                 "Exchanges": "التبادلات",
                 "Credits": "النقاط"
-            }
+            },
+            "AddressLabel": "العنوان / نقطة اللقاء",
+            "AddressPlaceholder": "مثال: مقهى فينيسيا، شارع الزرقطوني...",
+            "NeighborhoodLabel": "الحي",
+            "NeighborhoodPlaceholder": "مثال: المعاريف، راسين..."
         },
         "Ratings": {
             "Title": "تقييم التبادل",
@@ -758,5 +843,22 @@
         "NoPosts": "لا توجد مقالات منشورة حالياً.",
         "ComingSoon": "عد قريباً لاكتشاف منشوراتنا القادمة.",
         "ReadArticle": "اقرأ المقال"
+    },
+    "Orders": {
+        "Title": "طلباتي",
+        "Subtitle": "سجل المشتريات",
+        "EmptyTitle": "لا توجد طلبات",
+        "EmptyDesc": "لم تقم بأي طلب بعد",
+        "OrderNumber": "طلب #",
+        "Quantity": "الكمية:",
+        "DeliveryAddress": "عنوان التوصيل",
+        "Contact": "اتصل",
+        "TrackingTitle": "تتبع الطلب",
+        "TrackButton": "تتبع",
+        "Status": {
+            "CONFIRMED": "مؤكد",
+            "CANCELLED": "ملغى",
+            "PENDING": "قيد الانتظار"
+        }
     }
 }

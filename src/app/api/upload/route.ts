@@ -1,9 +1,49 @@
-import { writeFile } from 'fs/promises'
+import { writeFile, mkdir } from 'fs/promises'
 import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
+import { verifyAdmin } from '@/lib/actions/auth'
+import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
+import { sanitizeFilename } from '@/lib/security'
+import { createHash } from 'crypto'
+
+// Liste blanche des types MIME autorisés
+const ALLOWED_MIME_TYPES = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+    'image/gif'
+]
+
+// Extensions autorisées
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif']
+
+// Taille max : 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024
 
 export async function POST(request: NextRequest) {
     try {
+        // OWASP A01: Broken Access Control - Vérifier authentification admin
+        try {
+            await verifyAdmin()
+        } catch {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            )
+        }
+
+        // OWASP A04: Rate Limiting
+        const ip = await getIpIdentifier()
+        const limiter = await rateLimit(`upload_${ip}`, { limit: 10, windowMs: 60000 })
+
+        if (!limiter.success) {
+            return NextResponse.json(
+                { error: 'Too many upload requests. Please try again later.' },
+                { status: 429 }
+            )
+        }
+
         const formData = await request.formData()
         const file = formData.get('file') as File
 
@@ -11,37 +51,92 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'No file provided' }, { status: 400 })
         }
 
-        // Vérifier le type de fichier
-        if (!file.type.startsWith('image/')) {
-            return NextResponse.json({ error: 'File must be an image' }, { status: 400 })
+        // OWASP A03: Injection - Validation stricte du type MIME
+        if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+            return NextResponse.json(
+                { error: `Invalid file type. Allowed: ${ALLOWED_MIME_TYPES.join(', ')}` },
+                { status: 400 }
+            )
         }
 
-        // Vérifier la taille (5MB max)
-        if (file.size > 5 * 1024 * 1024) {
-            return NextResponse.json({ error: 'File size must be less than 5MB' }, { status: 400 })
+        // Vérifier l'extension du fichier
+        const fileExtension = path.extname(file.name).toLowerCase()
+        if (!ALLOWED_EXTENSIONS.includes(fileExtension)) {
+            return NextResponse.json(
+                { error: `Invalid file extension. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}` },
+                { status: 400 }
+            )
+        }
+
+        // Vérifier la taille
+        if (file.size > MAX_FILE_SIZE) {
+            return NextResponse.json(
+                { error: `File size must be less than ${MAX_FILE_SIZE / (1024 * 1024)}MB` },
+                { status: 400 }
+            )
         }
 
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
 
-        // Générer un nom de fichier unique
-        const timestamp = Date.now()
-        const originalName = file.name.replace(/\s+/g, '-').toLowerCase()
-        const fileName = `${timestamp}-${originalName}`
+        // OWASP A08: Vérifier les magic bytes (signature du fichier)
+        const magicBytes = buffer.slice(0, 4).toString('hex')
+        const validSignatures: Record<string, string[]> = {
+            'image/jpeg': ['ffd8ffe0', 'ffd8ffe1', 'ffd8ffe2', 'ffd8ffe3', 'ffd8ffe8'],
+            'image/png': ['89504e47'],
+            'image/gif': ['47494638'],
+            'image/webp': ['52494646']
+        }
 
-        // Chemin de sauvegarde
+        const expectedSignatures = validSignatures[file.type]
+        if (expectedSignatures && !expectedSignatures.some(sig => magicBytes.startsWith(sig))) {
+            return NextResponse.json(
+                { error: 'File content does not match declared type' },
+                { status: 400 }
+            )
+        }
+
+        // OWASP A03: Sanitize filename pour éviter path traversal
+        const sanitizedName = sanitizeFilename(file.name)
+
+        // Générer un hash unique pour éviter les collisions
+        const hash = createHash('sha256')
+            .update(buffer)
+            .update(Date.now().toString())
+            .digest('hex')
+            .substring(0, 16)
+
+        const fileName = `${hash}-${sanitizedName}`
+
+        // Créer le répertoire s'il n'existe pas
         const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'books')
+        await mkdir(uploadDir, { recursive: true })
+
+        // Vérifier que le chemin final est bien dans le répertoire autorisé (anti path traversal)
         const filePath = path.join(uploadDir, fileName)
+        const normalizedPath = path.normalize(filePath)
+
+        if (!normalizedPath.startsWith(uploadDir)) {
+            return NextResponse.json(
+                { error: 'Invalid file path' },
+                { status: 400 }
+            )
+        }
 
         // Sauvegarder le fichier
-        await writeFile(filePath, buffer)
+        await writeFile(normalizedPath, buffer)
 
         // Retourner l'URL publique
         const url = `/uploads/books/${fileName}`
 
         return NextResponse.json({ success: true, url })
-    } catch (error) {
-        console.error('Upload error:', error)
-        return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+    } catch (error: any) {
+        console.error('[UPLOAD ERROR]', error.message)
+
+        // Ne pas exposer les détails de l'erreur en production
+        return NextResponse.json(
+            { error: 'Upload failed' },
+            { status: 500 }
+        )
     }
 }

@@ -12,6 +12,7 @@ import CouponInput from '@/components/CouponInput'
 import { useTranslations } from 'next-intl'
 import { MOROCCO_CITIES } from '@/lib/constants/cities'
 import { useUIStore } from '@/store/ui'
+import { fbPixelEvents } from '@/lib/facebook-pixel'
 
 interface CheckoutForm {
     firstName: string
@@ -49,6 +50,20 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
     }, [])
 
     useEffect(() => {
+        if (mounted && items.length > 0) {
+            // Facebook Pixel: InitiateCheckout
+            fbPixelEvents.initiateCheckout({
+                items: items.map(item => ({
+                    id: item.id,
+                    price: item.price,
+                    quantity: item.quantity
+                })),
+                total: finalTotal
+            })
+        }
+    }, [mounted])
+
+    useEffect(() => {
         if (mounted && items.length === 0) {
             router.replace('/cart')
         }
@@ -77,14 +92,17 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
     const onSubmit = async (data: CheckoutForm) => {
         setIsSubmitting(true)
         setError(null)
+        fbPixelEvents.addPaymentInfo()
 
         try {
             const orderItems = items.map(item => ({
                 productId: item.id,
                 quantity: item.quantity,
                 type: item.type,
-                price: item.price
+                price: Number(item.price)
             }))
+
+            console.log('Sending order items:', orderItems)
 
             const result = await createOrder({
                 fullName: `${data.firstName} ${data.lastName}`,
@@ -95,9 +113,21 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
                 comment: data.comment,
                 items: orderItems,
                 couponCode: coupon?.code,
+                discount: discountAmount,
             })
 
             if (result.success) {
+                // Facebook Pixel: Purchase
+                fbPixelEvents.purchase({
+                    id: result.orderId,
+                    total: finalTotal,
+                    items: items.map(item => ({
+                        id: item.id,
+                        price: item.price,
+                        quantity: item.quantity
+                    }))
+                })
+
                 clearCart()
                 showNotification(t('OrderSuccess'), 'success')
                 router.push(`/checkout/success/${result.orderId}`)
@@ -257,13 +287,19 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
                                 {items.map((item) => (
                                     <div key={item.id} className="flex gap-5 group">
                                         <div className="relative w-20 h-24 rounded-2xl overflow-hidden bg-pixio-cream shrink-0 border border-gray-50 group-hover:scale-105 transition-transform">
-                                            <Image
-                                                src={item.image}
-                                                alt={item.title}
-                                                fill
-                                                className="object-cover"
-                                                unoptimized
-                                            />
+                                            {item.image ? (
+                                                <Image
+                                                    src={item.image}
+                                                    alt={item.title}
+                                                    fill
+                                                    className="object-cover"
+                                                    unoptimized
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                                                    <Package className="w-6 h-6 text-gray-300" />
+                                                </div>
+                                            )}
                                             <div className="absolute -top-1 -right-1 rtl:-left-1 rtl:right-auto w-7 h-7 bg-black text-white text-[10px] font-black rounded-xl flex items-center justify-center shadow-2xl">
                                                 {item.quantity}
                                             </div>

@@ -17,7 +17,11 @@ import {
     MessageSquare,
     BarChart3,
     GripVertical,
-    FileText
+    FileText,
+    Banknote,
+    TrendingUp,
+    Settings,
+    Crown
 } from 'lucide-react'
 
 const navigation = [
@@ -28,12 +32,22 @@ const navigation = [
     { name: 'Commandes', href: '/fr/admin/orders', icon: ShoppingCart },
     { name: 'Clients', href: '/fr/admin/customers', icon: Users },
     { name: 'Echanges', href: '/fr/admin/exchanges', icon: Repeat },
-    { name: 'Community', href: '/fr/admin/community', icon: Users },
+    {
+        name: 'Community',
+        href: '/fr/admin/community',
+        icon: Users,
+        children: [
+            { name: 'Top Lecteurs', href: '/fr/admin/community/top-readers', icon: Crown }
+        ]
+    },
     { name: 'Signalements', href: '/fr/admin/reports', icon: AlertCircle },
     { name: 'Avis', href: '/fr/admin/reviews', icon: MessageSquare },
     { name: 'Coupons', href: '/fr/admin/coupons', icon: Ticket },
     { name: 'Analytics', href: '/fr/admin/analytics', icon: BarChart3 },
     { name: 'Menus', href: '/fr/admin/menus', icon: GripVertical },
+    { name: 'Finance', href: '/fr/admin/finance', icon: Banknote },
+    { name: 'Traffic', href: '/fr/admin/traffic', icon: TrendingUp },
+    { name: 'Paramètres', href: '/fr/admin/settings', icon: Settings },
     { name: 'Audit Log', href: '/fr/admin/audit', icon: ShieldCheck },
 ]
 
@@ -81,22 +95,52 @@ export default function AdminLayout({
                         {navigation.map((item) => {
                             const isActive = pathname === item.href
                             const Icon = item.icon
+                            // @ts-ignore
+                            const hasChildren = item.children && item.children.length > 0
 
                             return (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    className={`
-                    flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors
-                    ${isActive
-                                            ? 'bg-blue-50 text-blue-700'
-                                            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                                        }
-                  `}
-                                >
-                                    <Icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-700' : 'text-gray-400'}`} />
-                                    {item.name}
-                                </Link>
+                                <div key={item.name}>
+                                    <Link
+                                        href={item.href}
+                                        className={`
+                                            flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors
+                                            ${isActive
+                                                ? 'bg-blue-50 text-blue-700'
+                                                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                                            }
+                                        `}
+                                    >
+                                        <Icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-700' : 'text-gray-400'}`} />
+                                        {item.name}
+                                    </Link>
+
+                                    {hasChildren && (
+                                        <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-100 pl-2">
+                                            {/* @ts-ignore */}
+                                            {item.children.map((child) => {
+                                                const isChildActive = pathname === child.href
+                                                const ChildIcon = child.icon
+
+                                                return (
+                                                    <Link
+                                                        key={child.name}
+                                                        href={child.href}
+                                                        className={`
+                                                            flex items-center px-4 py-2 text-xs font-medium rounded-lg transition-colors
+                                                            ${isChildActive
+                                                                ? 'bg-blue-50 text-blue-700'
+                                                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                                            }
+                                                        `}
+                                                    >
+                                                        <ChildIcon className={`w-3.5 h-3.5 mr-3 ${isChildActive ? 'text-blue-700' : 'text-gray-400'}`} />
+                                                        {child.name}
+                                                    </Link>
+                                                )
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
                             )
                         })}
                     </nav>

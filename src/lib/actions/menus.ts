@@ -79,14 +79,14 @@ export async function getMenuWithItems(menuId: string) {
 }
 
 // Créer un nouveau menu
-export async function createMenu(data: { name: string; label: string }) {
+export async function createMenu(data: { slug: string; name: string }) {
     try {
         await verifyAdmin()
 
         const menu = await prisma.menu.create({
             data: {
-                name: data.name,
-                label: data.label
+                slug: data.slug,
+                name: data.name
             }
         })
 
@@ -200,7 +200,7 @@ export async function deleteMenu(id: string) {
     }
 }
 
-// Mettre à jour un menu (toggle isActive)
+// Mettre à jour un menu (toggle isActive ou rename)
 export async function updateMenu(id: string, data: { isActive?: boolean, name?: string }) {
     try {
         await verifyAdmin()

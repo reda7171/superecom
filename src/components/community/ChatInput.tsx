@@ -7,6 +7,7 @@ import { sendMessage } from '@/lib/actions/community-chat'
 import { useRouter } from '@/i18n/routing'
 
 import { useUIStore } from '@/store/ui'
+import { fbPixelEvents } from '@/lib/facebook-pixel'
 
 interface ChatInputProps {
     chatId: string
@@ -27,6 +28,7 @@ export default function ChatInput({ chatId }: ChatInputProps) {
         const result = await sendMessage(chatId, message)
 
         if (result.success) {
+            fbPixelEvents.contact()
             setMessage('')
             router.refresh()
 

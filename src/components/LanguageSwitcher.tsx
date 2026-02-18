@@ -5,6 +5,8 @@ import { usePathname, useRouter } from '@/i18n/routing';
 import { useTransition, useState, useRef, useEffect } from 'react';
 import { Globe, ChevronDown } from 'lucide-react';
 
+import { updateUserLocale } from '@/lib/actions/locale';
+
 export default function LanguageSwitcher() {
     const locale = useLocale();
     const router = useRouter();
@@ -21,8 +23,9 @@ export default function LanguageSwitcher() {
 
     const currentLang = languages.find(l => l.code === locale) || languages[0];
 
-    const handleChange = (newLocale: string) => {
+    const handleChange = async (newLocale: string) => {
         setIsOpen(false);
+        await updateUserLocale(newLocale);
         startTransition(() => {
             router.replace(pathname, { locale: newLocale });
         });

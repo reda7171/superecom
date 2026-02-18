@@ -33,7 +33,7 @@ export default async function ExchangesPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Demandes Reçues */}
-                    <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
+                    <div className="bg-white rounded-[2.5rem] p-4 sm:p-8 border border-gray-100 shadow-sm">
                         <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100">
                             <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center">
                                 <Inbox className="w-6 h-6 text-white" />
@@ -49,7 +49,7 @@ export default async function ExchangesPage() {
                     </div>
 
                     {/* Demandes Envoyées */}
-                    <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
+                    <div className="bg-white rounded-[2.5rem] p-4 sm:p-8 border border-gray-100 shadow-sm">
                         <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100">
                             <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center">
                                 <Send className="w-6 h-6 text-black" />

@@ -7,9 +7,19 @@ import { getCommunityUser } from '@/lib/actions/community-auth'
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params
     const t = await getTranslations({ locale, namespace: 'Wishlist' })
+
     return {
-        title: `${t('Title')} | Riwaya.`,
-        description: t('Subtitle', { count: 0 }).replace('0', ''), // Fallback description
+        title: t('seo.Title'),
+        description: t('seo.Description'),
+        robots: {
+            index: false,
+            follow: true,
+        },
+        openGraph: {
+            title: t('seo.Title'),
+            description: t('seo.Description'),
+            type: 'website',
+        }
     }
 }
 

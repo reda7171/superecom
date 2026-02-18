@@ -4,6 +4,7 @@ import { ShoppingCart } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { useUIStore } from '@/store/ui'
 import { useTranslations } from 'next-intl'
+import { fbPixelEvents } from '@/lib/facebook-pixel'
 
 interface AddToCartButtonProps {
     product: {
@@ -29,10 +30,10 @@ export default function AddToCartButton({
 
     return (
         <button
-            className={`w-full flex items-center justify-center gap-3 font-bold rounded-xl active:scale-95 transition-all shadow-lg hover:shadow-xl ${variant === 'primary'
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-50'
-                } py-4 px-8 ${className}`}
+            className={`w-full flex items-center justify-center gap-3 font-bold rounded-2xl active:scale-95 transition-all shadow-lg hover:shadow-black/20 ${variant === 'primary'
+                ? 'bg-black text-white hover:bg-gray-800'
+                : 'bg-white text-black border-2 border-black hover:bg-gray-50'
+                } py-5 px-8 ${className}`}
             onClick={() => {
                 try {
                     console.log('Adding product to cart:', product.id)
@@ -43,6 +44,15 @@ export default function AddToCartButton({
                         price: product.price,
                         image: product.image,
                     })
+
+                    // Facebook Pixel Tracking
+                    fbPixelEvents.addToCart({
+                        id: product.id,
+                        title: product.title,
+                        price: product.price,
+                        quantity: 1
+                    })
+
                     openCart()
                     showNotification(t('AddedToCartSuccess'), 'success')
                 } catch (error) {

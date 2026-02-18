@@ -10,6 +10,7 @@ import { Link, useRouter } from '@/i18n/routing'
 import { Hash } from 'lucide-react'
 import { trackBadgeClick } from '@/lib/actions/analytics'
 import { useTranslations } from 'next-intl'
+import { fbPixelEvents } from '@/lib/facebook-pixel'
 
 const Countdown = ({ expiresAt }: { expiresAt: string | Date }) => {
     const [timeLeft, setTimeLeft] = useState('')
@@ -18,7 +19,7 @@ const Countdown = ({ expiresAt }: { expiresAt: string | Date }) => {
     useEffect(() => {
         const calculateTimeLeft = () => {
             const difference = new Date(expiresAt).getTime() - new Date().getTime()
-            if (difference <= 0) return 'Terminé'
+            if (difference <= 0) return t('Terminated')
 
             const hours = Math.floor(difference / (1000 * 60 * 60))
             const minutes = Math.floor((difference / 1000 / 60) % 60)
@@ -118,6 +119,7 @@ export default function PredictiveSearch() {
         e.preventDefault()
         if (query.trim()) {
             saveToHistory(query)
+            fbPixelEvents.search(query.trim())
             router.push(`/books?search=${encodeURIComponent(query.trim())}`)
             setIsOpen(false)
         }
@@ -165,7 +167,7 @@ export default function PredictiveSearch() {
 
             {/* Dropdown Results - Style Pixio */}
             {isOpen && (
-                <div className="absolute top-full left-0 right-0 mt-4 bg-white rounded-[2.5rem] border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 w-[120%] min-w-[320px] md:min-w-[500px] mt-4 bg-white rounded-[2.5rem] border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
 
                     {/* Suggestions si query vide */}
                     {query.length === 0 && (
@@ -225,9 +227,9 @@ export default function PredictiveSearch() {
                                         {popularCats.map((cat, idx) => {
                                             const badge = cat.badge
                                             const customColor = cat.badgeColor
-                                            const badgeColorClass = customColor?.startsWith('bg-') ? customColor : badge === 'NEW' ? 'bg-green-500' : badge === 'HOT' ? 'bg-red-500' : badge === 'TRENDING' ? 'bg-blue-600' : 'bg-orange-500'
+                                            const badgeColorClass = customColor?.startsWith('bg-') ? customColor : badge === 'NEW' ? 'bg-green-500' : badge === 'HOT' ? 'bg-red-500' : badge === 'TRENDING' ? 'bg-emerald-600' : 'bg-orange-500'
                                             const badgeStyle = !customColor?.startsWith('bg-') ? { backgroundColor: customColor || undefined } : {}
-                                            const badgeLabel = badge === 'PROMO' ? 'Promo' : badge === 'NEW' ? 'Nouveau' : badge === 'HOT' ? 'Top' : badge === 'TRENDING' ? 'Tendance' : badge
+                                            const badgeLabel = badge ? t(`Badges.${badge}`) : ''
 
                                             return (
                                                 <button

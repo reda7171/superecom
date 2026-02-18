@@ -7,6 +7,7 @@ import { createExchangeRequest } from '@/lib/actions/community-exchanges'
 import { ArrowLeft, BookOpen, Loader2, Coins, RefreshCw, Sparkles } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 import ReportButton from './ReportButton'
+import { fbPixelEvents, fbCustomEvents } from '@/lib/facebook-pixel'
 
 interface ExchangeFormProps {
     details: {
@@ -56,6 +57,8 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
         const res = await createExchangeRequest(formData)
 
         if (res.success) {
+            fbPixelEvents.lead('ExchangeRequest')
+            fbCustomEvents.exchangeInitiated(book.id)
             router.push('/community')
             router.refresh()
         } else {

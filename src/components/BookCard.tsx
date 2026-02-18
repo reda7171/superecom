@@ -47,7 +47,15 @@ export default function BookCard({
                         alt={`${title} - Livre par ${author}`}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-700"
-                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                        sizes={
+                            isCompact
+                                ? "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                                : isFeatured
+                                    ? "(max-width: 768px) 80vw, (max-width: 1200px) 40vw, 30vw"
+                                    : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        }
+                        loading={isFeatured ? "eager" : "lazy"}
+                        quality={isFeatured ? 90 : 75}
                         unoptimized
                     />
 
@@ -62,6 +70,7 @@ export default function BookCard({
                             title={title}
                             author={author}
                             cover={image}
+                            className="bg-white/80 backdrop-blur-sm hover:bg-white shadow-sm"
                         />
                     </div>
 

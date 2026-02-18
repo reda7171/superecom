@@ -10,6 +10,24 @@
             "EditorsChoice": "Editor's Choice",
             "Select": "SELECT"
         },
+        "SearchSection": {
+            "Badge": "Search",
+            "TitlePart1": "Find your",
+            "TitlePart2": "next read.",
+            "Description": "Use our advanced search to filter by title, author, or budget.",
+            "Placeholder": "Search for a book, keyword...",
+            "MoreFilters": "More filters",
+            "HideFilters": "Hide filters",
+            "Filters": {
+                "Title": "Title",
+                "TitlePlaceholder": "Ex: Alchemist",
+                "Author": "Author",
+                "AuthorPlaceholder": "Ex: Paulo Coelho",
+                "MinPrice": "Min Price (MAD)",
+                "MaxPrice": "Max Price (MAD)"
+            },
+            "Submit": "Search"
+        },
         "seo": {
             "Title": "Riwaya | Digital Literature Curators & Book Bundles",
             "Description": "Riwaya is your premium destination for personal development, business, and philosophy books in Morocco. Nationwide delivery."
@@ -108,6 +126,7 @@
         "UserMenu": {
             "Profile": "My Profile",
             "ReadingList": "My Reading List",
+            "ReadingProgress": "{completed} / {total} books",
             "Orders": "My Orders",
             "Settings": "Settings",
             "Logout": "Logout",
@@ -130,7 +149,8 @@
         "NewsletterText": "Join our newsletter for exclusive curated selections.",
         "Join": "Join",
         "Rights": "All rights reserved.",
-        "BackToTop": "Back to Top"
+        "BackToTop": "Back to Top",
+        "DevelopedBy": "Developed by <name>Reda</name>"
     },
     "Common": {
         "Loading": "Loading...",
@@ -140,6 +160,8 @@
         "Remaining": "remaining",
         "By": "By",
         "BestSeller": "Best Seller",
+        "BookCount": "{count, plural, =0 {0 books} one {1 book} other {{count} books}}",
+        "NoResultsDesc": "No books found for this author.",
         "Errors": {
             "UnexpectedError": "An unexpected error occurred",
             "ImageUploadError": "Error uploading image"
@@ -328,15 +350,23 @@
         "Clear": "Clear",
         "PopularThemes": "Popular Themes",
         "PopularSearches": "Popular Searches",
-        "BookCount": "{count} book(s)",
-        "Remaining": "remaining!",
+        "BookCount": "{count, plural, =0 {No books} one {1 book} other {{count} books}}",
+        "Remaining": "remaining",
         "From": "From {price} MAD",
         "Suggestions": "Suggestions",
         "By": "By {author}",
         "NoResultsTitle": "Oops!",
         "NoResultsDesc": "No books match your search.",
         "ViewAll": "View all results",
-        "EndsIn": "Ends in: {time}"
+        "EndsIn": "Ends in {time}",
+        "Terminated": "Terminated",
+        "Badges": {
+            "PROMO": "Promo",
+            "NEW": "New",
+            "HOT": "Hot",
+            "TRENDING": "Trending",
+            "LIVRAISON": "Free Shipping"
+        }
     },
     "Categories": {
         "Développement Personnel": "Personal Development",
@@ -385,7 +415,15 @@
         "EmptyTitle": "Your list is empty",
         "EmptyDesc": "You haven't added any books to your favorites yet.",
         "ContinueShopping": "Continue Shopping",
-        "AddToCart": "Add to Cart"
+        "AddToCart": "Add to Cart",
+        "AddAllToCart": "Add all to Cart",
+        "seo": {
+            "Title": "My Favorites | Riwaya - Digital Literature Curators",
+            "Description": "Discover your personal selection of premium books and bundles. Organize your next reads on Riwaya."
+        },
+        "By": "By {author}",
+        "Quote": "The book we await is the one that changes us.",
+        "QuoteSubtitle": "Riwaya Selection • Curating Literature"
     },
     "Tracking": {
         "Title": "Order Tracking",
@@ -425,6 +463,9 @@
         "AddBook": "Add a Book",
         "Credits": "Credits",
         "ExchangesLabel": "Exchanges",
+        "TopReaders": "Top Readers",
+        "TopReadersTitle": "Top Readers",
+        "TopReadersSubtitle": "Most avid readers of the week",
         "Dashboard": {
             "RestrictedAccess": "Restricted access to exchanges",
             "EligibilityDesc": "You must have placed at least one order in our shop to be able to add books or make exchange requests in the community.",
@@ -458,7 +499,7 @@
             },
             "Status": {
                 "AVAILABLE": "Available",
-                "EXCHANGED": "Exchanged",
+                "EXCHANGED": "Already Exchanged",
                 "PRIVATE": "Private"
             }
         },
@@ -483,6 +524,7 @@
             "Mutual": "Mutual Match",
             "DescriptionTitle": "Book Summary",
             "MemberSince": "Member Since",
+            "Credits": "Credits",
             "SecurityNotice": "Secure exchange guaranteed by Riwaya. Zero commission."
         },
         "Exchange": {
@@ -543,7 +585,8 @@
             },
             "ChatButton": "Chat",
             "FinishButton": "Finish",
-            "HistoryChat": "Chat History"
+            "HistoryChat": "Chat History",
+            "MeetingDetails": "Meeting Details"
         },
         "Notifications": {
             "Title": "Notifications",
@@ -551,14 +594,50 @@
             "Empty": "No notifications",
             "All": "See all notifications",
             "Loading": "Loading notifications...",
-            "Delete": "Delete"
+            "Delete": "Delete",
+            "NewMessage": "New message",
+            "NewMessageDesc": "{user} sent you a message"
+        },
+        "ReadingList": {
+            "Title": "My Reading List",
+            "Subtitle": "Track your reading and progress, even for your personal books.",
+            "AddBook": "Add a book",
+            "Empty": "Your reading list is empty.",
+            "Status": {
+                "TO_READ": "To Read",
+                "READING": "Reading",
+                "COMPLETED": "Completed",
+                "DROPPED": "Dropped",
+                "ON_HOLD": "On Hold"
+            },
+            "Stats": {
+                "Library": "Library",
+                "Completed": "{count} completed",
+                "Authors": "Authors",
+                "Explored": "Explored",
+                "TotalVolume": "Total Volume",
+                "PagesAccumulated": "Total Pages",
+                "Progress": "Progress",
+                "PagesRead": "{count} pages read"
+            },
+            "Board": {
+                "Empty": "Empty",
+                "CurrentPage": "Current page:",
+                "Read": "Read",
+                "MarkFinished": "Mark as finished",
+                "Delete": "Delete",
+                "ConfirmDelete": "Are you sure?"
+            }
         },
         "Chat": {
             "Title": "Chat",
             "Placeholder": "Type your message...",
             "Send": "Send",
             "Read": "Read",
-            "SystemMessage": "Start of conversation regarding"
+            "SystemMessage": "Start of conversation regarding",
+            "Empty": "No messages yet",
+            "StartConversation": "Send a message to start the discussion.",
+            "Instructions": "Press Enter to send your message."
         },
         "Profile": {
             "Title": "My Profile",
@@ -576,7 +655,11 @@
                 "Books": "Books",
                 "Exchanges": "Exchanges",
                 "Credits": "Credits"
-            }
+            },
+            "AddressLabel": "Meeting Address / Landmark",
+            "AddressPlaceholder": "Ex: Venice Cafe, Zerktouni Blvd...",
+            "NeighborhoodLabel": "Neighborhood",
+            "NeighborhoodPlaceholder": "Ex: Maârif, Racine..."
         },
         "Ratings": {
             "Title": "Rate the Exchange",
@@ -676,5 +759,22 @@
         "NoPosts": "No articles published yet.",
         "ComingSoon": "Come back soon to discover our upcoming publications.",
         "ReadArticle": "Read Article"
+    },
+    "Orders": {
+        "Title": "My Orders",
+        "Subtitle": "Purchase History",
+        "EmptyTitle": "No orders",
+        "EmptyDesc": "You haven't placed any orders yet",
+        "OrderNumber": "Order #",
+        "Quantity": "Quantity:",
+        "DeliveryAddress": "Delivery Address",
+        "Contact": "Contact",
+        "TrackingTitle": "Tracking",
+        "TrackButton": "Track",
+        "Status": {
+            "CONFIRMED": "Confirmed",
+            "CANCELLED": "Cancelled",
+            "PENDING": "Pending"
+        }
     }
 }

@@ -8,7 +8,7 @@ import { z } from 'zod'
 
 const ratingSchema = z.object({
     exchangeId: z.string(),
-    rating: z.number().min(1).max(5),
+    rating: z.number().min(1, 'La note doit être entre 1 et 5').max(5, 'La note doit être entre 1 et 5'),
     comment: z.string().optional()
 })
 

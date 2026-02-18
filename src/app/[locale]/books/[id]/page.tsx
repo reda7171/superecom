@@ -14,13 +14,14 @@ import { getCategoryConfigByName } from '@/lib/actions/categories'
 import { getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/routing'
 import { Metadata } from 'next'
+import SetPixelView from '@/components/SetPixelView'
 
 export async function generateMetadata({
     params,
 }: {
     params: Promise<{ id: string; locale: string }>
 }): Promise<Metadata> {
-    const { id } = await params
+    const { id, locale } = await params
     const book = await getBookById(id)
 
     if (!book) {
@@ -32,14 +33,45 @@ export async function generateMetadata({
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.com'
     const imageUrl = book.image.startsWith('http') ? book.image : `${baseUrl}${book.image}`
 
+    // Générer des mots-clés SEO pertinents
+    const keywords = [
+        book.title,
+        book.author,
+        `${book.title} ${book.author}`,
+        `acheter ${book.title} maroc`,
+        `${book.category} maroc`,
+        `livre ${book.category}`,
+        `${book.author} livres`,
+        'livres maroc',
+        'librairie en ligne maroc',
+        book.language === 'FR' ? 'livre français maroc' : book.language === 'AR' ? 'livre arabe maroc' : 'livre anglais maroc',
+    ].filter(Boolean)
+
     return {
         title: `${book.title} - ${book.author} | Riwaya`,
-        description: book.description.slice(0, 160) + '...',
+        description: `Achetez "${book.title}" de ${book.author} sur Riwaya. ${book.description.slice(0, 120)}... Livraison rapide au Maroc. Prix: ${book.price} MAD. ${book.stock > 0 ? 'En stock' : 'Rupture de stock'}.`,
+        keywords,
         openGraph: {
-            title: book.title,
+            title: `${book.title} - ${book.author}`,
             description: book.description.slice(0, 160) + '...',
             images: [imageUrl],
             type: 'book',
+            locale: locale === 'ar' ? 'ar_MA' : locale === 'en' ? 'en_MA' : 'fr_MA',
+            url: `${baseUrl}/${locale}/books/${book.id}`,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: `${book.title} - ${book.author}`,
+            description: book.description.slice(0, 160) + '...',
+            images: [imageUrl],
+        },
+        alternates: {
+            canonical: `/${locale}/books/${book.id}`,
+            languages: {
+                'fr': `/fr/books/${book.id}`,
+                'ar': `/ar/books/${book.id}`,
+                'en': `/en/books/${book.id}`,
+            },
         },
     }
 }
@@ -138,6 +170,12 @@ export default async function BookDetailPage({
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
             />
             <div className="min-h-screen bg-pixio-cream">
+                <SetPixelView
+                    id={book.id}
+                    title={book.title}
+                    price={book.price}
+                    category={book.category || undefined}
+                />
 
                 <Header />
 
@@ -237,7 +275,9 @@ export default async function BookDetailPage({
                                     {book.title}<span className="text-gray-200">.</span>
                                 </h1>
 
-                                <p className="text-xl font-black text-gray-300 uppercase tracking-widest">{tCommon('By')} {book.author}</p>
+                                <p className="text-xl font-black text-gray-300 uppercase tracking-widest">
+                                    {tCommon('By')} <Link href={`/authors/${encodeURIComponent(book.author)}`} className="hover:text-black transition-colors border-b-2 border-transparent hover:border-black">{book.author}</Link>
+                                </p>
                             </div>
 
                             {/* Rating Summary */}
@@ -328,23 +368,7 @@ export default async function BookDetailPage({
                                             </div>
                                         </dl>
                                     </div>
-                                    <div className="bg-black p-10 rounded-[2.5rem] text-white flex flex-col justify-center space-y-6 shadow-2xl shadow-black/10">
-                                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-pixio-pink">{tBook('RiwayaSelect')}</h2>
-                                        <ul className="space-y-4">
-                                            <li className="text-[9px] font-black uppercase tracking-widest flex items-center gap-3">
-                                                <div className="w-1 h-1 bg-pixio-pink rounded-full" />
-                                                {tBook('OriginalMasterpiece')}
-                                            </li>
-                                            <li className="text-[9px] font-black uppercase tracking-widest flex items-center gap-3">
-                                                <div className="w-1 h-1 bg-pixio-pink rounded-full" />
-                                                {tBook('PremiumPaperQual')}
-                                            </li>
-                                            <li className="text-[9px] font-black uppercase tracking-widest flex items-center gap-3">
-                                                <div className="w-1 h-1 bg-pixio-pink rounded-full" />
-                                                {tBook('GlobalStandard')}
-                                            </li>
-                                        </ul>
-                                    </div>
+
                                 </div>
                             </div>
 

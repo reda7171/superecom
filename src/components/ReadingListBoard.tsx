@@ -4,22 +4,25 @@ import { useState } from 'react'
 import { ReadingStatus } from '@prisma/client'
 import { updateReadingProgress, removeFromReadingList } from '@/lib/actions/reading-list'
 import Image from 'next/image'
-import { MoreHorizontal, Trash2, CheckCircle, BookOpen, Clock } from 'lucide-react'
+import { MoreHorizontal, Trash2, CheckCircle, BookOpen, Clock, Book } from 'lucide-react'
 import { useUIStore } from '@/store/ui'
+
+import { useTranslations } from 'next-intl'
 
 interface ReadingListBoardProps {
     initialItems: any[]
 }
 
-const statusMap = {
-    [ReadingStatus.TO_READ]: { label: 'À lire', icon: Clock, color: 'bg-gray-100 text-gray-600' },
-    [ReadingStatus.READING]: { label: 'En cours', icon: BookOpen, color: 'bg-blue-100 text-blue-600' },
-    [ReadingStatus.COMPLETED]: { label: 'Terminé', icon: CheckCircle, color: 'bg-green-100 text-green-600' },
-    [ReadingStatus.ON_HOLD]: { label: 'En pause', icon: MoreHorizontal, color: 'bg-yellow-100 text-yellow-600' },
-    [ReadingStatus.DROPPED]: { label: 'Abandonné', icon: Trash2, color: 'bg-red-100 text-red-600' }
+const statusConfig = {
+    [ReadingStatus.TO_READ]: { icon: Clock, color: 'bg-gray-100 text-gray-600' },
+    [ReadingStatus.READING]: { icon: BookOpen, color: 'bg-emerald-100 text-emerald-600' },
+    [ReadingStatus.COMPLETED]: { icon: CheckCircle, color: 'bg-green-100 text-green-600' },
+    [ReadingStatus.ON_HOLD]: { icon: MoreHorizontal, color: 'bg-yellow-100 text-yellow-600' },
+    [ReadingStatus.DROPPED]: { icon: Trash2, color: 'bg-red-100 text-red-600' }
 }
 
 export default function ReadingListBoard({ initialItems }: ReadingListBoardProps) {
+    const t = useTranslations('Community.ReadingList')
     const [items, setItems] = useState(initialItems)
     const { showNotification } = useUIStore()
 
@@ -42,17 +45,18 @@ export default function ReadingListBoard({ initialItems }: ReadingListBoardProps
     }
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Êtes-vous sûr ?')) return
+        if (!confirm(t('Board.ConfirmDelete'))) return
         setItems(prev => prev.filter(item => item.id !== id))
         await removeFromReadingList(id)
     }
 
     const renderColumn = (status: ReadingStatus) => {
         const columnItems = items.filter(item => item.status === status)
-        const { label, icon: Icon, color } = statusMap[status]
+        const { icon: Icon, color } = statusConfig[status]
+        const label = t(`Status.${status}`)
 
         return (
-            <div className="flex flex-col gap-4 min-w-[300px] flex-1">
+            <div className="flex flex-col gap-4 w-full md:min-w-[300px] flex-1">
                 <div className={`flex items-center gap-2 p-3 rounded-xl font-bold ${color}`}>
                     <Icon className="w-5 h-5" />
                     <span>{label}</span>
@@ -72,7 +76,10 @@ export default function ReadingListBoard({ initialItems }: ReadingListBoardProps
                                             className="object-cover"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No img</div>
+                                        <div className="w-full h-full flex flex-col items-center justify-center bg-blue-50/50">
+                                            <Book className="w-8 h-8 text-blue-200" />
+                                            <span className="text-[8px] font-black text-blue-300 mt-1 uppercase tracking-widest">Perso</span>
+                                        </div>
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -82,7 +89,7 @@ export default function ReadingListBoard({ initialItems }: ReadingListBoardProps
                                     {/* Progress Bar */}
                                     <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
                                         <div
-                                            className="bg-blue-600 h-2 rounded-full transition-all"
+                                            className="bg-emerald-600 h-2 rounded-full transition-all"
                                             style={{ width: `${Math.min((item.currentPage / item.totalPages) * 100, 100)}%` }}
                                         />
                                     </div>
@@ -96,17 +103,17 @@ export default function ReadingListBoard({ initialItems }: ReadingListBoardProps
                                         {status !== ReadingStatus.READING && (
                                             <button
                                                 onClick={() => handleUpdateStatus(item.id, ReadingStatus.READING)}
-                                                className="p-1.5 hover:bg-blue-50 text-blue-600 rounded-lg text-xs font-medium"
-                                                title="Commencer / Continuer"
+                                                className="p-1.5 hover:bg-emerald-50 text-emerald-600 rounded-lg text-xs font-medium"
+                                                title={t('Board.Read')}
                                             >
-                                                Lire
+                                                {t('Board.Read')}
                                             </button>
                                         )}
                                         {status !== ReadingStatus.COMPLETED && (
                                             <button
                                                 onClick={() => handleUpdateStatus(item.id, ReadingStatus.COMPLETED)}
                                                 className="p-1.5 hover:bg-green-50 text-green-600 rounded-lg"
-                                                title="Marquer comme terminé"
+                                                title={t('Board.MarkFinished')}
                                             >
                                                 <CheckCircle className="w-4 h-4" />
                                             </button>
@@ -114,7 +121,7 @@ export default function ReadingListBoard({ initialItems }: ReadingListBoardProps
                                         <button
                                             onClick={() => handleDelete(item.id)}
                                             className="p-1.5 hover:bg-red-50 text-red-600 rounded-lg"
-                                            title="Supprimer"
+                                            title={t('Board.Delete')}
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
@@ -125,12 +132,12 @@ export default function ReadingListBoard({ initialItems }: ReadingListBoardProps
                             {/* Update pages input if reading */}
                             {status === ReadingStatus.READING && (
                                 <div className="mt-3 pt-3 border-t border-gray-50 flex items-center gap-2">
-                                    <span className="text-xs text-gray-500">Page actuelle :</span>
+                                    <span className="text-xs text-gray-500">{t('Board.CurrentPage')}</span>
                                     <input
                                         type="number"
                                         value={item.currentPage}
                                         onChange={(e) => handleUpdateProgress(item.id, parseInt(e.target.value) || 0)}
-                                        className="w-16 p-1 text-xs border border-gray-200 rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        className="w-16 p-1 text-xs border border-gray-200 rounded text-center focus:outline-none focus:ring-1 focus:ring-emerald-500"
                                         max={item.totalPages}
                                     />
                                 </div>
@@ -139,7 +146,7 @@ export default function ReadingListBoard({ initialItems }: ReadingListBoardProps
                     ))}
                     {columnItems.length === 0 && (
                         <div className="text-center py-8 border-2 border-dashed border-gray-100 rounded-xl text-gray-400 text-xs">
-                            Vide
+                            {t('Board.Empty')}
                         </div>
                     )}
                 </div>

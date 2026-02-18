@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { BookCheck, Globe, Users2, Repeat } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
+import { useResponsiveAnimation } from '@/hooks/useResponsiveAnimation'
 
 function AnimatedCounter({ value, duration = 2000 }: { value: string, duration?: number }) {
     const [count, setCount] = useState(0)
@@ -105,6 +106,8 @@ function StatCard({ icon, number, label, bgColor, iconColor, idx }: StatCardProp
 
 export default function TrustSection({ stats }: { stats?: { books: number, readers: number, exchanges: number } }) {
     const t = useTranslations('HomePage.Trust')
+    const pulseClass = useResponsiveAnimation('animate-pulse')
+    const pingClass = useResponsiveAnimation('animate-ping')
 
     const statsData = [
         {
@@ -132,22 +135,22 @@ export default function TrustSection({ stats }: { stats?: { books: number, reade
             icon: <Repeat className="w-10 h-10" />,
             number: stats?.exchanges ? `${stats.exchanges}+` : "300+",
             label: t('Items.Exchanges'),
-            bgColor: "bg-blue-50",
-            iconColor: "text-blue-600"
+            bgColor: "bg-emerald-50",
+            iconColor: "text-emerald-600"
         }
     ]
 
     return (
         <section className="py-40 bg-white relative overflow-hidden">
             {/* Master Background Elements */}
-            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-pixio-yellow/10 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2 -z-10 animate-pulse"></div>
+            <div className={`absolute top-0 right-0 w-[800px] h-[800px] bg-pixio-yellow/10 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2 -z-10 ${pulseClass}`}></div>
             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-sky-50/20 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2 -z-10"></div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header with High-End Typography */}
                 <div className="flex flex-col items-center text-center max-w-4xl mx-auto mb-32 space-y-8">
                     <div className="inline-flex items-center gap-3 px-8 py-3 bg-black text-white rounded-full hover:scale-105 transition-transform cursor-default">
-                        <div className="w-2 h-2 bg-pixio-yellow rounded-full animate-ping"></div>
+                        <div className={`w-2 h-2 bg-pixio-yellow rounded-full ${pingClass}`}></div>
                         <span className="text-[10px] font-black uppercase tracking-[0.5em]">
                             {t('Badge')}
                         </span>

@@ -63,6 +63,18 @@ export async function importBooksFromExcel(formData: FormData): Promise<BulkImpo
                     continue
                 }
 
+                // Vérifier si le livre existe déjà (ISBN)
+                if (row.isbn) {
+                    const existing = await prisma.book.findUnique({
+                        where: { isbn: String(row.isbn) }
+                    })
+                    if (existing) {
+                        errors.push(`Ligne ${i + 2}: Le livre avec l'ISBN ${row.isbn} existe déjà.`)
+                        failed++
+                        continue
+                    }
+                }
+
                 // Créer le livre
                 await prisma.book.create({
                     data: {

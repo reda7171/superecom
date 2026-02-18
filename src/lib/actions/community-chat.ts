@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { getCommunityUser } from './community-auth'
 import { revalidatePath } from 'next/cache'
 import { createNotification } from './community-notifications'
+import { getTranslations } from 'next-intl/server'
 
 // Créer ou récupérer un chat pour un échange
 export async function getOrCreateChat(exchangeId: string) {
@@ -14,7 +15,17 @@ export async function getOrCreateChat(exchangeId: string) {
         // Vérifier que l'utilisateur fait partie de l'échange
         const exchange = await prisma.exchange.findUnique({
             where: { id: exchangeId },
-            include: { chat: { include: { messages: { orderBy: { createdAt: 'asc' }, include: { sender: { select: { id: true, fullName: true, image: true } } } } } } }
+            include: {
+                chat: {
+                    include: {
+                        messages: {
+                            orderBy: { createdAt: 'asc' },
+                            include: { sender: { select: { id: true, fullName: true, image: true } } }
+                        }
+                    }
+                },
+                bookRequested: true
+            }
         })
 
         if (!exchange) {
@@ -27,7 +38,7 @@ export async function getOrCreateChat(exchangeId: string) {
 
         // Si le chat existe déjà, le retourner
         if (exchange.chat) {
-            return { success: true, chat: exchange.chat }
+            return { success: true, chat: { ...exchange.chat, exchange } }
         }
 
         // Créer un nouveau chat
@@ -36,6 +47,11 @@ export async function getOrCreateChat(exchangeId: string) {
                 exchangeId: exchangeId
             },
             include: {
+                exchange: {
+                    include: {
+                        bookRequested: true
+                    }
+                },
                 messages: {
                     orderBy: { createdAt: 'asc' },
                     include: {
@@ -67,6 +83,7 @@ export async function sendMessage(chatId: string, content: string) {
     }
 
     try {
+        const t = await getTranslations('Notifications')
         // Vérifier que l'utilisateur a accès au chat
         const chat = await prisma.chat.findUnique({
             where: { id: chatId },
@@ -107,8 +124,8 @@ export async function sendMessage(chatId: string, content: string) {
         await createNotification({
             userId: recipientId,
             type: 'NEW_MESSAGE',
-            title: 'Nouveau message',
-            message: `${user.fullName} vous a envoyé un message`,
+            title: t('NewMessage'),
+            message: t('NewMessageDesc', { user: user.fullName }),
             link: `/community/exchanges/${chat.exchange.id}/chat`
         })
 

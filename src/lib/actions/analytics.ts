@@ -124,9 +124,89 @@ export async function getDashboardAnalytics() {
             }
         }))
 
+        // 5. Ventes par ville (évolution)
+        const ordersByCity = await prisma.order.findMany({
+            where: {
+                status: 'DELIVERED',
+                createdAt: { gte: sixMonthsAgo }
+            },
+            select: {
+                city: true,
+                total: true,
+                createdAt: true
+            }
+        })
+
+        const cityRevenueData = ordersByCity.reduce((acc: any, order) => {
+            const date = new Date(order.createdAt)
+            const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+            const monthLabel = date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })
+
+            if (!acc[monthKey]) acc[monthKey] = { name: monthLabel }
+
+            const city = order.city || 'Inconnu'
+            acc[monthKey][city] = (acc[monthKey][city] || 0) + order.total
+            return acc
+        }, {})
+
+        const formattedCityRevenue = Object.entries(cityRevenueData)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([_, value]) => value)
+
+        const allCities = Array.from(new Set(ordersByCity.map(o => o.city || 'Inconnu')))
+
+        // 6. Panier moyen (AOV) par ville
+        const cityStats = ordersByCity.reduce((acc: any, order) => {
+            const city = order.city || 'Inconnu'
+            if (!acc[city]) acc[city] = { total: 0, count: 0 }
+            acc[city].total += order.total
+            acc[city].count += 1
+            return acc
+        }, {})
+
+        const cityAOV = Object.entries(cityStats).map(([name, stats]: [string, any]) => ({
+            name,
+            average: stats.total / stats.count,
+            orders: stats.count
+        })).sort((a, b) => b.average - a.average)
+
+        // 7. Taux de retour par ville
+        const allOrdersForReturns = await prisma.order.findMany({
+            where: {
+                createdAt: { gte: sixMonthsAgo }
+            },
+            select: {
+                city: true,
+                status: true
+            }
+        })
+
+        const returnStats = allOrdersForReturns.reduce((acc: any, order) => {
+            const city = order.city || 'Inconnu'
+            if (!acc[city]) acc[city] = { total: 0, returned: 0 }
+            acc[city].total += 1
+            if (['RETURNED', 'FAILED'].includes(order.status)) {
+                acc[city].returned += 1
+            }
+            return acc
+        }, {})
+
+        const cityReturnRates = Object.entries(returnStats)
+            .map(([name, stats]: [string, any]) => ({
+                name,
+                rate: (stats.returned / stats.total) * 100,
+                total: stats.total,
+                returned: stats.returned
+            }))
+            .sort((a, b) => b.rate - a.rate) // Du plus haut taux au plus bas
+
         return {
             monthlyRevenue: formattedMonthlyRevenue,
             categoryRevenue: formattedCategoryRevenue,
+            cityRevenue: formattedCityRevenue,
+            cityAOV,
+            cityReturnRates,
+            cities: allCities,
             lowStockBooks,
             topProducts
         }

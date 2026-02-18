@@ -1,12 +1,14 @@
-import { getCommunityUser, logout, checkExchangeEligibility } from '@/lib/actions/community-auth'
+import { getCommunityUser, checkExchangeEligibility } from '@/lib/actions/community-auth'
 import { redirect } from 'next/navigation'
-import Header from '@/components/HeaderWithUser'
+import HeaderWithUser from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import { getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/routing'
-import { Plus, BookOpen, Star, MapPin, Coins, Settings, LogOut, RefreshCw, Instagram, Facebook, Twitter } from 'lucide-react'
+import { Plus, BookOpen, Star, MapPin, Coins, Settings, RefreshCw, Instagram, Facebook, Twitter } from 'lucide-react'
 import { getWishlist } from '@/lib/actions/community-wishlist'
 import WishlistSection from '@/components/community/WishlistSection'
+import TopReadersList from '@/components/community/TopReadersList'
+import { getTopReaders, getUserExchangeCount } from '@/lib/actions/community'
 
 export default async function CommunityDashboard() {
     const user = await getCommunityUser()
@@ -15,23 +17,21 @@ export default async function CommunityDashboard() {
         redirect('/community/login')
     }
 
-    const [t, wishlist, isEligible] = await Promise.all([
+    const [t, wishlist, isEligible, topReaders, exchangeCount] = await Promise.all([
         getTranslations('Community'),
         getWishlist(),
-        checkExchangeEligibility(user)
+        checkExchangeEligibility(user),
+        getTopReaders(5),
+        getUserExchangeCount(user.id)
     ])
 
-    async function handleLogout() {
-        'use server'
-        await logout()
-        redirect('/')
-    }
+
 
     const u = user as any
 
     return (
-        <div className="min-h-screen bg-pixio-cream flex flex-col">
-            <Header />
+        <main className="min-h-screen bg-pixio-cream flex flex-col">
+            <HeaderWithUser />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-32 flex-grow w-full">
                 {/* Eligibility Notice */}
@@ -114,21 +114,13 @@ export default async function CommunityDashboard() {
                         <Link href="/community/exchanges" className="bg-white border-2 border-gray-100 px-8 py-4 rounded-3xl flex flex-col items-center min-w-[120px] hover:border-black transition-all group hover:shadow-lg text-center">
                             <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1 group-hover:text-black transition-colors">{t('ExchangesLabel')}</span>
                             <span className="text-3xl font-black text-black tracking-tighter group-hover:scale-110 transition-transform">
-                                {/* TODO: Get real count if needed */}
-                                -
+                                {exchangeCount}
                             </span>
                         </Link>
                     </div>
 
                     {/* Logout Button (Absolute Top Right) */}
-                    <form action={handleLogout} className="absolute top-6 right-6 z-20">
-                        <button
-                            type="submit"
-                            className="text-gray-400 hover:text-red-500 transition-colors flex items-center gap-2 text-xs font-bold uppercase tracking-widest"
-                        >
-                            <LogOut className="w-4 h-4" /> {t('Dashboard.Logout')}
-                        </button>
-                    </form>
+
                 </div>
 
                 {/* Wishlist Section */}
@@ -218,9 +210,16 @@ export default async function CommunityDashboard() {
                         </Link>
                     </div>
                 )}
+                {/* Top Readers Section */}
+                <div className="mb-12 mt-40">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <TopReadersList readers={topReaders} title={t('TopReadersTitle')} subtitle={t('TopReadersSubtitle')} />
+                    </div>
+                </div>
+
             </div>
 
             <Footer />
-        </div>
+        </main>
     )
 }

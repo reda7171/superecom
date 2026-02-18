@@ -119,6 +119,11 @@ export async function logout() {
  * Session Management (Basic)
  */
 async function createSession(userId: string) {
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { locale: true }
+    })
+
     const token = Buffer.from(`${userId}:${Date.now()}`).toString('base64')
     const cookieStore = await cookies()
     cookieStore.set('community-token', token, {
@@ -128,6 +133,10 @@ async function createSession(userId: string) {
         maxAge: 60 * 60 * 24 * 30, // 30 jours
         path: '/',
     })
+
+    if (user?.locale) {
+        cookieStore.set('NEXT_LOCALE', user.locale, { path: '/' })
+    }
 }
 
 export async function getCommunityUser() {

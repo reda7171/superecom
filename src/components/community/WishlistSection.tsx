@@ -6,6 +6,7 @@ import { Plus, Trash2, Loader2, BookMarked } from 'lucide-react'
 import { useRouter } from '@/i18n/routing'
 import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui'
+import { useWishlistStore } from '@/store/wishlist'
 
 interface WishlistSectionProps {
     wishlist: any[]
@@ -45,10 +46,19 @@ export default function WishlistSection({ wishlist }: WishlistSectionProps) {
         })
     }
 
-    async function handleRemove(id: string) {
+    const { removeItem } = useWishlistStore()
+
+    async function handleRemove(id: string, bookId?: string) {
         startTransition(async () => {
             updateOptimisticWishlist({ type: 'DELETE', id })
+            // Supprimer de la DB
             await removeFromWishlist(id)
+            // Supprimer du store local (Zustand) pour l'en-tête
+            if (bookId) {
+                removeItem(bookId)
+            } else {
+                removeItem(id)
+            }
             router.refresh()
         })
     }
@@ -115,7 +125,7 @@ export default function WishlistSection({ wishlist }: WishlistSectionProps) {
                                 {item.author && <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider truncate">{item.author}</p>}
                             </div>
                             <button
-                                onClick={() => handleRemove(item.id)}
+                                onClick={() => handleRemove(item.id, item.bookId)}
                                 disabled={isPending}
                                 className="p-2 text-gray-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-50"
                             >
