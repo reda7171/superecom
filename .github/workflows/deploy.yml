@@ -21,8 +21,8 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           port: 2222
           script: |
-            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git config --global --add safe.directory /var/www/riwaya
-            cd /var/www/riwaya
+            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git config --global --add safe.directory /var/www/riwayama
+            cd /var/www/riwayama
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git pull origin main
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker-compose down || true
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker-compose up -d --build --force-recreate
