@@ -34,10 +34,14 @@ jobs:
 
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git config --global --add safe.directory /var/www/riwayama
             
-            # Forcer la synchronisation avec le repo distant
+            # Forcer la synchronisation avec le repo distant avec sudo
             echo "📥 Récupération des derniers changements..."
-            git fetch origin main
-            git reset --hard origin/main
+            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git fetch origin main
+            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git reset --hard origin/main
+            
+            # Debug: lister les fichiers pour vérifier leur présence
+            ls -la
+            ls -la scripts/
             
             # Permissions et Cron
             echo "🔐 Configuration des permissions et Cron..."
