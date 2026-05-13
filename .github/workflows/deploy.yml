@@ -32,6 +32,9 @@ jobs:
               echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git remote add origin https://github.com/reda7171/riwaya.git
             fi
 
+            # Mettre à jour l'URL pour inclure le token d'accès (pour éviter le prompt de login)
+            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/reda7171/riwaya.git
+
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git config --global --add safe.directory /var/www/riwayama
             
             # Debug: Infos Git
