@@ -24,5 +24,8 @@ jobs:
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git config --global --add safe.directory /var/www/riwayama
             cd /var/www/riwayama
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git pull origin main
+            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S chmod +x scripts/backup-db.sh
+            # Ajouter la tâche cron si elle n'existe pas (Tous les jours à 03:00)
+            (crontab -l 2>/dev/null | grep -q "backup-db.sh") || (crontab -l 2>/dev/null; echo "0 3 * * * /var/www/riwayama/scripts/backup-db.sh >> /var/www/riwayama/backups/backup.log 2>&1") | crontab -
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker-compose down || true
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker-compose up -d --build --force-recreate
