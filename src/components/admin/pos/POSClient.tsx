@@ -240,7 +240,7 @@ export default function POSClient({ books, packs }: POSClientProps) {
 
       {/* Right Sidebar - Cart Premium */}
       <div className={`
-        fixed inset-0 z-50 lg:relative lg:inset-auto lg:z-0 lg:w-[450px] flex flex-col bg-white lg:rounded-[3rem] shadow-2xl lg:shadow-xl border border-gray-100 overflow-hidden shrink-0 transition-all duration-500 ease-in-out
+        fixed inset-0 z-50 lg:relative lg:inset-auto lg:z-0 lg:w-[450px] flex flex-col bg-white lg:rounded-[3rem] shadow-2xl lg:shadow-xl border border-gray-100 overflow-y-auto custom-scrollbar shrink-0 transition-all duration-500 ease-in-out
         ${showMobileCart ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
       `}>
         <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
@@ -265,7 +265,7 @@ export default function POSClient({ books, packs }: POSClientProps) {
         </div>
 
         {/* Cart Items Premium */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-white">
+        <div className="shrink-0 p-6 space-y-4 bg-white min-h-[300px]">
           {cart.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-gray-200 space-y-6">
               <div className="w-32 h-32 bg-gray-50 rounded-[3rem] flex items-center justify-center shadow-inner">
@@ -325,7 +325,7 @@ export default function POSClient({ books, packs }: POSClientProps) {
         </div>
 
         {/* Customer Information Form Premium */}
-        <div className="p-8 border-t border-gray-50 bg-gray-50/50 space-y-6">
+        <div className="shrink-0 p-8 border-t border-gray-50 bg-gray-50/50 space-y-6">
           <div className="flex items-center gap-3 text-[10px] font-black text-black uppercase tracking-[0.2em]">
             <User className="w-3.5 h-3.5" /> Fiche Client
           </div>
@@ -364,7 +364,7 @@ export default function POSClient({ books, packs }: POSClientProps) {
         </div>
 
         {/* Summary & Checkout Premium */}
-        <div className="p-8 md:p-10 bg-white border-t border-gray-50 shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
+        <div className="shrink-0 p-8 md:p-10 bg-white border-t border-gray-50 shadow-[0_-10px_40px_rgba(0,0,0,0.03)]">
           <div className="space-y-4 mb-8">
             <div className="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest">
               <span>Sous-total articles</span>
