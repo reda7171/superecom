@@ -11,10 +11,10 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
     }
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-black text-gray-900 tracking-tight">Modifier l'article</h1>
-                <p className="text-sm text-gray-500">Mettez à jour le contenu de votre article</p>
+        <div className="space-y-10 max-w-7xl mx-auto py-8">
+            <div className="text-center md:text-left">
+                <h1 className="text-4xl md:text-5xl font-black text-[#0f0f0f] tracking-tight mb-3">Modifier l'article</h1>
+                <p className="text-gray-500 font-medium text-lg">Mettez à jour le contenu de votre article avec l'éditeur premium</p>
             </div>
 
             <PostForm post={post} isEditing />

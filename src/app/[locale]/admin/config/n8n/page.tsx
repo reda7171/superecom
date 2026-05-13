@@ -18,6 +18,7 @@ export default async function N8nConfigPage() {
     }
 
     const webhookUrl = await getSetting('n8n_webhook_url') || ''
+    const instagramWebhookUrl = await getSetting('n8n_instagram_webhook_url') || ''
     const facebookAccessToken = await getSetting('facebook_access_token') || ''
     const instagramAccountId = await getSetting('instagram_account_id') || ''
     const instagramToken = await getSetting('instagram_token') || ''
@@ -49,6 +50,7 @@ export default async function N8nConfigPage() {
                     </div>
                     <N8nConfigForm 
                         initialWebhookUrl={webhookUrl} 
+                        initialInstagramWebhookUrl={instagramWebhookUrl}
                         initialFacebookAccessToken={facebookAccessToken} 
                         initialInstagramAccountId={instagramAccountId}
                         initialInstagramToken={instagramToken}

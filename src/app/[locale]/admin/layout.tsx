@@ -42,7 +42,9 @@ import {
     Usb,
     Library,
     Database,
-    ChevronDown
+    ChevronDown,
+    PanelLeftClose,
+    PanelLeftOpen
 } from 'lucide-react'
 
 import OrderNotifications from '@/components/admin/OrderNotifications'
@@ -57,6 +59,7 @@ export default function AdminLayout({
     const lang = typeof locale === 'string' ? locale : 'fr'
     const [featureSettings, setFeatureSettings] = useState<Record<string, string>>({})
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(true) // Collapsed by default
     const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
         'Configuration': false 
     })
@@ -66,6 +69,9 @@ export default function AdminLayout({
     }, [])
 
     const toggleMenu = (name: string) => {
+        if (sidebarCollapsed) {
+            setSidebarCollapsed(false)
+        }
         setExpandedMenus(prev => ({
             ...prev,
             [name]: !prev[name]
@@ -140,20 +146,19 @@ export default function AdminLayout({
     const pathname = usePathname()
     const router = useRouter()
 
-    // Auto-expand if child is active
     useEffect(() => {
         navigation.forEach(item => {
             if (item.children && item.children.some(child => pathname === child.href)) {
                 setExpandedMenus(prev => {
-                    // Only update if not already expanded to avoid infinite loops
                     if (prev[item.name]) return prev;
                     return { ...prev, [item.name]: true };
                 })
+                // Open sidebar if child is active to show it
+                setSidebarCollapsed(false);
             }
         })
     }, [pathname, navigation])
 
-    // Fermer sidebar sur changement de route (mobile)
     useEffect(() => {
         setSidebarOpen(false)
     }, [pathname])
@@ -176,18 +181,20 @@ export default function AdminLayout({
         )
     }
 
-    const renderSidebarContent = () => (
-        <div className="flex flex-col h-full">
-            {/* Logo */}
-            <div className="flex items-center justify-between h-16 md:h-20 px-5 md:px-8">
+    const renderSidebarContent = (isCollapsed: boolean) => (
+        <div className="flex flex-col h-full overflow-hidden">
+            {/* Logo & Toggle */}
+            <div className={`flex items-center ${isCollapsed ? 'justify-center flex-col py-4 gap-4' : 'justify-between px-5 md:px-8'} h-16 md:h-20 shrink-0`}>
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center">
+                    <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center shrink-0">
                         <span className="text-white text-lg font-black italic">R</span>
                     </div>
-                    <h1 className="text-lg font-black text-slate-900 tracking-tight">Riwaya<span className="text-blue-600">.</span></h1>
+                    {!isCollapsed && <h1 className="text-lg font-black text-slate-900 tracking-tight">Riwaya<span className="text-blue-600">.</span></h1>}
                 </div>
+                
                 <div className="flex items-center gap-2">
-                    <OrderNotifications />
+                    {!isCollapsed && <OrderNotifications />}
+                    
                     {/* Bouton fermer sur mobile */}
                     <button
                         onClick={() => setSidebarOpen(false)}
@@ -195,12 +202,23 @@ export default function AdminLayout({
                     >
                         <X className="w-5 h-5" />
                     </button>
+
+                    {/* Toggle Desktop */}
+                    <button
+                        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                        className={`hidden md:flex p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors ${isCollapsed ? 'mt-2' : ''}`}
+                        title={isCollapsed ? "Agrandir" : "Réduire"}
+                    >
+                        {isCollapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+                    </button>
                 </div>
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-3 md:px-4 pb-6 space-y-1 overflow-y-auto custom-scrollbar" suppressHydrationWarning>
-                <div className="mb-4 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Menu Principal</div>
+            <nav className={`flex-1 ${isCollapsed ? 'px-2' : 'px-3 md:px-4'} pb-6 space-y-1 overflow-y-auto custom-scrollbar`} suppressHydrationWarning>
+                {!isCollapsed && <div className="mb-4 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-4">Menu Principal</div>}
+                {isCollapsed && <div className="h-4"></div>}
+                
                 {navigation.map((item) => {
                     const isExact = pathname === item.href
                     const isParent = pathname.startsWith(item.href + '/') && item.href !== `/${lang}/admin`
@@ -210,42 +228,53 @@ export default function AdminLayout({
                     const hasChildren = item.children && item.children.length > 0
 
                     return (
-                        <div key={item.name} className="space-y-1">
+                        <div key={item.name} className="space-y-1 relative group/nav">
                             {hasChildren ? (
                                 <div
                                     onClick={() => toggleMenu(item.name)}
                                     className={`
-                                        group flex items-center px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 cursor-pointer
+                                        flex items-center py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 cursor-pointer
+                                        ${isCollapsed ? 'justify-center px-0' : 'px-4'}
                                         ${isActive
                                             ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
                                             : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                         }
                                     `}
+                                    title={isCollapsed ? item.name : undefined}
                                 >
-                                    <Icon className={`w-5 h-5 mr-3 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                                    <span className="flex-1">{item.name}</span>
-                                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedMenus[item.name] ? 'rotate-180' : ''}`} />
+                                    <Icon className={`w-5 h-5 transition-colors ${isCollapsed ? '' : 'mr-3'} ${isActive ? 'text-white' : 'text-slate-400 group-hover/nav:text-slate-600'}`} />
+                                    {!isCollapsed && <span className="flex-1">{item.name}</span>}
+                                    {!isCollapsed && <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedMenus[item.name] ? 'rotate-180' : ''}`} />}
                                 </div>
                             ) : (
                                 <Link
                                     href={item.href}
                                     className={`
-                                        group flex items-center px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200
+                                        flex items-center py-2.5 text-sm font-semibold rounded-xl transition-all duration-200
+                                        ${isCollapsed ? 'justify-center px-0' : 'px-4'}
                                         ${isActive
                                             ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
                                             : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                         }
                                     `}
+                                    title={isCollapsed ? item.name : undefined}
                                 >
-                                    <Icon className={`w-5 h-5 mr-3 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                                    <span className="flex-1">{item.name}</span>
-                                    {isActive && !hasChildren && (
+                                    <Icon className={`w-5 h-5 transition-colors ${isCollapsed ? '' : 'mr-3'} ${isActive ? 'text-white' : 'text-slate-400 group-hover/nav:text-slate-600'}`} />
+                                    {!isCollapsed && <span className="flex-1">{item.name}</span>}
+                                    {!isCollapsed && isActive && !hasChildren && (
                                         <div className="w-1.5 h-1.5 rounded-full bg-white/40 animate-pulse ml-2" />
                                     )}
                                 </Link>
                             )}
 
-                            {hasChildren && expandedMenus[item.name] && (
+                            {/* Tooltip for collapsed mode on hover */}
+                            {isCollapsed && (
+                                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover/nav:opacity-100 group-hover/nav:visible transition-all whitespace-nowrap z-50 shadow-xl pointer-events-none">
+                                    {item.name}
+                                </div>
+                            )}
+
+                            {!isCollapsed && hasChildren && expandedMenus[item.name] && (
                                 <div className="ml-4 mt-1 space-y-1 border-l-2 border-slate-100 pl-4 py-1">
                                     {/* @ts-ignore */}
                                     {item.children.map((child) => {
@@ -277,36 +306,41 @@ export default function AdminLayout({
             </nav>
 
             {/* User Section */}
-            <div className="p-4 md:p-6 bg-slate-50/50 border-t border-slate-100">
-                <div className="flex items-center justify-between mb-4">
-                    <LanguageSwitcher upward={true} />
-                </div>
-                <div className="flex items-center gap-3 mb-4 p-2 rounded-2xl bg-white border border-slate-100 shadow-sm">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-100 shrink-0">
-                        <span className="text-sm font-bold text-white tracking-widest">AD</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-slate-900 truncate">Administrateur</p>
-                        <p className="text-[10px] text-slate-500 font-medium truncate">admin@riwaya.store</p>
-                    </div>
-                </div>
+            <div className={`p-4 ${isCollapsed ? 'md:p-2' : 'md:p-6'} bg-slate-50/50 border-t border-slate-100 shrink-0`}>
+                {!isCollapsed && (
+                    <>
+                        <div className="flex items-center justify-between mb-4">
+                            <LanguageSwitcher upward={true} />
+                        </div>
+                        <div className="flex items-center gap-3 mb-4 p-2 rounded-2xl bg-white border border-slate-100 shadow-sm">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-100 shrink-0">
+                                <span className="text-sm font-bold text-white tracking-widest">AD</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold text-slate-900 truncate">Administrateur</p>
+                                <p className="text-[10px] text-slate-500 font-medium truncate">admin@riwaya.store</p>
+                            </div>
+                        </div>
 
-                <a
-                    href={`/${lang}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center w-full px-4 py-2.5 mb-2 text-sm font-bold text-emerald-700 hover:text-white hover:bg-emerald-600 rounded-xl transition-all border border-emerald-200 bg-emerald-50"
-                >
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Voir le site
-                </a>
+                        <a
+                            href={`/${lang}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center w-full px-4 py-2.5 mb-2 text-sm font-bold text-emerald-700 hover:text-white hover:bg-emerald-600 rounded-xl transition-all border border-emerald-200 bg-emerald-50"
+                        >
+                            <ExternalLink className="w-4 h-4 mr-2" />
+                            Voir le site
+                        </a>
+                    </>
+                )}
 
                 <button
                     onClick={handleLogout}
-                    className="flex items-center justify-center w-full px-4 py-2.5 text-sm font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all border border-slate-200 bg-white"
+                    className={`flex items-center justify-center w-full py-2.5 text-sm font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all border border-slate-200 bg-white ${isCollapsed ? 'px-0' : 'px-4'}`}
+                    title={isCollapsed ? "Déconnexion" : undefined}
                 >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Déconnexion
+                    <LogOut className={`w-4 h-4 ${isCollapsed ? '' : 'mr-2'}`} />
+                    {!isCollapsed && "Déconnexion"}
                 </button>
             </div>
         </div>
@@ -323,17 +357,17 @@ export default function AdminLayout({
             )}
 
             {/* Sidebar desktop (fixe) */}
-            <aside className="hidden md:flex fixed inset-y-0 left-0 w-64 lg:w-72 bg-white border-r border-slate-200/60 shadow-sm z-50 flex-col">
-                {renderSidebarContent()}
+            <aside className={`hidden md:flex fixed inset-y-0 left-0 bg-white border-r border-slate-200/60 shadow-sm z-50 flex-col transition-all duration-300 ${sidebarCollapsed ? 'w-20' : 'w-64 lg:w-72'}`}>
+                {renderSidebarContent(sidebarCollapsed)}
             </aside>
 
             {/* Sidebar mobile (drawer) */}
             <aside className={`md:hidden fixed inset-y-0 left-0 w-72 bg-white border-r border-slate-200/60 shadow-xl z-50 flex flex-col transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                {renderSidebarContent()}
+                {renderSidebarContent(false)}
             </aside>
 
             {/* Main Content */}
-            <div className="md:pl-64 lg:pl-72 transition-all duration-300">
+            <div className={`transition-all duration-300 ${sidebarCollapsed ? 'md:pl-20' : 'md:pl-64 lg:pl-72'}`}>
                 {/* Topbar mobile */}
                 <div className="md:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-white border-b border-slate-200 shadow-sm">
                     <button

@@ -291,6 +291,32 @@ export async function getPostsByBookId(bookId: string, language: string = 'fr') 
 }
 
 /**
+ * Récupère les articles similaires (même catégorie)
+ */
+export async function getRelatedPosts(postId: string, category: string | null, language: string = 'fr', limit = 3) {
+    return prisma.post.findMany({
+        where: {
+            published: true,
+            language,
+            id: { not: postId },
+            ...(category ? { category } : {})
+        },
+        orderBy: { publishedAt: 'desc' },
+        take: limit,
+        select: {
+            id: true,
+            title: true,
+            slug: true,
+            excerpt: true,
+            coverImage: true,
+            publishedAt: true,
+            category: true,
+            author: { select: { fullName: true } }
+        }
+    })
+}
+
+/**
  * Incrémente le compteur de vues d'un article
  */
 export async function incrementPostViews(id: string) {

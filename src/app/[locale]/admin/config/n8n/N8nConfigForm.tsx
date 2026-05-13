@@ -5,12 +5,14 @@ import { updateSetting } from '@/lib/actions/site-settings'
 import { Save } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-export default function N8nConfigForm({ initialWebhookUrl, initialFacebookAccessToken, initialInstagramAccountId, initialInstagramToken }: { initialWebhookUrl: string, initialFacebookAccessToken: string, initialInstagramAccountId: string, initialInstagramToken: string }) {
+export default function N8nConfigForm({ initialWebhookUrl, initialInstagramWebhookUrl, initialFacebookAccessToken, initialInstagramAccountId, initialInstagramToken }: { initialWebhookUrl: string, initialInstagramWebhookUrl: string, initialFacebookAccessToken: string, initialInstagramAccountId: string, initialInstagramToken: string }) {
     const [webhookUrl, setWebhookUrl] = useState(initialWebhookUrl)
+    const [instagramWebhookUrl, setInstagramWebhookUrl] = useState(initialInstagramWebhookUrl)
     const [facebookAccessToken, setFacebookAccessToken] = useState(initialFacebookAccessToken)
     const [instagramAccountId, setInstagramAccountId] = useState(initialInstagramAccountId)
     const [instagramToken, setInstagramToken] = useState(initialInstagramToken)
     const [loading, setLoading] = useState(false)
+    const [isTesting, setIsTesting] = useState(false)
     const [message, setMessage] = useState('')
     const router = useRouter()
 
@@ -21,6 +23,7 @@ export default function N8nConfigForm({ initialWebhookUrl, initialFacebookAccess
 
         try {
             await updateSetting('n8n_webhook_url', webhookUrl, 'config', 'URL du Webhook n8n')
+            await updateSetting('n8n_instagram_webhook_url', instagramWebhookUrl, 'config', 'URL du Webhook Instagram')
             await updateSetting('facebook_access_token', facebookAccessToken, 'config', 'Facebook Access Token')
             await updateSetting('instagram_account_id', instagramAccountId, 'config', 'Instagram Account ID')
             await updateSetting('instagram_token', instagramToken, 'config', 'Instagram Token')
@@ -55,6 +58,23 @@ export default function N8nConfigForm({ initialWebhookUrl, initialFacebookAccess
                 />
                 <p className="mt-2 text-xs text-gray-500 font-medium">
                     Cette URL sera appelée lors d'événements importants (nouvelle commande, etc.)
+                </p>
+            </div>
+
+            <div>
+                <label htmlFor="instagramWebhookUrl" className="block text-sm font-bold text-gray-900 mb-2">
+                    URL du Webhook Instagram (n8n)
+                </label>
+                <input
+                    type="url"
+                    id="instagramWebhookUrl"
+                    value={instagramWebhookUrl}
+                    onChange={(e) => setInstagramWebhookUrl(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                    placeholder="Ex: https://n8n.votredomaine.com/webhook/instagram..."
+                />
+                <p className="mt-2 text-xs text-gray-500 font-medium">
+                    Ce webhook sera appelé pour déclencher une publication sur Instagram.
                 </p>
             </div>
 
@@ -107,14 +127,48 @@ export default function N8nConfigForm({ initialWebhookUrl, initialFacebookAccess
                 </p>
             </div>
 
-            <button
-                type="submit"
-                disabled={loading}
-                className="w-full sm:w-auto px-8 py-3 bg-black text-white text-sm font-black uppercase tracking-widest rounded-xl hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
-            >
-                <Save className="w-4 h-4" />
-                {loading ? 'Enregistrement...' : 'Enregistrer'}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-100">
+                <button
+                    type="submit"
+                    disabled={loading || isTesting}
+                    className="flex-1 sm:flex-none px-8 py-3 bg-black text-white text-sm font-black uppercase tracking-widest rounded-xl hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+                >
+                    <Save className="w-4 h-4" />
+                    {loading ? 'Enregistrement...' : 'Enregistrer'}
+                </button>
+                
+                <button
+                    type="button"
+                    disabled={isTesting || !instagramWebhookUrl || !instagramToken || !instagramAccountId}
+                    onClick={async () => {
+                        setIsTesting(true)
+                        setMessage('')
+                        try {
+                            const res = await fetch(instagramWebhookUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    action: 'test_instagram',
+                                    token: instagramToken,
+                                    account_id: instagramAccountId
+                                })
+                            })
+                            if (res.ok) {
+                                setMessage('Test envoyé avec succès !')
+                            } else {
+                                setMessage('Erreur lors du test du webhook.')
+                            }
+                        } catch (e) {
+                            setMessage('Erreur réseau lors du test.')
+                        } finally {
+                            setIsTesting(false)
+                        }
+                    }}
+                    className="flex-1 sm:flex-none px-8 py-3 bg-gradient-to-r from-pink-500 to-orange-500 text-white text-sm font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                    {isTesting ? 'Test en cours...' : 'Tester la publication IG'}
+                </button>
+            </div>
 
             <div className="mt-8 p-6 bg-blue-50 rounded-2xl border border-blue-100">
                 <h3 className="text-blue-900 font-bold flex items-center gap-2 mb-3">

@@ -277,10 +277,10 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                    <div className="bg-white p-8 md:p-10 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-black/[0.03] space-y-8">
                         <div>
-                            <div className="flex items-center justify-between mb-2">
-                                <label className="block text-sm font-bold text-gray-900">Titre</label>
+                            <div className="flex items-center justify-between mb-4">
+                                <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest">Titre de l'article</label>
                                 <div className="flex gap-2">
                                     <button
                                         type="button"
@@ -306,15 +306,15 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                                 type="text"
                                 value={title}
                                 onChange={handleTitleChange}
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
-                                placeholder="Titre de l'article"
+                                className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-black text-2xl md:text-3xl text-gray-900 placeholder:text-gray-300"
+                                placeholder="Titre captivant de l'article..."
                                 required
                             />
                         </div>
 
                         <div>
-                            <div className="flex items-center justify-between mb-2">
-                                <label className="block text-sm font-bold text-gray-900">Slug</label>
+                            <div className="flex items-center justify-between mb-4">
+                                <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest">URL Slug</label>
                                 <button
                                     type="button"
                                     onClick={() => handleFieldGenerate('fr', 'SLUG')}
@@ -329,7 +329,7 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                                 type="text"
                                 value={slug}
                                 onChange={(e) => setSlug(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all font-mono text-sm text-gray-600"
+                                className="w-full px-6 py-3 bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-black outline-none transition-all font-mono text-sm text-gray-500 placeholder:text-gray-300"
                                 placeholder="titre-de-l-article"
                                 required
                             />
@@ -361,8 +361,8 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                         </div>
 
                         <div>
-                            <div className="flex items-center justify-between mb-2">
-                                <label className="block text-sm font-bold text-gray-900">Extrait</label>
+                            <div className="flex items-center justify-between mb-4">
+                                <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest">Extrait / Résumé court</label>
                                 <div className="flex gap-2">
                                     <button
                                         type="button"
@@ -388,13 +388,13 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                                 value={excerpt}
                                 onChange={(e) => setExcerpt(e.target.value)}
                                 rows={3}
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
-                                placeholder="Bref résumé de l'article..."
+                                className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-medium text-lg text-gray-600 placeholder:text-gray-300 resize-none leading-relaxed"
+                                placeholder="Bref résumé accrocheur de l'article..."
                             />
                         </div>
 
-                        <div className="flex items-center justify-between mb-2">
-                            <label className="block text-sm font-bold text-gray-900">Contenu (Markdown)</label>
+                        <div className="flex items-center justify-between mb-4">
+                            <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest">Contenu complet (Markdown)</label>
                             <div className="flex flex-wrap gap-2">
                                 <button
                                     type="button"
@@ -429,10 +429,11 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                                 <textarea
                                     value={content}
                                     onChange={(e) => setContent(e.target.value)}
-                                    rows={15}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all font-mono text-sm"
-                                    placeholder="# Titre du contenu..."
+                                    rows={25}
+                                    className="w-full px-8 py-8 bg-gray-50 border-2 border-transparent rounded-[2rem] focus:bg-white focus:border-black outline-none transition-all font-sans text-[17px] md:text-[19px] text-gray-800 placeholder:text-gray-300 resize-y leading-[2] tracking-wide"
+                                    placeholder="# Rédigez votre chef-d'œuvre ici... (Markdown supporté)"
                                     required
+                                    style={{ fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}
                                 />
                                 <div className="absolute bottom-2 right-2 text-xs text-gray-400 pointer-events-none">
                                     Markdown supporté
@@ -443,7 +444,7 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl shadow-black/[0.03] space-y-6">
                         <h3 className="font-bold text-gray-900">Publication</h3>
 
                         <div className="flex items-center gap-2">
@@ -473,7 +474,7 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl shadow-black/[0.03] space-y-6">
                         <h3 className="font-bold text-gray-900">Image de couverture</h3>
 
                         {coverImage ? (
@@ -513,7 +514,7 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                         </p>
                     </div>
 
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl shadow-black/[0.03] space-y-6">
                         <h3 className="font-bold text-gray-900">Livres liés</h3>
                         <p className="text-[10px] text-gray-500 font-medium">L'article sera affiché sur la page de ces produits.</p>
 

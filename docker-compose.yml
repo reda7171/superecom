@@ -82,6 +82,23 @@ services:
     networks:
       - riwaya_network
 
+  # phpMyAdmin - Database Manager
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: riwaya_phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USER:-riwaya_user}
+      PMA_PASSWORD: ${DB_PASSWORD:-riwaya_pass}
+    ports:
+      - "9901:80"
+    depends_on:
+      - db
+    networks:
+      - riwaya_network
+
 volumes:
   mysql_data:
   n8n_data:
