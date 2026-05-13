@@ -565,7 +565,19 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                                             className="w-full px-3 py-2 text-left hover:bg-gray-50 text-xs font-medium flex items-center gap-3 transition-colors"
                                         >
                                             <div className="w-8 h-10 bg-gray-100 rounded flex-shrink-0 overflow-hidden">
-                                                {book.image && <img src={book.image.startsWith('http') ? book.image : `data:image/jpeg;base64,${book.image}`} alt="" className="w-full h-full object-cover" />}
+                                                {book.image && (
+                                                    <img 
+                                                        src={
+                                                            book.image.startsWith('http') || book.image.startsWith('/') || book.image.startsWith('data:') 
+                                                                ? book.image 
+                                                                : book.image.startsWith('/9j/') ? `data:image/jpeg;base64,${book.image}` 
+                                                                : book.image.startsWith('iVBOR') ? `data:image/png;base64,${book.image}` 
+                                                                : `data:image/jpeg;base64,${book.image}`
+                                                        } 
+                                                        alt="" 
+                                                        className="w-full h-full object-cover" 
+                                                    />
+                                                )}
                                             </div>
                                             <div className="min-w-0">
                                                 <div className="truncate font-bold text-gray-900">{book.title}</div>

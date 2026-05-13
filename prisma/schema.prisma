@@ -601,6 +601,7 @@ enum UserRole {
   INFLUENCER
   SELLER
   USER
+  TEST
 }
 
 enum OrderStatus {

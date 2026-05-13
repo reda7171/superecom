@@ -98,6 +98,7 @@ export default function AdminLayout({
         { name: 'Commandes', href: `/${lang}/admin/orders`, icon: ShoppingCart },
         { name: 'Caisse (POS)', href: `/${lang}/admin/pos`, icon: Monitor },
         { name: 'Clients', href: `/${lang}/admin/customers`, icon: Users },
+        { name: 'Utilisateurs', href: `/${lang}/admin/users`, icon: Users },
         { name: 'Vendeurs', href: `/${lang}/admin/vendeurs`, icon: Store, featureKey: 'feature_seller' },
         { name: 'Signalements', href: `/${lang}/admin/reports`, icon: AlertCircle },
         { name: 'Avis', href: `/${lang}/admin/reviews`, icon: MessageSquare },

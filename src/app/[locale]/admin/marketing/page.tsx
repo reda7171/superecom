@@ -251,7 +251,15 @@ export default function MarketingPage() {
                             {/* Image Preview */}
                             <div className="aspect-[4/5] relative bg-slate-900 overflow-hidden">
                                 <Image 
-                                    src={asset.url}
+                                    src={(() => {
+                                        const url = asset.url || asset.name;
+                                        if (!url) return '';
+                                        if (url.startsWith('http')) return url;
+                                        if (url.startsWith('data:image')) return url;
+                                        if (url.startsWith('/uploads')) return url;
+                                        if (url.startsWith('uploads')) return `/${url}`;
+                                        return `/uploads/books/${url}`;
+                                    })()}
                                     alt={asset.name}
                                     fill
                                     className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -259,7 +267,15 @@ export default function MarketingPage() {
                                 {/* Overlay Actions */}
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                                     <a 
-                                        href={asset.url}
+                                        href={(() => {
+                                            const url = asset.url || asset.name;
+                                            if (!url) return '';
+                                            if (url.startsWith('http')) return url;
+                                            if (url.startsWith('data:image')) return url;
+                                            if (url.startsWith('/uploads')) return url;
+                                            if (url.startsWith('uploads')) return `/${url}`;
+                                            return `/uploads/books/${url}`;
+                                        })()}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-900 hover:bg-indigo-600 hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 duration-300"
