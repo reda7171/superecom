@@ -22,31 +22,40 @@ jobs:
           port: 2222
           script: |
             # Aller dans le dossier, le créer s'il n'existe pas
-            mkdir -p /var/www/riwayama
+            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S mkdir -p /var/www/riwayama
             cd /var/www/riwayama
             
             # Initialisation robuste de Git si absente
             if [ ! -d ".git" ]; then
               echo "🔧 Initialisation du dépôt Git..."
-              git init
-              git remote add origin https://github.com/reda7171/riwaya.git
+              echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git init
+              echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git remote add origin https://github.com/reda7171/riwaya.git
             fi
 
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git config --global --add safe.directory /var/www/riwayama
             
-            # Forcer la synchronisation avec le repo distant avec sudo
-            echo "📥 Récupération des derniers changements..."
+            # Debug: Infos Git
+            echo "🔍 Infos Git sur le VPS :"
+            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git remote -v
+            
+            # Synchronisation forcée
+            echo "📥 Récupération et synchronisation..."
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git fetch origin main
+            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git checkout -f main
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git reset --hard origin/main
             
-            # Debug: lister les fichiers pour vérifier leur présence
+            # Debug: lister les fichiers
+            echo "📂 Contenu du dossier :"
             ls -la
-            ls -la scripts/
             
             # Permissions et Cron
-            echo "🔐 Configuration des permissions et Cron..."
-            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S chmod +x scripts/backup-db.sh
-            (crontab -l 2>/dev/null | grep -q "backup-db.sh") || (crontab -l 2>/dev/null; echo "0 3 * * * /var/www/riwayama/scripts/backup-db.sh >> /var/www/riwayama/backups/backup.log 2>&1") | crontab -
+            if [ -d "scripts" ]; then
+              echo "🔐 Configuration des permissions et Cron..."
+              echo "${{ secrets.VPS_PASSWORD }}" | sudo -S chmod +x scripts/backup-db.sh
+              (crontab -l 2>/dev/null | grep -q "backup-db.sh") || (crontab -l 2>/dev/null; echo "0 3 * * * /var/www/riwayama/scripts/backup-db.sh >> /var/www/riwayama/backups/backup.log 2>&1") | crontab -
+            else
+              echo "⚠️ Dossier 'scripts' non trouvé !"
+            fi
             
             # Rebuild et Restart UNIQUEMENT le service 'app'
             echo "🚀 Rechargement du service application..."
