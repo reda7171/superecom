@@ -1,7 +1,7 @@
 import { getCommunityUser, checkExchangeEligibility } from '@/lib/actions/community-auth'
 import { redirect } from 'next/navigation'
 import HeaderWithUser from '@/components/HeaderWithUser'
-import Footer from '@/components/Footer'
+import Footer from '@/components/FooterWithFeatures'
 import { getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/routing'
 import { Plus, BookOpen, Star, MapPin, Coins, Settings, RefreshCw, Instagram, Facebook, Twitter } from 'lucide-react'
@@ -9,6 +9,7 @@ import { getWishlist } from '@/lib/actions/community-wishlist'
 import WishlistSection from '@/components/community/WishlistSection'
 import TopReadersList from '@/components/community/TopReadersList'
 import { getTopReaders, getUserExchangeCount } from '@/lib/actions/community'
+import { isFeatureEnabled } from '@/lib/actions/site-settings'
 
 export default async function CommunityDashboard() {
     const user = await getCommunityUser()
@@ -17,12 +18,13 @@ export default async function CommunityDashboard() {
         redirect('/community/login')
     }
 
-    const [t, wishlist, isEligible, topReaders, exchangeCount] = await Promise.all([
+    const [t, wishlist, isEligible, topReaders, exchangeCount, exchangeEnabled] = await Promise.all([
         getTranslations('Community'),
         getWishlist(),
         checkExchangeEligibility(user),
         getTopReaders(5),
-        getUserExchangeCount(user.id)
+        getUserExchangeCount(user.id),
+        isFeatureEnabled('exchange')
     ])
 
 
@@ -104,13 +106,6 @@ export default async function CommunityDashboard() {
                     </div>
 
                     <div className="flex gap-4 z-10">
-                        <div className="bg-black text-white px-8 py-4 rounded-3xl flex flex-col items-center min-w-[120px] shadow-lg">
-                            <span className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">{t('Credits')}</span>
-                            <div className="flex items-center gap-2">
-                                <Coins className="w-5 h-5 text-pixio-yellow" />
-                                <span className="text-3xl font-black tracking-tighter">{u.credits}</span>
-                            </div>
-                        </div>
                         <Link href="/community/exchanges" className="bg-white border-2 border-gray-100 px-8 py-4 rounded-3xl flex flex-col items-center min-w-[120px] hover:border-black transition-all group hover:shadow-lg text-center">
                             <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1 group-hover:text-black transition-colors">{t('ExchangesLabel')}</span>
                             <span className="text-3xl font-black text-black tracking-tighter group-hover:scale-110 transition-transform">
@@ -126,7 +121,8 @@ export default async function CommunityDashboard() {
                 {/* Wishlist Section */}
                 <WishlistSection wishlist={wishlist} />
 
-                {/* Quick Actions */}
+                {/* Quick Actions - visible seulement si échange activé */}
+                {exchangeEnabled && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                     <Link href="/community/market" className="bg-white rounded-[2.5rem] p-8 border border-gray-100 hover:border-black transition-all group hover:shadow-xl">
                         <div className="flex items-center gap-4 mb-4">
@@ -154,8 +150,11 @@ export default async function CommunityDashboard() {
                         <p className="text-sm text-gray-500">{t('Dashboard.ManageExchangesLong')}</p>
                     </Link>
                 </div>
+                )}
 
-                {/* My Books Content */}
+                {/* Mes Livres - visible seulement si échange activé */}
+                {exchangeEnabled && (
+                <>
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-black text-black uppercase tracking-normal flex items-center gap-3">
                         <BookOpen className="w-6 h-6" /> {t('MyBooks')}
@@ -209,6 +208,8 @@ export default async function CommunityDashboard() {
                             <Plus className="w-4 h-4" /> {t('Dashboard.StartAdding')}
                         </Link>
                     </div>
+                )}
+                </>
                 )}
                 {/* Top Readers Section */}
                 <div className="mb-12 mt-40">

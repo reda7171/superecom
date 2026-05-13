@@ -1,12 +1,12 @@
 'use client'
 
-import Image from 'next/image'
 import { Link } from '@/i18n/routing'
 import { Package, ShoppingCart, Sparkles, ArrowRight } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui'
 import WishlistButton from '@/components/WishlistButton'
+import { normalizeImage } from '@/lib/utils'
 
 interface PackCardProps {
     id: string
@@ -76,24 +76,22 @@ export default function PackCard({
             <Link href={`/packs/${id}`} className="block">
                 <div className="relative h-64 bg-gray-50 overflow-hidden">
                     {image ? (
-                        <Image
-                            src={image}
+                        <img
+                            src={normalizeImage(image)}
                             alt={`Pack ${name} - Riwaya Selection`}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-700"
-                            unoptimized
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
                         />
                     ) : (
                         <div className="absolute inset-0 flex items-center justify-center bg-pixio-yellow/30 p-8">
                             <div className="grid grid-cols-2 gap-3 transform group-hover:scale-105 transition-transform">
                                 {books.slice(0, 4).map((pb: any, idx: number) => (
                                     <div key={pb.book.id} className={`relative w-20 h-28 rounded-xl overflow-hidden shadow-2xl border-2 border-white ${idx % 2 === 0 ? '-rotate-6' : 'rotate-6'}`}>
-                                        <Image
-                                            src={pb.book.image}
+                                        <img
+                                            src={normalizeImage(pb.book.image)}
                                             alt={`${pb.book.title} - Inclus dans le pack ${name}`}
-                                            fill
-                                            className="object-cover"
-                                            unoptimized
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
                                         />
                                     </div>
                                 ))}

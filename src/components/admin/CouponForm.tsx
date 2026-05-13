@@ -34,63 +34,67 @@ export default function CouponForm() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
-            <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-                <Plus className="w-5 h-5 text-blue-600" />
-                Nouveau Coupon
-            </h2>
+        <form onSubmit={handleSubmit} className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-xl shadow-black/5 space-y-8">
+            <div>
+                <h2 className="text-3xl font-black text-black tracking-tighter flex items-center gap-3">
+                    Nouveau<span className="text-blue-600">.</span>
+                </h2>
+                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Générer un code de réduction</p>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                    <label className="text-xs font-black uppercase text-gray-500">Code Promo (ex: RIWAYA10)</label>
+            <div className="space-y-6">
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-2">Code Promo</label>
                     <div className="relative">
-                        <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                             name="code"
                             required
-                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold focus:ring-2 focus:ring-blue-500 outline-none uppercase placeholder:italic"
+                            className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-[1.5rem] font-black text-black focus:bg-white focus:border-black outline-none uppercase placeholder:italic transition-all"
                             placeholder="RIWAYA10"
                         />
                     </div>
                 </div>
 
-                <div className="space-y-2">
-                    <label className="text-xs font-black uppercase text-gray-500">Type de remise</label>
-                    <select name="type" className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold focus:ring-2 focus:ring-blue-500 outline-none">
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-2">Type de remise</label>
+                    <select name="type" className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-[1.5rem] font-black text-black focus:bg-white focus:border-black outline-none transition-all appearance-none">
                         <option value="PERCENTAGE">Pourcentage (%)</option>
                         <option value="FIXED_AMOUNT">Montant fixe (MAD)</option>
                     </select>
                 </div>
 
-                <div className="space-y-2">
-                    <label className="text-xs font-black uppercase text-gray-500">Valeur de la remise</label>
-                    <input
-                        name="discount"
-                        type="number"
-                        required
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                        placeholder="10"
-                    />
-                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-2">Valeur</label>
+                        <input
+                            name="discount"
+                            type="number"
+                            required
+                            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-[1.5rem] font-black text-black focus:bg-white focus:border-black outline-none transition-all"
+                            placeholder="10"
+                        />
+                    </div>
 
-                <div className="space-y-2">
-                    <label className="text-xs font-black uppercase text-gray-500">Minimum d'achat (Optionnel)</label>
-                    <input
-                        name="minAmount"
-                        type="number"
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                        placeholder="0"
-                    />
+                    <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-2">Min. Achat</label>
+                        <input
+                            name="minAmount"
+                            type="number"
+                            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-[1.5rem] font-black text-black focus:bg-white focus:border-black outline-none transition-all"
+                            placeholder="0"
+                        />
+                    </div>
                 </div>
             </div>
 
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full bg-black text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-black/10 hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 uppercase tracking-widest text-[10px]"
             >
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
-                Enregistrer le coupon
+                Activer le coupon
             </button>
         </form>
     )

@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -37,18 +38,17 @@ model BadgeClick {
 }
 
 model SiteSettings {
-  id               String   @id @default(uuid())
-  key              String   @unique
-  value            String?  @db.Text
-  category         String   @default("general")
-  description      String?  @db.VarChar(500)
-  updatedAt        DateTime @updatedAt
-  createdAt        DateTime @default(now())
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String?  @db.Text
+  category    String   @default("general")
+  description String?  @db.VarChar(500)
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
 
   @@index([category])
   @@map("site_settings")
 }
-
 
 model User {
   id                String         @id @default(uuid())
@@ -85,6 +85,13 @@ model User {
   wishlist          Wishlist[]
   expenses          Expense[]
   pageViews         PageView[]
+  coupons           Coupon[]       @relation("AffiliateCoupons")
+  comments          Comment[]
+
+  // Marketplace relations
+  sellerBooks      Book[]      @relation("SellerBooks")
+  sellerOrders     Order[]     @relation("SellerOrders")
+  sellerOrderItems OrderItem[] @relation("SellerOrderItems")
 
   @@index([email])
   @@index([role])
@@ -93,25 +100,39 @@ model User {
 }
 
 model Book {
-  id            String        @id @default(uuid())
-  title         String        @db.VarChar(255)
-  author        String        @db.VarChar(255)
-  description   String        @db.Text
-  isbn          String?       @unique @db.VarChar(20)
-  price         Float
-  originalPrice Float?
-  stock         Int           @default(0)
-  image         String        @db.VarChar(500)
-  category      String?       @db.VarChar(100)
-  language      String        @default("fr") @db.VarChar(10)
-  active        Boolean       @default(true)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  orderItems    OrderItem[]
-  packBooks     PackBook[]
-  readingLists  ReadingList[]
-  reviews       Review[]
-  wishlists     Wishlist[]
+  id              String        @id @default(uuid())
+  title           String        @db.VarChar(255)
+  author          String        @db.VarChar(255)
+  description     String        @db.Text
+  longDescription String?       @db.LongText
+  isbn            String?       @unique @db.VarChar(20)
+  price           Float
+  originalPrice   Float?
+  costPrice       Float         @default(0) // Prix de revient unitaire (calculé via lots ou manuel)
+  stock           Int           @default(0)
+  image           String        @db.LongText
+  previewUrl      String?       @db.LongText
+  category        String?       @db.VarChar(100)
+  language        String        @default("fr") @db.VarChar(10)
+  active          Boolean       @default(true)
+  status          String        @default("APPROVED") // PENDING, APPROVED, REJECTED
+  isBestSeller    Boolean       @default(false)
+  imageAlt        String?       @db.VarChar(500) // Alt text SEO pour l'image
+  imageTitle      String?       @db.VarChar(500) // Title SEO pour l'image
+  displayOrder    Int           @default(0)
+  isOriginal      Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  orderItems      OrderItem[]
+  packBooks       PackBook[]
+  readingLists    ReadingList[]
+  reviews         Review[]
+  wishlists       Wishlist[]
+  posts           Post[]        @relation("PostBooks")
+
+  // Marketplace fields
+  sellerId String?
+  seller   User?   @relation("SellerBooks", fields: [sellerId], references: [id])
 
   @@index([category])
   @@index([active])
@@ -124,16 +145,20 @@ model Book {
 }
 
 model Pack {
-  id          String      @id @default(uuid())
-  name        String      @db.VarChar(255)
-  description String?     @db.Text
-  price       Float
-  image       String?     @db.VarChar(500)
-  active      Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  orderItems  OrderItem[]
-  books       PackBook[]
+  id             String      @id @default(uuid())
+  name           String      @db.VarChar(255)
+  description    String?     @db.Text
+  price          Float
+  costPrice      Float       @default(0) // Prix de revient du pack entier
+  image          String?     @db.VarChar(500)
+  isFreeDelivery Boolean     @default(false)
+  shippingFees   Float       @default(0)
+  active         Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  orderItems     OrderItem[]
+  books          PackBook[]
+  wishlists      Wishlist[]
 
   @@index([active])
   @@map("packs")
@@ -177,13 +202,41 @@ model Order {
   items          OrderItem[]
   statusHistory  OrderStatusHistory[]
 
+  // Marketplace fields
+  sellerId String?
+  seller   User?   @relation("SellerOrders", fields: [sellerId], references: [id])
+
+  // Customer link
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
   @@index([status])
   @@index([createdAt])
   @@index([phone])
   @@index([email])
   @@index([status, createdAt])
   @@index([trackingID])
+  @@index([customerId])
   @@map("orders")
+}
+
+model Customer {
+  id            String   @id @default(uuid())
+  fullName      String   @db.VarChar(255)
+  email         String?  @db.VarChar(255)
+  phone         String   @unique @db.VarChar(20)
+  address       String?  @db.VarChar(500)
+  city          String?  @db.VarChar(100)
+  totalOrders   Int      @default(0)
+  totalSpent    Float    @default(0)
+  lastOrderDate DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  orders        Order[]
+
+  @@index([phone])
+  @@index([email])
+  @@map("customers")
 }
 
 model OrderStatusHistory {
@@ -200,22 +253,36 @@ model OrderStatusHistory {
 }
 
 model OrderItem {
-  id       String        @id @default(uuid())
-  orderId  String
-  type     OrderItemType
-  quantity Int           @default(1)
-  price    Float
-  bookId   String?
-  packId   String?
-  book     Book?         @relation(fields: [bookId], references: [id])
-  order    Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  pack     Pack?         @relation(fields: [packId], references: [id])
+  id               String          @id @default(uuid())
+  orderId          String
+  type             OrderItemType
+  quantity         Int             @default(1)
+  price            Float // Prix de vente au moment de la commande
+  costPrice        Float           @default(0) // Prix de revient au moment de la commande
+  bookId           String?
+  packId           String?
+  giftId           String?
+  digitalProductId String?
+  book             Book?           @relation(fields: [bookId], references: [id])
+  order            Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  pack             Pack?           @relation(fields: [packId], references: [id])
+  gift             Gift?           @relation(fields: [giftId], references: [id])
+  digitalProduct   DigitalProduct? @relation("DigitalOrderItems", fields: [digitalProductId], references: [id])
+  extraProductId   String?
+  extraProduct     ExtraProduct?   @relation(fields: [extraProductId], references: [id])
+
+  // Marketplace fields
+  sellerId String?
+  seller   User?   @relation("SellerOrderItems", fields: [sellerId], references: [id])
 
   @@index([orderId])
   @@index([bookId])
   @@index([packId])
+  @@index([giftId])
+  @@index([extraProductId])
   @@index([bookId, type])
   @@index([packId, type])
+  @@index([giftId, type])
   @@map("order_items")
 }
 
@@ -227,8 +294,16 @@ model Coupon {
   minAmount Float?
   isActive  Boolean    @default(true)
   expiresAt DateTime?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+
+  // Affiliate fields
+  isAffiliate   Boolean @default(false)
+  affiliateName String? @db.VarChar(255)
+  commission    Float?  @default(0)
+  userId        String?
+  user          User?   @relation("AffiliateCoupons", fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("coupons")
 }
@@ -237,6 +312,8 @@ model Review {
   id         String   @id @default(uuid())
   bookId     String
   fullName   String   @db.VarChar(255)
+  city       String?  @db.VarChar(100)
+  image      String?  @db.VarChar(500)
   rating     Int      @default(5)
   comment    String   @db.Text
   isApproved Boolean  @default(false)
@@ -256,7 +333,7 @@ model ExchangeBook {
   isbn         String?
   condition    BookCondition @default(GOOD)
   description  String?       @db.Text
-  image        String?
+  image        String?       @db.LongText
   language     String        @default("fr")
   exchangeType ExchangeType  @default(DIRECT)
   status       String        @default("AVAILABLE")
@@ -390,14 +467,17 @@ model Wishlist {
   id        String   @id @default(uuid())
   userId    String
   bookId    String?
+  packId    String?
   title     String
   author    String?
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   book      Book?    @relation(fields: [bookId], references: [id])
+  pack      Pack?    @relation(fields: [packId], references: [id])
 
   @@index([userId])
   @@index([bookId])
+  @@index([packId])
   @@map("wishlists")
 }
 
@@ -455,7 +535,7 @@ model ReadingList {
   bookId      String?
   title       String
   author      String
-  cover       String?
+  cover       String?       @db.LongText
   totalPages  Int           @default(0)
   currentPage Int           @default(0)
   status      ReadingStatus @default(TO_READ)
@@ -478,23 +558,48 @@ model Post {
   title       String
   excerpt     String?   @db.Text
   content     String    @db.LongText
-  coverImage  String?
+  coverImage  String?       @db.LongText
   authorId    String
   published   Boolean   @default(false)
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   author      User      @relation(fields: [authorId], references: [id])
+  viewCount   Int       @default(0)
+  category    String?   @db.VarChar(100)
+  tags        String?   @db.Text
+  language    String    @default("fr") @db.VarChar(10)
+  comments    Comment[]
+  books       Book[]    @relation("PostBooks")
 
   @@index([slug])
   @@index([published])
+  @@index([language])
   @@index([authorId], map: "posts_authorId_fkey")
   @@map("posts")
+}
+
+model Comment {
+  id         String   @id @default(uuid())
+  content    String   @db.Text
+  postId     String
+  userId     String?
+  authorName String?  @db.VarChar(255)
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([postId])
+  @@index([userId])
+  @@map("comments")
 }
 
 enum UserRole {
   ADMIN
   MANAGER
+  INFLUENCER
+  SELLER
   USER
 }
 
@@ -513,6 +618,9 @@ enum OrderStatus {
 enum OrderItemType {
   BOOK
   PACK
+  GIFT
+  DIGITAL
+  ACCESSORY
 }
 
 enum CouponType {
@@ -566,6 +674,7 @@ model Expense {
   category    ExpenseCategory
   date        DateTime        @default(now())
   description String?         @db.Text
+  unitCost    Float? // Pour le prix de revient moyen d'un livre lors d'un achat en lot
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   userId      String?
@@ -585,13 +694,15 @@ enum ExpenseCategory {
   SALARIES
   OFFICE
   OTHER
+  GIFTS
+  CASHOUT
 }
 
 model PageView {
   id        String   @id @default(uuid())
   url       String
   ip        String?
-  userAgent String?
+  userAgent String?  @db.LongText
   sessionId String? // Cookie or session ID
   userId    String?
   country   String?
@@ -609,19 +720,19 @@ model PageView {
 }
 
 model Advertisement {
-  id          String   @id @default(uuid())
-  title       String   @db.VarChar(255)
-  image       String   @db.VarChar(500)
-  link        String?  @db.VarChar(500)
-  placement   AdPlacement
-  isActive    Boolean  @default(false)
-  priority    Int      @default(0)
-  startDate   DateTime?
-  endDate     DateTime?
-  clickCount  Int      @default(0)
-  viewCount   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String      @id @default(uuid())
+  title      String      @db.VarChar(255)
+  image      String      @db.VarChar(500)
+  link       String?     @db.VarChar(500)
+  placement  AdPlacement
+  isActive   Boolean     @default(false)
+  priority   Int         @default(0)
+  startDate  DateTime?
+  endDate    DateTime?
+  clickCount Int         @default(0)
+  viewCount  Int         @default(0)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
   @@index([placement, isActive])
   @@index([isActive, priority])
@@ -640,17 +751,160 @@ enum AdPlacement {
 }
 
 model AuthorProfile {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  bio         String?  @db.Text
-  image       String?  @db.VarChar(500)
+  id          String  @id @default(uuid())
+  name        String  @unique
+  bio         String? @db.Text
+  image       String? @db.VarChar(500)
   nationality String?
   birthYear   Int?
   deathYear   Int?
-  influences  String?  @db.Text // JSON string or comma separated
-  
+  influences  String? @db.Text // JSON string or comma separated
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("author_profiles")
+}
+
+model AbandonedCart {
+  id        String   @id @default(uuid())
+  phone     String?  @db.VarChar(20)
+  email     String?  @db.VarChar(255)
+  fullName  String?  @db.VarChar(255)
+  cartData  String   @db.Text
+  total     Float
+  status    String   @default("PENDING") // PENDING, RECOVERED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([phone])
+  @@index([status])
+  @@index([createdAt])
+  @@map("abandoned_carts")
+}
+
+model Gift {
+  id          String      @id @default(uuid())
+  name        String      @db.VarChar(255)
+  description String?     @db.Text
+  price       Float       @default(0)
+  costPrice   Float       @default(0)
+  minAmount   Float       @default(0)
+  image       String?     @db.VarChar(500)
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+
+  @@index([active])
+}
+
+// Produits numériques (livres PDF)
+model DigitalProduct {
+  id             String             @id @default(uuid())
+  title          String             @db.VarChar(255)
+  author         String             @db.VarChar(255)
+  description    String             @db.Text
+  price          Float
+  originalPrice  Float?
+  image          String             @db.VarChar(500)
+  pdfUrl         String             @db.VarChar(500)
+  category       String?            @db.VarChar(100)
+  language       String             @default("fr") @db.VarChar(10)
+  pages          Int?
+  fileSize       String?            @db.VarChar(50)
+  active         Boolean            @default(true)
+  featured       Boolean            @default(false)
+  downloadCount  Int                @default(0)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  orderItems     DigitalOrderItem[]
+  mainOrderItems OrderItem[]        @relation("DigitalOrderItems")
+
+  @@index([active])
+  @@index([category])
+  @@index([featured])
+  @@map("digital_products")
+}
+
+// Commandes produits numériques
+model DigitalOrder {
+  id           String             @id @default(uuid())
+  fullName     String             @db.VarChar(255)
+  email        String             @db.VarChar(255)
+  phone        String             @db.VarChar(20)
+  total        Float
+  status       String             @default("PENDING")
+  paymentProof String?            @db.VarChar(500)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  items        DigitalOrderItem[]
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+  @@map("digital_orders")
+}
+
+model DigitalOrderItem {
+  id               String         @id @default(uuid())
+  orderId          String
+  digitalProductId String
+  quantity         Int            @default(1)
+  price            Float
+  downloadSent     Boolean        @default(false)
+  order            DigitalOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product          DigitalProduct @relation(fields: [digitalProductId], references: [id])
+
+  @@index([orderId])
+  @@index([digitalProductId])
+  @@map("digital_order_items")
+}
+
+model SellerRequest {
+  id          String   @id @default(uuid())
+  storeName   String   @db.VarChar(255)
+  managerName String   @db.VarChar(255)
+  email       String   @db.VarChar(255)
+  phone       String   @db.VarChar(50)
+  city        String   @db.VarChar(100)
+  stockSize   String   @db.VarChar(50)
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@map("author_profiles")
+  @@index([status])
+  @@index([createdAt])
+  @@map("seller_requests")
+}
+model ExtraProduct {
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  price       Float
+  costPrice   Float    @default(0)
+  stock       Int      @default(0)
+  image       String?  @db.VarChar(500)
+  category    String   @default("ACCESSORY") // BOOKMARK, FURNITURE, USB, etc.
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orderItems  OrderItem[]
+
+  @@index([category])
+  @@index([active])
+  @@map("extra_products")
+}
+
+model MarketingAsset {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  url       String
+  type      String   // CREATIVE, PACK, DESCRIPTION
+  bookId    String?
+  packId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("marketing_assets")
 }

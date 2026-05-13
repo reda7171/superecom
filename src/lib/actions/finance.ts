@@ -10,6 +10,7 @@ export async function createExpense(data: {
     amount: number
     category: ExpenseCategory
     description?: string
+    unitCost?: number
 }) {
     await verifyAdmin()
     try {
@@ -27,6 +28,27 @@ export async function createExpense(data: {
     }
 }
 
+export async function updateExpense(id: string, data: {
+    title: string
+    amount: number
+    category: ExpenseCategory
+    description?: string
+    unitCost?: number | null
+}) {
+    await verifyAdmin()
+    try {
+        await prisma.expense.update({
+            where: { id },
+            data
+        })
+        revalidatePath('/admin/finance')
+        return { success: true }
+    } catch (error) {
+        console.error(error)
+        return { success: false, error: 'Erreur lors de la modification' }
+    }
+}
+
 export async function deleteExpense(id: string) {
     await verifyAdmin()
     try {
@@ -36,6 +58,16 @@ export async function deleteExpense(id: string) {
     } catch (error) {
         return { success: false, error: 'Erreur suppression' }
     }
+}
+
+export async function getPurchaseLots() {
+    await verifyAdmin()
+    return prisma.expense.findMany({
+        where: { 
+            category: 'BOOKS_PURCHASE'
+        },
+        orderBy: { date: 'desc' }
+    })
 }
 
 export async function getExpenses() {
@@ -59,15 +91,30 @@ export async function getFinancialStats() {
         _sum: { amount: true }
     })
 
-    // Total Revenue (from Orders)
-    const totalRevenue = await prisma.order.aggregate({
+    // Commands (Chiffre d'affaire) and Cost (Pour Marge)
+    const orders = await prisma.order.findMany({
         where: { status: 'DELIVERED' },
-        _sum: { total: true }
+        include: {
+            items: true
+        }
     })
+
+    let totalRevenue = 0
+    let totalCostOfGoodsSold = 0
+    let totalFixedCosts = 0
+
+    for (const order of orders) {
+        totalRevenue += order.total
+        totalFixedCosts += 2.65 // 1DH étiquette + 0.65 sachet + 1DH ads
+        for (const item of order.items) {
+            totalCostOfGoodsSold += ((item as any).costPrice || 0) * item.quantity
+        }
+    }
 
     return {
         totalExpenses: totalExpenses._sum.amount || 0,
-        totalRevenue: totalRevenue._sum.total || 0,
+        totalRevenue: totalRevenue,
+        totalCostOfGoodsSold: totalCostOfGoodsSold + totalFixedCosts, // On inclut dans le coût total de vente
         byCategory: byCategory.map(c => ({
             category: c.category,
             amount: c._sum.amount || 0

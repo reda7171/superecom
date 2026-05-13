@@ -7,6 +7,7 @@ import { z } from 'zod'
 
 const WishlistSchema = z.object({
     bookId: z.string().optional(),
+    packId: z.string().optional(),
     title: z.string().min(1, 'Le titre est requis'),
     author: z.string().optional(),
 })
@@ -30,6 +31,8 @@ export async function addToWishlist(formData: FormData) {
 
         if (data.bookId) {
             whereClause.bookId = data.bookId
+        } else if (data.packId) {
+            whereClause.packId = data.packId
         } else {
             whereClause.title = data.title
             if (data.author) whereClause.author = data.author
@@ -45,6 +48,7 @@ export async function addToWishlist(formData: FormData) {
             data: {
                 userId: user.id,
                 bookId: data.bookId,
+                packId: data.packId,
                 title: data.title,
                 author: data.author
             }
@@ -76,13 +80,14 @@ export async function removeFromWishlist(id: string) {
                 userId: user.id,
                 OR: [
                     { id: id },
-                    { bookId: id }
+                    { bookId: id },
+                    { packId: id }
                 ]
             }
         })
 
         if (deleted.count === 0) {
-            console.log("Nothing deleted for id:", id)
+
         }
 
         revalidatePath('/community')
@@ -110,6 +115,14 @@ export async function getWishlist() {
                         image: true,
                         price: true,
                         category: true
+                    }
+                },
+                pack: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        price: true
                     }
                 }
             }

@@ -1,13 +1,17 @@
 import { getUserExchanges } from '@/lib/actions/community-exchanges'
 import { getCommunityUser } from '@/lib/actions/community-auth'
-import { redirect } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import ExchangesList from '@/components/community/ExchangesList'
 import { Inbox, Send } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import { isFeatureEnabled } from '@/lib/actions/site-settings'
 
 export default async function ExchangesPage() {
+    // Guard: vérifier si la fonctionnalité Échange est activée
+    const enabled = await isFeatureEnabled('feature_exchange')
+    // if (!enabled) notFound()
     const user = await getCommunityUser()
 
     if (!user) {

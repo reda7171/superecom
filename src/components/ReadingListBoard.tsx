@@ -8,6 +8,7 @@ import { MoreHorizontal, Trash2, CheckCircle, BookOpen, Clock, Book } from 'luci
 import { useUIStore } from '@/store/ui'
 
 import { useTranslations } from 'next-intl'
+import { normalizeImage } from '@/lib/utils'
 
 interface ReadingListBoardProps {
     initialItems: any[]
@@ -68,35 +69,48 @@ export default function ReadingListBoard({ initialItems }: ReadingListBoardProps
                         <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                             <div className="flex gap-4">
                                 <div className="relative w-16 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
-                                    {item.cover || item.book?.image ? (
-                                        <Image
-                                            src={item.cover || item.book.image}
-                                            alt={item.title}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex flex-col items-center justify-center bg-blue-50/50">
-                                            <Book className="w-8 h-8 text-blue-200" />
-                                            <span className="text-[8px] font-black text-blue-300 mt-1 uppercase tracking-widest">Perso</span>
-                                        </div>
-                                    )}
+                                    {(() => {
+                                        const rawImage = item.cover || item.book?.image;
+                                        const normalized = normalizeImage(rawImage);
+                                        const isPlaceholder = normalized === '/book-placeholder.png';
+                                        
+                                        return !isPlaceholder ? (
+                                            <Image
+                                                src={normalized}
+                                                alt={item.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex flex-col items-center justify-center bg-blue-50/50">
+                                                <Book className="w-8 h-8 text-blue-200" />
+                                                <span className="text-[8px] font-black text-blue-300 mt-1 uppercase tracking-widest">Perso</span>
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <h4 className="font-bold text-sm truncate" title={item.title}>{item.title}</h4>
                                     <p className="text-xs text-gray-500 mb-2">{item.author}</p>
 
                                     {/* Progress Bar */}
-                                    <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
-                                        <div
-                                            className="bg-emerald-600 h-2 rounded-full transition-all"
-                                            style={{ width: `${Math.min((item.currentPage / item.totalPages) * 100, 100)}%` }}
-                                        />
-                                    </div>
-                                    <div className="flex justify-between text-[10px] text-gray-500 mb-3">
-                                        <span>{Math.round((item.currentPage / item.totalPages) * 100)}%</span>
-                                        <span>{item.currentPage}/{item.totalPages} p.</span>
-                                    </div>
+                                    {(() => {
+                                        const progress = item.totalPages > 0 ? Math.min((item.currentPage / item.totalPages) * 100, 100) : 0;
+                                        return (
+                                            <>
+                                                <div className="w-full bg-gray-100 rounded-full h-2 mb-1">
+                                                    <div
+                                                        className="bg-emerald-600 h-2 rounded-full transition-all"
+                                                        style={{ width: `${progress}%` }}
+                                                    />
+                                                </div>
+                                                <div className="flex justify-between text-[10px] text-gray-500 mb-3">
+                                                    <span>{Math.round(progress)}%</span>
+                                                    <span>{item.currentPage}/{item.totalPages} p.</span>
+                                                </div>
+                                            </>
+                                        );
+                                    })()}
 
                                     {/* Actions */}
                                     <div className="flex gap-2 justify-end">

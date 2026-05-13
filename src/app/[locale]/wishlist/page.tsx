@@ -1,5 +1,5 @@
 import Header from '@/components/HeaderWithUser'
-import Footer from '@/components/Footer'
+import Footer from '@/components/FooterWithFeatures'
 import WishlistContent from '@/components/WishlistContent'
 import { getTranslations } from 'next-intl/server'
 import { getCommunityUser } from '@/lib/actions/community-auth'

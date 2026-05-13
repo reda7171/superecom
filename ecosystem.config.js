@@ -1,14 +1,14 @@
 module.exports = {
     apps: [{
         name: 'riwaya',
-        script: 'node_modules/next/dist/bin/next',
-        args: 'start',
+        script: '.next/standalone/server.js',
+        args: '',
         cwd: '/var/www/riwaya',
         instances: 'max',
         exec_mode: 'cluster',
         env: {
             NODE_ENV: 'production',
-            PORT: 3000
+            PORT: 3009
         },
         error_file: '/var/log/pm2/riwaya-error.log',
         out_file: '/var/log/pm2/riwaya-out.log',
@@ -20,3 +20,4 @@ module.exports = {
         watch: false
     }]
 }
+

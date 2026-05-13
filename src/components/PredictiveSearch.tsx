@@ -3,14 +3,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { Search as SearchIcon, Loader2, BookOpen, X, ArrowRight, Clock } from 'lucide-react'
 import { searchBooksPredictive, getPopularSearches } from '@/lib/actions/search'
-import { getPopularCategories } from '@/lib/actions/categories'
 import Image from 'next/image'
 // import Link from 'next/link' <-- use i18n link
 import { Link, useRouter } from '@/i18n/routing'
-import { Hash } from 'lucide-react'
+
 import { trackBadgeClick } from '@/lib/actions/analytics'
 import { useTranslations } from 'next-intl'
 import { fbPixelEvents } from '@/lib/facebook-pixel'
+import { normalizeImage } from '@/lib/utils'
 
 const Countdown = ({ expiresAt }: { expiresAt: string | Date }) => {
     const [timeLeft, setTimeLeft] = useState('')
@@ -45,7 +45,7 @@ export default function PredictiveSearch() {
     const [query, setQuery] = useState('')
     const [results, setResults] = useState<any[]>([])
     const [history, setHistory] = useState<string[]>([])
-    const [popularCats, setPopularCats] = useState<any[]>([])
+
     const [popularSearches, setPopularSearches] = useState<string[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
@@ -60,8 +60,6 @@ export default function PredictiveSearch() {
             setHistory(JSON.parse(savedHistory))
         }
 
-        // Charger les thèmes populaires avec leurs comptes
-        getPopularCategories().then((data: any) => setPopularCats(data))
 
         // Charger les recherches populaires
         getPopularSearches().then((data: any) => setPopularSearches(data))
@@ -104,7 +102,7 @@ export default function PredictiveSearch() {
             } else {
                 setResults([])
                 // Si l'input est vide on affiche l'historique ou les thèmes
-                if (query.length === 0 && (history.length > 0 || popularCats.length > 0)) {
+                if (query.length === 0 && history.length > 0) {
                     // L'état isOpen est géré par onFocus
                 } else {
                     setIsOpen(false)
@@ -113,7 +111,7 @@ export default function PredictiveSearch() {
         }, 300)
 
         return () => clearTimeout(timer)
-    }, [query, history.length, popularCats.length])
+    }, [query, history.length])
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
@@ -141,14 +139,14 @@ export default function PredictiveSearch() {
     }
 
     return (
-        <div ref={searchRef} className="relative w-full max-w-xl group">
+        <div ref={searchRef} className="relative w-full max-w-xl mx-auto group">
             {/* Form standard inspiré par Pixio */}
             <form onSubmit={handleSearch} className="relative group/input">
                 <input
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    onFocus={() => (query.length >= 2 || history.length > 0 || popularCats.length > 0) && setIsOpen(true)}
+                    onFocus={() => (query.length >= 2 || history.length > 0) && setIsOpen(true)}
                     placeholder={t('Placeholder')}
                     className="w-full bg-white border-2 border-gray-100 focus:border-black rounded-[2rem] py-4 pl-14 pr-10 rtl:pr-14 rtl:pl-10 font-bold text-gray-900 transition-all outline-none placeholder:text-gray-400 shadow-sm focus:shadow-xl group-hover/input:border-gray-200"
                 />
@@ -217,72 +215,7 @@ export default function PredictiveSearch() {
                                 </div>
                             )}
 
-                            {/* Thèmes populaires - Style Cartes Pixio */}
-                            {popularCats.length > 0 && (
-                                <div>
-                                    <div className="px-2 mb-4">
-                                        <span className="text-[11px] font-black uppercase text-gray-900 tracking-widest">{t('PopularThemes')}</span>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {popularCats.map((cat, idx) => {
-                                            const badge = cat.badge
-                                            const customColor = cat.badgeColor
-                                            const badgeColorClass = customColor?.startsWith('bg-') ? customColor : badge === 'NEW' ? 'bg-green-500' : badge === 'HOT' ? 'bg-red-500' : badge === 'TRENDING' ? 'bg-emerald-600' : 'bg-orange-500'
-                                            const badgeStyle = !customColor?.startsWith('bg-') ? { backgroundColor: customColor || undefined } : {}
-                                            const badgeLabel = badge ? t(`Badges.${badge}`) : ''
 
-                                            return (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => handleCategoryClick(cat.name, badge || (cat.avgDiscount ? 'PROMO' : cat.isFreeDelivery ? 'LIVRAISON' : null))}
-                                                    className="relative flex flex-col gap-3 p-5 bg-pixio-cream border border-transparent hover:border-black rounded-[2rem] transition-all text-center group/cat overflow-hidden items-center"
-                                                >
-                                                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-black group-hover/cat:bg-black group-hover/cat:text-white shadow-sm transition-all">
-                                                        <Hash className="w-5 h-5" />
-                                                    </div>
-                                                    <div className="flex flex-col items-center">
-                                                        <span className="text-sm font-black text-gray-900 group-hover/cat:text-black">{cat.name}</span>
-                                                        <div className="flex flex-col items-center gap-1 mt-1">
-                                                            <span className={`text-[10px] font-bold uppercase tracking-tighter ${cat.count < 3 && cat.count > 0 ? 'text-orange-500 animate-pulse' : 'text-gray-400'}`}>
-                                                                {cat.count < 3 && cat.count > 0 && '🔥 '}
-                                                                {t('BookCount', { count: cat.count })}
-                                                                {cat.count < 3 && cat.count > 0 && ` ${t('Remaining')}`}
-                                                            </span>
-                                                            {cat.topAuthor && (
-                                                                <span className="text-[10px] font-medium text-gray-500 italic">
-                                                                    {t('By', { author: cat.topAuthor })}
-                                                                </span>
-                                                            )}
-                                                            {cat.minPrice > 0 && (
-                                                                <span className="text-[10px] font-black text-black bg-white px-3 py-1 rounded-full shadow-sm mt-1">
-                                                                    {t('From', { price: cat.minPrice })}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        {badge === 'PROMO' && cat.badgeExpiresAt && (
-                                                            <div className="mt-2 scale-110">
-                                                                <Countdown expiresAt={cat.badgeExpiresAt} />
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    {badge && (
-                                                        <div
-                                                            style={badgeStyle}
-                                                            className={`absolute top-0 right-0 rtl:left-0 rtl:right-auto px-4 py-1 ${badgeColorClass} text-white text-[9px] font-black uppercase tracking-tighter rounded-bl-2xl rtl:rounded-bl-none rtl:rounded-br-2xl shadow-sm`}
-                                                        >
-                                                            {badge === 'PROMO' && cat.avgDiscount > 0
-                                                                ? `-${cat.avgDiscount}% ${badgeLabel}`
-                                                                : badgeLabel
-                                                            }
-                                                        </div>
-                                                    )}
-                                                </button>
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     )}
 
@@ -309,7 +242,7 @@ export default function PredictiveSearch() {
                                             >
                                                 <div className="relative w-14 h-20 rounded-xl overflow-hidden bg-gray-50 shrink-0 border border-gray-50 shadow-sm transition-all group-hover/item:scale-105">
                                                     <Image
-                                                        src={book.image}
+                                                        src={normalizeImage(book.image)}
                                                         alt={book.title}
                                                         fill
                                                         className="object-cover"

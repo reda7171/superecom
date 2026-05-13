@@ -15,54 +15,63 @@ export default function CouponsTable({ coupons }: { coupons: any[] }) {
 
     return (
         <div className="overflow-x-auto">
-            <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-100">
-                    <tr>
-                        <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase">Code</th>
-                        <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase">Réduction</th>
-                        <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase">Min. Achat</th>
-                        <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase">Statut</th>
-                        <th className="px-6 py-4 text-right text-xs font-black text-gray-500 uppercase">Actions</th>
+            <table className="w-full text-left border-collapse">
+                <thead>
+                    <tr className="bg-gray-50/50">
+                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">Code</th>
+                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">Réduction</th>
+                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">Min. Achat</th>
+                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">Statut</th>
+                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 italic font-medium">
+                <tbody className="divide-y divide-gray-50">
                     {coupons.length === 0 ? (
                         <tr>
-                            <td colSpan={5} className="px-6 py-10 text-center text-gray-400">Aucun coupon disponible</td>
+                            <td colSpan={5} className="px-8 py-20 text-center">
+                                <div className="flex flex-col items-center gap-3">
+                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
+                                        <Trash2 className="w-8 h-8 text-gray-200" />
+                                    </div>
+                                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Aucun coupon actif</p>
+                                </div>
+                            </td>
                         </tr>
                     ) : (
                         coupons.map((coupon) => (
-                            <tr key={coupon.id} className="hover:bg-gray-50/50">
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className="bg-blue-600 text-white px-3 py-1 rounded-lg font-black text-sm uppercase">
+                            <tr key={coupon.id} className="group hover:bg-gray-50/30 transition-colors">
+                                <td className="px-8 py-7 whitespace-nowrap">
+                                    <span className="bg-blue-600 text-white px-4 py-2 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-100">
                                         {coupon.code}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className="font-bold text-gray-900">
+                                <td className="px-8 py-7 whitespace-nowrap">
+                                    <p className="text-lg font-black text-black tracking-tighter">
                                         {coupon.type === 'PERCENTAGE' ? `${coupon.discount}%` : `${coupon.discount} MAD`}
-                                    </span>
+                                    </p>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                    {coupon.minAmount ? `${coupon.minAmount} MAD` : '-'}
+                                <td className="px-8 py-7 whitespace-nowrap">
+                                    <p className="text-xs font-bold text-gray-500 uppercase">
+                                        {coupon.minAmount ? `${coupon.minAmount} MAD` : 'Sans minimum'}
+                                    </p>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                <td className="px-8 py-7 whitespace-nowrap">
                                     {coupon.isActive ? (
-                                        <span className="inline-flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded-full text-xs font-bold">
+                                        <span className="inline-flex items-center gap-2 text-green-600 bg-green-50 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
                                             <CheckCircle2 className="w-3 h-3" /> Actif
                                         </span>
                                     ) : (
-                                        <span className="inline-flex items-center gap-1 text-red-600 bg-red-50 px-2 py-1 rounded-full text-xs font-bold">
+                                        <span className="inline-flex items-center gap-2 text-red-600 bg-red-50 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
                                             <XCircle className="w-3 h-3" /> Inactif
                                         </span>
                                     )}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right">
+                                <td className="px-8 py-7 whitespace-nowrap text-right">
                                     <button
                                         onClick={() => handleDelete(coupon.id)}
-                                        className="p-2 text-red-400 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                                        className="p-3 bg-red-50 text-red-400 rounded-2xl hover:bg-red-500 hover:text-white transition-all active:scale-90"
                                     >
-                                        <Trash2 className="w-5 h-5" />
+                                        <Trash2 className="w-4 h-4" />
                                     </button>
                                 </td>
                             </tr>

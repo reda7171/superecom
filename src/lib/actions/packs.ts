@@ -10,8 +10,10 @@ import { createAuditLog } from './audit'
 const PackSchema = z.object({
     name: z.string().min(1, 'Le nom est requis'),
     description: z.string().optional(),
-    price: z.number().positive('Le prix doit être supérieur à 0'),
-    image: z.string().url('L\'URL de l\'image est invalide').optional(),
+    price: z.number().min(0),
+    image: z.string().min(1, 'L\'image est requise').optional(),
+    isFreeDelivery: z.boolean().default(false),
+    shippingFees: z.number().min(0).default(0),
     bookIds: z.array(z.string().uuid()).min(1, 'Le pack doit contenir au moins un livre'),
 })
 
@@ -47,6 +49,8 @@ export async function createPack(input: PackInput): Promise<PackResult> {
                 description: validatedData.description,
                 price: validatedData.price,
                 image: validatedData.image,
+                isFreeDelivery: validatedData.isFreeDelivery,
+                shippingFees: validatedData.shippingFees,
                 active: true,
                 books: {
                     create: validatedData.bookIds.map((bookId) => ({
@@ -152,6 +156,8 @@ export async function updatePack(
                     description: validatedData.description,
                     price: validatedData.price,
                     image: validatedData.image,
+                    isFreeDelivery: validatedData.isFreeDelivery,
+                    shippingFees: validatedData.shippingFees,
                     books: {
                         create: validatedData.bookIds.map((bookId) => ({
                             bookId,

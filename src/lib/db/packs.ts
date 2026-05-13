@@ -20,6 +20,24 @@ export async function getPacks() {
 }
 
 /**
+ * Récupère TOUS les packs (pour l'admin)
+ */
+export async function adminGetPacks() {
+    return prisma.pack.findMany({
+        include: {
+            books: {
+                include: {
+                    book: true,
+                },
+            },
+        },
+        orderBy: {
+            createdAt: 'desc',
+        },
+    })
+}
+
+/**
  * Récupère un pack par son ID avec ses livres
  */
 export async function getPackById(id: string) {

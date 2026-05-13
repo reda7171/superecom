@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // API pour générer un sitemap dynamique des images
 export async function GET(request: NextRequest) {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.com'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
 
     // Récupérer les images depuis la base de données
     const { prisma } = await import('@/lib/prisma')

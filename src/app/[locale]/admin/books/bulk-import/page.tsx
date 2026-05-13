@@ -3,14 +3,15 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Upload, Download, FileSpreadsheet, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
-import { importBooksFromExcel } from '@/lib/actions/bulk-import'
+import { ArrowLeft, Upload, Download, FileSpreadsheet, CheckCircle, XCircle, AlertCircle, RefreshCw, Plus } from 'lucide-react'
+import { importBooksFromExcel, updateStockFromTsv } from '@/lib/actions/bulk-import'
 
 export default function BulkImportPage() {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState<any>(null)
     const [dragActive, setDragActive] = useState(false)
+    const [importType, setImportType] = useState<'new' | 'stock'>('new')
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -18,7 +19,9 @@ export default function BulkImportPage() {
         setResult(null)
 
         const formData = new FormData(e.currentTarget)
-        const importResult = await importBooksFromExcel(formData)
+        const importResult = importType === 'new' 
+            ? await importBooksFromExcel(formData)
+            : await updateStockFromTsv(formData)
 
         setResult(importResult)
         setLoading(false)
@@ -27,7 +30,7 @@ export default function BulkImportPage() {
             setTimeout(() => {
                 router.push('/admin/books')
                 router.refresh()
-            }, 3000)
+            }, 4000)
         }
     }
 
@@ -56,9 +59,9 @@ export default function BulkImportPage() {
 
     async function downloadTemplate() {
         // Créer un template simple côté client
-        const templateData = `title,author,description,isbn,price,stock,category,language,image
-Atomic Habits,James Clear,Un guide facile et éprouvé pour créer de bonnes habitudes,9780735211292,180,50,Développement Personnel,en,https://images.unsplash.com/photo-1589829085413-56de8ae18c73
-Le pouvoir du moment présent,Eckhart Tolle,Guide d'éveil spirituel,9782290020203,150,30,Développement Personnel,fr,https://images.unsplash.com/photo-1544947950-fa07a98d237f`
+        const templateData = `Marque,Nom,Prix de vente,Image
+James Clear,Atomic Habits,180,https://images.unsplash.com/photo-1589829085413-56de8ae18c73
+Eckhart Tolle,Le pouvoir du moment présent,150,https://images.unsplash.com/photo-1544947950-fa07a98d237f`
 
         const blob = new Blob([templateData], { type: 'text/csv' })
         const url = window.URL.createObjectURL(blob)
@@ -82,32 +85,63 @@ Le pouvoir du moment présent,Eckhart Tolle,Guide d'éveil spirituel,97822900202
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Retour à la liste
                 </Link>
-                <h1 className="text-3xl font-bold text-gray-900">Importation en masse</h1>
+                <h1 className="text-3xl font-bold text-gray-900">Importation & Mise à jour</h1>
                 <p className="mt-2 text-sm text-gray-600">
-                    Importez plusieurs livres à la fois depuis un fichier Excel ou CSV
+                    Importez de nouveaux livres ou mettez à jour votre stock en masse
                 </p>
             </div>
 
-            {/* Instructions */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                <h2 className="text-lg font-bold text-blue-900 mb-4 flex items-center">
-                    <AlertCircle className="w-5 h-5 mr-2" />
-                    Instructions
-                </h2>
-                <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
-                    <li>Téléchargez le fichier template ci-dessous</li>
-                    <li>Remplissez le fichier avec vos données (ne supprimez pas les en-têtes)</li>
-                    <li>Colonnes requises: <strong>title, author, description, price, stock, image</strong></li>
-                    <li>Colonnes optionnelles: isbn, category, language (par défaut: fr)</li>
-                    <li>Uploadez le fichier complété</li>
-                </ol>
+            {/* Switch Mode */}
+            <div className="flex p-1 bg-gray-100 rounded-xl mb-6 max-w-md">
                 <button
-                    onClick={downloadTemplate}
-                    className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                    onClick={() => { setImportType('new'); setResult(null); }}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all ${importType === 'new' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                 >
-                    <Download className="w-4 h-4 mr-2" />
-                    Télécharger le template
+                    <Plus className="w-4 h-4" />
+                    Nouveaux Livres
                 </button>
+                <button
+                    onClick={() => { setImportType('stock'); setResult(null); }}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all ${importType === 'stock' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                    <RefreshCw className="w-4 h-4" />
+                    Mise à jour Stock
+                </button>
+            </div>
+
+            {/* Instructions */}
+            <div className={`${importType === 'new' ? 'bg-blue-50 border-blue-200 text-blue-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'} border rounded-lg p-6 mb-6`}>
+                <h2 className={`text-lg font-bold mb-4 flex items-center ${importType === 'new' ? 'text-blue-900' : 'text-emerald-900'}`}>
+                    <AlertCircle className="w-5 h-5 mr-2" />
+                    Instructions ({importType === 'new' ? 'Importation' : 'Stock'})
+                </h2>
+                {importType === 'new' ? (
+                    <ol className="list-decimal list-inside space-y-2 text-sm">
+                        <li>Téléchargez le fichier template ci-dessous</li>
+                        <li>Remplissez le fichier avec vos données (ne supprimez pas les en-têtes)</li>
+                        <li>Colonnes requises (Format Odoo): <strong>Marque, Nom, Prix de vente, Image</strong></li>
+                        <li><em>Note : Le stock sera initialisé à 100 par défaut s'il n'est pas précisé.</em></li>
+                        <li>Uploadez le fichier complété (.xlsx, .csv)</li>
+                    </ol>
+                ) : (
+                    <ol className="list-decimal list-inside space-y-2 text-sm">
+                        <li>Utilisez un fichier <strong>TSV</strong> (Tab-Separated Values)</li>
+                        <li>Format requis : une ligne d'en-tête, puis <strong>Nom[TAB]stock</strong></li>
+                        <li>Exemple : <code>Livre Cadeaux [TAB] 40</code></li>
+                        <li>Le système cherchera le livre par son nom exact pour mettre à jour son stock.</li>
+                        <li>Uploadez votre fichier <strong>.tsv</strong></li>
+                    </ol>
+                )}
+                
+                {importType === 'new' && (
+                    <button
+                        onClick={downloadTemplate}
+                        className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                    >
+                        <Download className="w-4 h-4 mr-2" />
+                        Télécharger le template
+                    </button>
+                )}
             </div>
 
             {/* Upload Form */}
@@ -134,14 +168,14 @@ Le pouvoir du moment présent,Eckhart Tolle,Guide d'éveil spirituel,97822900202
                             type="file"
                             id="file"
                             name="file"
-                            accept=".xlsx,.xls,.csv"
+                            accept={importType === 'new' ? ".xlsx,.xls,.csv" : ".tsv,.txt"}
                             required
                             className="hidden"
                             disabled={loading}
                         />
                     </label>
                     <p className="mt-2 text-sm text-gray-500">
-                        Formats acceptés: Excel (.xlsx, .xls) ou CSV
+                        {importType === 'new' ? 'Formats acceptés: Excel (.xlsx, .xls) ou CSV' : 'Formats acceptés: TSV (.tsv) ou Texte (.txt)'}
                     </p>
                 </div>
 
@@ -159,7 +193,7 @@ Le pouvoir du moment présent,Eckhart Tolle,Guide d'éveil spirituel,97822900202
                         className="inline-flex items-center px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <Upload className="w-5 h-5 mr-2" />
-                        {loading ? 'Importation...' : 'Importer'}
+                        {loading ? 'Traitement...' : importType === 'new' ? 'Importer' : 'Mettre à jour le stock'}
                     </button>
                 </div>
             </form>

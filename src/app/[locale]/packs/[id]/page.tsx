@@ -3,13 +3,17 @@ import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import BookCard from '@/components/BookCard'
 import AddToCartButton from '@/components/AddToCartButton'
-import Image from 'next/image'
+import { normalizeImage } from '@/lib/utils'
 import { Link } from '@/i18n/routing'
 import { ArrowLeft, Check, Package, Shield, Sparkles, Truck } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import ImageWithFallback from '@/components/ImageWithFallback'
 import { Metadata } from 'next'
 import SetPixelView from '@/components/SetPixelView'
+import WhatsAppOrderButton from '@/components/WhatsAppOrderButton'
+import { getSetting } from '@/lib/actions/site-settings'
+import AnnouncementBar from '@/components/AnnouncementBar'
 
 export async function generateMetadata({
     params,
@@ -25,7 +29,7 @@ export async function generateMetadata({
         }
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.com'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
     const imageUrl = pack.image?.startsWith('http') ? pack.image : (pack.books[0]?.book.image || '')
 
     const totalOriginalPrice = pack.books.reduce((sum, pb) => sum + pb.book.price, 0)
@@ -85,6 +89,13 @@ export default async function PackDetailPage({
     const t = await getTranslations('PackDetail')
     const tPacks = await getTranslations('Packs')
     const tNav = await getTranslations('Navigation')
+    const [whatsappPhone, announcementEnabled, announcementMessage, announcementBgColor, announcementTextColor] = await Promise.all([
+        getSetting('contact_whatsapp'),
+        getSetting('announcement_bar_enabled'),
+        getSetting('announcement_bar_message'),
+        getSetting('announcement_bar_bg_color'),
+        getSetting('announcement_bar_text_color')
+    ])
 
     if (!pack) {
         notFound()
@@ -94,7 +105,7 @@ export default async function PackDetailPage({
     const savings = totalOriginalPrice - pack.price
     const savingsPercent = Math.round((savings / totalOriginalPrice) * 100)
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.com'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
     const jsonLd = [
         {
             '@context': 'https://schema.org',
@@ -165,6 +176,12 @@ export default async function PackDetailPage({
                     price={pack.price}
                     category="Packs"
                 />
+                <AnnouncementBar
+                    message={announcementMessage || ""}
+                    isEnabled={announcementEnabled === 'true'}
+                    bgColor={announcementBgColor || "#000000"}
+                    textColor={announcementTextColor || "#FFFFFF"}
+                />
                 <Header />
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-32">
@@ -199,24 +216,20 @@ export default async function PackDetailPage({
 
                                 {pack.image ? (
                                     <div className="relative w-full h-full min-h-[400px] group">
-                                        <Image
+                                        <ImageWithFallback
                                             src={pack.image}
                                             alt={pack.name}
-                                            fill
-                                            className="object-contain transition-transform duration-700 group-hover:scale-105"
-                                            unoptimized
+                                            className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
                                         />
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-2 gap-6 w-full max-w-md">
                                         {pack.books.slice(0, 4).map((pb, i) => (
                                             <div key={pb.book.id} className={`relative aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 hover:scale-105 transform ${i % 2 === 0 ? '-rotate-3 mt-6' : 'rotate-3 mb-6'}`}>
-                                                <Image
+                                                <ImageWithFallback
                                                     src={pb.book.image}
                                                     alt={pb.book.title}
-                                                    fill
-                                                    className="object-cover"
-                                                    unoptimized
+                                                    className="w-full h-full object-cover"
                                                 />
                                             </div>
                                         ))}
@@ -268,16 +281,24 @@ export default async function PackDetailPage({
                                     </ul>
                                 </div>
 
-                                <AddToCartButton
-                                    product={{
-                                        id: pack.id,
-                                        title: pack.name,
-                                        price: pack.price,
-                                        image: pack.image || pack.books[0]?.book.image || '',
-                                        type: 'PACK'
-                                    }}
-                                    className="!py-8 text-xs font-black uppercase tracking-[0.3em] !rounded-full shadow-2xl hover:shadow-black/20"
-                                />
+                                <div className="space-y-4">
+                                    <WhatsAppOrderButton
+                                        title={pack.name}
+                                        price={pack.price}
+                                        phone={whatsappPhone || undefined}
+                                        type="pack"
+                                    />
+                                    <AddToCartButton
+                                        product={{
+                                            id: pack.id,
+                                            title: pack.name,
+                                            price: pack.price,
+                                            image: pack.image || pack.books[0]?.book.image || '',
+                                            type: 'PACK'
+                                        }}
+                                        className="!py-8 text-xs font-black uppercase tracking-[0.3em] !rounded-full shadow-2xl hover:shadow-black/20"
+                                    />
+                                </div>
 
                                 <div className="flex items-center justify-center gap-10 mt-10">
                                     <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-gray-300">

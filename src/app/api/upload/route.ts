@@ -5,6 +5,7 @@ import { verifyAdmin } from '@/lib/actions/auth'
 import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
 import { sanitizeFilename } from '@/lib/security'
 import { createHash } from 'crypto'
+import sharp from 'sharp'
 
 // Liste blanche des types MIME autorisés
 const ALLOWED_MIME_TYPES = [
@@ -16,7 +17,7 @@ const ALLOWED_MIME_TYPES = [
 ]
 
 // Extensions autorisées
-const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif']
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.jfif']
 
 // Taille max : 5MB
 const MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -53,8 +54,9 @@ export async function POST(request: NextRequest) {
 
         // OWASP A03: Injection - Validation stricte du type MIME
         if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+            console.error('[UPLOAD] Invalid MIME type:', file.type)
             return NextResponse.json(
-                { error: `Invalid file type. Allowed: ${ALLOWED_MIME_TYPES.join(', ')}` },
+                { error: `Invalid file type: ${file.type}. Allowed: ${ALLOWED_MIME_TYPES.join(', ')}` },
                 { status: 400 }
             )
         }
@@ -62,16 +64,18 @@ export async function POST(request: NextRequest) {
         // Vérifier l'extension du fichier
         const fileExtension = path.extname(file.name).toLowerCase()
         if (!ALLOWED_EXTENSIONS.includes(fileExtension)) {
+            console.error('[UPLOAD] Invalid extension:', fileExtension)
             return NextResponse.json(
-                { error: `Invalid file extension. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}` },
+                { error: `Invalid file extension: ${fileExtension}. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}` },
                 { status: 400 }
             )
         }
 
         // Vérifier la taille
         if (file.size > MAX_FILE_SIZE) {
+            console.error('[UPLOAD] File too large:', file.size)
             return NextResponse.json(
-                { error: `File size must be less than ${MAX_FILE_SIZE / (1024 * 1024)}MB` },
+                { error: `File size (${(file.size / (1024 * 1024)).toFixed(2)}MB) must be less than ${MAX_FILE_SIZE / (1024 * 1024)}MB` },
                 { status: 400 }
             )
         }
@@ -90,23 +94,40 @@ export async function POST(request: NextRequest) {
 
         const expectedSignatures = validSignatures[file.type]
         if (expectedSignatures && !expectedSignatures.some(sig => magicBytes.startsWith(sig))) {
+            console.error('[UPLOAD] Magic bytes mismatch for', file.type, ':', magicBytes)
             return NextResponse.json(
-                { error: 'File content does not match declared type' },
+                { error: 'File content does not match declared type (Magic Bytes Mismatch)' },
                 { status: 400 }
             )
         }
 
+        // --- OPTIMISATION SHARP ---
+        // On convertit tout en WebP pour la performance (réduit le poids de 60-80%)
+        let processedBuffer: Buffer
+        try {
+            processedBuffer = await sharp(buffer)
+                .webp({ quality: 80, effort: 4 }) // Équilibre entre vitesse et compression
+                .resize(1200, 1600, { fit: 'inside', withoutEnlargement: true }) // Taille max raisonnable
+                .toBuffer()
+        } catch (sharpError) {
+            console.error('[UPLOAD] Sharp processing failed:', sharpError)
+            // Fallback sur le buffer original si sharp échoue
+            processedBuffer = buffer
+        }
+
         // OWASP A03: Sanitize filename pour éviter path traversal
-        const sanitizedName = sanitizeFilename(file.name)
+        const baseName = path.basename(file.name, fileExtension)
+        const sanitizedName = sanitizeFilename(baseName)
 
         // Générer un hash unique pour éviter les collisions
         const hash = createHash('sha256')
-            .update(buffer)
+            .update(processedBuffer)
             .update(Date.now().toString())
             .digest('hex')
             .substring(0, 16)
 
-        const fileName = `${hash}-${sanitizedName}`
+        // On force l'extension .webp
+        const fileName = `${hash}-${sanitizedName}.webp`
 
         // Créer le répertoire s'il n'existe pas
         const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'books')
@@ -123,8 +144,8 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // Sauvegarder le fichier
-        await writeFile(normalizedPath, buffer)
+        // Sauvegarder le fichier optimisé
+        await writeFile(normalizedPath, processedBuffer)
 
         // Retourner l'URL publique
         const url = `/uploads/books/${fileName}`

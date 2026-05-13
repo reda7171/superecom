@@ -1,8 +1,7 @@
 import { getCommunityUser } from '@/lib/actions/community-auth'
-import Header from '@/components/Header'
+import HeaderWithUser from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import CheckoutClient from '@/components/checkout/CheckoutClient'
-import NotificationDropdownWrapper from '@/components/NotificationDropdownWrapper'
 
 export default async function CheckoutPage() {
     const user = await getCommunityUser()
@@ -15,7 +14,7 @@ export default async function CheckoutPage() {
 
     return (
         <div className="min-h-screen bg-pixio-cream">
-            <Header user={userProps} notificationDropdown={user ? <NotificationDropdownWrapper /> : null} />
+            <HeaderWithUser />
             <CheckoutClient user={userProps} />
             <Footer />
         </div>

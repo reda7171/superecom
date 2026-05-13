@@ -5,8 +5,14 @@ import AddManualBookReadingList from '@/components/AddManualBookReadingList'
 import ReadingListStats from '@/components/ReadingListStats'
 import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
+import { isFeatureEnabled } from '@/lib/actions/site-settings'
+import { notFound } from 'next/navigation'
 
 export default async function ReadingListPage() {
+    // Guard: vérifier si le Suivi de Lecture est activé
+    const enabled = await isFeatureEnabled('feature_reading_list')
+    if (!enabled) notFound()
+
     const t = await getTranslations('Community')
     const readingList = await getReadingList()
 

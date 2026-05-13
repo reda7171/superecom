@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Link } from '@/i18n/routing'
-import { User, Settings, Package, LogOut, ChevronDown, BookOpen } from 'lucide-react'
+import { User, Settings, Package, LogOut, ChevronDown, BookOpen, Heart, ShieldCheck, Sparkles } from 'lucide-react'
 import { logout } from '@/lib/actions/community-auth'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -14,10 +14,14 @@ interface UserDropdownProps {
         fullName?: string | null
         email: string
         image?: string | null
+        role?: string | null
     } | null
+    features?: {
+        readingList?: boolean
+    }
 }
 
-export default function UserDropdown({ user }: UserDropdownProps) {
+export default function UserDropdown({ user, features = {} }: UserDropdownProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [loggingOut, setLoggingOut] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
@@ -111,26 +115,28 @@ export default function UserDropdown({ user }: UserDropdownProps) {
                             <span className="text-sm font-bold text-gray-700 group-hover:text-black">{t('UserMenu.Profile')}</span>
                         </Link>
 
-                        <Link
-                            href="/community/reading-list"
-                            onClick={() => setIsOpen(false)}
-                            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors group"
-                        >
-                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-black transition-colors">
-                                <BookOpen className="w-4 h-4 text-gray-600 group-hover:text-white" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-bold text-gray-700 group-hover:text-black">{t('UserMenu.ReadingList')}</span>
-                                {mounted && readingList.length > 0 && (
-                                    <span className="text-[10px] text-gray-400 font-medium">
-                                        {t('UserMenu.ReadingProgress', {
-                                            completed: readingList.filter(i => i.status === 'COMPLETED').length,
-                                            total: readingList.length
-                                        })}
-                                    </span>
-                                )}
-                            </div>
-                        </Link>
+                        {features?.readingList !== false && (
+                            <Link
+                                href="/community/reading-list"
+                                onClick={() => setIsOpen(false)}
+                                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors group"
+                            >
+                                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-black transition-colors">
+                                    <BookOpen className="w-4 h-4 text-gray-600 group-hover:text-white" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-gray-700 group-hover:text-black">{t('UserMenu.ReadingList')}</span>
+                                    {mounted && readingList.length > 0 && (
+                                        <span className="text-[10px] text-gray-400 font-medium">
+                                            {t('UserMenu.ReadingProgress', {
+                                                completed: readingList.filter(i => i.status === 'COMPLETED').length,
+                                                total: readingList.length
+                                            })}
+                                        </span>
+                                    )}
+                                </div>
+                            </Link>
+                        )}
 
                         <Link
                             href="/orders"
@@ -141,6 +147,43 @@ export default function UserDropdown({ user }: UserDropdownProps) {
                                 <Package className="w-4 h-4 text-gray-600 group-hover:text-white" />
                             </div>
                             <span className="text-sm font-bold text-gray-700 group-hover:text-black">{t('UserMenu.Orders')}</span>
+                        </Link>
+
+                        {(user.email === 'admin@riwaya.com' || user.role === 'ADMIN') && (
+                            <Link
+                                href="/admin"
+                                onClick={() => setIsOpen(false)}
+                                className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 transition-colors group"
+                            >
+                                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+                                    <ShieldCheck className="w-4 h-4 text-blue-600 group-hover:text-white" />
+                                </div>
+                                <span className="text-sm font-bold text-blue-700 group-hover:text-blue-800">Panneau Admin</span>
+                            </Link>
+                        )}
+
+                        {(user.role === 'INFLUENCER' || user.role === 'influencer') && (
+                            <Link
+                                href="/influencer"
+                                onClick={() => setIsOpen(false)}
+                                className="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 transition-colors group"
+                            >
+                                <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-600 transition-colors">
+                                    <Sparkles className="w-4 h-4 text-purple-600 group-hover:text-white" />
+                                </div>
+                                <span className="text-sm font-bold text-purple-700 group-hover:text-purple-800">Dashboard</span>
+                            </Link>
+                        )}
+
+                        <Link
+                            href="/wishlist"
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors group"
+                        >
+                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-red-500 transition-colors">
+                                <Heart className="w-4 h-4 text-gray-600 group-hover:text-white" />
+                            </div>
+                            <span className="text-sm font-bold text-gray-700 group-hover:text-red-600">Mes favoris</span>
                         </Link>
 
                         <Link

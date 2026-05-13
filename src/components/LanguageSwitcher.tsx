@@ -7,7 +7,7 @@ import { Globe, ChevronDown } from 'lucide-react';
 
 import { updateUserLocale } from '@/lib/actions/locale';
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ upward = false }: { upward?: boolean } = {}) {
     const locale = useLocale();
     const router = useRouter();
     const pathname = usePathname();
@@ -61,7 +61,7 @@ export default function LanguageSwitcher() {
             </button>
 
             {isOpen && (
-                <div className="absolute top-full right-0 mt-2 w-32 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                <div className={`absolute ${upward ? 'bottom-full mb-2' : 'top-full mt-2'} right-0 w-32 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2 z-50 animate-in fade-in zoom-in-95 duration-200`}>
                     {languages.map((lang) => (
                         <button
                             key={lang.code}

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
+import { useSearchParams } from 'next/navigation'
 import { login } from '@/lib/actions/auth'
 import { Lock, Mail } from 'lucide-react'
 
@@ -23,7 +24,7 @@ export default function LoginPage() {
         const result = await login(email, password)
 
         if (result.success) {
-            const from = searchParams.get('from') || '/admin'
+            const from = searchParams.get('from') || result.redirect
             router.push(from)
             router.refresh()
         } else {
@@ -70,7 +71,7 @@ export default function LoginPage() {
                                     name="email"
                                     required
                                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="admin@riwaya.com"
+                                    placeholder="admin@riwaya.store"
                                 />
                             </div>
                         </div>

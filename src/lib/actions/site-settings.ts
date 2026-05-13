@@ -28,15 +28,15 @@ export async function getAllSettings() {
 }
 
 // Récupérer un paramètre spécifique
-export async function getSetting(key: string) {
+export async function getSetting(key: string, defaultValue: string | null = null) {
     try {
         const setting = await prisma.siteSettings.findUnique({
             where: { key }
         })
-        return setting?.value || null
+        return setting?.value ?? defaultValue
     } catch (error) {
         console.error(`Error fetching setting ${key}:`, error)
-        return null
+        return defaultValue
     }
 }
 
@@ -51,8 +51,9 @@ export async function updateSetting(key: string, value: string, category: string
             create: { key, value, category, description }
         })
 
-        revalidatePath('/admin/settings')
-        revalidatePath('/')
+        // revalidatePath('/admin/settings')
+        // revalidatePath('/admin/config/n8n')
+        // revalidatePath('/')
 
         return { success: true, setting }
     } catch (error: any) {
@@ -119,4 +120,12 @@ export async function getSettingsByCategory(category: string) {
         console.error(`Error fetching settings for category ${category}:`, error)
         return {}
     }
+}
+
+// Vérifie si une fonctionnalité est activée (défaut: true si pas défini)
+export async function isFeatureEnabled(featureKey: string, defaultValue: boolean = true): Promise<boolean> {
+    const value = await getSetting(featureKey)
+    // Si non défini → utiliser la valeur par défaut
+    if (value === null) return defaultValue
+    return value === 'true'
 }

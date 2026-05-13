@@ -80,7 +80,12 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                             className="w-full h-full rounded-full overflow-hidden border-4 border-gray-100 shadow-md bg-gray-50 relative"
                             onClick={() => document.getElementById('avatar-upload')?.click()}
                         >
-                            <img src={previewImage || selectedImage} alt="Avatar" className="w-full h-full object-cover" />
+                            {(() => {
+                                const imgSrc = previewImage || selectedImage;
+                                return (imgSrc && imgSrc.trim() !== '') ? (
+                                    <img src={imgSrc} alt="Avatar" className="w-full h-full object-cover" />
+                                ) : null;
+                            })()}
                         </div>
 
                         <input

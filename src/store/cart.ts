@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
 export interface CartItem {
-    type: 'BOOK' | 'PACK'
+    type: 'BOOK' | 'PACK' | 'GIFT' | 'DIGITAL'
     id: string
     title: string
     price: number

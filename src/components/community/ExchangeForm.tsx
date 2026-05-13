@@ -30,17 +30,13 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
     const [error, setError] = useState<string | null>(null)
 
     // Form state
-    const [type, setType] = useState<'DIRECT' | 'CREDIT'>('DIRECT')
+    const type = 'DIRECT'
     const [selectedBook, setSelectedBook] = useState<string>('')
     const [deliveryMethod, setDeliveryMethod] = useState<'MEETUP' | 'SHIPPING' | 'LOCKER'>('MEETUP')
 
     const { book, myBooks, currentUser, isEligible } = details
 
-    const handleTypeChange = (newType: 'DIRECT' | 'CREDIT') => {
-        startTransition(() => {
-            setType(newType)
-        })
-    }
+
 
     const handleDeliveryChange = (newMethod: 'MEETUP' | 'SHIPPING' | 'LOCKER') => {
         startTransition(() => {
@@ -123,51 +119,12 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
                     <form onSubmit={onSubmit} className="space-y-10">
                         <input type="hidden" name="bookRequestedId" value={book.id} />
 
-                        {/* Exchange Type Selection */}
-                        <div className="space-y-6">
-                            <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 ml-1">{t('YourOffer')}</label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <button
-                                    type="button"
-                                    onClick={() => handleTypeChange('DIRECT')}
-                                    className={`p-6 rounded-[2rem] border-2 text-left transition-all duration-500 ${type === 'DIRECT'
-                                        ? 'border-black bg-black text-white shadow-xl translate-y-[-4px]'
-                                        : 'border-gray-100 bg-gray-50/50 text-gray-400 hover:border-gray-200 hover:bg-white'
-                                        }`}
-                                >
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className={`p-2 rounded-xl ${type === 'DIRECT' ? 'bg-white/10' : 'bg-white'}`}>
-                                            <RefreshCw className={`w-5 h-5 ${type === 'DIRECT' ? 'text-pixio-yellow' : 'text-gray-400'}`} />
-                                        </div>
-                                        <span className="font-black text-xs uppercase tracking-widest">{t('BookToBook')}</span>
-                                    </div>
-                                    <p className="text-xs opacity-70 leading-relaxed font-medium">{t('BookToBookDesc')}</p>
-                                </button>
+                        <input type="hidden" name="type" value="DIRECT" />
+                        
+                        {/* Selected Book Offer */}
+                        <div className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
+                             <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 ml-1">{t('SelectBook')}</label>
 
-                                <button
-                                    type="button"
-                                    onClick={() => handleTypeChange('CREDIT')}
-                                    className={`p-6 rounded-[2rem] border-2 text-left transition-all duration-500 ${type === 'CREDIT'
-                                        ? 'border-black bg-black text-white shadow-xl translate-y-[-4px]'
-                                        : 'border-gray-100 bg-gray-50/50 text-gray-400 hover:border-gray-200 hover:bg-white'
-                                        }`}
-                                >
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className={`p-2 rounded-xl ${type === 'CREDIT' ? 'bg-white/10' : 'bg-white'}`}>
-                                            <Coins className={`w-5 h-5 ${type === 'CREDIT' ? 'text-pixio-yellow' : 'text-gray-400'}`} />
-                                        </div>
-                                        <span className="font-black text-xs uppercase tracking-widest">{tc('Credits')}</span>
-                                    </div>
-                                    <p className="text-xs opacity-70 leading-relaxed font-medium">{t('CreditsDesc')} ({t('Balance', { count: currentUser.credits })})</p>
-                                </button>
-                            </div>
-                            <input type="hidden" name="type" value={type} />
-                        </div>
-
-                        {/* Dynamic Content based on Type */}
-                        {type === 'DIRECT' ? (
-                            <div className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 ml-1">{t('SelectBook')}</label>
                                 <div className="relative group/select">
                                     <div className="absolute left-6 top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
                                         <BookOpen className="w-4 h-4 text-black" />
@@ -194,20 +151,7 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
                                     </p>
                                 )}
                             </div>
-                        ) : (
-                            <div className="p-8 bg-pixio-yellow/10 rounded-[2rem] border-2 border-dashed border-pixio-yellow/40 animate-in fade-in slide-in-from-top-4 duration-500 flex items-center gap-6">
-                                <div className="w-16 h-16 bg-pixio-yellow rounded-2xl flex items-center justify-center shadow-lg">
-                                    <Coins className="w-8 h-8 text-black" />
-                                </div>
-                                <div>
-                                    <p className="text-black text-lg font-black tracking-tight">{t('TotalCost')}</p>
-                                    <p className="text-gray-500 text-xs font-bold mt-1">{t('Balance', { count: currentUser.credits })}</p>
-                                </div>
-                                {currentUser.credits < 1 && (
-                                    <div className="ml-auto text-red-500 text-[10px] font-black uppercase tracking-widest">{t('InsufficientBalance')}</div>
-                                )}
-                            </div>
-                        )}
+
 
                         {/* Delivery Method Selector */}
                         <div className="space-y-6">
@@ -271,7 +215,7 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
 
                         <button
                             type="submit"
-                            disabled={submitting || !isEligible || (type === 'DIRECT' && !selectedBook) || (type === 'CREDIT' && currentUser.credits < 1)}
+                            disabled={submitting || !isEligible || !selectedBook}
                             className="group relative w-full h-20 bg-black text-white rounded-[2rem] overflow-hidden shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100"
                         >
                             <div className="absolute inset-0 bg-pixio-yellow translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>

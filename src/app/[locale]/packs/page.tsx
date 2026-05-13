@@ -1,6 +1,6 @@
 import { getPacks } from '@/lib/db/packs'
 import Header from '@/components/HeaderWithUser'
-import Footer from '@/components/Footer'
+import Footer from '@/components/FooterWithFeatures'
 import PackCard from '@/components/PackCard'
 import { Package, Sparkles } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'

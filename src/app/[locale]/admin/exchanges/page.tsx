@@ -10,89 +10,46 @@ export default async function AdminExchangesPage() {
     ])
 
     return (
-        <div>
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+        <div className="space-y-12">
+            {/* Header section style Riwaya */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-gray-100">
                 <div>
-                    <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase">Gestion des Échanges</h1>
-                    <p className="mt-2 text-sm text-gray-500 font-medium">
-                        Gérez les échanges de livres entre membres de la communauté Riwaya
+                    <h1 className="text-5xl lg:text-7xl font-black text-black tracking-tighter mb-2 italic">
+                        Échanges<span className="text-blue-600">.</span>
+                    </h1>
+                    <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">
+                        Communauté & Économie Circulaire
                     </p>
                 </div>
+                
                 <Link
                     href="/admin/exchanges/create"
-                    className="flex items-center gap-2 px-6 py-3 bg-black text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg hover:shadow-black/20"
+                    className="flex items-center gap-3 px-8 py-4 bg-black text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-900 transition-all shadow-xl active:scale-95 w-fit"
                 >
                     <PackageOpen className="w-4 h-4" />
                     Nouvel Échange
                 </Link>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-                <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total</p>
-                            <p className="mt-1 text-4xl font-black text-gray-900 tracking-tighter">{stats.total}</p>
-                        </div>
-                        <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center">
-                            <PackageOpen className="w-6 h-6 text-gray-400" />
-                        </div>
+            {/* Stats Grid Premium */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                {[
+                    { label: "Total", value: stats.total, color: "text-gray-400", icon: PackageOpen },
+                    { label: "En attente", value: stats.pending, color: "text-yellow-500", icon: Clock },
+                    { label: "Acceptés", value: stats.accepted, color: "text-blue-500", icon: AlertCircle },
+                    { label: "Complétés", value: stats.completed, color: "text-emerald-500", icon: CheckCircle },
+                    { label: "Annulés", value: stats.cancelled, color: "text-red-500", icon: XCircle }
+                ].map((stat, i) => (
+                    <div key={i} className="group bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-xl shadow-black/5 hover:-translate-y-1 transition-all relative overflow-hidden">
+                        <p className={`text-[10px] font-black uppercase tracking-widest mb-3 ${stat.color}`}>{stat.label}</p>
+                        <p className="text-4xl font-black text-black tracking-tighter">{stat.value}</p>
+                        <stat.icon className={`absolute top-8 right-8 w-8 h-8 opacity-5 transition-transform group-hover:scale-125 ${stat.color}`} />
                     </div>
-                </div>
-
-                <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-[10px] font-black text-yellow-500 uppercase tracking-widest">En attente</p>
-                            <p className="mt-1 text-4xl font-black text-gray-900 tracking-tighter">{stats.pending}</p>
-                        </div>
-                        <div className="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center">
-                            <Clock className="w-6 h-6 text-yellow-500" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Acceptés</p>
-                            <p className="mt-1 text-4xl font-black text-gray-900 tracking-tighter">{stats.accepted}</p>
-                        </div>
-                        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                            <AlertCircle className="w-6 h-6 text-blue-500" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-[10px] font-black text-green-500 uppercase tracking-widest">Complétés</p>
-                            <p className="mt-1 text-4xl font-black text-gray-900 tracking-tighter">{stats.completed}</p>
-                        </div>
-                        <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-                            <CheckCircle className="w-6 h-6 text-green-500" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">Annulés</p>
-                            <p className="mt-1 text-4xl font-black text-gray-900 tracking-tighter">{stats.cancelled}</p>
-                        </div>
-                        <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
-                            <XCircle className="w-6 h-6 text-red-500" />
-                        </div>
-                    </div>
-                </div>
+                ))}
             </div>
 
-            {/* Table */}
-            <div className="bg-white rounded-lg border border-gray-200">
+            {/* Table Container Premium */}
+            <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-black/5 overflow-hidden">
                 <ExchangesTable exchanges={exchanges} />
             </div>
         </div>

@@ -1,45 +1,91 @@
 version: '3.8'
 
 services:
-  mysql:
+  # Database - MySQL 8
+  db:
     image: mysql:8.0
-    container_name: riwaya_mysql
+    container_name: riwaya_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: riwaya_db
-      MYSQL_USER: riwaya_user
-      MYSQL_PASSWORD: riwaya_pass
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${DB_NAME:-riwaya_db}
+      MYSQL_USER: ${DB_USER:-riwaya_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-riwaya_pass}
     ports:
-      - "3306:3306"
+      - "3906:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - riwaya_network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD || exit 1" ]
+      interval: 10s
       timeout: 20s
       retries: 10
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    container_name: riwaya_pma
+  # Cache & n8n queue - Redis
+  redis:
+    image: redis:alpine
+    container_name: riwaya_redis
     restart: always
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_USER: riwaya_user
-      PMA_PASSWORD: riwaya_pass
     ports:
-      - "8081:80"
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - riwaya_network
+
+  # Application - Next.js
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: riwaya-app:latest
+    container_name: riwaya_app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=mysql://${DB_USER:-riwaya_user}:${DB_PASSWORD:-riwaya_pass}@db:3306/${DB_NAME:-riwaya_db}?connect_timeout=30
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+      - JWT_SECRET=${JWT_SECRET}
+      - REDIS_URL=redis://redis:6379
     depends_on:
-      - mysql
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - riwaya_network
+    volumes:
+      - ./public/uploads:/app/public/uploads
+      - ./backups:/app/backups
+
+  # n8n - Automation
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: riwaya_n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_SECURE_COOKIE=false
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5678/}
+      - GENERIC_TIMEZONE=Africa/Casablanca
+      - TZ=Africa/Casablanca
+    volumes:
+      - n8n_data:/home/node/.n8n
     networks:
       - riwaya_network
 
 volumes:
   mysql_data:
-
+  n8n_data:
+  redis_data:
 
 networks:
   riwaya_network:

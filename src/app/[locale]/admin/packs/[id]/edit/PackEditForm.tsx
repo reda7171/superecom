@@ -5,12 +5,17 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save } from 'lucide-react'
 import { updatePack, type PackInput } from '@/lib/actions/packs'
+import PackCreativeModal from '@/components/admin/PackCreativeModal'
+import ImageInput from '@/components/admin/ImageInput'
 
 interface Book {
     id: string
     title: string
     author: string
     price: number
+    image?: string
+    category?: string | null
+    active: boolean
 }
 
 interface PackEditFormProps {
@@ -20,16 +25,25 @@ interface PackEditFormProps {
         description: string
         price: number
         image: string
+        isFreeDelivery: boolean
+        shippingFees: number
         selectedBookIds: string[]
     }
     books: Book[]
+    whatsappPhone?: string
 }
 
-export default function PackEditForm({ pack, books }: PackEditFormProps) {
+export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFormProps) {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [creativeFormat, setCreativeFormat] = useState<'post' | 'story' | null>(null)
     const [selectedBooks, setSelectedBooks] = useState<string[]>(pack.selectedBookIds)
+    const [isFreeDelivery, setIsFreeDelivery] = useState(pack.isFreeDelivery)
+    const [shippingFees, setShippingFees] = useState(pack.shippingFees || 30)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [name, setName] = useState(pack.name)
+    const [description, setDescription] = useState(pack.description)
 
     function toggleBook(bookId: string) {
         setSelectedBooks(prev =>
@@ -37,6 +51,25 @@ export default function PackEditForm({ pack, books }: PackEditFormProps) {
                 ? prev.filter(id => id !== bookId)
                 : [...prev, bookId]
         )
+    }
+
+    function toggleAll() {
+        if (selectedBooks.length === books.length) {
+            setSelectedBooks([])
+        } else {
+            setSelectedBooks(books.map(b => b.id))
+        }
+    }
+
+    function toggleAllInCategory(categoryBooks: Book[]) {
+        const categoryBookIds = categoryBooks.map(b => b.id)
+        const allSelected = categoryBookIds.every(id => selectedBooks.includes(id))
+        
+        if (allSelected) {
+            setSelectedBooks(prev => prev.filter(id => !categoryBookIds.includes(id)))
+        } else {
+            setSelectedBooks(prev => Array.from(new Set([...prev, ...categoryBookIds])))
+        }
     }
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -57,6 +90,8 @@ export default function PackEditForm({ pack, books }: PackEditFormProps) {
             description: formData.get('description') as string || undefined,
             price: parseFloat(formData.get('price') as string),
             image: formData.get('image') as string || undefined,
+            isFreeDelivery,
+            shippingFees: isFreeDelivery ? 0 : shippingFees,
             bookIds: selectedBooks,
         }
 
@@ -73,6 +108,21 @@ export default function PackEditForm({ pack, books }: PackEditFormProps) {
 
     const selectedBooksData = books.filter(b => selectedBooks.includes(b.id))
     const totalOriginalPrice = selectedBooksData.reduce((sum, b) => sum + b.price, 0)
+
+    // Filter and group books
+    const filteredBooks = books.filter(book => 
+        book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        book.author.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+
+    const groupedBooks = filteredBooks.reduce((acc, book) => {
+        const category = book.category || 'Non catégorisé'
+        if (!acc[category]) {
+            acc[category] = []
+        }
+        acc[category].push(book)
+        return acc
+    }, {} as Record<string, typeof books>)
 
     return (
         <div>
@@ -116,7 +166,8 @@ export default function PackEditForm({ pack, books }: PackEditFormProps) {
                                     id="name"
                                     name="name"
                                     required
-                                    defaultValue={pack.name}
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="Ex: Pack Développement Personnel"
                                 />
@@ -131,7 +182,8 @@ export default function PackEditForm({ pack, books }: PackEditFormProps) {
                                     id="description"
                                     name="description"
                                     rows={3}
-                                    defaultValue={pack.description}
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="Description du pack..."
                                 />
@@ -161,50 +213,139 @@ export default function PackEditForm({ pack, books }: PackEditFormProps) {
                             </div>
 
                             {/* Image */}
-                            <div>
-                                <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                                    URL de l'image
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Image du pack
                                 </label>
-                                <input
-                                    type="url"
-                                    id="image"
-                                    name="image"
-                                    defaultValue={pack.image}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="/images/packs/pack.jpg"
+                                <ImageInput 
+                                    defaultValue={pack.image} 
+                                    bookTitle={pack.name} 
                                 />
+                            </div>
+
+                            {/* Livraison */}
+                            <div className="pt-4 border-t border-gray-100">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            id="isFreeDelivery"
+                                            checked={isFreeDelivery}
+                                            onChange={(e) => setIsFreeDelivery(e.target.checked)}
+                                            className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        />
+                                        <label htmlFor="isFreeDelivery" className="text-sm font-bold text-gray-700 cursor-pointer">
+                                            Livraison gratuite
+                                        </label>
+                                    </div>
+
+                                    {isFreeDelivery ? (
+                                        <div className="flex items-center gap-3 px-2 py-1 select-none">
+                                            <span className="text-4xl filter drop-shadow-lg">🚚</span>
+                                            <div className="flex flex-col">
+                                                <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 leading-none mb-1">Livraison</p>
+                                                <p className="text-xs font-black text-green-500 leading-none">GRATUITE</p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-3">
+                                            <label htmlFor="shippingFees" className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                                Frais de livraison
+                                            </label>
+                                            <select
+                                                id="shippingFees"
+                                                value={shippingFees}
+                                                onChange={(e) => setShippingFees(Number(e.target.value))}
+                                                className="px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm font-bold"
+                                            >
+                                                {[20, 30, 35, 40, 45].map((fee) => (
+                                                    <option key={fee} value={fee}>
+                                                        {fee} MAD
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Book Selection */}
                     <div className="bg-white rounded-lg border border-gray-200 p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                            Sélectionner les livres ({selectedBooks.length} sélectionné{selectedBooks.length > 1 ? 's' : ''})
-                        </h2>
-
-                        <div className="space-y-2 max-h-96 overflow-y-auto">
-                            {books.map((book) => (
-                                <label
-                                    key={book.id}
-                                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${selectedBooks.includes(book.id)
-                                        ? 'border-blue-500 bg-blue-50'
-                                        : 'border-gray-200 hover:bg-gray-50'
-                                        }`}
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                            <div>
+                                <h2 className="text-lg font-semibold text-gray-900">
+                                    Sélectionner les livres ({selectedBooks.length} sélectionné{selectedBooks.length > 1 ? 's' : ''})
+                                </h2>
+                                <button
+                                    type="button"
+                                    onClick={toggleAll}
+                                    className="text-sm text-blue-600 hover:text-blue-800 font-medium mt-1"
                                 >
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedBooks.includes(book.id)}
-                                        onChange={() => toggleBook(book.id)}
-                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                    />
-                                    <div className="ml-3 flex-1">
-                                        <p className="text-sm font-medium text-gray-900">{book.title}</p>
-                                        <p className="text-xs text-gray-500">{book.author}</p>
+                                    {selectedBooks.length === books.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                                </button>
+                            </div>
+                            <div className="w-full sm:w-64">
+                                <input 
+                                    type="text" 
+                                    placeholder="Rechercher par titre ou auteur..." 
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+                            {Object.entries(groupedBooks).length === 0 ? (
+                                <p className="text-center text-gray-500 py-8">Aucun livre trouvé</p>
+                            ) : (
+                                Object.entries(groupedBooks).map(([category, categoryBooks]) => (
+                                    <div key={category} className="mb-6 last:mb-0">
+                                        <div className="flex justify-between items-center mb-3 border-b border-gray-100 pb-2">
+                                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+                                                {category} ({categoryBooks.length})
+                                            </h3>
+                                            <button
+                                                type="button"
+                                                onClick={() => toggleAllInCategory(categoryBooks)}
+                                                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                                            >
+                                                {categoryBooks.every(b => selectedBooks.includes(b.id)) ? 'Tout désélectionner' : 'Tout sélectionner'}
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            {categoryBooks.map((book) => (
+                                                <label
+                                                    key={book.id}
+                                                    className={`flex items-center p-4 border-2 rounded-2xl cursor-pointer transition-all ${selectedBooks.includes(book.id)
+                                                            ? 'border-blue-600 bg-blue-50'
+                                                            : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+                                                        }`}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedBooks.includes(book.id)}
+                                                        onChange={() => toggleBook(book.id)}
+                                                        className="w-5 h-5 text-blue-600 border-gray-300 rounded-lg focus:ring-blue-500"
+                                                    />
+                                                    <div className="ml-4 flex-1">
+                                                        <p className="text-sm font-black text-gray-900 leading-tight">
+                                                            {book.title}
+                                                            {!book.active && (
+                                                                <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded">Inactif</span>
+                                                            )}
+                                                        </p>
+                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{book.author}</p>
+                                                    </div>
+                                                    <span className="text-sm font-black text-black ml-2">{book.price} MAD</span>
+                                                </label>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <span className="text-sm font-medium text-gray-900">{book.price} MAD</span>
-                                </label>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
@@ -247,6 +388,20 @@ export default function PackEditForm({ pack, books }: PackEditFormProps) {
                                 <Save className="w-5 h-5 mr-2" />
                                 {loading ? 'Enregistrement...' : 'Enregistrer'}
                             </button>
+                            <button
+                                type="button"
+                                onClick={() => setCreativeFormat('post')}
+                                className="w-full inline-flex items-center justify-center px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+                            >
+                                ✨ Générer Post (FB/Insta)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setCreativeFormat('story')}
+                                className="w-full inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors"
+                            >
+                                ✨ Générer Story (FB/Insta)
+                            </button>
                             <Link
                                 href="/admin/packs"
                                 className="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
@@ -257,6 +412,21 @@ export default function PackEditForm({ pack, books }: PackEditFormProps) {
                     </div>
                 </div>
             </form>
+
+            <PackCreativeModal
+                isOpen={creativeFormat !== null}
+                onClose={() => setCreativeFormat(null)}
+                format={creativeFormat || 'post'}
+                pack={{
+                    id: pack.id,
+                    name: name,
+                    description: description,
+                    price: pack.price,
+                    isFreeDelivery: isFreeDelivery,
+                    books: selectedBooksData,
+                    whatsappNumber: whatsappPhone
+                }}
+            />
         </div>
     )
 }

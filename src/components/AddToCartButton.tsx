@@ -5,6 +5,7 @@ import { useCartStore } from '@/store/cart'
 import { useUIStore } from '@/store/ui'
 import { useTranslations } from 'next-intl'
 import { fbPixelEvents } from '@/lib/facebook-pixel'
+import { notifyAddToCart } from '@/lib/actions/cart-notify'
 
 interface AddToCartButtonProps {
     product: {
@@ -16,12 +17,14 @@ interface AddToCartButtonProps {
     }
     variant?: 'primary' | 'secondary'
     className?: string
+    showIcon?: boolean
 }
 
 export default function AddToCartButton({
     product,
     variant = 'primary',
-    className = ''
+    className = '',
+    showIcon = true
 }: AddToCartButtonProps) {
     const addItem = useCartStore((state) => state.addItem)
     const openCart = useUIStore((state) => state.openCart)
@@ -36,7 +39,7 @@ export default function AddToCartButton({
                 } py-5 px-8 ${className}`}
             onClick={() => {
                 try {
-                    console.log('Adding product to cart:', product.id)
+
                     addItem({
                         type: product.type,
                         id: product.id,
@@ -53,6 +56,9 @@ export default function AddToCartButton({
                         quantity: 1
                     })
 
+                    // Telegram Notification
+                    notifyAddToCart(product.title, product.price, product.type).catch(console.error)
+
                     openCart()
                     showNotification(t('AddedToCartSuccess'), 'success')
                 } catch (error) {
@@ -61,8 +67,8 @@ export default function AddToCartButton({
                 }
             }}
         >
-            <ShoppingCart className="w-6 h-6 rtl:flip" />
-            <span className="text-lg uppercase tracking-widest text-[10px] font-black">{t('AddToCart')}</span>
+            {showIcon && <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 rtl:flip" />}
+            <span className="uppercase tracking-widest text-[10px] font-black">{t('AddToCart')}</span>
         </button>
     )
 }

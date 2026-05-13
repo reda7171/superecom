@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { verifyAdmin } from './auth'
 import { createAuditLog } from './audit'
 import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
+import { sendTelegramMessage } from '@/lib/telegram'
 
 const ReviewSchema = z.object({
     bookId: z.string().uuid(),
@@ -40,16 +41,24 @@ export async function createReview(data: z.infer<typeof ReviewSchema>) {
             }
         }
 
-        await prisma.review.create({
+        const review = await prisma.review.create({
             data: {
                 ...validated,
                 isApproved: false, // En attente de modération
             }
         })
 
+        // Notification Telegram pour le nouvel avis
+        const { sendReviewNotification } = await import('@/lib/telegram')
+        sendReviewNotification(review).catch(console.error)
+
         revalidatePath(`/books/${validated.bookId}`)
         return { success: true }
     } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            const firstError = error.issues?.[0]?.message || 'Vérifiez les champs du formulaire.';
+            return { success: false, error: firstError };
+        }
         return { success: false, error: error.message || 'Erreur lors de l\'envoi de l\'avis' }
     }
 }

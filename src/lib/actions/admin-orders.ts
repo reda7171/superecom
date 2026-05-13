@@ -5,44 +5,95 @@ import { revalidatePath } from 'next/cache'
 import { verifyAdmin } from '@/lib/actions/auth'
 import { createAuditLog } from './audit'
 import { olivraison } from '@/lib/delivery/olivraison'
+import { sendTelegramMessage } from '@/lib/telegram'
 
 import { OrderStatus } from '@prisma/client'
 
 /**
  * Mettre à jour le statut d'une commande
+ * Si RETURNED ou CANCELLED : réintègre le stock des livres
  */
 export async function updateOrderStatus(orderId: string, status: OrderStatus) {
     try {
         await verifyAdmin()
 
-        // Mettre à jour la commande et ajouter à l'historique
-        await prisma.order.update({
+        // Récupérer la commande avec items pour gérer le stock
+        const order = await prisma.order.findUnique({
             where: { id: orderId },
-            data: {
-                status,
-                statusHistory: {
-                    create: {
-                        status,
-                        comment: `Statut de la commande mis à jour manuellement par l'administrateur`,
-                        createdBy: 'ADMIN'
+            include: {
+                items: {
+                    include: {
+                        book: { select: { id: true, title: true } }
                     }
                 }
+            }
+        })
+
+        if (!order) return { success: false, error: 'Commande introuvable' }
+
+        const prevStatus = order.status
+        const isNowReturned = status === 'RETURNED' || status === 'CANCELLED'
+        // Statuts qui n'avaient pas encore décrémenté (ne pas remettre le stock)
+        const wasNeverShipped = ['PENDING', 'CANCELLED', 'RETURNED'].includes(prevStatus)
+
+        await prisma.$transaction(async (tx) => {
+            // Mise à jour statut + historique
+            await tx.order.update({
+                where: { id: orderId },
+                data: {
+                    status,
+                    statusHistory: {
+                        create: {
+                            status,
+                            comment: `Statut mis à jour manuellement par l'administrateur`,
+                            createdBy: 'ADMIN'
+                        }
+                    }
+                }
+            })
+
+            // Réintégrer le stock si retour/annulation d'une commande qui avait décrémenté le stock
+            if (isNowReturned && !wasNeverShipped) {
+                for (const item of order.items) {
+                    if (item.type === 'BOOK' && item.bookId) {
+                        await tx.book.update({
+                            where: { id: item.bookId },
+                            data: { stock: { increment: item.quantity } }
+                        })
+                    }
+                    // Note: les packs ne gèrent pas de stock direct
+                }
+            }
+
+            // Empêcher le double remboursement si on annule depuis RETURNED
+            if (status === 'CANCELLED' && prevStatus === 'RETURNED') {
+                // Déjà remis en stock, ne rien faire
             }
         })
 
         revalidatePath('/admin/orders')
         revalidatePath(`/admin/orders/${orderId}`)
 
+        const stockNote = isNowReturned && !wasNeverShipped
+            ? ` | Stock des livres réintégré (${order.items.filter(i => i.type === 'BOOK').length} articles)`
+            : ''
+
         await createAuditLog({
             action: 'UPDATE_STATUS',
             entity: 'ORDER',
             entityId: orderId,
-            details: `Statut de la commande mis à jour vers: ${status}`
+            details: `Statut: ${prevStatus} → ${status}${stockNote}`
         })
+
+        // Notification Telegram si retour
+        if (status === 'RETURNED') {
+            const msg = `📦 *Retour Commande*\n\n🆔 \`${orderId.slice(0, 8)}\`\n👤 ${order.fullName}\n📱 ${order.phone}\n💰 ${order.total} MAD\n📍 ${order.city}${stockNote}`
+            sendTelegramMessage(msg).catch(console.error)
+        }
 
         return {
             success: true,
-            message: 'Statut mis à jour avec succès'
+            message: `Statut mis à jour vers ${status}${stockNote}`
         }
     } catch (error) {
         console.error('Erreur lors de la mise à jour du statut:', error)
@@ -52,6 +103,46 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
         }
     }
 }
+
+/**
+ * Modifier les informations d'une commande
+ */
+export async function updateOrderDetails(orderId: string, data: {
+    fullName?: string
+    phone?: string
+    address?: string
+    city?: string
+    total?: number
+    comment?: string
+}) {
+    try {
+        await verifyAdmin()
+
+        await prisma.order.update({
+            where: { id: orderId },
+            data: {
+                ...data,
+                updatedAt: new Date()
+            }
+        })
+
+        revalidatePath('/admin/orders')
+        revalidatePath(`/admin/orders/${orderId}`)
+
+        await createAuditLog({
+            action: 'UPDATE_DETAILS',
+            entity: 'ORDER',
+            entityId: orderId,
+            details: `Informations de la commande modifiées par l'administrateur`
+        })
+
+        return { success: true }
+    } catch (error) {
+        console.error('Erreur mise à jour commande:', error)
+        return { success: false, error: 'Impossible de modifier la commande' }
+    }
+}
+
 
 /**
  * Récupérer toutes les commandes (admin)
@@ -111,6 +202,7 @@ export async function getOrderById(orderId: string) {
                                 author: true,
                                 image: true,
                                 price: true,
+                                costPrice: true,
                             }
                         },
                         pack: {
@@ -119,6 +211,7 @@ export async function getOrderById(orderId: string) {
                                 name: true,
                                 description: true,
                                 price: true,
+                                costPrice: true,
                             }
                         }
                     }
@@ -214,7 +307,7 @@ export async function getOrderShippingLabel(orderId: string) {
         const response = await olivraison.getSticker([order.trackingID])
 
         if (response && response[0] && response[0].stickerFilePath) {
-            console.log('✅ Sticker found:', response[0].stickerFilePath)
+
             return {
                 success: true,
                 stickerUrl: response[0].stickerFilePath,
@@ -237,3 +330,48 @@ export async function getOrderShippingLabel(orderId: string) {
     }
 }
 
+/**
+ * Suppression groupée de commandes (Bulk Delete)
+ */
+export async function bulkDeleteOrders(orderIds: string[]) {
+    try {
+        await verifyAdmin()
+
+        if (!orderIds || orderIds.length === 0) {
+            return {
+                success: false,
+                error: 'Aucune commande sélectionnée'
+            }
+        }
+
+        // Supprimer les commandes (les items et l'historique de statut seront supprimés via Cascade ou manuellement si nécessaire)
+        // Note: Dans le schéma, OrderItem et OrderStatusHistory doivent avoir onDelete: Cascade sur orderId
+        await prisma.order.deleteMany({
+            where: {
+                id: { in: orderIds }
+            }
+        })
+
+        revalidatePath('/admin/orders')
+
+        await createAuditLog({
+            action: 'BULK_DELETE',
+            entity: 'ORDER',
+            entityId: 'MULTIPLE',
+            details: `Suppression groupée de ${orderIds.length} commandes`
+        })
+
+        sendTelegramMessage(`🗑️ *Suppression Massive*\n\n${orderIds.length} commandes ont été supprimées par l'administrateur.\n🕒 ${new Date().toLocaleString('fr-FR')}`).catch(console.error)
+
+        return {
+            success: true,
+            message: `${orderIds.length} commandes supprimées avec succès`
+        }
+    } catch (error) {
+        console.error('Erreur lors de la suppression groupée des commandes:', error)
+        return {
+            success: false,
+            error: 'Une erreur est survenue lors de la suppression'
+        }
+    }
+}

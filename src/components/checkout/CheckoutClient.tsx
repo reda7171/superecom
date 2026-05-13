@@ -1,7 +1,7 @@
 'use client'
 
 import { useCartStore } from '@/store/cart'
-import Image from 'next/image'
+import { normalizeImage } from '@/lib/utils'
 import { useRouter } from '@/i18n/routing'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -10,9 +10,9 @@ import { ArrowLeft, CheckCircle, Package, Truck, Wallet, Ticket, Loader2, ArrowR
 import { Link } from '@/i18n/routing'
 import CouponInput from '@/components/CouponInput'
 import { useTranslations } from 'next-intl'
-import { MOROCCO_CITIES } from '@/lib/constants/cities'
 import { useUIStore } from '@/store/ui'
 import { fbPixelEvents } from '@/lib/facebook-pixel'
+import { getActiveGifts } from '@/lib/actions/gifts'
 
 interface CheckoutForm {
     firstName: string
@@ -32,6 +32,7 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [coupon, setCoupon] = useState<any>(null)
+    const [gifts, setGifts] = useState<any[]>([])
     const t = useTranslations('Checkout')
 
     // Pré-remplir le formulaire si l'utilisateur est connecté
@@ -41,12 +42,53 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
         lastName: user.fullName?.split(' ').slice(1).join(' ') || ''
     } : {}
 
-    const { register, handleSubmit, formState: { errors } } = useForm<CheckoutForm>({
+    const { register, handleSubmit, getValues, formState: { errors } } = useForm<CheckoutForm>({
         defaultValues
     })
 
+    const [abandonedCartId, setAbandonedCartId] = useState<string | null>(null)
+
+    const saveAbandonedCart = async () => {
+        const data = getValues()
+        if (!data.phone && !data.email) return
+
+        try {
+            const res = await fetch('/api/abandoned-cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: abandonedCartId,
+                    phone: data.phone,
+                    email: data.email,
+                    fullName: `${data.firstName || ''} ${data.lastName || ''}`.trim(),
+                    items,
+                    total: finalTotal
+                })
+            })
+            const result = await res.json()
+            if (result.success && result.id) {
+                setAbandonedCartId(result.id)
+            }
+        } catch (e) {
+            console.error('Failed to save abandoned cart', e)
+        }
+    }
+
+    const registerWithTracker = (name: keyof CheckoutForm, options?: any) => {
+        const reg = register(name, options)
+        return {
+            ...reg,
+            onBlur: async (e: any) => {
+                reg.onBlur(e)
+                await saveAbandonedCart()
+            }
+        }
+    }
+
     useEffect(() => {
         setMounted(true)
+        // Fetch active gifts
+        getActiveGifts().then(setGifts)
     }, [])
 
     useEffect(() => {
@@ -63,11 +105,13 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
         }
     }, [mounted])
 
+    const [isSuccess, setIsSuccess] = useState(false)
+
     useEffect(() => {
-        if (mounted && items.length === 0) {
+        if (mounted && items.length === 0 && !isSuccess) {
             router.replace('/cart')
         }
-    }, [mounted, items.length, router])
+    }, [mounted, items.length, router, isSuccess])
 
     if (!mounted) return null
 
@@ -76,7 +120,8 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
     }
 
     const subtotal = getTotalPrice()
-    const shippingFee = subtotal >= 500 ? 0 : 30
+    const hasOnlyDigital = items.length > 0 && items.every(item => item.type === 'DIGITAL')
+    const shippingFee = hasOnlyDigital ? 0 : (subtotal >= 500 ? 0 : 30)
 
     let discountAmount = 0
     if (coupon) {
@@ -89,20 +134,34 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
 
     const finalTotal = Math.max(0, subtotal - discountAmount + shippingFee)
 
+    // Sélectionner le meilleur cadeau éligible
+    const eligibleGift = gifts
+        .filter(g => g.minAmount <= subtotal)
+        .sort((a, b) => b.minAmount - a.minAmount)[0]
+
     const onSubmit = async (data: CheckoutForm) => {
         setIsSubmitting(true)
         setError(null)
         fbPixelEvents.addPaymentInfo()
 
         try {
-            const orderItems = items.map(item => ({
-                productId: item.id,
-                quantity: item.quantity,
-                type: item.type,
-                price: Number(item.price)
-            }))
+            const orderItems = [
+                ...items.map(item => ({
+                    productId: item.id,
+                    quantity: item.quantity,
+                    type: item.type,
+                    price: Number(item.price)
+                })),
+                // Ajouter le cadeau éligible s'il existe
+                ...(eligibleGift ? [{
+                    productId: eligibleGift.id,
+                    quantity: 1,
+                    type: 'GIFT' as const,
+                    price: 0
+                }] : [])
+            ]
 
-            console.log('Sending order items:', orderItems)
+
 
             const result = await createOrder({
                 fullName: `${data.firstName} ${data.lastName}`,
@@ -128,9 +187,24 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
                     }))
                 })
 
+                // Delete the abandoned cart now that it's complete
+                if (abandonedCartId) {
+                    fetch('/api/abandoned-cart', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: abandonedCartId })
+                    }).catch(() => {})
+                }
+
+                setIsSuccess(true)
                 clearCart()
-                showNotification(t('OrderSuccess'), 'success')
-                router.push(`/checkout/success/${result.orderId}`)
+                if (user) {
+                    showNotification('Commande reussi...', 'success')
+                    router.push('/orders')
+                } else {
+                    showNotification(t('OrderSuccess'), 'success')
+                    router.push(`/checkout/success/${result.orderId}`)
+                }
             } else {
                 setError(result.error || t('Errors.UnexpectedError'))
                 showNotification(result.error || t('Errors.UnexpectedError'), 'error')
@@ -169,7 +243,7 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('FirstName')}</label>
                                     <input
-                                        {...register('firstName', { required: t('Errors.FirstNameRequired') })}
+                                        {...registerWithTracker('firstName', { required: t('Errors.FirstNameRequired') })}
                                         className="w-full px-6 py-5 bg-pixio-cream/50 border-2 border-transparent rounded-[1.5rem] focus:bg-white focus:border-black outline-none transition-all font-black text-black"
                                     />
                                     {errors.firstName && <p className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">{errors.firstName.message}</p>}
@@ -177,32 +251,24 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('LastName')}</label>
                                     <input
-                                        {...register('lastName', { required: t('Errors.LastNameRequired') })}
+                                        {...registerWithTracker('lastName', { required: t('Errors.LastNameRequired') })}
                                         className="w-full px-6 py-5 bg-pixio-cream/50 border-2 border-transparent rounded-[1.5rem] focus:bg-white focus:border-black outline-none transition-all font-black text-black"
                                     />
                                     {errors.lastName && <p className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">{errors.lastName.message}</p>}
                                 </div>
                             </div>
 
-                            <div className="space-y-3 mb-8">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('Email')}</label>
+                            <div className="hidden">
                                 <input
-                                    {...register('email', {
-                                        required: t('Errors.EmailRequired'),
-                                        pattern: {
-                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                            message: t('Errors.EmailInvalid')
-                                        }
-                                    })}
-                                    className="w-full px-6 py-5 bg-pixio-cream/50 border-2 border-transparent rounded-[1.5rem] focus:bg-white focus:border-black outline-none transition-all font-black text-black"
+                                    {...register('email')}
+                                    type="hidden"
                                 />
-                                {errors.email && <p className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">{errors.email.message}</p>}
                             </div>
 
                             <div className="space-y-3 mb-8">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('MobileNumber')}</label>
                                 <input
-                                    {...register('phone', {
+                                    {...registerWithTracker('phone', {
                                         required: t('Errors.PhoneRequired'),
                                         pattern: {
                                             value: /^(06|07|05)[0-9]{8}$/,
@@ -217,20 +283,11 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('City')}</label>
-                                    <div className="relative">
-                                        <select
-                                            {...register('city', { required: t('Errors.CityRequired') })}
-                                            className="w-full px-6 py-5 bg-pixio-cream/50 border-2 border-transparent rounded-[1.5rem] focus:bg-white focus:border-black outline-none transition-all font-black text-black appearance-none"
-                                        >
-                                            <option value="">{t('ChooseCity')}</option>
-                                            {MOROCCO_CITIES.map(city => (
-                                                <option key={city} value={city}>{city}</option>
-                                            ))}
-                                        </select>
-                                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none rtl:left-6 rtl:right-auto">
-                                            <div className="w-2 h-2 border-r-2 border-b-2 border-black rotate-45"></div>
-                                        </div>
-                                    </div>
+                                    <input
+                                        {...registerWithTracker('city', { required: t('Errors.CityRequired') })}
+                                        placeholder={t('ChooseCity')}
+                                        className="w-full px-6 py-5 bg-pixio-cream/50 border-2 border-transparent rounded-[1.5rem] focus:bg-white focus:border-black outline-none transition-all font-black text-black"
+                                    />
                                     {errors.city && <p className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">{errors.city.message}</p>}
                                 </div>
                                 <div className="space-y-3">
@@ -264,8 +321,12 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
                                         <Wallet className="w-8 h-8" />
                                     </div>
                                     <div>
-                                        <p className="font-black text-black text-xl tracking-tight">{t('CashOnDelivery')}</p>
-                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">{t('PayWhenReceive')}</p>
+                                        <p className="font-black text-black text-xl tracking-tight">
+                                            {hasOnlyDigital ? 'Paiement à distance (Virement/CashPlus)' : t('CashOnDelivery')}
+                                        </p>
+                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                            {hasOnlyDigital ? 'Nous vous contacterons via WhatsApp pour le règlement.' : t('PayWhenReceive')}
+                                        </p>
                                     </div>
                                     <div className="ml-auto rtl:mr-auto rtl:ml-0">
                                         <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
@@ -288,12 +349,11 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
                                     <div key={item.id} className="flex gap-5 group">
                                         <div className="relative w-20 h-24 rounded-2xl overflow-hidden bg-pixio-cream shrink-0 border border-gray-50 group-hover:scale-105 transition-transform">
                                             {item.image ? (
-                                                <Image
-                                                    src={item.image}
+                                                <img
+                                                    src={normalizeImage(item.image)}
                                                     alt={item.title}
-                                                    fill
-                                                    className="object-cover"
-                                                    unoptimized
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -310,6 +370,30 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
                                         </div>
                                     </div>
                                 ))}
+
+                                {eligibleGift && (
+                                    <div className="flex gap-5 group border-2 border-indigo-100 p-3 rounded-2xl bg-indigo-50/30 animate-pulse">
+                                        <div className="relative w-20 h-24 rounded-2xl overflow-hidden bg-white shrink-0 border border-indigo-100 flex items-center justify-center">
+                                            {eligibleGift.image ? (
+                                                <img
+                                                    src={normalizeImage(eligibleGift.image)}
+                                                    alt={eligibleGift.name}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
+                                                />
+                                            ) : (
+                                                <Package className="w-8 h-8 text-indigo-300" />
+                                            )}
+                                            <div className="absolute -top-1 -right-1 rtl:-left-1 rtl:right-auto px-2 h-6 bg-indigo-600 text-white text-[10px] font-black rounded-xl flex items-center justify-center shadow-xl uppercase tracking-tighter">
+                                                Offert
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 py-1">
+                                            <p className="text-sm font-black text-indigo-900 line-clamp-2 leading-tight tracking-tight">{eligibleGift.name}</p>
+                                            <p className="text-[10px] font-black text-indigo-300 uppercase tracking-widest mt-2">{eligibleGift.minAmount > 0 ? `Palier: ${eligibleGift.minAmount} MAD` : 'Cadeau de bienvenue'}</p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

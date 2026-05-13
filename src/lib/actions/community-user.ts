@@ -48,11 +48,17 @@ export async function updateProfile(formData: FormData) {
                 const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'profiles')
                 await mkdir(uploadDir, { recursive: true })
 
-                const ext = path.extname(file.name) || '.jpg'
-                const fileName = `${randomUUID()}${ext}`
+                // --- OPTIMISATION SHARP ---
+                const sharp = (await import('sharp')).default
+                const processedBuffer = await sharp(buffer)
+                    .resize(400, 400, { fit: 'cover' }) // Format carré pour profil
+                    .webp({ quality: 80 })
+                    .toBuffer()
+
+                const fileName = `${randomUUID()}.webp`
                 const filePath = path.join(uploadDir, fileName)
 
-                await writeFile(filePath, buffer)
+                await writeFile(filePath, processedBuffer)
                 imageUrl = `/uploads/profiles/${fileName}`
             } catch (err) {
                 console.error('Upload Error:', err)
@@ -78,7 +84,8 @@ export async function updateProfile(formData: FormData) {
     const validated = ProfileSchema.safeParse(data)
 
     if (!validated.success) {
-        return { success: false, error: validated.error.errors[0].message }
+        const firstError = validated.error.issues[0]?.message || 'Données invalides'
+        return { success: false, error: firstError }
     }
 
     try {

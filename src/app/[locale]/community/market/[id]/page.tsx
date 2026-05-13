@@ -3,7 +3,8 @@ import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
-import Image from 'next/image'
+import { normalizeImage } from '@/lib/utils'
+import ImageWithFallback from '@/components/ImageWithFallback'
 import { BookOpen, MapPin, Star, Calendar, RefreshCw, ArrowLeft, ShieldCheck, MessageCircle } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 
@@ -43,12 +44,10 @@ export default async function CommunityBookDetailPage({
                         <div className="absolute inset-0 bg-pixio-yellow rounded-[3rem] rotate-3 -z-10 opacity-50 scale-105 blur-sm"></div>
                         <div className="relative aspect-[3/4] bg-white rounded-[2.5rem] shadow-2xl shadow-black/10 overflow-hidden border-2 border-black group">
                             {book.image ? (
-                                <Image
+                                <ImageWithFallback
                                     src={book.image}
                                     alt={book.title}
-                                    fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                                    unoptimized
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                 />
                             ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center bg-pixio-yellow/20">
@@ -100,12 +99,10 @@ export default async function CommunityBookDetailPage({
 
                                 <div className="relative w-24 h-24 rounded-full border-4 border-pixio-yellow overflow-hidden bg-gray-800 mb-2">
                                     {book.owner.image ? (
-                                        <Image
+                                        <ImageWithFallback
                                             src={book.owner.image}
                                             alt={book.owner.fullName}
-                                            fill
-                                            className="object-cover"
-                                            unoptimized
+                                            className="w-full h-full object-cover"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-3xl font-black">

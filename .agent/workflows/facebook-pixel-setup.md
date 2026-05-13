@@ -12,7 +12,7 @@ description: Configuration Facebook Pixel pour Riwaya
 ### 2. Créer le Pixel
 1. Choisissez "Meta Pixel"
 2. Nommez-le : **Riwaya - Production**
-3. Entrez l'URL : `https://riwaya.com` (ou votre domaine)
+3. Entrez l'URL : `https://riwaya.store` (ou votre domaine)
 4. Cliquez sur "Continue"
 
 ### 3. Choisir la méthode d'installation

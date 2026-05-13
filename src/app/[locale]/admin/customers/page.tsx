@@ -1,13 +1,13 @@
 import { prisma } from '@/lib/prisma'
-import { Users, ShoppingBag, MapPin, Phone } from 'lucide-react'
+import { Users, Zap, RefreshCw } from 'lucide-react'
+import CustomersTable from '@/components/admin/CustomersTable'
 
-async function getCustomers() {
-    // On groupe par téléphone pour identifier les clients uniques
+async function syncCustomers() {
+    // Cette fonction permet de peupler la table Customer à partir des commandes existantes
     const orders = await prisma.order.findMany({
         orderBy: { createdAt: 'desc' },
     })
 
-    // Map pour stocker les clients uniques
     const customersMap = new Map()
 
     orders.forEach(order => {
@@ -15,6 +15,7 @@ async function getCustomers() {
             customersMap.set(order.phone, {
                 fullName: order.fullName,
                 phone: order.phone,
+                email: order.email,
                 city: order.city,
                 address: order.address,
                 totalOrders: 0,
@@ -27,82 +28,97 @@ async function getCustomers() {
         client.totalSpent += order.total
     })
 
-    return Array.from(customersMap.values())
+    const customersToCreate = Array.from(customersMap.values())
+
+    // Création massive (on utilise createMany si supporté, sinon boucle)
+    for (const c of customersToCreate) {
+        await prisma.customer.upsert({
+            where: { phone: c.phone },
+            update: {
+                totalOrders: c.totalOrders,
+                totalSpent: c.totalSpent,
+                lastOrderDate: c.lastOrderDate,
+                fullName: c.fullName,
+                email: c.email,
+                city: c.city,
+                address: c.address
+            },
+            create: c
+        })
+    }
 }
+
+async function getCustomers() {
+    let customers = await prisma.customer.findMany({
+        orderBy: { updatedAt: 'desc' },
+    })
+
+    // Si la table est vide, on tente de synchroniser
+    if (customers.length === 0) {
+        await syncCustomers()
+        customers = await prisma.customer.findMany({
+            orderBy: { updatedAt: 'desc' },
+        })
+    }
+
+    return customers.map(c => ({
+        ...c,
+        id: c.id,
+        fullName: c.fullName,
+        phone: c.phone,
+        email: c.email || '',
+        city: c.city || '',
+        address: c.address || '',
+        totalOrders: c.totalOrders,
+        totalSpent: c.totalSpent,
+        lastOrderDate: c.lastOrderDate
+    }))
+}
+
+import CustomersPageClient from './CustomersPageClient'
 
 export default async function AdminCustomersPage() {
     const customers = await getCustomers()
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-900">Gestion des Clients</h1>
-                <div className="bg-blue-100 text-blue-700 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    {customers.length} Clients uniques
+        <div className="space-y-12">
+            {/* Header section style Riwaya */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-gray-100">
+                <div>
+                    <h1 className="text-5xl lg:text-6xl font-black text-black tracking-tighter mb-2">
+                        Lecteurs<span className="text-gray-200">.</span>
+                    </h1>
+                    <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">
+                        Base de données centralisée ({customers.length})
+                    </p>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                    <div className="bg-black text-white px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest flex items-center gap-3 shadow-xl shadow-black/10">
+                        <Users className="w-4 h-4 text-gray-400" />
+                        <span>Total {customers.length} Profils</span>
+                    </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                        <tr>
-                            <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase tracking-wider">Client</th>
-                            <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase tracking-wider">Localisation</th>
-                            <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase tracking-wider">Commandes</th>
-                            <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase tracking-wider">Total Dépensé</th>
-                            <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase tracking-wider">Dernière activité</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                        {customers.length === 0 ? (
-                            <tr>
-                                <td colSpan={5} className="px-6 py-12 text-center text-gray-500 font-medium">
-                                    Aucun client enregistré pour le moment.
-                                </td>
-                            </tr>
-                        ) : (
-                            customers.map((customer) => (
-                                <tr key={customer.phone} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-black shadow-md">
-                                                {customer.fullName.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <div className="text-sm font-bold text-gray-900">{customer.fullName}</div>
-                                                <div className="text-xs text-gray-500 flex items-center gap-1">
-                                                    <Phone className="w-3 h-3" />
-                                                    {customer.phone}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-gray-900 flex items-center gap-1">
-                                            <MapPin className="w-4 h-4 text-gray-400" />
-                                            {customer.city}
-                                        </div>
-                                        <div className="text-xs text-gray-500 truncate max-w-xs">{customer.address}</div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100">
-                                            <ShoppingBag className="w-3 h-3" />
-                                            {customer.totalOrders}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-black text-gray-900">
-                                        {customer.totalSpent.toFixed(0)} MAD
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {new Date(customer.lastOrderDate).toLocaleDateString('fr-FR')}
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+            {/* Statistiques rapides */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                    { label: 'Volume Ventes', value: `${customers.reduce((acc, c) => acc + c.totalSpent, 0).toLocaleString()} MAD` },
+                    { label: 'Commandes', value: `${customers.reduce((acc, c) => acc + c.totalOrders, 0)} Total` },
+                    { label: 'Panier Moyen', value: `${(customers.reduce((acc, c) => acc + c.totalSpent, 0) / (customers.reduce((acc, c) => acc + c.totalOrders, 0) || 1)).toFixed(0)} MAD` },
+                    { label: 'LTV Moyen', value: `${(customers.reduce((acc, c) => acc + c.totalSpent, 0) / (customers.length || 1)).toFixed(0)} MAD` }
+                ].map((stat, i) => (
+                    <div key={i} className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">{stat.label}</p>
+                        <p className="text-3xl font-black text-black tracking-tighter">
+                            {stat.value}
+                        </p>
+                    </div>
+                ))}
             </div>
+
+            <CustomersPageClient initialCustomers={customers} />
         </div>
     )
 }

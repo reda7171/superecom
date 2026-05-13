@@ -10,7 +10,7 @@ const ExchangeRequestSchema = z.object({
     bookRequestedId: z.string().uuid(),
     bookOfferedId: z.string().uuid().optional(), // Optionnel si crédit
     message: z.string().optional(),
-    type: z.enum(['DIRECT', 'CREDIT']),
+    type: z.literal('DIRECT'),
     deliveryMethod: z.enum(['MEETUP', 'SHIPPING', 'LOCKER']).optional(),
     meetingPoint: z.string().optional(),
     meetingDate: z.string().optional(),
@@ -69,9 +69,6 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
             if (offeredBook.status !== 'AVAILABLE') {
                 return { success: false, error: "Votre livre proposé n'est pas disponible" }
             }
-        } else if (data.type === 'CREDIT') {
-            // Vérifier solde crédits (si on implémente le coût maintenant)
-            // Pour l'instant on laisse passer, la validation se fera à l'acceptation
         }
 
         // 3. Créer l'échange
@@ -81,7 +78,7 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
                 responderId: requestedBook.ownerId,
                 bookRequestedId: requestedBook.id,
                 bookOfferedId: data.bookOfferedId || null,
-                type: data.type as 'DIRECT' | 'CREDIT',
+                type: 'DIRECT',
                 message: data.message || '',
                 status: 'PENDING',
                 deliveryMethod: data.deliveryMethod || null,
@@ -208,21 +205,8 @@ export async function acceptExchange(exchangeId: string) {
                 if (exchange.bookOffered.status !== 'AVAILABLE') {
                     throw new Error("Le livre proposé n'est plus disponible")
                 }
-            } else if (exchange.type === 'CREDIT') {
-                if (exchange.requester.credits < 1) {
-                    throw new Error("L'utilisateur n'a plus assez de crédits")
-                }
-
-                // Transfert de crédit
-                await tx.user.update({
-                    where: { id: exchange.requesterId },
-                    data: { credits: { decrement: 1 } }
-                })
-                await tx.user.update({
-                    where: { id: exchange.responderId },
-                    data: { credits: { increment: 1 } }
-                })
             }
+
 
             // Mettre à jour l'échange
             await tx.exchange.update({

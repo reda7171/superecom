@@ -164,9 +164,9 @@ export function getPaginationParams(page: number = 1, limit: number = 12) {
 export function getSearchWhere(search: string): Prisma.BookWhereInput {
     return {
         OR: [
-            { title: { contains: search, mode: 'insensitive' as const } },
-            { author: { contains: search, mode: 'insensitive' as const } },
-            { description: { contains: search, mode: 'insensitive' as const } },
+            { title: { contains: search } },
+            { author: { contains: search } },
+            { description: { contains: search } },
         ]
     }
 }

@@ -8,25 +8,36 @@ import { revalidatePath } from 'next/cache'
 /**
  * Récupère les articles de blog publiés avec pagination
  */
-export async function getPublishedPosts(page = 1, limit = 9) {
+export async function getPublishedPosts(page: number = 1, limit: number = 9, category?: string, language: string = 'fr') {
     const skip = (page - 1) * limit
+    const where: any = { published: true, language }
+    if (category) {
+        where.category = category
+    }
 
-    const [posts, total] = await prisma.$transaction([
+    const [posts, total] = await Promise.all([
         prisma.post.findMany({
-            where: { published: true },
-            orderBy: { publishedAt: 'desc' },
+            where,
             skip,
             take: limit,
+            orderBy: { publishedAt: 'desc' },
             include: {
                 author: {
                     select: {
                         fullName: true,
                         image: true
                     }
+                },
+                _count: {
+                    select: {
+                        comments: {
+                            where: { isApproved: true }
+                        }
+                    }
                 }
             }
         }),
-        prisma.post.count({ where: { published: true } })
+        prisma.post.count({ where })
     ])
 
     return {
@@ -38,6 +49,18 @@ export async function getPublishedPosts(page = 1, limit = 9) {
             totalPages: Math.ceil(total / limit)
         }
     }
+}
+
+/**
+ * Récupère les catégories uniques
+ */
+export async function getPostCategories(language: string = 'fr') {
+    const categories = await prisma.post.findMany({
+        where: { published: true, category: { not: null }, language },
+        select: { category: true },
+        distinct: ['category']
+    })
+    return categories.map((c) => c.category).filter(Boolean) as string[]
 }
 
 /**
@@ -53,6 +76,18 @@ export async function getPostBySlug(slug: string) {
                     image: true,
                     bio: true
                 }
+            },
+            comments: {
+                where: { isApproved: true },
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    user: {
+                        select: { fullName: true, image: true }
+                    }
+                }
+            },
+            _count: {
+                select: { comments: { where: { isApproved: true } } }
             }
         }
     })
@@ -63,9 +98,9 @@ export async function getPostBySlug(slug: string) {
 /**
  * Récupère les derniers articles pour la page d'accueil (optionnel)
  */
-export async function getRecentPosts(limit = 3) {
+export async function getRecentPosts(limit = 3, language: string = 'fr') {
     return prisma.post.findMany({
-        where: { published: true },
+        where: { published: true, language },
         orderBy: { publishedAt: 'desc' },
         take: limit,
         select: {
@@ -151,7 +186,13 @@ export async function createPost(data: any) {
                 coverImage: data.coverImage,
                 published: data.published,
                 publishedAt: data.published ? new Date() : null,
-                authorId: adminId
+                authorId: adminId,
+                category: data.category,
+                tags: data.tags || null,
+                language: data.language || 'fr',
+                books: data.bookIds ? {
+                    connect: data.bookIds.map((id: string) => ({ id }))
+                } : undefined
             }
         })
 
@@ -177,7 +218,13 @@ export async function updatePost(id: string, data: any) {
                 content: data.content,
                 coverImage: data.coverImage,
                 published: data.published,
-                publishedAt: data.published ? (data.publishedAt || new Date()) : null,
+                publishedAt: data.published && !data.publishedAt ? new Date() : data.publishedAt,
+                category: data.category,
+                tags: data.tags || null,
+                language: data.language || 'fr',
+                books: {
+                    set: data.bookIds ? data.bookIds.map((id: string) => ({ id })) : []
+                }
             }
         })
 
@@ -210,7 +257,51 @@ export async function deletePost(id: string) {
 
 export async function getPostById(id: string) {
     return prisma.post.findUnique({
-        where: { id }
+        where: { id },
+        include: {
+            books: {
+                select: { id: true, title: true }
+            }
+        }
     })
+}
+
+/**
+ * Récupère les articles parlant d'un livre spécifique
+ */
+export async function getPostsByBookId(bookId: string, language: string = 'fr') {
+    return prisma.post.findMany({
+        where: {
+            published: true,
+            language,
+            books: {
+                some: { id: bookId }
+            }
+        },
+        orderBy: { publishedAt: 'desc' },
+        select: {
+            id: true,
+            title: true,
+            slug: true,
+            excerpt: true,
+            coverImage: true,
+            publishedAt: true
+        }
+    })
+}
+
+/**
+ * Incrémente le compteur de vues d'un article
+ */
+export async function incrementPostViews(id: string) {
+    try {
+        await prisma.post.update({
+            where: { id },
+            data: { viewCount: { increment: 1 } }
+        })
+        return { success: true }
+    } catch (error) {
+        return { success: false }
+    }
 }
 

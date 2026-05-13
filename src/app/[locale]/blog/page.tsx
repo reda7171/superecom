@@ -1,16 +1,32 @@
-import { getPublishedPosts } from '@/lib/actions/blog'
+import { getPublishedPosts, getPostCategories } from '@/lib/actions/blog'
 import { Link } from '@/i18n/routing'
 import Image from 'next/image'
 import Header from '@/components/HeaderWithUser'
-import Footer from '@/components/Footer'
-import { ArrowRight, Calendar, User, Quote, Sparkles } from 'lucide-react'
+import Footer from '@/components/FooterWithFeatures'
+import { ArrowRight, Calendar, User, Quote, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react'
+import AdUnit from '@/components/AdUnit'
+import { getSetting } from '@/lib/actions/site-settings'
 import { getTranslations } from 'next-intl/server'
 
-export default async function BlogPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
-    const params = await searchParams
+export default async function BlogPage({ 
+    params,
+    searchParams 
+}: { 
+    params: Promise<{ locale: string }>,
+    searchParams: Promise<{ page?: string; category?: string }> 
+}) {
+    const { locale } = await params
+    const sParams = await searchParams
     const t = await getTranslations('Blog')
-    const page = Number(params.page) || 1
-    const { posts, pagination } = await getPublishedPosts(page)
+    const page = Number(sParams.page) || 1
+    const category = sParams.category || undefined
+    const [{ posts, pagination }, categories, adsenseId, adsenseEnabled, adsenseSidebarSlot] = await Promise.all([
+        getPublishedPosts(page, 9, category, locale),
+        getPostCategories(locale),
+        getSetting('adsense_publisher_id'),
+        getSetting('adsense_enabled'),
+        getSetting('adsense_slot_sidebar')
+    ])
 
     return (
         <div className="min-h-screen bg-pixio-cream font-sans">
@@ -31,7 +47,35 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
                         {t('Subtitle')}
                     </p>
                 </div>
+
+                {/* Categories Bar */}
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 relative z-10">
+                    <div className="flex flex-wrap justify-center gap-3">
+                        <Link
+                            href="/blog"
+                            className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${!category ? 'bg-black text-white shadow-xl shadow-black/20' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
+                        >
+                            Tous
+                        </Link>
+                        {categories.map((cat) => (
+                            <Link
+                                key={cat}
+                                href={`/blog?category=${cat}`}
+                                className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${category === cat ? 'bg-black text-white shadow-xl shadow-black/20' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
+                            >
+                                {cat}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
             </div>
+
+            <AdUnit 
+                publisherId={adsenseId || ""} 
+                slot={adsenseSidebarSlot || "blog_top_horizontal"} 
+                isEnabled={adsenseEnabled === 'true'} 
+                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10"
+            />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 {posts.length === 0 ? (
@@ -90,6 +134,11 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
                                                 <span>{post.author.fullName}</span>
                                             </div>
                                         )}
+                                        {post.category && (
+                                            <div className="flex items-center gap-1 bg-black text-white px-2 py-0.5 rounded-full text-[8px]">
+                                                <span>{post.category}</span>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <h2 className={`font-black text-black leading-tight mb-4 group-hover:text-pixio-pink transition-colors ${idx === 0 ? 'text-3xl md:text-5xl' : 'text-2xl'}`}>
@@ -118,20 +167,54 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
 
                 {/* Pagination */}
                 {pagination.totalPages > 1 && (
-                    <div className="mt-20 flex justify-center gap-2">
-                        {/* Simple pagination logic could be improved */}
-                        {Array.from({ length: pagination.totalPages }).map((_, i) => (
+                    <div className="mt-16 md:mt-24 flex flex-wrap items-center justify-center gap-2 md:gap-4">
+                        {/* Previous Button */}
+                        {page > 1 ? (
                             <Link
-                                key={i}
-                                href={`/blog?page=${i + 1}`}
-                                className={`w-12 h-12 flex items-center justify-center rounded-full text-sm font-black transition-all ${page === i + 1
-                                    ? 'bg-black text-white shadow-xl'
-                                    : 'bg-white text-gray-400 hover:bg-gray-100'
-                                    }`}
+                                href={`/blog?page=${page - 1}${category ? `&category=${category}` : ''}`}
+                                className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl md:rounded-2xl bg-white border border-gray-100 text-black hover:bg-black hover:text-white transition-all shadow-sm"
                             >
-                                {i + 1}
+                                <ChevronLeft className="w-5 h-5" />
                             </Link>
-                        ))}
+                        ) : (
+                            <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl md:rounded-2xl bg-gray-50 text-gray-300 border border-gray-100 cursor-not-allowed">
+                                <ChevronLeft className="w-5 h-5" />
+                            </div>
+                        )}
+
+                        {/* Page Numbers */}
+                        <div className="flex flex-wrap items-center justify-center gap-1 md:gap-2 bg-white px-2 py-2 md:px-4 rounded-2xl md:rounded-3xl border border-gray-100 shadow-sm">
+                            {Array.from({ length: pagination.totalPages }).map((_, i) => {
+                                const pageNum = i + 1;
+                                const isCurrent = page === pageNum;
+                                return (
+                                    <Link
+                                        key={i}
+                                        href={`/blog?page=${pageNum}${category ? `&category=${category}` : ''}`}
+                                        className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg md:rounded-xl text-xs font-black transition-all ${isCurrent
+                                            ? 'bg-black text-white'
+                                            : 'text-gray-400 hover:text-black hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        {pageNum}
+                                    </Link>
+                                )
+                            })}
+                        </div>
+
+                        {/* Next Button */}
+                        {page < pagination.totalPages ? (
+                            <Link
+                                href={`/blog?page=${page + 1}${category ? `&category=${category}` : ''}`}
+                                className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl md:rounded-2xl bg-white border border-gray-100 text-black hover:bg-black hover:text-white transition-all shadow-sm"
+                            >
+                                <ChevronRight className="w-5 h-5" />
+                            </Link>
+                        ) : (
+                            <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl md:rounded-2xl bg-gray-50 text-gray-300 border border-gray-100 cursor-not-allowed">
+                                <ChevronRight className="w-5 h-5" />
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

@@ -10,6 +10,7 @@ import { AlertTriangle, TrendingUp, Package, Star, FileText, MapPin, ShoppingCar
 import Image from 'next/image'
 import ExportButton from './ExportButton'
 import { exportSalesReport } from '@/lib/actions/export'
+import { normalizeImage } from '@/lib/utils'
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#0088fe', '#00c49f', '#ff8042']
 
@@ -148,7 +149,7 @@ export default function DashboardAnalytics() {
                         <MapPin size={20} className="text-orange-600" />
                         Évolution des ventes par ville
                     </h3>
-                    <div className="h-[400px] w-full">
+                    <div className="h-[250px] md:h-[400px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={data.cityRevenue}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
@@ -189,7 +190,7 @@ export default function DashboardAnalytics() {
                                 <div key={book.id} className="flex items-center justify-between p-3 bg-orange-50/50 rounded-lg border border-orange-100">
                                     <div className="flex items-center gap-3">
                                         <div className="relative w-10 h-10 rounded overflow-hidden">
-                                            <Image src={book.image} alt={book.title} fill className="object-cover" />
+                                            <Image src={normalizeImage(book.image)} alt={book.title} fill className="object-cover" />
                                         </div>
                                         <span className="font-medium text-sm text-gray-800 line-clamp-1">{book.title}</span>
                                     </div>
@@ -273,7 +274,7 @@ export default function DashboardAnalytics() {
                                 <div className="flex items-center gap-3">
                                     {product.image ? (
                                         <div className="relative w-10 h-10 rounded overflow-hidden border border-gray-100">
-                                            <Image src={product.image} alt={product.name} fill className="object-cover" />
+                                            <Image src={normalizeImage(product.image)} alt={product.name} fill className="object-cover" />
                                         </div>
                                     ) : (
                                         <div className="w-10 h-10 bg-white border rounded flex items-center justify-center text-xs font-bold text-gray-400">

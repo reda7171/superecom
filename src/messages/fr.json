@@ -1,4 +1,205 @@
 {
+    "KidsPage": {
+        "Title": "Mon Enfant",
+        "Description": "Découvrez notre collection magique de livres pour enfants, petites histoires et coloriages.",
+        "HeroBadge": "Le coin des petits prodiges",
+        "HeroTitle": "Des mondes <span class=\"text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500\">magiques</span> à explorer.",
+        "HeroDesc": "Éveillez leur imagination avec notre sélection d'histoires formidables, de livres éducatifs originaux et de cahiers de coloriage créatifs.",
+        "HeroBtnStory": "Lire une histoire",
+        "HeroBtnColoring": "Coloriages",
+        "SectionFeatures": {
+            "BadgeSubtitle": "Une sélection soignée pour les aider à grandir avec le sourire.",
+            "BadgeTitle": "Ce qui rend leurs lectures uniques",
+            "StoryTitle": "Histoires Inspirantes",
+            "StoryDesc": "Des récits qui stimulent la créativité et transmettent de belles valeurs.",
+            "LearnTitle": "Apprentissage Doux",
+            "LearnDesc": "Découvrir les chiffres, les lettres et le monde avec beaucoup de douceur.",
+            "ColorTitle": "Coloriages Magiques",
+            "ColorDesc": "Leurs personnages préférés prêts à prendre vie sous leurs crayons."
+        },
+        "SectionStories": {
+            "Badge": "Petites Histoires",
+            "Title": "Des récits pour rêver <br/> avant de dormir.",
+            "Desc": "Plongez dans un univers d'aventures et de contes merveilleux. Des histoires amusantes avec des animaux attachants et de courageux petits héros qui accompagneront les douces nuits de votre enfant.",
+            "Btn": "Découvrir notre collection"
+        },
+        "SectionColoring": {
+            "Badge": "Atelier Créatif",
+            "Title": "Laissez s'exprimer <br/> leur créativité.",
+            "Desc": "Nos albums de coloriage offrent des heures de divertissement et de création. Des formes simples pour les plus petits aux mandalas ludiques pour les plus grands.",
+            "Btn": "Voir les cahiers de coloriage"
+        },
+        "SectionLearning": {
+            "Badge": "Apprendre en s'amusant",
+            "Title": "Des premières lettres <br/> aux grands savoirs.",
+            "Desc": "Nous avons sélectionné des ouvrages pédagogiques qui rendent l'apprentissage passionnant. Alphabets, nombres, découverte du monde : tout est conçu pour éveiller leur curiosité naturelle."
+        },
+        "SectionWisdom": {
+            "Badge": "Découverte Magique",
+            "Title": "Une petite chouette <br/> pleine de sagesse.",
+            "Desc": "Lire dès le plus jeune âge renforce la concentration et l'empathie. Nos livres pour enfants sont pensés pour être de véritables compagnons de route dans leur développement personnel."
+        },
+        "SectionLibrary": {
+            "Badge": "La Bibliothèque Enchantée",
+            "Title": "Construisez leur <br/> propre tour de magie.",
+            "Desc": "Chaque livre ajouté à leur bibliothèque est une graine plantée dans leur esprit. Créez avec eux un espace merveilleux rempli de belles couleurs et de connaissances infinies.",
+            "Btn": "Voir nos packs enfants"
+        },
+        "CTA": {
+            "Title": "Prêts pour une nouvelle aventure ?",
+            "Desc": "Rejoignez des milliers de parents et offrez à vos enfants le cadeau d'une imagination sans limites.",
+            "Btn": "Explorer toute la boutique"
+        }
+    },
+    "UsbPage": {
+        "Title": "Clé USB",
+        "Description": "La clé USB éducative Riwaya. Plus de 500 heures de contenu éducatif pour enfants.",
+        "HeroBadge": "NOUVEAU · {seriesCount} séries · {episodesCount}+ épisodes",
+        "HeroTitleP1": "La Clé USB ",
+        "HeroTitleP2": "Éducative",
+        "HeroDesc": "<strong>500+ heures</strong> de vidéos éducatives pour vos enfants. <span class=\"text-green-600 font-bold\">Sans internet, sans pub.</span>",
+        "BtnOrder": "Commander — 349 DH",
+        "PriceNew": "349 DH",
+        "PriceOld": "499 DH",
+        "Discount": "-30%",
+        "HeroFooterText": "Paiement à la livraison · Livraison partout au Maroc",
+        "Badge500h": "500h+",
+        "Badge3Lang": "3 Langues",
+        "PromoTitleSub": "Pour toute la famille",
+        "PromoTitle": "Apprenez ensemble, grandissez ensemble",
+        "PromoDesc": "Un seul investissement pour des années de contenu éducatif de qualité.",
+        "CatalogTitle": "Catalogue Complet — {seriesCount} Séries",
+        "CatalogDesc": "Cliquez sur une carte pour voir un aperçu gratuit",
+        "Episodes": "épisodes",
+        "CatalogFooter": "+ Des centaines d'autres épisodes et bonus exclusifs inclus dans la clé USB.",
+        "HowTitle": "Comment ça marche ?",
+        "HowSteps": {
+            "Step1Title": "Commandez",
+            "Step1Desc": "Passez votre commande. Livraison en 2-4 jours partout au Maroc.",
+            "Step2Title": "Branchez",
+            "Step2Desc": "Branchez la clé sur votre TV, PC ou tablette. Aucune installation.",
+            "Step3Title": "Apprenez",
+            "Step3Desc": "Votre enfant accède instantanément à tout le contenu, sans Wi-Fi."
+        },
+        "CtaTitle": "Offrez le meilleur à votre enfant",
+        "CtaSub": "{episodesCount}+ épisodes · {seriesCount} séries · 3 langues",
+        "CtaDesc": "Un investissement unique de <strong>349 DH</strong> pour des années d'apprentissage.",
+        "CtaBtn": "Commander ma clé USB — 349 DH",
+        "CtaFooter": "Paiement à la livraison · Satisfait ou remboursé 7 jours",
+        "Features": {
+            "F1": "Compatible TV, PC & Tablette",
+            "F2": "Sans internet requis",
+            "F3": "Zéro publicité",
+            "F4": "Arabe · Français · Anglais",
+            "F5": "64 GB de contenu HD",
+            "F6": "Pour 2 à 12 ans"
+        },
+        "StickyMenu": {
+            "Catalog": "Catalogue",
+            "Guide": "Guide"
+        }
+    },
+    "Privacy": {
+        "Title": "Politique de Confidentialité",
+        "Description": "Découvrez comment Riwaya collecte, utilise et protège vos données personnelles."
+    },
+    "Terms": {
+        "Title": "Conditions Générales",
+        "Description": "Veuillez lire attentivement nos conditions d'utilisation. Elles définissent les règles d'utilisation de la plateforme Riwaya."
+    },
+    "AboutPage": {
+        "Hero": {
+            "Title": "Notre Histoire",
+            "Subtitle": "Découvrez qui nous sommes et notre mission pour démocratiser la lecture au Maroc."
+        },
+        "Quote": {
+            "Text": "Un livre est un rêve que vous tenez entre vos mains.",
+            "Source": "Sagesse Littéraire"
+        },
+        "Mission": {
+            "Badge": "Notre Mission",
+            "Title1": "Connecter les esprits",
+            "Title2": "à travers les livres.",
+            "Desc1": "Chez Riwaya, nous croyons au pouvoir de la lecture pour transformer des vies. Notre mission est de rendre les livres accessibles, abordables et disponibles pour tous.",
+            "Desc2": "Nous construisons plus qu'une simple librairie, nous bâtissons une communauté de lecteurs passionnés."
+        },
+        "Values": {
+            "Passion": {
+                "Title": "Passion",
+                "Desc": "L'amour des livres est au cœur de tout ce que nous faisons."
+            },
+            "Quality": {
+                "Title": "Qualité",
+                "Desc": "Nous sélectionnons soigneusement chaque livre de notre catalogue."
+            },
+            "Trust": {
+                "Title": "Confiance",
+                "Desc": "Nous bâtissons des relations durables avec nos lecteurs."
+            },
+            "Proximity": {
+                "Title": "Proximité",
+                "Desc": "Toujours à votre écoute pour vous conseiller la meilleure lecture."
+            }
+        },
+        "Team": {
+            "Title": "L'équipe Riwaya",
+            "Subtitle": "Les personnes derrière la magie",
+            "Member1": {
+                "Name": "Ahmed Benali",
+                "Role": "Fondateur",
+                "Bio": "Passionné par la littérature depuis son plus jeune âge, Ahmed a fondé Riwaya pour partager cette passion."
+            },
+            "Member2": {
+                "Name": "Youssef El Idrissi",
+                "Role": "Directeur Technique",
+                "Bio": "Youssef s'assure que votre expérience sur la plateforme soit fluide et agréable."
+            },
+            "Member3": {
+                "Name": "Sara Benali",
+                "Role": "Responsable Éditoriale",
+                "Bio": "Sara sélectionne les meilleurs titres et packs pour nos lecteurs."
+            },
+            "Member4": {
+                "Name": "Fatima Zahra",
+                "Role": "Service Client",
+                "Bio": "Fatima est toujours prête à vous aider et à répondre à vos questions."
+            }
+        },
+        "WhyUs": {
+            "Title": "Pourquoi nous choisir",
+            "Subtitle": "Notre engagement envers vous",
+            "LiveStock": {
+                "Title": "Stock en temps réel",
+                "Desc": "Disponibilité garantie de nos livres."
+            },
+            "ExpertHelp": {
+                "Title": "Conseil expert",
+                "Desc": "Une équipe de passionnés pour vous guider."
+            },
+            "SafeArrival": {
+                "Title": "Livraison sécurisée",
+                "Desc": "Vos livres arrivent en parfait état."
+            }
+        },
+        "CTA": {
+            "Title": "Commencez votre voyage",
+            "Subtitle": "Explorez notre collection de livres et de packs",
+            "SelectLibrary": "Voir la Librairie",
+            "ViewBundles": "Découvrir les Packs"
+        }
+    },
+    "AuthorsPage": {
+      "Title": "Nos Auteurs | Riwaya",
+      "Heading": "Découvrez nos auteurs",
+      "Subheading": "Explorez les esprits brillants derrière vos livres préférés.",
+      "SearchPlaceholder": "Rechercher un auteur...",
+      "NoResults": "Aucun auteur trouvé pour cette recherche.",
+      "BooksCount": "{count, plural, =0 {Aucun livre} one {# livre} other {# livres}}",
+      "ViewBooks": "Voir ses livres",
+      "Featured": "Auteurs à la une",
+      "AllAuthors": "Tous nos auteurs",
+      "AuthorLabel": "Auteur"
+    },
     "HomePage": {
         "hero": {
             "Badge": "Sélections 2024",
@@ -35,9 +236,9 @@
         "Features": {
             "ShippingTitle": "Livraison Express",
             "ShippingDesc": "Couverture partout au Maroc en un temps record.",
-            "PaymentTitle": "Paiement Sécurisé",
+            "PaymentTitle": "Paiement à la livraison",
             "PaymentDesc": "Paiement à la livraison en toute confiance.",
-            "PacksTitle": "Packs Premium",
+            "PacksTitle": "Pack de livres à 100dhs",
             "PacksDesc": "Des sélections soignées à des prix étudiés."
         },
         "Quotes": {
@@ -58,7 +259,8 @@
             "Title": "Meilleures Ventes",
             "Description": "Découvrez les livres que nos lecteurs adorent le plus. Des favoris éprouvés qui ont transformé des milliers de vies.",
             "ViewAll": "Tout voir",
-            "NoData": "Aucune donnée de vente pour le moment"
+            "NoData": "Aucune donnée de vente pour le moment",
+            "Soon": "Bientôt disponible"
         },
         "BestAuthors": {
             "Subtitle": "Auteurs Vedettes",
@@ -111,12 +313,24 @@
                 "Readers": "Lecteurs satisfaits",
                 "Exchanges": "Échanges réussis"
             }
+        },
+        "Journal": {
+            "Subtitle": "Notre Journal",
+            "TitlePart1": "Derniers Articles",
+            "TitlePart2": "à Découvrir",
+            "ViewAll": "Tout Lire",
+            "ReadMore": "Lire l'article"
         }
     },
     "Navigation": {
+        "Clé fameux": "Clé fameux",
         "Home": "Accueil",
+        "Authors": "Auteurs",
         "Books": "Livres",
         "Packs": "Packs",
+        "Kids": "Mon enfant",
+        "UsbKey": "Clé USB",
+        "Digital": "Livres PDF",
         "Community": "Echanges",
         "Cart": "Panier",
         "Login": "Connexion",
@@ -150,11 +364,14 @@
         "Join": "Rejoindre",
         "Rights": "Tous droits réservés.",
         "BackToTop": "Revenir en haut",
-        "DevelopedBy": "Développé par <name>Reda</name>"
+        "DevelopedBy": "Développé par <name>Reda</name>",
+        "Privacy": "Confidentialité",
+        "Terms": "Conditions"
     },
     "Common": {
         "AddedToCartSuccess": "Article ajouté au panier avec succès !",
         "AddedToReadingList": "Ajouté à mes lectures !",
+        "RemovedFromReadingList": "Retiré de mes lectures !",
         "AddedToCartError": "Erreur lors de l'ajout au panier. Veuillez réessayer.",
         "BuyNow": "Acheter maintenant",
         "Price": "Prix",
@@ -336,6 +553,8 @@
     "Review": {
         "SuccessTitle": "Merci pour votre avis !",
         "SuccessDesc": "Votre témoignage aide les autres lecteurs à faire le bon choix.",
+        "SuccessNotification": "Avis envoyé avec succès !",
+        "ErrorNotification": "Une erreur est survenue lors de l'envoi de l'avis.",
         "Title": "Laissez votre avis",
         "GlobalRating": "Note globale",
         "FullName": "Nom complet",
@@ -376,10 +595,17 @@
         "Business & Finance": "Business & Finance",
         "Psychologie": "Psychologie",
         "Romans & Fiction": "Romans & Fiction",
+        "Roman & Fiction": "Roman & Fiction",
         "Religion": "Religion",
         "Organisation": "Organisation",
         "Philosophie": "Philosophie",
         "Productivité": "Productivité",
+        "Enfants": "Enfants",
+        "Coloriage": "Coloriage",
+        "Autre": "Autre",
+        "Histoire & Politique": "Histoire & Politique",
+        "Psychologie & Sociologie": "Psychologie & Sociologie",
+        "Religion & Spiritualité": "Religion & Spiritualité",
         "All": "Toutes les catégories"
     },
     "BooksPage": {
@@ -398,7 +624,8 @@
         "NoVolumes": "Aucun volume trouvé",
         "EmptyCollection": "Notre collection est vide pour ces filtres.",
         "EmptyFilters": "Effacer les filtres",
-        "Results": "Résultats"
+        "Results": "Résultats",
+        "AllAuthors": "Tous les auteurs"
     },
     "ReviewsSection": {
         "Title": "Avis Clients",
@@ -444,7 +671,8 @@
             "CONFIRMED": "Confirmée",
             "SHIPPED": "En cours de livraison",
             "DELIVERED": "Livrée",
-            "CANCELLED": "Annulée"
+            "CANCELLED": "Annulée",
+            "RETURNED": "Retournée"
         }
     },
     "Community": {
@@ -488,12 +716,16 @@
         },
         "BookForm": {
             "FormTitle": "Ajouter un livre",
+            "EditFormTitle": "Modifier le livre",
             "Title": "Titre du livre",
             "Author": "Auteur",
             "Condition": "État",
             "Description": "Description (optionnel)",
             "Isbn": "ISBN (optionnel)",
             "Submit": "Ajouter à ma bibliothèque",
+            "SaveChanges": "Enregistrer les modifications",
+            "Delete": "Supprimer le livre",
+            "ConfirmDelete": "Êtes-vous sûr de vouloir supprimer ce livre de votre bibliothèque ?",
             "EligibilityError": "Vous devez avoir effectué au moins une commande sur Riwaya pour ajouter un livre au système d'échange.",
             "Conditions": {
                 "NEW": "Neuf",
@@ -501,9 +733,11 @@
                 "USED": "Usé / Acceptable"
             },
             "Status": {
+                "Label": "Statut de visibilité",
                 "AVAILABLE": "Disponible",
                 "EXCHANGED": "Déjà échangé",
-                "PRIVATE": "Privé"
+                "PRIVATE": "Privé",
+                "HIDDEN": "Masqué (Brouillon)"
             }
         },
         "Market": {
@@ -732,28 +966,31 @@
         "VolumesInCollection": "Volumes dans cette Collection"
     },
     "CartPage": {
-        "Title": "Archive",
-        "CollectionCount": "{count} Collections",
-        "EmptyTitle": "Votre archive est vide",
-        "EmptyDesc": "Il semble que vous n'ayez pas encore sélectionné de volumes. Explorez nos sélections pour commencer votre collection.",
+        "Title": "Votre Panier",
+        "CollectionCount": "{count} Articles",
+        "EmptyTitle": "Votre panier est vide",
+        "EmptyDesc": "Il semble que vous n'ayez pas encore sélectionné de volumes. Explorez notre librairie.",
         "BrowseLibrary": "Parcourir la Librairie",
         "ViewBundles": "Voir les Packs",
         "BundleBadge": "PACK",
         "ItemUnit": "article",
         "VolumesIncluded": "{count} volumes inclus",
         "DeleteItem": "Supprimer l'article",
-        "ClearSelection": "Vider toute la sélection",
-        "SummaryTitle": "Résumé de l'Archive",
+        "ClearSelection": "Vider le panier",
+        "SummaryTitle": "Résumé de la commande",
         "Items": "Articles",
         "Shipping": "Livraison",
         "FreeShip": "Livraison Gratuite",
         "FreeShippingAd": "Plus que <span class=\"text-black\">{amount} MAD</span> pour la <span class=\"text-black\">LIVRAISON GRATUITE PARTOUT</span>.",
-        "TotalValue": "Valeur Totale",
-        "TaxesNote": "Taxes calculées dynamiquement",
+        "TotalValue": "Total",
+        "TaxesNote": "Taxes incluses (s'il y a lieu)",
         "BeginCheckout": "Passer à la commande",
-        "ContinueShopping": "Continuer la sélection",
+        "ContinueShopping": "Continuer les achats",
         "Secure": "Sécurisé",
-        "FastShip": "Envoi Rapide"
+        "FastShip": "Envoi Rapide",
+        "MinOrderWarning": "Le montant minimum de commande est de {min} MAD. Veuillez ajouter plus d'articles pour continuer.",
+        "RecommendedForYou": "Recommandé pour vous",
+        "CompleteYourCollection": "Complétez votre collection"
     },
     "Blog": {
         "Badge": "Journal",
@@ -773,11 +1010,102 @@
         "DeliveryAddress": "Adresse de livraison",
         "Contact": "Contact",
         "TrackingTitle": "Suivi de livraison",
-        "TrackButton": "Suivre",
+        "TrackButton": "Suivi de Commande",
         "Status": {
             "CONFIRMED": "Confirmée",
             "CANCELLED": "Annulée",
-            "PENDING": "En attente"
+            "PENDING": "En attente",
+            "SHIPPED": "En cours de livraison",
+            "DELIVERED": "Livrée",
+            "RETURNED": "Retournée"
         }
+    },
+    "Promotion": {
+        "SpecialPromotion": "Promotion Spéciale",
+        "GiftWaiting": "Un cadeau vous attend",
+        "GiftDescription": "Nous célébrons nos nouveaux lecteurs ! Recevez un marque-page exclusif ou un livre surprise avec votre prochaine commande.",
+        "BookmarksTitle": "Marque-pages Premium",
+        "BookmarksDesc": "Des designs uniques pour chaque type de lecteur.",
+        "RandomBookTitle": "Livre Aléatoire Offert",
+        "RandomBookDesc": "Parfois, la chance sourit : recevez un livre gratuit.",
+        "ExploreBtn": "Explorer la Collection",
+        "Offered": "Offert",
+        "ValidToday": "* Valable pour toute commande aujourd'hui"
+    },
+    "DigitalBooks": {
+        "seo": {
+            "Title": "Livres Numériques PDF",
+            "Description": "Téléchargez instantanément vos livres PDF. Accès immédiat, lecture sur tous vos appareils."
+        },
+        "hero": {
+            "Badge": "NOUVEAU · Livres numériques",
+            "TitlePart1": "Lire",
+            "TitlePart2": "Instantanément.",
+            "Description": "Téléchargez vos livres PDF en quelques secondes. Lisez sur mobile, tablette ou ordinateur, n'importe où, n'importe quand.",
+            "BrowseCatalog": "Voir le catalogue",
+            "LearnMore": "En savoir plus",
+            "InstantDownload": "Téléchargement instant",
+            "AllFormats": "Tous supports",
+            "stats": {
+                "Books": "Titres disponibles",
+                "Digital": "Format numérique",
+                "Access": "Accès immédiat"
+            }
+        },
+        "Features": {
+            "DownloadTitle": "Téléchargement Instant",
+            "DownloadDesc": "Recevez votre lien PDF par email dès confirmation de votre paiement.",
+            "SecureTitle": "Paiement Sécurisé",
+            "SecureDesc": "COD ou virement bancaire. Lien envoyé après confirmation.",
+            "AccessTitle": "Accès Multi-Appareils",
+            "AccessDesc": "Lisez sur votre mobile, tablette, ou ordinateur sans restriction."
+        },
+        "Catalog": {
+            "Subtitle": "Notre bibliothèque digitale",
+            "Title": "Catalogue PDF",
+            "Description": "{count} livres numériques disponibles en téléchargement immédiat.",
+            "Empty": "Catalogue bientôt disponible",
+            "EmptyDesc": "Notre équipe prépare une sélection premium de livres numériques."
+        },
+        "HowItWorks": {
+            "Subtitle": "Processus simple",
+            "Title": "Comment ça marche",
+            "Step1Title": "Choisissez votre livre",
+            "Step1Desc": "Parcourez notre catalogue et sélectionnez les titres qui vous intéressent.",
+            "Step2Title": "Confirmez la commande",
+            "Step2Desc": "Remplissez le formulaire. Paiement par virement ou à la livraison selon disponibilité.",
+            "Step3Title": "Téléchargez instamment",
+            "Step3Desc": "Recevez le lien PDF par email dès validation. Accès immédiat à vie."
+        },
+        "CTA": {
+            "Title": "Votre prochaine lecture, maintenant.",
+            "Description": "Plus de 50 titres disponibles en format numérique. Téléchargez et lisez immédiatement.",
+            "Button": "Découvrir le catalogue"
+        },
+        "HomeSection": {
+            "Badge": "Nouveauté",
+            "Title": "Livres Numériques",
+            "Description": "Téléchargez vos livres PDF instantanément. Lisez sur tous vos appareils, sans délai de livraison.",
+            "Feature1": "Accès immédiat",
+            "Feature2": "Format PDF",
+            "Feature3": "Prix réduits",
+            "CTA": "Voir les livres PDF"
+        },
+        "Reader": {
+            "Title": "Lecteur Immersif",
+            "Next": "Suivant",
+            "Prev": "Précédent",
+            "Page": "Page",
+            "Loading": "Chargement du livre...",
+            "Fullscreen": "Plein écran",
+            "Exit": "Quitter",
+            "Close": "Fermer le lecteur"
+        }
+    },
+    "CookieConsent": {
+        "Title": "Cookies & Vie Privée",
+        "Description": "Nous utilisons des cookies pour améliorer votre expérience et diffuser des annonces adaptées via Google AdSense. En continuant, vous acceptez notre <link>politique de confidentialité</link>.",
+        "Accept": "Accepter tout",
+        "LearnMore": "En savoir plus"
     }
 }

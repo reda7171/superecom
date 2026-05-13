@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { BookOpen, Check } from 'lucide-react'
-import { addToReadingList } from '@/lib/actions/reading-list'
+import { BookOpen, Check, X } from 'lucide-react'
+import { addToReadingList, removeFromReadingListByBookId } from '@/lib/actions/reading-list'
 import { useUIStore } from '@/store/ui'
 import { ReadingStatus } from '@prisma/client'
 import { useReadingListStore } from '@/store/reading-list'
@@ -21,7 +21,7 @@ interface AddToReadingListProps {
 export default function AddToReadingListButton({ bookId, title, author, cover, totalPages = 300, className }: AddToReadingListProps) {
     const [loading, setLoading] = useState(false)
     const [mounted, setMounted] = useState(false)
-    const { addItem, isInReadingList } = useReadingListStore()
+    const { addItem, removeItem, isInReadingList } = useReadingListStore()
     const isAdded = isInReadingList(bookId)
     const { showNotification } = useUIStore()
     const t = useTranslations()
@@ -74,12 +74,46 @@ export default function AddToReadingListButton({ bookId, title, author, cover, t
         setLoading(false)
     }
 
+    const handleRemove = async (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+
+        if (!isAdded) return
+
+        setLoading(true)
+
+        const result = await removeFromReadingListByBookId(bookId)
+
+        if (result.success) {
+            showNotification(t('Common.RemovedFromReadingList') || 'Retiré de mes lectures', 'success')
+            removeItem(bookId)
+        } else {
+            if (result.error === 'Non autorisé' || result.error === 'Vous devez être connecté') {
+                removeItem(bookId)
+                showNotification(t('Common.RemovedFromReadingList') || 'Retiré de mes lectures', 'success')
+            } else {
+                showNotification(result.error || 'Erreur', 'error')
+            }
+        }
+        setLoading(false)
+    }
+
     if (!mounted) return <div className="p-2 w-9 h-9" />
 
     if (isAdded) {
         return (
-            <button disabled className={cn("p-2 text-emerald-600 bg-emerald-50 rounded-full", className)}>
-                <Check className="w-5 h-5" />
+            <button 
+                onClick={handleRemove}
+                disabled={loading} 
+                className={cn("p-2 text-emerald-600 bg-emerald-50 hover:bg-red-50 hover:text-red-500 rounded-full transition-all group", className)}
+                title={t('Common.RemovedFromReadingList') || "Retirer des lectures"}
+            >
+                {loading ? <BookOpen className="w-5 h-5 animate-pulse" /> : (
+                    <>
+                        <Check className="w-5 h-5 group-hover:hidden" />
+                        <X className="w-5 h-5 hidden group-hover:block" />
+                    </>
+                )}
             </button>
         )
     }

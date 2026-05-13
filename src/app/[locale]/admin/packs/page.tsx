@@ -1,4 +1,4 @@
-import { getPacks } from '@/lib/db/packs'
+import { adminGetPacks } from '@/lib/db/packs'
 import { getBooks } from '@/lib/db/books'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
@@ -6,7 +6,7 @@ import PacksTable from './PacksTable'
 
 export default async function PacksPage() {
     const [packs, books] = await Promise.all([
-        getPacks(),
+        adminGetPacks(),
         getBooks({ active: true }),
     ])
 

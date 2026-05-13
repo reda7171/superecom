@@ -10,6 +10,7 @@ const STAGES = [
     { value: 'CONFIRMED', label: 'Confirmée', color: 'bg-blue-100 text-blue-800' },
     { value: 'SHIPPED', label: 'En livraison', color: 'bg-purple-100 text-purple-800' },
     { value: 'DELIVERED', label: 'Livrée', color: 'bg-green-100 text-green-800' },
+    { value: 'RETURNED', label: 'Retournée', color: 'bg-orange-100 text-orange-800' },
     { value: 'CANCELLED', label: 'Annulée', color: 'bg-red-100 text-red-800' },
 ]
 
@@ -21,6 +22,15 @@ export default function OrderStatusUpdater({ orderId, currentStatus }: { orderId
     const currentStage = STAGES.find(s => s.value === currentStatus) || STAGES[0]
 
     const handleUpdate = async (newStatus: string) => {
+        // Confirmation pour les statuts destructifs
+        const needsConfirm = newStatus === 'RETURNED' || newStatus === 'CANCELLED'
+        if (needsConfirm) {
+            const label = newStatus === 'RETURNED' ? 'Retournée' : 'Annulée'
+            const ok = window.confirm(
+                `Marquer comme "${label}" ?\n\nAttention : le stock des livres sera automatiquement réintégré si la commande était confirmée/expédiée.`
+            )
+            if (!ok) return
+        }
         setIsUpdating(true)
         setIsOpen(false)
         try {

@@ -12,4 +12,4 @@ Allow: /*/books
 Allow: /*/packs
 
 # Sitemap
-Sitemap: https://riwaya.com/sitemap.xml
+Sitemap: https://riwaya.store/sitemap.xml

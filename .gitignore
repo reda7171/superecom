@@ -45,3 +45,26 @@ next-env.d.ts
 /prisma/migrations
 
 /src/generated/prisma
+
+# Agent specific
+brain/
+scratch/
+.gemini/
+.agent/
+
+# Backups and temporary files
+*.sql
+*.tar
+*.zip
+*.gz
+/backups/
+/public/uploads/backup_*
+
+# Public uploads (except placeholders)
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/book-placeholder.png
+
+# Standalone build artifacts
+server.js
+/scripts/bundle-standalone.js

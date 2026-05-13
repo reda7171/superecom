@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         const limiter = await rateLimit(`webhook_${ip}`, { limit: 100, windowMs: 60000 })
 
         if (!limiter.success) {
-            console.warn(`[SECURITY] Webhook rate limit exceeded from IP: ${ip}`)
+
             return NextResponse.json(
                 { error: 'Too many requests' },
                 { status: 429 }
@@ -86,11 +86,7 @@ export async function POST(request: NextRequest) {
         // Parser le JSON après vérification
         const payload = JSON.parse(rawBody)
 
-        console.log('📦 Webhook Olivraison reçu:', {
-            trackingID: payload.trackingID,
-            status: payload.status,
-            timestamp: new Date().toISOString()
-        })
+
 
         // OWASP A03: Validation et sanitization des inputs
         const {
@@ -117,7 +113,7 @@ export async function POST(request: NextRequest) {
 
         // Valider que le statut est dans la liste autorisée
         if (!Object.keys(STATUS_MAPPING).includes(status)) {
-            console.warn(`[SECURITY] Unknown status received: ${status}`)
+
             return NextResponse.json(
                 { error: 'Invalid status' },
                 { status: 400 }
@@ -133,7 +129,7 @@ export async function POST(request: NextRequest) {
         })
 
         if (!order) {
-            console.warn(`⚠️ Commande introuvable pour trackingID: ${trackingID}`)
+
             return NextResponse.json(
                 { message: 'Order not found, but webhook received' },
                 { status: 200 } // Retourner 200 pour éviter les retries Olivraison
@@ -167,7 +163,7 @@ export async function POST(request: NextRequest) {
         revalidatePath(`/admin/orders/${order.id}`)
         revalidatePath('/orders') // Page client
 
-        console.log(`✅ Commande ${order.id} mise à jour: ${status}`)
+
 
         // TODO: Envoyer un email au client si statut important (DELIVERED, FAILED, etc.)
         if (['DELIVERED', 'OUT_FOR_DELIVERY', 'FAILED'].includes(status)) {

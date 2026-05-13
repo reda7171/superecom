@@ -60,7 +60,11 @@ export default function WishlistButton({ item, className, showText = false, vari
                 const formData = new FormData()
                 formData.append('title', item.title)
                 if (item.author) formData.append('author', item.author)
-                if (item.type === 'BOOK') formData.append('bookId', item.id)
+                if (item.type === 'BOOK') {
+                    formData.append('bookId', item.id)
+                } else if (item.type === 'PACK') {
+                    formData.append('packId', item.id)
+                }
 
                 const res = await addToWishlist(formData)
 
@@ -102,7 +106,7 @@ export default function WishlistButton({ item, className, showText = false, vari
                     className
                 )}
             >
-                {syncing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Heart className={cn("w-5 h-5 transition-colors", active ? "fill-red-600 text-red-600" : "text-gray-900")} />}
+                {syncing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Heart className={cn("w-5 h-5", active ? "fill-red-600 text-red-600" : "text-gray-900")} />}
                 <span>{active ? "Retirer des favoris" : "Ajouter aux favoris"}</span>
             </button>
         )
@@ -119,7 +123,7 @@ export default function WishlistButton({ item, className, showText = false, vari
             )}
             title={active ? "Retirer des favoris" : "Ajouter aux favoris"}
         >
-            {syncing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Heart className={cn("w-5 h-5 transition-colors", active && "fill-current")} />}
+            {syncing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Heart className={cn("w-5 h-5", active && "fill-current")} />}
         </button>
     )
 }

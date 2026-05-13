@@ -160,8 +160,32 @@ export async function removeFromReadingList(id: string) {
     if (!user) return { success: false, error: 'Non autorisé' }
 
     try {
-        await prisma.readingList.delete({
+        await prisma.readingList.deleteMany({
             where: { id, userId: user.id }
+        })
+        revalidatePath('/community/reading-list')
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: 'Suppression échouée' }
+    }
+}
+
+/**
+ * Supprimer un livre de la liste par bookId ou id
+ */
+export async function removeFromReadingListByBookId(bookId: string) {
+    const user = await getCommunityUser()
+    if (!user) return { success: false, error: 'Non autorisé' }
+
+    try {
+        await prisma.readingList.deleteMany({
+            where: { 
+                userId: user.id,
+                OR: [
+                    { bookId: bookId },
+                    { id: bookId }
+                ]
+            }
         })
         revalidatePath('/community/reading-list')
         return { success: true }

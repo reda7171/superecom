@@ -9,7 +9,7 @@ import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui'
 import { useCartStore } from '@/store/cart'
 import { useEffect, useState } from 'react'
-import { cn } from '@/lib/utils'
+import { cn, normalizeImage } from '@/lib/utils'
 
 interface WishlistContentProps {
     isAuthenticated?: boolean
@@ -179,16 +179,14 @@ export default function WishlistContent({ isAuthenticated = false }: WishlistCon
                             <div className="relative z-10 flex flex-col h-full">
                                 {/* Image Wrapper */}
                                 <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl mb-8 group-hover:scale-[1.02] transition-transform duration-700">
-                                    <Link href={item.slug} className="absolute inset-0 z-10" />
-                                    {item.image && (
-                                        <Image
-                                            src={item.image}
-                                            alt={item.title}
-                                            fill
-                                            className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                                            unoptimized
-                                        />
-                                    )}
+                                    {item.slug !== '#' && <Link href={item.slug} className="absolute inset-0 z-10" />}
+                                    <Image
+                                        src={normalizeImage(item.image)}
+                                        alt={item.title}
+                                        fill
+                                        className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                                        unoptimized
+                                    />
                                     {/* Action Overlays */}
                                     <div className="absolute top-6 right-6 z-20">
                                         <WishlistButton
@@ -207,7 +205,11 @@ export default function WishlistContent({ isAuthenticated = false }: WishlistCon
                                 <div className="px-4 space-y-4 flex-grow flex flex-col">
                                     <div className="space-y-2">
                                         <h3 className="text-2xl font-black text-black leading-tight tracking-tighter line-clamp-2 min-h-[4rem]">
-                                            <Link href={item.slug} className="hover:text-pixio-yellow transition-colors">{item.title}</Link>
+                                            {item.slug !== '#' ? (
+                                                <Link href={item.slug} className="hover:text-pixio-yellow transition-colors">{item.title}</Link>
+                                            ) : (
+                                                item.title
+                                            )}
                                         </h3>
                                         {item.author && (
                                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
@@ -219,17 +221,19 @@ export default function WishlistContent({ isAuthenticated = false }: WishlistCon
                                     {/* Price & Action */}
                                     <div className="mt-auto pt-8 flex items-center justify-between">
                                         <div className="flex items-baseline gap-1">
-                                            <span className="text-3xl font-black text-black tracking-tighter">{item.price}</span>
+                                            <span className="text-3xl font-black text-black tracking-tighter">{item.price || 0}</span>
                                             <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">MAD</span>
                                         </div>
 
-                                        <button
-                                            onClick={() => moveToCart(item)}
-                                            className="w-14 h-14 bg-black text-white rounded-[1.5rem] flex items-center justify-center hover:bg-pixio-yellow hover:text-black transition-all shadow-xl hover:shadow-pixio-yellow/20 active:scale-90 group/btn"
-                                            title={t('AddToCart')}
-                                        >
-                                            <ShoppingBag className="w-6 h-6 transition-transform group-hover/btn:-translate-y-1" />
-                                        </button>
+                                        {(item.id && (item.type === 'BOOK' || item.type === 'PACK') && item.price > 0) && (
+                                            <button
+                                                onClick={() => moveToCart(item)}
+                                                className="w-14 h-14 bg-black text-white rounded-[1.5rem] flex items-center justify-center hover:bg-pixio-yellow hover:text-black transition-all shadow-xl hover:shadow-pixio-yellow/20 active:scale-90 group/btn"
+                                                title={t('AddToCart')}
+                                            >
+                                                <ShoppingBag className="w-6 h-6 transition-transform group-hover/btn:-translate-y-1" />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>

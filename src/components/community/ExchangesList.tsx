@@ -200,31 +200,19 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
                                 </div>
 
                                 {/* Offered Product */}
-                                {exchange.type === 'DIRECT' ? (
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0">
-                                            {exchange.bookOffered?.image ? (
-                                                <img src={exchange.bookOffered.image} alt="" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-4 h-4 text-gray-300" /></div>
-                                            )}
-                                        </div>
-                                        <div className="min-w-0">
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{t('Offered')}</p>
-                                            <p className="text-xs font-black text-black truncate">{exchange.bookOffered?.title}</p>
-                                        </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+                                        {exchange.bookOffered?.image ? (
+                                            <img src={exchange.bookOffered.image} alt="" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-4 h-4 text-gray-300" /></div>
+                                        )}
                                     </div>
-                                ) : (
-                                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl">
-                                        <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center shrink-0">
-                                            <Coins className="w-5 h-5 text-yellow-600" />
-                                        </div>
-                                        <div className="min-w-0">
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{t('Offered')}</p>
-                                            <p className="text-xs font-black text-black">{t('Credits')}</p>
-                                        </div>
+                                    <div className="min-w-0">
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{t('Offered')}</p>
+                                        <p className="text-xs font-black text-black truncate">{exchange.bookOffered?.title}</p>
                                     </div>
-                                )}
+                                </div>
                             </div>
 
                             {/* Meeting Details */}

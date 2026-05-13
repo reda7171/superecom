@@ -77,3 +77,116 @@ export async function addExchangeBook(formData: FormData): Promise<BookResult> {
         return { success: false, error: "Erreur lors de l'ajout du livre" }
     }
 }
+
+export async function getExchangeBook(id: string) {
+    const user = await getCommunityUser()
+    if (!user) return null
+
+    const book = await prisma.exchangeBook.findUnique({
+        where: { id }
+    })
+
+    if (!book || book.ownerId !== user.id) return null
+
+    return book
+}
+
+export async function updateExchangeBook(id: string, formData: FormData): Promise<BookResult> {
+    const user = await getCommunityUser()
+    if (!user) return { success: false, error: "Vous devez être connecté" }
+
+    const rawData = {
+        title: formData.get('title'),
+        author: formData.get('author'),
+        condition: formData.get('condition'),
+        description: formData.get('description'),
+        isbn: formData.get('isbn'),
+        image: formData.get('image'),
+        status: formData.get('status'),
+    }
+
+    try {
+        const data = BookSchema.parse(rawData)
+
+        // Vérifier propriété du livre
+        const existingBook = await prisma.exchangeBook.findUnique({
+            where: { id }
+        })
+
+        if (!existingBook || existingBook.ownerId !== user.id) {
+            return { success: false, error: "Livre introuvable ou vous n'êtes pas propriétaire" }
+        }
+
+        const updateData: any = {
+            title: data.title,
+            author: data.author,
+            condition: data.condition as any,
+            description: data.description || '',
+            isbn: data.isbn || null,
+        }
+
+        if (data.image) {
+            updateData.image = data.image
+        }
+
+        if (rawData.status) {
+            updateData.status = rawData.status
+        }
+
+        await prisma.exchangeBook.update({
+            where: { id },
+            data: updateData
+        })
+
+        revalidatePath('/community')
+        revalidatePath(`/community/books/${id}`)
+        return { success: true, bookId: id }
+
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return { success: false, error: error.issues[0].message }
+        }
+        return { success: false, error: "Erreur lors de la mise à jour du livre" }
+    }
+}
+
+export async function deleteExchangeBook(id: string): Promise<BookResult> {
+    const user = await getCommunityUser()
+    if (!user) return { success: false, error: "Vous devez être connecté" }
+
+    try {
+        const existingBook = await prisma.exchangeBook.findUnique({
+            where: { id }
+        })
+
+        if (!existingBook || existingBook.ownerId !== user.id) {
+            return { success: false, error: "Livre introuvable ou vous n'êtes pas propriétaire" }
+        }
+
+        // Vérifier s'il est utilisé dans des échanges PENDING
+        const pendingExchanges = await prisma.exchange.findFirst({
+            where: {
+                OR: [
+                    { bookRequestedId: id },
+                    { bookOfferedId: id }
+                ],
+                status: {
+                    in: ['PENDING', 'ACCEPTED']
+                }
+            }
+        })
+
+        if (pendingExchanges) {
+            return { success: false, error: "Impossible de supprimer ce livre car il est engagé dans un échange en cours" }
+        }
+
+        await prisma.exchangeBook.delete({
+            where: { id }
+        })
+
+        revalidatePath('/community')
+        return { success: true, bookId: id }
+    } catch (error) {
+        return { success: false, error: "Erreur lors de la suppression du livre" }
+    }
+}

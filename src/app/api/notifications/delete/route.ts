@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { deleteNotification } from '@/lib/actions/community-notifications'
+import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
     try {
+        const ip = await getIpIdentifier()
+        const limiter = await rateLimit(`notif_delete_${ip}`, { limit: 20, windowMs: 60000 })
+        if (!limiter.success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+
         const { notificationId } = await request.json()
 
         if (!notificationId) {

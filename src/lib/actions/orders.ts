@@ -10,7 +10,7 @@ import { sanitizeInput } from '@/lib/security'
 
 const OrderSchema = z.object({
     fullName: z.string().min(1, 'Nom complet requis').max(100),
-    email: z.string().email('Email invalide'),
+    email: z.string().optional().default(''),
     phone: z.string().min(8, 'Téléphone invalide').max(20),
     address: z.string().min(5, 'Adresse trop courte').max(500),
     city: z.string().min(1, 'Ville requise').max(100),
@@ -18,8 +18,8 @@ const OrderSchema = z.object({
     items: z.array(z.object({
         productId: z.string().uuid(),
         quantity: z.number().int().positive('La quantité doit être supérieure à 0').max(100),
-        type: z.enum(['BOOK', 'PACK']),
-        price: z.number().positive('Le prix doit être supérieur à 0').max(100000)
+        type: z.enum(['BOOK', 'PACK', 'GIFT', 'DIGITAL']),
+        price: z.number().min(0, 'Le prix doit être positif ou nul').max(100000)
     })).min(1, 'Panier vide').max(50),
     couponCode: z.string().max(50).optional(),
     discount: z.number().optional()
@@ -56,6 +56,14 @@ export async function getOrders() {
                                 id: true,
                                 name: true,
                             }
+                        },
+                        digitalProduct: {
+                            select: {
+                                id: true,
+                                title: true,
+                                image: true,
+                                pdfUrl: true
+                            }
                         }
                     }
                 }
@@ -73,14 +81,14 @@ export async function getOrders() {
 
 export async function createOrder(input: z.infer<typeof OrderSchema>) {
     const ip = await getIpIdentifier()
-    const limiter = await rateLimit(`order_${ip}`, { limit: 3, windowMs: 60000 }) // 3 commandes par minute max
+    const limiter = await rateLimit(`order_${ip}`, { limit: 10, windowMs: 60000 }) // 3 commandes par minute max
 
     if (!limiter.success) {
         return { success: false, error: "Trop de commandes. Veuillez patienter une minute." }
     }
 
     try {
-        console.log('Incoming order data:', JSON.stringify(input, null, 2))
+
         // OWASP A03: Injection / Validation
         const data = OrderSchema.parse(input)
 
@@ -105,6 +113,25 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
 
         // Création commande transactionnelle
         const order = await prisma.$transaction(async (tx) => {
+            // Récupérer les prix de revient (costPrice) pour chaque article
+            const itemsWithCost = await Promise.all(data.items.map(async (item) => {
+                let costPrice = 0
+                if (item.type === 'BOOK') {
+                    const book = await tx.book.findUnique({
+                        where: { id: item.productId },
+                        select: { costPrice: true }
+                    })
+                    costPrice = book?.costPrice || 0
+                } else if (item.type === 'PACK') {
+                    const pack = await tx.pack.findUnique({
+                        where: { id: item.productId },
+                        select: { costPrice: true }
+                    })
+                    costPrice = pack?.costPrice || 0
+                }
+                return { ...item, costPrice }
+            }))
+
             // Créer la commande
             const newOrder = await (tx.order as any).create({
                 data: {
@@ -120,14 +147,19 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
                     total: total,
                     couponCode: data.couponCode,
                     status: 'PENDING',
-                    paymentMethod: 'COD', // Cash On Delivery
+                    paymentMethod: sanitizedData.items.every(item => item.type === 'DIGITAL')
+                        ? 'DIGITAL_PAYMENT'
+                        : 'COD', // Cash On Delivery
                     items: {
-                        create: data.items.map(item => ({
+                        create: itemsWithCost.map(item => ({
                             type: item.type,
                             bookId: item.type === 'BOOK' ? item.productId : null,
                             packId: item.type === 'PACK' ? item.productId : null,
+                            giftId: item.type === 'GIFT' ? item.productId : null,
+                            digitalProductId: item.type === 'DIGITAL' ? item.productId : null,
                             quantity: item.quantity,
-                            price: item.price
+                            price: item.price,
+                            costPrice: item.costPrice
                         }))
                     }
                 }
@@ -136,10 +168,18 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
             // Mettre à jour le stock des livres
             for (const item of data.items) {
                 if (item.type === 'BOOK') {
-                    await tx.book.update({
+                    const updatedBook = await tx.book.update({
                         where: { id: item.productId },
                         data: { stock: { decrement: item.quantity } }
                     })
+                    
+                    if (updatedBook.stock < 3) {
+                        const { sendLowStockNotification } = await import('@/lib/telegram')
+                        sendLowStockNotification({ 
+                            title: updatedBook.title, 
+                            stock: updatedBook.stock 
+                        }).catch(console.error)
+                    }
                 }
             }
 
@@ -155,6 +195,17 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
                 sameSite: 'lax',
                 maxAge: 60 * 60 * 24 * 30 // 30 jours 
             })
+        }
+
+        // Notification Telegram (asynchrone, on ne bloque pas la réponse)
+        try {
+            const fullOrder = await getOrderById(order.id)
+            if (fullOrder) {
+                const { sendOrderNotification } = await import('@/lib/telegram')
+                sendOrderNotification(fullOrder as any).catch(console.error)
+            }
+        } catch (e) {
+            console.error('Erreur Telegram Notification:', e)
         }
 
         return { success: true, orderId: order.id }
@@ -198,7 +249,7 @@ export async function getOrderById(orderId: string) {
             const emailToCheck = communityUser?.email || guestEmail
 
             if (order.email !== emailToCheck) {
-                console.warn(`[SECURITY] Tentative d'accès non autorisé à la commande ${orderId}`)
+
                 return null
             }
         }
@@ -234,7 +285,9 @@ export async function getOrderStats() {
             CANCELLED: counts.CANCELLED || 0
         }
     } catch (error: any) {
-        console.error('Error fetching order stats:', error)
+        if (error?.message && !error.message.includes('Non autorisé')) {
+            console.error('Error fetching order stats:', error)
+        }
         return null
     }
 }

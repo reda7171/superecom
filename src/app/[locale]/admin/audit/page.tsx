@@ -15,12 +15,18 @@ export default async function AuditPage() {
     }
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-end">
+        <div className="space-y-12">
+            {/* Header section style Riwaya */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-gray-100">
                 <div>
-                    <h1 className="text-2xl font-black text-gray-900">Journal d'Audit</h1>
-                    <p className="text-sm text-gray-500 font-medium">Historique des actions administratives</p>
+                    <h1 className="text-5xl lg:text-6xl font-black text-black tracking-tighter mb-2">
+                        Audit<span className="text-blue-600">.</span>
+                    </h1>
+                    <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">
+                        Historique complet des actions administratives
+                    </p>
                 </div>
+                
                 <ExportButton
                     action={exportAuditLogs}
                     filename="audit_logs"
@@ -28,54 +34,65 @@ export default async function AuditPage() {
                 />
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-black/5 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead className="bg-gray-50 border-b border-gray-100">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-gray-50/50 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
                             <tr>
-                                <th className="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-widest">Date</th>
-                                <th className="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-widest">Admin</th>
-                                <th className="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-widest">Action</th>
-                                <th className="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-widest">Entité</th>
-                                <th className="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-widest">Détails</th>
+                                <th className="px-8 py-6">Horodatage</th>
+                                <th className="px-8 py-6">Admin</th>
+                                <th className="px-8 py-6">Action</th>
+                                <th className="px-8 py-6">Entité</th>
+                                <th className="px-8 py-6">Détails de l'opération</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100 font-medium">
+                        <tbody className="divide-y divide-gray-100">
                             {logs.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-gray-400 italic">
-                                        Aucun log disponible.
+                                    <td colSpan={5} className="px-8 py-24 text-center text-gray-400">
+                                        <div className="flex flex-col items-center justify-center">
+                                            <Clock className="w-16 h-16 mb-4 opacity-10" />
+                                            <p className="font-black uppercase tracking-widest text-[10px]">Aucun log disponible</p>
+                                        </div>
                                     </td>
                                 </tr>
                             ) : (
                                 logs.map((log: any) => (
-                                    <tr key={log.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
-                                            <div className="flex items-center gap-2">
-                                                <Clock className="w-3 h-3" />
-                                                {new Date(log.createdAt).toLocaleString('fr-FR')}
+                                    <tr key={log.id} className="hover:bg-gray-50/50 transition-colors group">
+                                        <td className="px-8 py-6">
+                                            <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                <Clock className="w-3.5 h-3.5" />
+                                                {new Date(log.createdAt).toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-bold">
-                                            {log.adminId}
+                                        <td className="px-8 py-6">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 font-black text-xs border border-blue-100 shadow-sm">
+                                                    ID
+                                                </div>
+                                                <span className="font-bold text-black text-xs italic tracking-tighter">{log.adminId}</span>
+                                            </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 py-1 rounded text-[10px] font-black uppercase tracking-tighter ${log.action === 'DELETE' ? 'bg-red-100 text-red-700' :
-                                                log.action === 'CREATE' ? 'bg-green-100 text-green-700' :
-                                                    log.action === 'UPDATE' ? 'bg-blue-100 text-blue-700' :
-                                                        'bg-gray-100 text-gray-700'
-                                                }`}>
+                                        <td className="px-8 py-6">
+                                            <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${
+                                                log.action === 'DELETE' ? 'bg-red-50 text-red-600 border-red-100' :
+                                                log.action === 'CREATE' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                                log.action === 'UPDATE' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                                'bg-gray-50 text-gray-500 border-gray-100'
+                                            }`}>
                                                 {log.action}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                        <td className="px-8 py-6">
+                                            <div className="flex items-center gap-2 text-xs font-black text-gray-600 uppercase tracking-tighter">
                                                 {entityIcons[log.entity] || <Tag className="w-4 h-4" />}
                                                 {log.entity}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-600">
-                                            {log.details || <span className="text-gray-300 italic">N/A</span>}
+                                        <td className="px-8 py-6">
+                                            <p className="text-xs font-bold text-gray-600 italic leading-relaxed max-w-md line-clamp-1 group-hover:line-clamp-none transition-all">
+                                                {log.details || "N/A"}
+                                            </p>
                                         </td>
                                     </tr>
                                 ))

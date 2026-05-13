@@ -104,7 +104,7 @@ function StatCard({ icon, number, label, bgColor, iconColor, idx }: StatCardProp
     )
 }
 
-export default function TrustSection({ stats }: { stats?: { books: number, readers: number, exchanges: number } }) {
+export default function TrustSection({ stats, className, style }: { stats?: { books: number, readers: number, exchanges: number }, className?: string, style?: React.CSSProperties }) {
     const t = useTranslations('HomePage.Trust')
     const pulseClass = useResponsiveAnimation('animate-pulse')
     const pingClass = useResponsiveAnimation('animate-ping')
@@ -141,7 +141,7 @@ export default function TrustSection({ stats }: { stats?: { books: number, reade
     ]
 
     return (
-        <section className="py-40 bg-white relative overflow-hidden">
+        <section className={`py-40 relative overflow-hidden ${className || 'bg-white'}`} style={style}>
             {/* Master Background Elements */}
             <div className={`absolute top-0 right-0 w-[800px] h-[800px] bg-pixio-yellow/10 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2 -z-10 ${pulseClass}`}></div>
             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-sky-50/20 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2 -z-10"></div>

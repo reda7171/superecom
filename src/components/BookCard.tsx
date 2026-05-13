@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { Link } from '@/i18n/routing'
 import { ShoppingCart, Star, ArrowRight } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
@@ -8,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui'
 import WishlistButton from '@/components/WishlistButton'
 import AddToReadingListButton from '@/components/AddToReadingListButton'
+import ImageWithFallback from '@/components/ImageWithFallback'
 
 interface BookCardProps {
     id: string
@@ -37,26 +37,14 @@ export default function BookCard({
     const { openCart, showNotification } = useUIStore()
 
     return (
-        <div className={`group relative bg-white rounded-[2rem] overflow-hidden transition-all duration-500 border border-gray-100/50 hover:border-black shadow-sm hover:shadow-2xl h-full flex flex-col ${isFeatured ? 'scale-105 z-10 border-black shadow-xl' : ''}`}>
+        <div className={`group relative bg-white rounded-3xl overflow-hidden transition-all duration-500 border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-2xl h-full flex flex-col ${isFeatured ? 'scale-105 z-10 border-black shadow-xl' : ''}`}>
             {/* Image Container */}
             <Link href={`/books/${id}`} className="block relative">
-                <div className={`relative bg-pixio-cream overflow-hidden ${isCompact ? 'aspect-[3/4]' : isFeatured ? 'aspect-[4/5]' : 'aspect-square'
-                    }`}>
-                    <Image
+                <div className={`relative bg-white overflow-hidden ${isCompact ? 'aspect-[3/4]' : isFeatured ? 'aspect-[3/4]' : 'aspect-[3/4]'}`}>
+                    <ImageWithFallback
                         src={image}
                         alt={`${title} - Livre par ${author}`}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-700"
-                        sizes={
-                            isCompact
-                                ? "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                                : isFeatured
-                                    ? "(max-width: 768px) 80vw, (max-width: 1200px) 40vw, 30vw"
-                                    : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        }
-                        loading={isFeatured ? "eager" : "lazy"}
-                        quality={isFeatured ? 90 : 75}
-                        unoptimized
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
                     />
 
                     {/* Action Buttons */}
@@ -82,15 +70,6 @@ export default function BookCard({
                             </span>
                         </div>
                     )}
-
-                    {stock === 0 && (
-                        <div className="absolute inset-0 bg-white/80 flex items-center justify-center backdrop-blur-sm">
-                            <span className="px-4 py-2 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-xl">
-                                {t('OutOfStock')}
-                            </span>
-                        </div>
-                    )}
-
                     {/* Category Label */}
                     {category && !isCompact && (
                         <div className="absolute bottom-4 left-4">
@@ -103,31 +82,30 @@ export default function BookCard({
             </Link>
 
             {/* Content */}
-            <div className={`text-center flex flex-col items-center flex-grow ${isCompact ? 'p-4' : 'p-6'}`}>
+            <div className={`text-center flex flex-col items-center flex-grow bg-white ${isCompact ? 'p-4' : 'px-4 py-6'}`}>
                 <Link href={`/books/${id}`} className="block w-full">
-                    <h3 className={`font-black text-black tracking-tighter line-clamp-2 transition-colors ${isCompact ? 'text-sm mb-1 uppercase' : isFeatured ? 'text-xl mb-2' : 'text-base mb-1.5'
+                    <h3 className={`font-black text-gray-900 tracking-tight line-clamp-2 transition-colors group-hover:text-black ${isCompact ? 'text-sm mb-1 uppercase' : isFeatured ? 'text-xl mb-2' : 'text-base mb-1.5'
                         }`}>
                         {title}
                     </h3>
-                    <p className={`text-gray-400 font-bold italic ${isCompact ? 'text-[10px]' : 'text-xs'}`}>
+                    <p className={`text-gray-500 font-bold ${isCompact ? 'text-[10px]' : 'text-xs'}`}>
                         {t('By')} {author}
                     </p>
                 </Link>
 
                 {/* Price & Action */}
-                <div className="mt-auto flex flex-col items-center gap-4 w-full">
-                    <p className={`font-black text-black leading-none ${isCompact ? 'text-base' : isFeatured ? 'text-2xl' : 'text-xl'
-                        }`}>
-                        {price} <span className="text-[10px] font-black text-gray-400">MAD</span>
+                <div className="mt-auto flex flex-col items-center gap-4 w-full pt-4">
+                    <p className={`font-black text-gray-900 leading-none ${isCompact ? 'text-base' : isFeatured ? 'text-2xl' : 'text-xl'}`}>
+                        {price} <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">MAD</span>
                     </p>
 
                     {stock > 0 && (
                         <button
-                            className={`w-full flex items-center justify-center gap-2 bg-black text-white font-black text-[10px] uppercase tracking-widest rounded-full hover:bg-gray-800 transition-all shadow-lg hover:shadow-black/20 group/btn ${isCompact
+                            className={`w-full flex items-center justify-center gap-2 bg-gray-900 text-white font-black text-[11px] uppercase tracking-widest rounded-2xl hover:bg-black transition-all shadow-lg hover:shadow-black/20 hover:-translate-y-0.5 group/btn ${isCompact
                                 ? 'py-3'
                                 : isFeatured
                                     ? 'py-4'
-                                    : 'py-3.5'
+                                    : 'py-4'
                                 }`}
                             onClick={(e) => {
                                 e.preventDefault()
@@ -156,9 +134,18 @@ export default function BookCard({
 
             {/* Featured Badge */}
             {isFeatured && (
-                <div className="absolute top-6 left-6 -rotate-12 group-hover:rotate-0 transition-transform duration-300">
+                <div className="absolute top-6 left-6">
                     <div className="bg-pixio-yellow text-black px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-yellow-300 shadow-xl">
                         ✨ {t('BestSeller')}
+                    </div>
+                </div>
+            )}
+
+            {/* Out of Stock Ribbon - Top Most Layer */}
+            {stock === 0 && (
+                <div className="absolute top-0 left-0 w-36 h-36 overflow-hidden z-30 pointer-events-none">
+                    <div className="absolute top-8 -left-11 w-48 py-2.5 bg-gradient-to-r from-red-800 via-red-600 to-red-800 text-white text-[10px] font-black uppercase tracking-[0.25em] text-center -rotate-45 shadow-[0_10px_20px_rgba(0,0,0,0.5)] border-y border-white/10 backdrop-blur-md ring-1 ring-black/20">
+                        {t('OutOfStock')}
                     </div>
                 </div>
             )}

@@ -125,7 +125,7 @@ export async function sendMessage(chatId: string, content: string) {
             userId: recipientId,
             type: 'NEW_MESSAGE',
             title: t('NewMessage'),
-            message: t('NewMessageDesc', { user: user.fullName }),
+            message: t('NewMessageDesc', { user: user.fullName || 'Utilisateur' }),
             link: `/community/exchanges/${chat.exchange.id}/chat`
         })
 

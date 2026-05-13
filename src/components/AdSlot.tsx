@@ -1,6 +1,6 @@
 import { getActiveAds } from '@/lib/actions/advertisements'
 import { AdPlacement } from '@prisma/client'
-import AdBanner from './AdBanner'
+import InternalAdBanner from './InternalAdBanner'
 
 interface AdSlotProps {
     placement: AdPlacement
@@ -18,7 +18,7 @@ export default async function AdSlot({ placement, className = '', closeable = fa
 
     return (
         <div className={`ad-slot ${className}`}>
-            <AdBanner ad={ad} closeable={closeable} />
+            <InternalAdBanner ad={ad} closeable={closeable} />
         </div>
     )
 }

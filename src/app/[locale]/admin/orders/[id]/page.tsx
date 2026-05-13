@@ -1,10 +1,12 @@
 import { getOrderById } from '@/lib/actions/admin-orders'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import { normalizeImage } from '@/lib/utils'
+import ImageWithFallback from '@/components/ImageWithFallback'
 import { ArrowLeft, User, Phone, MapPin, Calendar, Clock, Package, ShoppingBag, Truck } from 'lucide-react'
 import OrderStatusUpdater from '@/components/admin/OrderStatusUpdater'
 import DeliverySyncButton from '@/components/admin/DeliverySyncButton'
+import OrderEditModal from '@/components/admin/OrderEditModal'
 import { isAuthenticated } from '@/lib/actions/auth'
 import { redirect } from 'next/navigation'
 
@@ -43,6 +45,15 @@ export default async function OrderDetailsPage({
                     </h1>
                 </div>
                 <div className="flex items-center gap-3">
+                    <OrderEditModal order={{
+                        id: order.id,
+                        fullName: order.fullName,
+                        phone: order.phone,
+                        address: order.address,
+                        city: order.city,
+                        total: order.total,
+                        comment: order.comment
+                    }} />
                     <OrderStatusUpdater orderId={order.id} currentStatus={order.status} />
                 </div>
             </div>
@@ -62,12 +73,10 @@ export default async function OrderDetailsPage({
                                     <div key={item.id} className="p-6 flex gap-4">
                                         <div className="relative w-20 h-28 bg-gray-50 rounded-lg overflow-hidden shrink-0 border border-gray-100">
                                             {item.book?.image ? (
-                                                <Image
+                                                <ImageWithFallback
                                                     src={item.book.image}
                                                     alt="Produit"
-                                                    fill
-                                                    className="object-cover"
-                                                    unoptimized
+                                                    className="w-full h-full object-cover"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center">
@@ -100,11 +109,37 @@ export default async function OrderDetailsPage({
                                 )
                             })}
                         </div>
-                        <div className="bg-gray-50 p-6 border-t border-gray-100">
-                            <div className="flex justify-between items-center">
-                                <span className="text-lg font-bold text-gray-900">Total de la commande</span>
-                                <span className="text-2xl font-black text-blue-600">
+                        <div className="bg-gray-50 p-6 border-t border-gray-100 flex flex-col gap-3">
+                            <div className="flex justify-between items-center text-sm text-gray-500 font-bold">
+                                <span>Total des articles (Prix de revient)</span>
+                                <span>
+                                    {order.items.reduce((sum, item) => {
+                                        const itemCost = item.costPrice || (item.book?.costPrice || item.pack?.costPrice || 0)
+                                        return sum + (itemCost * item.quantity)
+                                    }, 0).toFixed(2)} MAD
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm text-gray-500 font-bold">
+                                <span>Frais fixes (Étiquette, Sachet, Ads)</span>
+                                <span>2.65 MAD</span>
+                            </div>
+                            <div className="pt-3 border-t border-gray-200 flex justify-between items-center">
+                                <span className="text-lg font-bold text-gray-900">Chiffre d'Affaire</span>
+                                <span className="text-2xl font-black text-gray-900">
                                     {order.total} MAD
+                                </span>
+                            </div>
+                            <div className="pt-3 border-t border-gray-200 flex justify-between items-center bg-green-50 -mx-6 px-6 py-4 mt-2">
+                                <span className="text-lg font-bold text-green-800">Marge Nette (Estimée)</span>
+                                <span className="text-2xl font-black text-green-600">
+                                    {(
+                                        order.total -
+                                        order.items.reduce((sum, item) => {
+                                            const itemCost = item.costPrice || (item.book?.costPrice || item.pack?.costPrice || 0)
+                                            return sum + (itemCost * item.quantity)
+                                        }, 0) -
+                                        2.65
+                                    ).toFixed(2)} MAD
                                 </span>
                             </div>
                         </div>

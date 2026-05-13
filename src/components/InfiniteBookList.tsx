@@ -1,17 +1,23 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { BookFilters } from '@/lib/db/books'
 import { fetchBooks } from '@/lib/actions/books'
 import BookCard from '@/components/BookCard'
+import AdBanner from '@/components/AdBanner'
 import { Book } from '@prisma/client'
 
 interface InfiniteBookListProps {
     initialBooks: Book[]
     initialFilters: BookFilters
+    adsense?: {
+        enabled: boolean
+        publisherId: string
+        slotId: string
+    }
 }
 
-export default function InfiniteBookList({ initialBooks, initialFilters }: InfiniteBookListProps) {
+export default function InfiniteBookList({ initialBooks, initialFilters, adsense }: InfiniteBookListProps) {
     const [books, setBooks] = useState<Book[]>(initialBooks)
     const [page, setPage] = useState(2)
     const [hasMore, setHasMore] = useState(true)
@@ -71,17 +77,29 @@ export default function InfiniteBookList({ initialBooks, initialFilters }: Infin
 
     return (
         <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-10">
-                {books.map((book) => (
-                    <BookCard key={book.id} {...book} />
-                ))}
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
+                {books.map((book, index) => {
+                    // Afficher une pub tous les 8 livres (après la 2ème ligne sur desktop)
+                    const showAd = adsense?.enabled && adsense?.publisherId && adsense?.slotId && index > 0 && index % 8 === 0
+
+                    return (
+                        <React.Fragment key={book.id}>
+                            {showAd && (
+                                <div className="col-span-2 md:col-span-3 xl:col-span-4 py-4">
+                                    <AdBanner publisherId={adsense.publisherId} slotId={adsense.slotId} />
+                                </div>
+                            )}
+                            <BookCard {...book} />
+                        </React.Fragment>
+                    )
+                })}
             </div>
 
             {hasMore && (
                 <div ref={observerTarget} className="mt-10">
                     {loading && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-10">
-                            {[1, 2, 3].map((i) => (
+                        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5">
+                            {[1, 2, 3, 4].map((i) => (
                                 <div key={i} className="bg-white rounded-[2rem] overflow-hidden border border-gray-100/50 shadow-sm h-full flex flex-col p-4 animate-pulse lg:animate-none">
                                     <div className="aspect-square bg-gray-100 rounded-[1.5rem] mb-6"></div>
                                     <div className="space-y-3 px-2">

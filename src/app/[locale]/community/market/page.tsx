@@ -1,6 +1,6 @@
 import { getMarketBooks, getSmartMatches } from '@/lib/actions/community-market'
 import Header from '@/components/HeaderWithUser'
-import Footer from '@/components/Footer'
+import Footer from '@/components/FooterWithFeatures'
 import MarketClientSection from '@/components/community/MarketClientSection'
 import { getTranslations } from 'next-intl/server'
 

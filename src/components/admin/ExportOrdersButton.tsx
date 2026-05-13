@@ -1,47 +1,66 @@
 'use client'
 
-import * as XLSX from 'xlsx'
 import { Download, FileSpreadsheet } from 'lucide-react'
 
 interface ExportOrdersButtonProps {
     orders: any[]
 }
 
+/**
+ * Export CSV côté client — remplace xlsx (vulnérable, aucun fix disponible)
+ */
 export default function ExportOrdersButton({ orders }: ExportOrdersButtonProps) {
     const handleExport = () => {
-        // Préparation des données pour l'Excel
-        const dataToExport = orders.flatMap((order) => {
-            // Pour chaque commande, on peut soit faire une ligne par commande
-            // soit une ligne par article pour la logistique.
-            // On va opter pour une ligne par article pour être le plus complet possible.
-            return order.items.map((item: any, index: number) => ({
-                'ID Commande': `#${order.id.slice(0, 8)}`,
-                'Date': new Date(order.createdAt).toLocaleString('fr-FR'),
-                'Statut': order.status,
-                'Client': order.fullName,
-                'Téléphone': order.phone,
-                'Adresse': order.address,
-                'Ville': order.city,
-                'Article': item.type === 'BOOK' ? (item.book?.title || 'Livre inconnu') : (item.pack?.name || 'Pack inconnu'),
-                'Type': item.type,
-                'Quantité': item.quantity,
-                'Prix Unitaire': item.price,
-                'Total Article': item.price * item.quantity,
-                'Total Commande': index === 0 ? order.total : '', // Uniquement sur la 1ère ligne de la commande
-                'Remise': index === 0 ? (order.discount || 0) : '',
-                'Code Promo': index === 0 ? (order.couponCode || '') : '',
-                'Commentaire': order.comment || '',
-            }))
+        const rows: string[][] = []
+
+        // En-têtes
+        rows.push([
+            'ID Commande', 'Date', 'Statut', 'Client', 'Téléphone',
+            'Adresse', 'Ville', 'Article', 'Type', 'Quantité',
+            'Prix Unitaire', 'Total Article', 'Total Commande',
+            'Remise', 'Code Promo', 'Commentaire'
+        ])
+
+        orders.forEach((order) => {
+            order.items.forEach((item: any, index: number) => {
+                rows.push([
+                    `#${order.id.slice(0, 8)}`,
+                    new Date(order.createdAt).toLocaleString('fr-FR'),
+                    order.status,
+                    order.fullName,
+                    order.phone,
+                    order.address,
+                    order.city,
+                    item.type === 'BOOK'
+                        ? (item.book?.title || 'Livre inconnu')
+                        : (item.pack?.name || 'Pack inconnu'),
+                    item.type,
+                    String(item.quantity),
+                    String(item.price),
+                    String(item.price * item.quantity),
+                    index === 0 ? String(order.total) : '',
+                    index === 0 ? String(order.discount || 0) : '',
+                    index === 0 ? (order.couponCode || '') : '',
+                    order.comment || '',
+                ])
+            })
         })
 
-        // Création du classeur
-        const worksheet = XLSX.utils.json_to_sheet(dataToExport)
-        const workbook = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Commandes')
+        // Construire le CSV avec BOM pour Excel (support UTF-8 / Arabic)
+        const csvContent = '\uFEFF' + rows
+            .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+            .join('\n')
 
-        // Génération du fichier et téléchargement
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
         const date = new Date().toISOString().split('T')[0]
-        XLSX.writeFile(workbook, `Riwaya_Commandes_${date}.xlsx`)
+        link.href = url
+        link.setAttribute('download', `Riwaya_Commandes_${date}.csv`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
     }
 
     return (
@@ -50,7 +69,7 @@ export default function ExportOrdersButton({ orders }: ExportOrdersButtonProps) 
             className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl font-black text-sm hover:bg-green-700 transition-all shadow-lg shadow-green-100 uppercase tracking-wider"
         >
             <FileSpreadsheet className="w-5 h-5" />
-            Exporter Excel
+            Exporter CSV
         </button>
     )
 }

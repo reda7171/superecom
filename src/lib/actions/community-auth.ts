@@ -1,9 +1,11 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
+import crypto from 'crypto'
+import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
 
 const RegisterSchema = z.object({
     fullName: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
@@ -25,6 +27,13 @@ export type AuthResult =
  * Inscription nouveau membre
  */
 export async function register(formData: FormData): Promise<AuthResult> {
+    const ip = await getIpIdentifier()
+    const limiter = await rateLimit(`community_register_${ip}`, { limit: 3, windowMs: 60 * 60 * 1000 }) // 3 inscriptions par heure par IP
+
+    if (!limiter.success) {
+        return { success: false, error: 'Trop de tentatives d\'inscription. Veuillez réessayer plus tard.' }
+    }
+
     const rawData = {
         fullName: formData.get('fullName'),
         email: formData.get('email'),
@@ -59,6 +68,19 @@ export async function register(formData: FormData): Promise<AuthResult> {
             }
         })
 
+        // Notification Telegram
+        try {
+            const { sendUserRegistrationNotification } = await import('@/lib/telegram')
+            await sendUserRegistrationNotification({
+                fullName: user.fullName || '',
+                email: user.email,
+                city: user.city || '',
+                role: 'LECTEUR'
+            })
+        } catch (e) {
+            console.error('Telegram notification error:', e)
+        }
+
         // Auto-login
         await createSession(user.id)
 
@@ -76,6 +98,13 @@ export async function register(formData: FormData): Promise<AuthResult> {
  * Connexion membre
  */
 export async function login(formData: FormData): Promise<AuthResult> {
+    const ip = await getIpIdentifier()
+    const limiter = await rateLimit(`community_login_${ip}`, { limit: 10, windowMs: 15 * 60 * 1000 }) // 10 essais par 15 min
+
+    if (!limiter.success) {
+        return { success: false, error: 'Trop de tentatives de connexion. Veuillez réessayer dans 15 minutes.' }
+    }
+
     const rawData = {
         email: formData.get('email'),
         password: formData.get('password'),
@@ -124,11 +153,21 @@ async function createSession(userId: string) {
         select: { locale: true }
     })
 
-    const token = Buffer.from(`${userId}:${Date.now()}`).toString('base64')
+    const timestamp = Date.now().toString()
+    const payload = `${userId}:${timestamp}`
+    const secret = process.env.JWT_SECRET || 'default_secure_secret_for_riwaya'
+    
+    let signature = ''
+    if (typeof crypto !== 'undefined' && crypto.createHmac) {
+        signature = crypto.createHmac('sha256', secret).update(payload).digest('hex')
+    }
+    
+    const token = Buffer.from(`${payload}:${signature}`).toString('base64')
+    
     const cookieStore = await cookies()
     cookieStore.set('community-token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: false, // Forcer à false pour permettre la connexion via IP/HTTP sur VPS
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 30, // 30 jours
         path: '/',
@@ -146,11 +185,22 @@ export async function getCommunityUser() {
     if (!token) return null
 
     try {
-        // Decode token basic format: userId:timestamp
+        // Decode token format: userId:timestamp:signature
         const decoded = Buffer.from(token.value, 'base64').toString('utf-8')
-        const [userId] = decoded.split(':')
+        const [userId, timestamp, signature] = decoded.split(':')
 
-        if (!userId) return null
+        if (!userId || !timestamp) return null
+
+        // Vérification signature
+        const payload = `${userId}:${timestamp}`
+        const secret = process.env.JWT_SECRET || 'default_secure_secret_for_riwaya'
+        if (typeof crypto !== 'undefined' && crypto.createHmac) {
+            const expectedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex')
+            if (!signature || signature !== expectedSignature) {
+
+                return null
+            }
+        }
 
         const user = await prisma.user.findUnique({
             where: { id: userId },

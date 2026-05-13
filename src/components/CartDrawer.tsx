@@ -1,7 +1,7 @@
 'use client'
 
 import { useCartStore } from '@/store/cart'
-import Image from 'next/image'
+import { normalizeImage } from '@/lib/utils'
 // import Link from 'next/link' <-- remove standard next link
 import { X, Minus, Plus, ShoppingCart, Trash2, ArrowRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -27,7 +27,10 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
     const totalPrice = getTotalPrice()
     const totalItems = getTotalItems()
-    const shippingFee = totalPrice >= 500 ? 0 : 30
+    
+    // Si tous les articles sont numériques, pas de frais de livraison
+    const hasOnlyDigital = items.length > 0 && items.every(item => item.type === 'DIGITAL')
+    const shippingFee = hasOnlyDigital ? 0 : (totalPrice >= 500 ? 0 : 30)
     const finalTotal = totalPrice + shippingFee
 
     return (
@@ -54,7 +57,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             </div>
                             <div>
                                 <h2 className="text-2xl font-black text-black tracking-tight">{t('Title')}</h2>
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
                                     {t('SelectedItems', { count: totalItems })}
                                 </p>
                             </div>
@@ -104,13 +107,12 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                     >
                                         {/* Image */}
                                         <div className="relative w-24 h-32 flex-shrink-0 bg-pixio-cream rounded-2xl overflow-hidden border border-gray-50 group-hover:scale-105 transition-transform">
-                                            {item.image && typeof item.image === 'string' && item.image.trim().length > 5 && (item.image.startsWith('http') || item.image.startsWith('/')) ? (
-                                                <Image
-                                                    src={item.image}
+                                            {item.image && typeof item.image === 'string' && item.image.trim().length > 5 ? (
+                                                <img
+                                                    src={normalizeImage(item.image)}
                                                     alt={item.title}
-                                                    fill
-                                                    className="object-cover"
-                                                    unoptimized
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-300">
@@ -142,7 +144,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                                 </div>
                                                 <div className="flex items-center gap-4 mt-3">
                                                     <p className="text-sm font-black text-black">
-                                                        {item.price} <span className="text-[10px] text-gray-400">MAD</span>
+                                                        {item.price} <span className="text-[10px] text-gray-500">MAD</span>
                                                     </p>
                                                     {item.booksCount && (
                                                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-2 py-0.5 bg-gray-50 rounded-full">

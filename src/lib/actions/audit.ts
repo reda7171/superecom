@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { cookies } from 'next/headers'
 
-export type AuditEntity = 'BOOK' | 'PACK' | 'ORDER' | 'COUPON' | 'CATEGORY' | 'REVIEW' | 'USER' | 'AUTH'
+export type AuditEntity = 'BOOK' | 'PACK' | 'ORDER' | 'COUPON' | 'CATEGORY' | 'REVIEW' | 'USER' | 'AUTH' | 'AUTHOR_PROFILE'
 
 /**
  * Créer une entrée dans le journal d'audit

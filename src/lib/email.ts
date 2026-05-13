@@ -56,7 +56,7 @@ export async function sendOrderConfirmation(order: any) {
             subject: `Confirmation de commande #${order.id.slice(0, 8)}`,
             html,
         })
-        console.log(`Email de confirmation envoyé à ${order.email}`)
+
     } catch (error) {
         console.error('Erreur envoi email:', error)
     }

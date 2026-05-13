@@ -3,11 +3,20 @@
 import { useCartStore } from '@/store/cart'
 import Image from 'next/image'
 import { Link } from '@/i18n/routing'
-import { ArrowRight, Minus, Plus, Trash2, ShoppingCart, Shield, Truck } from 'lucide-react'
+import { ArrowRight, Minus, Plus, Trash2, ShoppingCart, Shield, Truck, AlertCircle, Sparkles } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { normalizeImage } from '@/lib/utils'
 
-export default function CartClient() {
+import AddToCartButton from '@/components/AddToCartButton'
+import ImageWithFallback from '@/components/ImageWithFallback'
+
+interface CartClientProps {
+    minOrderAmount?: number
+    recommendedBooks?: any[]
+}
+
+export default function CartClient({ minOrderAmount = 0, recommendedBooks = [] }: CartClientProps) {
     const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, clearCart } = useCartStore()
     const [mounted, setMounted] = useState(false)
     const t = useTranslations('CartPage')
@@ -22,6 +31,7 @@ export default function CartClient() {
     const totalItems = getTotalItems()
     const shippingFee = totalPrice >= 500 ? 0 : 30
     const finalTotal = totalPrice + shippingFee
+    const isMinAmountReached = totalPrice >= minOrderAmount
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 pb-40">
@@ -70,7 +80,7 @@ export default function CartClient() {
                                 {/* Image */}
                                 <div className="relative w-full sm:w-32 h-44 flex-shrink-0 bg-pixio-cream rounded-[2rem] overflow-hidden border border-gray-50 transition-transform group-hover:scale-105">
                                     <Image
-                                        src={item.image}
+                                        src={normalizeImage(item.image)}
                                         alt={item.title}
                                         fill
                                         className="object-cover"
@@ -197,13 +207,31 @@ export default function CartClient() {
                                 <p className="text-[9px] font-black uppercase tracking-widest text-gray-200 text-right">{t('TaxesNote')}</p>
                             </div>
 
-                            <Link
-                                href="/checkout"
-                                className="w-full h-24 flex items-center justify-center gap-6 bg-black text-white text-[12px] font-black uppercase tracking-[0.4em] rounded-full hover:bg-gray-800 transition-all shadow-2xl hover:shadow-black/20 group active:scale-95 mb-10"
-                            >
-                                <span>{t('BeginCheckout')}</span>
-                                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                            </Link>
+                            {minOrderAmount > 0 && !isMinAmountReached && (
+                                <div className="mb-10 p-6 bg-red-50 rounded-3xl border border-red-100 flex items-start gap-4 animate-pulse">
+                                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-red-600 leading-relaxed">
+                                        {t('MinOrderWarning', { min: minOrderAmount })}
+                                    </p>
+                                </div>
+                            )}
+
+                            {isMinAmountReached ? (
+                                <Link
+                                    href="/checkout"
+                                    className="w-full h-24 flex items-center justify-center gap-6 bg-black text-white text-[12px] font-black uppercase tracking-[0.4em] rounded-full hover:bg-gray-800 transition-all shadow-2xl hover:shadow-black/20 group active:scale-95 mb-10"
+                                >
+                                    <span>{t('BeginCheckout')}</span>
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                                </Link>
+                            ) : (
+                                <div
+                                    className="w-full h-24 flex items-center justify-center gap-6 bg-gray-100 text-gray-400 text-[12px] font-black uppercase tracking-[0.4em] rounded-full cursor-not-allowed mb-10"
+                                >
+                                    <span>{t('BeginCheckout')}</span>
+                                    <ArrowRight className="w-5 h-5" />
+                                </div>
+                            )}
 
                             <Link
                                 href="/books"
@@ -223,6 +251,62 @@ export default function CartClient() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Recommendations Section */}
+            {recommendedBooks.length > 0 && (
+                <div className="mt-32">
+                    <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-8 px-4">
+                        <div className="space-y-4">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-full">
+                                <Sparkles className="w-4 h-4 text-pixio-yellow" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em]">{t('RecommendedForYou')}</span>
+                            </div>
+                            <h2 className="text-4xl md:text-6xl font-black text-black tracking-tighter">
+                                {t('CompleteYourCollection')}<span className="text-gray-200">.</span>
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                        {recommendedBooks
+                            .filter(book => !items.some(item => item.id === book.id))
+                            .slice(0, 4)
+                            .map((book) => (
+                                <div key={book.id} className="group relative bg-white rounded-[2.5rem] p-6 overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col h-full">
+                                    <Link href={`/books/${book.id}`} className="relative aspect-[3/4] overflow-hidden rounded-[2rem] mb-8 block">
+                                        <ImageWithFallback
+                                            src={book.image}
+                                            alt={book.title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                        />
+                                    </Link>
+                                    <div className="flex-grow flex flex-col">
+                                        <h3 className="text-lg font-black text-black leading-tight mb-2 line-clamp-1">
+                                            {book.title}
+                                        </h3>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-6">
+                                            {book.author}
+                                        </p>
+                                        <div className="mt-auto flex items-center justify-between gap-4 pt-6 border-t border-gray-50">
+                                            <span className="text-xl font-black text-black">{book.price} MAD</span>
+                                            <AddToCartButton
+                                                product={{
+                                                    id: book.id,
+                                                    title: book.title,
+                                                    price: book.price,
+                                                    image: book.image,
+                                                    type: 'BOOK'
+                                                }}
+                                                showIcon={false}
+                                                className="!px-6 !py-3 !w-auto !rounded-xl text-[9px] uppercase font-black"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                     </div>
                 </div>
             )}
