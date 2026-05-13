@@ -25,18 +25,25 @@ jobs:
             mkdir -p /var/www/riwayama
             cd /var/www/riwayama
             
-            # Initialiser git si nécessaire
+            # Initialisation robuste de Git si absente
             if [ ! -d ".git" ]; then
-              echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git clone https://github.com/reda7171/riwaya.git .
+              echo "🔧 Initialisation du dépôt Git..."
+              git init
+              git remote add origin https://github.com/reda7171/riwaya.git
             fi
 
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git config --global --add safe.directory /var/www/riwayama
-            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S git pull origin main
+            
+            # Forcer la synchronisation avec le repo distant
+            echo "📥 Récupération des derniers changements..."
+            git fetch origin main
+            git reset --hard origin/main
             
             # Permissions et Cron
+            echo "🔐 Configuration des permissions et Cron..."
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S chmod +x scripts/backup-db.sh
             (crontab -l 2>/dev/null | grep -q "backup-db.sh") || (crontab -l 2>/dev/null; echo "0 3 * * * /var/www/riwayama/scripts/backup-db.sh >> /var/www/riwayama/backups/backup.log 2>&1") | crontab -
             
             # Rebuild et Restart UNIQUEMENT le service 'app'
-            # On ne touche pas aux volumes de la DB
+            echo "🚀 Rechargement du service application..."
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker-compose up -d --build app
