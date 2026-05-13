@@ -28,48 +28,60 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     )
 
     // 2. Livres dynamiques
-    const books = await prisma.book.findMany({
-        select: { id: true, updatedAt: true }
-    })
-
-    const bookUrls = locales.flatMap((locale) =>
-        books.map((book) => ({
-            url: `${baseUrl}/${locale}/books/${book.id}`,
-            lastModified: book.updatedAt,
-            changeFrequency: 'weekly' as const,
-            priority: 0.7,
-        }))
-    )
+    let bookUrls: any[] = []
+    try {
+        const books = await prisma.book.findMany({
+            select: { id: true, updatedAt: true }
+        })
+        bookUrls = locales.flatMap((locale) =>
+            books.map((book) => ({
+                url: `${baseUrl}/${locale}/books/${book.id}`,
+                lastModified: book.updatedAt,
+                changeFrequency: 'weekly' as const,
+                priority: 0.7,
+            }))
+        )
+    } catch (e) {
+        console.warn('⚠️ Sitemaps: Could not fetch books during build')
+    }
 
     // 3. Articles de blog dynamiques
-    const posts = await prisma.post.findMany({
-        where: { published: true },
-        select: { slug: true, updatedAt: true }
-    })
-
-    const postUrls = locales.flatMap((locale) =>
-        posts.map((post) => ({
-            url: `${baseUrl}/${locale}/blog/${post.slug}`,
-            lastModified: post.updatedAt,
-            changeFrequency: 'weekly' as const,
-            priority: 0.6,
-        }))
-    )
+    let postUrls: any[] = []
+    try {
+        const posts = await prisma.post.findMany({
+            where: { published: true },
+            select: { slug: true, updatedAt: true }
+        })
+        postUrls = locales.flatMap((locale) =>
+            posts.map((post) => ({
+                url: `${baseUrl}/${locale}/blog/${post.slug}`,
+                lastModified: post.updatedAt,
+                changeFrequency: 'weekly' as const,
+                priority: 0.6,
+            }))
+        )
+    } catch (e) {
+        console.warn('⚠️ Sitemaps: Could not fetch posts during build')
+    }
 
     // 4. Packs dynamiques
-    const packs = await prisma.pack.findMany({
-        where: { active: true },
-        select: { id: true }
-    })
-
-    const packUrls = locales.flatMap((locale) =>
-        packs.map((pack) => ({
-            url: `${baseUrl}/${locale}/packs/${pack.id}`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
-            priority: 0.7,
-        }))
-    )
+    let packUrls: any[] = []
+    try {
+        const packs = await prisma.pack.findMany({
+            where: { active: true },
+            select: { id: true }
+        })
+        packUrls = locales.flatMap((locale) =>
+            packs.map((pack) => ({
+                url: `${baseUrl}/${locale}/packs/${pack.id}`,
+                lastModified: new Date(),
+                changeFrequency: 'weekly' as const,
+                priority: 0.7,
+            }))
+        )
+    } catch (e) {
+        console.warn('⚠️ Sitemaps: Could not fetch packs during build')
+    }
 
     return [...staticUrls, ...bookUrls, ...postUrls, ...packUrls]
 }
