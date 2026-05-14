@@ -101,15 +101,18 @@ export async function sendOrderNotification(order: {
                 { text: '💬 WhatsApp Confirm', url: whatsappUrl }
             ],
             [
-                { text: '✅ Confirmer', callback_data: `order_status:${order.id}:CONFIRMED` },
-                { text: '🚚 En livraison', callback_data: `order_status:${order.id}:SHIPPED` }
+                { text: '✅ Confirmer', callback_data: `os:${order.id}:CONFIRMED` },
+                { text: '🚚 En livraison', callback_data: `os:${order.id}:SHIPPED` }
             ],
             [
-                { text: '📦 Livrée', callback_data: `order_status:${order.id}:DELIVERED` },
-                { text: '🔄 Retournée', callback_data: `order_status:${order.id}:RETURNED` }
+                { text: '🚀 Expédier WithYou', callback_data: `sw:${order.id}` }
             ],
             [
-                { text: '❌ Annuler', callback_data: `order_status:${order.id}:CANCELLED` }
+                { text: '📦 Livrée', callback_data: `os:${order.id}:DELIVERED` },
+                { text: '🔄 Retournée', callback_data: `os:${order.id}:RETURNED` }
+            ],
+            [
+                { text: '❌ Annuler', callback_data: `os:${order.id}:CANCELLED` }
             ]
         ]
     }

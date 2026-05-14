@@ -52,7 +52,7 @@ async function handleSecureUpload(file: File, subDir: string, prefix: string) {
     let processedBuffer: Buffer
     try {
         processedBuffer = await sharp(buffer)
-            .webp({ quality: 80, effort: 4 })
+            .jpeg({ quality: 85, mozjpeg: true })
             .resize(1200, 1600, { fit: 'inside', withoutEnlargement: true })
             .toBuffer()
     } catch (sharpError) {
@@ -64,8 +64,8 @@ async function handleSecureUpload(file: File, subDir: string, prefix: string) {
     const baseName = sanitizeFilename(file.name).split('.')[0]
     const hash = createHash('sha256').update(processedBuffer).update(Date.now().toString()).digest('hex').substring(0, 12)
     
-    // On force l'extension .webp pour toutes les images
-    const filename = `${prefix}_${hash}_${baseName}.webp`
+    // On force l'extension .jpg pour toutes les images (compatibilité Instagram)
+    const filename = `${prefix}_${hash}_${baseName}.jpg`
 
     // 5. Préparation du chemin
     const uploadDir = join(process.cwd(), 'public', 'uploads', subDir)

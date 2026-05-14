@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
             if (!isLocal(host)) {
                 baseUrl = `${protocol}://${host}`;
             } else {
-                const port = host.split(':')[1] || '3001';
+                const port = host.split(':')[1] || '3000';
                 baseUrl = `${protocol}://167.86.108.246${port ? `:${port}` : ''}`; 
             }
         }
@@ -100,6 +100,14 @@ export async function POST(req: NextRequest) {
         if (imageUrl && !imageUrl.startsWith('http')) {
             const imagePath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
             imageUrl = `${baseUrl}${imagePath}`;
+        }
+
+        // --- PROXY HTTPS POUR META (Instagram/Facebook) ---
+        // Instagram/Facebook exigent HTTPS. On utilise wsrv.nl comme proxy gratuit
+        // Cela règle aussi le problème du format .webp non supporté par IG.
+        if (imageUrl && (platform === 'instagram' || platform === 'facebook' || platform === 'both' || platform === 'all')) {
+            imageUrl = `https://wsrv.nl/?url=${encodeURIComponent(imageUrl)}&output=jpg&q=85`;
+            console.log('[N8N PUBLISH] Using Proxy URL for Meta:', imageUrl);
         }
 
         const title = body.packName || body.title || (item ? (itemType === 'BOOK' ? item.title : item.name) : 'Riwaya');

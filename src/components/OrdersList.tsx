@@ -167,14 +167,12 @@ export default function OrderList({ orders, locale }: OrderListProps) {
                                             </p>
                                         </div>
                                     </div>
-                                    <a
-                                        href={`https://partners.olivraison.com/package/${order.trackingID}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    <Link
+                                        href={`/tracking?orderId=${order.id}&contact=${order.phone || order.email || ''}`}
                                         className="text-white bg-black px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all active:scale-95 text-center"
                                     >
                                         {t('TrackButton')}
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         )}

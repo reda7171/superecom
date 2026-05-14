@@ -52,10 +52,10 @@ export async function updateProfile(formData: FormData) {
                 const sharp = (await import('sharp')).default
                 const processedBuffer = await sharp(buffer)
                     .resize(400, 400, { fit: 'cover' }) // Format carré pour profil
-                    .webp({ quality: 80 })
+                    .jpeg({ quality: 85, mozjpeg: true })
                     .toBuffer()
 
-                const fileName = `${randomUUID()}.webp`
+                const fileName = `${randomUUID()}.jpg`
                 const filePath = path.join(uploadDir, fileName)
 
                 await writeFile(filePath, processedBuffer)

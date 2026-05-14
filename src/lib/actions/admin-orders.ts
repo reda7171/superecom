@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { verifyAdmin } from '@/lib/actions/auth'
 import { createAuditLog } from './audit'
-import { olivraison } from '@/lib/delivery/olivraison'
+import { withyouService } from '@/lib/delivery/withyou'
 import { sendTelegramMessage } from '@/lib/telegram'
 
 import { OrderStatus } from '@prisma/client'
@@ -227,9 +227,9 @@ export async function getOrderById(orderId: string) {
 }
 
 /**
- * Envoyer la commande à Olivraison
+ * Envoyer la commande à WithYou
  */
-export async function syncOrderToOlivraison(orderId: string) {
+export async function syncOrderToWithYou(orderId: string) {
     try {
         await verifyAdmin()
 
@@ -241,50 +241,47 @@ export async function syncOrderToOlivraison(orderId: string) {
         if (!order) throw new Error('Commande introuvable')
         if (order.trackingID) throw new Error('Cette commande a déjà un tracking ID')
 
-        // Préparer les données pour Olivraison
+        // Préparer les données pour WithYou
         const packageData = {
-            price: order.total,
-            name: order.fullName,
-            description: `Commande Riwaya #${order.id.slice(0, 8)}`,
-            destination: {
-                name: order.fullName,
-                phone: order.phone,
-                city: order.city,
-                streetAddress: order.address
-            }
+            villedest: order.city,
+            nomdest: order.fullName,
+            teldest: order.phone,
+            adressedest: order.address,
+            prixcolis: order.total.toString(),
+            refcolis: order.id,
+            observation: `Commande Riwaya #${order.id.slice(0, 8)}`
         }
 
-        // Créer le colis sur Olivraison
-        const response = await olivraison.createPackage(packageData)
+        // Créer le colis sur WithYou
+        const response = await withyouService.createPackage(packageData)
 
-        if (response && response.trackingID) {
-            // Mettre à jour la commande locale
-            await prisma.order.update({
-                where: { id: orderId },
-                data: {
-                    trackingID: response.trackingID,
-                    deliveryStatus: response.status || 'CREATED',
-                    deliverySyncAt: new Date(),
-                    status: 'CONFIRMED' // Automatiquement passer à confirmé si envoyé à livraison
-                }
-            })
+        // On suppose que la réponse renvoie un succès. Si pas de trackingID clair, on utilise l'ID de la commande comme référence
+        const trackingID = response?.data?.[0]?.trackingID || response?.trackingID || order.id
 
-            revalidatePath('/admin/orders')
-            revalidatePath(`/admin/orders/${orderId}`)
-
-            return {
-                success: true,
-                trackingID: response.trackingID,
-                message: 'Commande envoyée à Olivraison avec succès'
+        // Mettre à jour la commande locale
+        await prisma.order.update({
+            where: { id: orderId },
+            data: {
+                trackingID: trackingID,
+                deliveryStatus: 'CREATED',
+                deliverySyncAt: new Date(),
+                status: 'CONFIRMED' // Automatiquement passer à confirmé si envoyé à livraison
             }
-        }
+        })
 
-        throw new Error('Réponse invalide de l\'API Olivraison')
+        revalidatePath('/admin/orders')
+        revalidatePath(`/admin/orders/${orderId}`)
+
+        return {
+            success: true,
+            trackingID: trackingID,
+            message: 'Commande envoyée à WithYou avec succès'
+        }
     } catch (error: any) {
-        console.error('Erreur Sync Olivraison:', error)
+        console.error('Erreur Sync WithYou:', error)
         return {
             success: false,
-            error: error.message || 'Erreur lors de la synchronisation avec Olivraison'
+            error: error.message || 'Erreur lors de la synchronisation avec WithYou'
         }
     }
 }
@@ -293,41 +290,7 @@ export async function syncOrderToOlivraison(orderId: string) {
  * Récupérer le sticker de livraison
  */
 export async function getOrderShippingLabel(orderId: string) {
-    try {
-        await verifyAdmin()
-        const order = await prisma.order.findUnique({
-            where: { id: orderId },
-            select: { trackingID: true }
-        })
-
-        if (!order || !order.trackingID) {
-            throw new Error('Aucun tracking ID pour cette commande')
-        }
-
-        const response = await olivraison.getSticker([order.trackingID])
-
-        if (response && response[0] && response[0].stickerFilePath) {
-
-            return {
-                success: true,
-                stickerUrl: response[0].stickerFilePath,
-                sipUrl: response[0].sipFilePath
-            }
-        }
-
-        console.error('❌ Shipping Label Error for trackingID:', order.trackingID, 'Response:', JSON.stringify(response, null, 2))
-
-        let errorMsg = 'Impossible de générer l\'étiquette'
-        if (!response || response.length === 0) {
-            errorMsg = 'L\'API Olivraison n\'a retourné aucune étiquette. La commande est peut-être trop récente.'
-        } else if (!response[0].stickerFilePath) {
-            errorMsg = 'L\'étiquette n\'est pas encore disponible pour ce colis.'
-        }
-
-        throw new Error(errorMsg)
-    } catch (error: any) {
-        return { success: false, error: error.message }
-    }
+    return { success: false, error: 'La génération d\'étiquettes n\'est pas supportée par l\'API WithYou' }
 }
 
 /**

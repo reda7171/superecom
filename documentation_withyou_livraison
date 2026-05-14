@@ -1,0 +1,283 @@
+Intégration API WITHYOU livraison
+Les accès fournis ci-dessous sont destinés à l’intégration de l’API. Ils vous permettent de connecter votre application à notre système et d’accéder à nos fonctionnalités. Veuillez consulter notre documentation API, ci dessous pour plus de détails.
+
+Key	
+3c8c2c6fc979f962ca746c63a740afb3
+
+Token	
+b245c32a148ccf8c5a4c6d04b78c12080d819f17c379d7553ead04665dc3b6f0
+
+
+
+
+
+Key	Token	Action
+3c8c2c6fc979f962ca746c63a740afb3	
+b245c32a148ccf8c5a4c6d04b78c12080d819f17c379d7553ead04665dc3b6f0
+Copier
+🔐 Ajouter colis
+POST https://new.withyou.ma/api-rest/savecolis
+
+{
+"key":"$key",
+"token":"$token",
+"data":[
+{
+"villedest":"temara",
+"nomdest":"Yassmina",
+"teldest":"06752584562",
+"adressedest":"adresse temara,
+"prixcolis":"202.23",
+"refcolis":"vazd1255",
+"observation":"observation test observation"
+},
+{
+"villedest":"rabat",
+"nomdest":"Jamal",
+"teldest":"06752586058",
+"adressedest":"adress rabat",
+"prixcolis":"202.23",
+"refcolis":"azd1255",
+"observation":"observation test observation"
+},
+{
+"villedest":"sale",
+"nomdest":"Adile",
+"teldest":"0668524523",
+"adressedest":"adress sale",
+"prixcolis":"202.23",
+"refcolis":"ah1203",
+"observation":"observation test observation"
+}
+]
+}
+
+
+
+
+
+
+📦 Modification statut colis
+POST https://new.withyou.ma/api-rest/updatstatus
+
+Modification statut d'un colis
+
+{
+"key":"$key",
+"token":"$token",
+"codetracking":"wXXX2020",
+"status":"livrer"
+}
+
+Copier
+
+Resultat code Http 200 :
+
+    
+    {"code":"200","status":"success","message":"Vote status est mis ajour"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GET https://new.withyou.ma/api-rest/getville
+
+{
+"key":"$key",
+"token":"$token",
+}
+Copier
+Resultat code Http 200 :
+
+    {
+"key":"$key",
+"token":"$token",
+"data":[
+{"ville":"Rabat"},
+{"ville":"Ain Attig"},
+{"ville":"Ain El Aouda"},
+{"ville":"Salé"},
+{"ville":"Temara"},
+{"ville":"Skhirate"},
+{"ville":"Kénitra"},
+{"ville":"Khemisset"},
+{"ville":"Tamesna"},
+{"ville":"Tiflet"},
+{"ville":"Sala Al Jadida"},
+{"ville":"Harhoura"},
+{"ville":"Mehdia"},
+{"ville":"Sidi Yahya Zaër"},
+{"ville":"Mers El Kheir"},
+{"ville":"Wanana"},
+{"ville":"Bouknadel"},
+{"ville":"Sidi Taibi"},
+{"ville":"Sidi Allal el Bahraoui"},
+{"ville":"El Aarjate"},
+{"ville":"Sidi Yahya El Gharb"},
+{"ville":"Sidi Slimane"},
+{"ville":"Sidi Kacem"},
+{"ville":"Sidi Allal Tazi"},
+{"ville":"Souk El Arbaa El Rharb"},
+{"ville":"Mechra Bel Ksiri"},
+{"ville":"Casablanca"},
+{"ville":"Rommani"},
+{"ville":"Kamouni"},
+{"ville":"Moulay Bousselham"},
+{"ville":"Ouezzane"},
+{"ville":"Tit Mellil"},
+{"ville":"Berrechid"},
+{"ville":"Bouskoura"},
+{"ville":"Bouznika"},
+{"ville":"Kaleat Boukora"},
+{"ville":"Settat"},
+{"ville":"Sidi Rahal"},
+{"ville":"Mediouna"},
+{"ville":"Ben Slimane"},
+{"ville":"Dar Bouazza"},
+{"ville":"Mohammedia"},
+{"ville":"Ben Ahmed"},
+{"ville":"Deroua"},
+{"ville":"Tarouale"},
+{"ville":"Ain Harrouda"},
+{"ville":"Lalla Mimouna"},
+{"ville":"El gara"},
+{"ville":"NOUACER"},
+{"ville":"Errahma"},
+{"ville":"guelmim"},
+{"ville":"El-afak"},
+{"ville":"Bassatine El Menzeh"},
+{"ville":"Khemisset"},
+{"ville":"Oulad Azzouz Dar 16"},
+{"ville":"Fes"},
+{"ville":"Meknes"},
+{"ville":"Ouislane"},
+{"ville":"Nador"},
+{"ville":"Oujda"},
+{"ville":"Marrakech"},
+{"ville":"Essaouira"},
+{"ville":"Safi"},
+{"ville":"zaer"},
+{"ville":"Agadir"},
+{"ville":"Aït Melloul"},
+{"ville":"Inezgane"},
+{"ville":"Tikiwin"},
+{"ville":"Tanger"},
+{"ville":"Bejaad"},
+{"ville":"Boujniba"},
+{"ville":"Kasba Tadla"},
+{"ville":"Khénifra"},
+{"ville":"Mrirt"},
+{"ville":"Oued Zem"},
+{"ville":"Zaouiat Cheikh"}
+]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+📦 All statuts
+GET https://new.withyou.ma/api-rest/getallstatus
+
+{
+"key":"$key",
+"token":"$token",
+}
+Copier
+
+Resultat code Http 200 :
+
+"status_list": [
+    {
+      "code": "pending",
+      "label": "En attente"
+    },
+    {
+      "code": "confirmed",
+      "label": "Confirmée"
+    },
+    {
+      "code": "in_transit",
+      "label": "En cours de livraison"
+    },
+    {
+      "code": "delivered",
+      "label": "Livrée"
+    },
+    {
+      "code": "cancelled",
+      "label": "Annulée"
+    }
+  ]
+
+
+
+
+
+
+
+
+
+ Get Statuts des colis
+GET https://new.withyou.ma/api-rest/getstatus
+
+Recuperer statut des colis
+
+{
+"key":"$key",
+"token":"$token",
+"data":[codetracking,codetracking2,codetracking3]
+}
+
+Copier
+
+Resultat code Http 200 :
+
+    
+    {
+    "message":'success',
+    "data": [
+    {
+      "id": "W120225",
+      "statut": "En attente",
+      "message": "success"
+    },
+    {
+      "id": "W52025",
+      "statut": "Livrer",
+      "message": "success"
+    },
+    {
+      "id": "W3259",
+      "statut": "Expedier",
+      "message": "success"
+    }
+  ]}_

@@ -37,7 +37,7 @@ export default function DeliveryConfigForm({
 
         try {
             await updateMultipleSettings([
-                { key: 'delivery_api_url', value: apiUrl, category: 'config', description: 'URL de l\'API Livraison (ex: Olivraison)' },
+                { key: 'delivery_api_url', value: apiUrl, category: 'config', description: 'URL de l\'API Livraison (ex: WithYou)' },
                 { key: 'delivery_api_key', value: apiKey, category: 'config', description: 'Clé d\'authentification de l\'API Livraison' },
                 { key: 'announcement_bar_enabled', value: announcementEnabled ? 'true' : 'false', category: 'marketing', description: 'Activer la bande d\'annonce sur les produits' },
                 { key: 'announcement_bar_message', value: announcementMessage, category: 'marketing', description: 'Message de la bande d\'annonce' },
@@ -76,7 +76,7 @@ export default function DeliveryConfigForm({
                             value={apiUrl}
                             onChange={(e) => setApiUrl(e.target.value)}
                             className="w-full px-4 py-3 rounded-xl border border-gray-100 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-black outline-none transition-all font-medium"
-                            placeholder="Ex: https://partners.olivraison.com/"
+                            placeholder="Ex: https://new.withyou.ma/api-rest"
                         />
                     </div>
 

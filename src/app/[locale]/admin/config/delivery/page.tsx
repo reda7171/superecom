@@ -43,7 +43,7 @@ export default async function DeliveryConfigPage() {
                             <Truck className="w-6 h-6" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-black tracking-tight uppercase">API Olivraison</h2>
+                            <h2 className="text-2xl font-black text-black tracking-tight uppercase">API WithYou</h2>
                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 italic">Paramètres de connexion serveur à serveur</p>
                         </div>
                     </div>

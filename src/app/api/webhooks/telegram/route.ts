@@ -41,8 +41,8 @@ export async function POST(req: Request) {
         if (body.callback_query) {
             const { id: callbackId, data, message } = body.callback_query
             
-            // Format attendu: order_status:{orderId}:{STATUS}
-            if (data && data.startsWith('order_status:')) {
+            // Format attendu: os:{orderId}:{STATUS}
+            if (data && data.startsWith('os:')) {
                 const [, orderId, newStatus] = data.split(':')
                 
                 // Valider le statut
@@ -81,6 +81,38 @@ export async function POST(req: Request) {
 
                 if (message?.chat?.id && message?.message_id) {
                     await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
+                }
+            }
+            
+            // Format: sw:{orderId}
+            if (data && data.startsWith('sw:')) {
+                const [, orderId] = data.split(':')
+                const { syncOrderToWithYou } = await import('@/lib/actions/admin-orders')
+
+                try {
+                    const result = await syncOrderToWithYou(orderId)
+                    
+                    if (result.success) {
+                        await answerCallbackQuery(callbackId, `🚀 Expédié WithYou avec succès !`, token)
+                        
+                        // Mettre à jour le message
+                        const order = await prisma.order.findUnique({ where: { id: orderId } })
+                        if (order && message?.chat?.id && message?.message_id) {
+                            const shortId = orderId.slice(0, 8).toUpperCase()
+                            const updatedText = `✅ <b>Commande #${shortId} EXPÉDIÉE</b>\n\n` +
+                                `👤 ${order.fullName}\n` +
+                                `📍 ${order.city}\n` +
+                                `💰 ${order.total.toFixed(2)} MAD\n\n` +
+                                `🚀 <b>WithYou Tracking :</b> <code>${order.trackingID}</code>\n` +
+                                `📌 <b>Statut :</b> Confirmée`
+                                
+                            await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
+                        }
+                    } else {
+                        await answerCallbackQuery(callbackId, `❌ Erreur : ${result.error}`, token)
+                    }
+                } catch (error: any) {
+                    await answerCallbackQuery(callbackId, `❌ Erreur système : ${error.message}`, token)
                 }
             }
 

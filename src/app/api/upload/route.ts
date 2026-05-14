@@ -102,12 +102,12 @@ export async function POST(request: NextRequest) {
         }
 
         // --- OPTIMISATION SHARP ---
-        // On convertit tout en WebP pour la performance (réduit le poids de 60-80%)
+        // On convertit tout en JPEG pour la compatibilité maximale (notamment Instagram)
         let processedBuffer: Buffer
         try {
             processedBuffer = await sharp(buffer)
-                .webp({ quality: 80, effort: 4 }) // Équilibre entre vitesse et compression
-                .resize(1200, 1600, { fit: 'inside', withoutEnlargement: true }) // Taille max raisonnable
+                .jpeg({ quality: 85, mozjpeg: true }) // Excellente compatibilité et compression
+                .resize(1200, 1600, { fit: 'inside', withoutEnlargement: true })
                 .toBuffer()
         } catch (sharpError) {
             console.error('[UPLOAD] Sharp processing failed:', sharpError)
@@ -126,8 +126,8 @@ export async function POST(request: NextRequest) {
             .digest('hex')
             .substring(0, 16)
 
-        // On force l'extension .webp
-        const fileName = `${hash}-${sanitizedName}.webp`
+        // On force l'extension .jpg
+        const fileName = `${hash}-${sanitizedName}.jpg`
 
         // Créer le répertoire s'il n'existe pas
         const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'books')

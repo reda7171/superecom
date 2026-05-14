@@ -183,7 +183,7 @@ export default async function OrderDetailsPage({
                         </div>
                     </div>
 
-                    {/* Livraison Olivraison */}
+                    {/* Livraison WithYou */}
                     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 overflow-hidden">
                         <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
                             <Truck className="w-5 h-5 text-gray-400" />
