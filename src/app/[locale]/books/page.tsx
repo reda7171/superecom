@@ -49,19 +49,38 @@ export default async function BooksPage({
     // Envoyer une notification Telegram de manière asynchrone
     try {
         const { getSetting } = await import('@/lib/actions/site-settings')
+        const { getCommunityUser } = await import('@/lib/actions/community-auth')
+        const { getAdminUser } = await import('@/lib/actions/auth')
+        const { prisma } = await import('@/lib/prisma')
+        
         const shouldNotify = await getSetting('telegram_notify_search') === 'true'
 
         if (shouldNotify) {
+            // Identifier l'utilisateur
+            const communityUser = await getCommunityUser()
+            const adminUserId = await getAdminUser()
+            
+            let visitorName = 'Client'
+            if (adminUserId) {
+                const admin = await prisma.user.findUnique({ 
+                    where: { id: adminUserId }, 
+                    select: { fullName: true } 
+                })
+                visitorName = admin?.fullName || 'Admin'
+            } else if (communityUser) {
+                visitorName = communityUser.fullName || 'Client'
+            }
+
             if (params.search || params.category || params.language) {
                 const safeSearch = (params.search || '---').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 const safeCat = (params.category || 'Toutes').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 const msg = params.search 
-                    ? `🔍 <b>Nouvelle Recherche</b>\n\n🔎 <b>Terme:</b> ${safeSearch}\n📁 <b>Catégorie:</b> ${safeCat}\n🌐 <b>Langue:</b> ${params.language || 'Toutes'}`
-                    : `📂 <b>Filtrage Catalogue</b>\n\n📁 <b>Catégorie:</b> ${safeCat}\n🌐 <b>Langue:</b> ${params.language || 'Toutes'}`;
+                    ? `🔍 <b>Nouvelle Recherche</b> - ${visitorName}\n\n🔎 <b>Terme:</b> ${safeSearch}\n📁 <b>Catégorie:</b> ${safeCat}\n🌐 <b>Langue:</b> ${params.language || 'Toutes'}`
+                    : `📂 <b>Filtrage Catalogue</b> - ${visitorName}\n\n📁 <b>Catégorie:</b> ${safeCat}\n🌐 <b>Langue:</b> ${params.language || 'Toutes'}`;
                 
                 sendTelegramMessage(msg).catch(console.error);
             } else {
-                sendTelegramMessage(`👀 <b>Visite Catalogue</b>\n\nUn client parcourt tous les livres.`).catch(console.error);
+                sendTelegramMessage(`👀 <b>Visite Catalogue</b> - ${visitorName}\n\nUn visiteur parcourt tous les livres.`).catch(console.error);
             }
         }
     } catch (e) {

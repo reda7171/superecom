@@ -84,7 +84,7 @@ export default function BookDescriptionModal({ isOpen, onClose, book, format = '
     useEffect(() => {
         if (!isOpen) {
             setTheme('dark')
-            setPositions({ book: { x: 0, y: 0 }, text: { x: 0, y: 0 } })
+            setPositions({ book: { x: 0, y: 0 }, text: { x: 0, y: 0 }, bg: { x: 0, y: 0 } })
             setImageScale(1)
             setImageRotation(0)
             setShowCover(false)

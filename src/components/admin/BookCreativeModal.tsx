@@ -100,7 +100,7 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
     useEffect(() => {
         if (!isOpen) {
             setTheme('dark') // reset
-            setPositions({ badge: { x: 0, y: 0 }, logo: { x: 0, y: 0 }, book: { x: 0, y: 0 }, footer: { x: 0, y: 0 }, delivery: { x: 0, y: 0 } })
+            setPositions({ badge: { x: 0, y: 0 }, logo: { x: 0, y: 0 }, book: { x: 0, y: 0 }, footer: { x: 0, y: 0 }, delivery: { x: 0, y: 0 }, bg: { x: 0, y: 0 } })
             setImageScale(1)
             setImageRotation(0)
             setLogoScale(3)
