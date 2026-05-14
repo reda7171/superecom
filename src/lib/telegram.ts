@@ -145,8 +145,18 @@ export async function answerCallbackQuery(callbackQueryId: string, text: string,
     })
 }
 
+/**
+ * Échapper les caractères HTML pour Telegram
+ */
+export function escapeHtml(text: string): string {
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+}
+
 // Modifier le message original après action
-export async function editTelegramMessage(chatId: string | number, messageId: number, text: string, token: string) {
+export async function editTelegramMessage(chatId: string | number, messageId: number, text: string, token: string, replyMarkup?: any) {
     await fetch(`${TELEGRAM_API}${token}/editMessageText`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -154,7 +164,8 @@ export async function editTelegramMessage(chatId: string | number, messageId: nu
             chat_id: chatId,
             message_id: messageId,
             text,
-            parse_mode: 'HTML'
+            parse_mode: 'HTML',
+            reply_markup: replyMarkup
         })
     })
 }

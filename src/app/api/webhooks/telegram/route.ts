@@ -40,47 +40,55 @@ export async function POST(req: Request) {
         // Traitement des callback_query (boutons)
         if (body.callback_query) {
             const { id: callbackId, data, message } = body.callback_query
+            const { escapeHtml } = await import('@/lib/telegram')
             
             // Format attendu: os:{orderId}:{STATUS}
             if (data && data.startsWith('os:')) {
-                const [, orderId, newStatus] = data.split(':')
+                const parts = data.split(':')
+                const orderId = parts[1]
+                const newStatus = parts[2]
                 
                 // Valider le statut
-                if (!Object.keys(STATUS_LABELS).includes(newStatus)) {
+                if (!STATUS_LABELS[newStatus]) {
                     await answerCallbackQuery(callbackId, 'Statut invalide', token)
                     return NextResponse.json({ ok: true })
                 }
 
-                // Mettre à jour la commande dans la DB
-                const order = await prisma.order.update({
-                    where: { id: orderId },
-                    data: {
-                        status: newStatus as OrderStatus,
-                        statusHistory: {
-                            create: {
-                                status: newStatus as OrderStatus,
-                                comment: 'Statut mis à jour via Telegram Bot',
-                                createdBy: 'TELEGRAM'
+                try {
+                    // Mettre à jour la commande dans la DB
+                    const order = await prisma.order.update({
+                        where: { id: orderId },
+                        data: {
+                            status: newStatus as OrderStatus,
+                            statusHistory: {
+                                create: {
+                                    status: newStatus as OrderStatus,
+                                    comment: 'Statut mis à jour via Telegram Bot',
+                                    createdBy: 'TELEGRAM'
+                                }
                             }
                         }
+                    })
+
+                    const label = STATUS_LABELS[newStatus]
+                    
+                    // Répondre au callback
+                    await answerCallbackQuery(callbackId, `✅ Statut mis à jour : ${label}`, token)
+
+                    // Modifier le message pour refléter le changement (en gardant les boutons)
+                    const shortId = orderId.slice(0, 8).toUpperCase()
+                    const updatedText = `✅ <b>Commande #${shortId}</b>\n\n` +
+                        `👤 ${escapeHtml(order.fullName)}\n` +
+                        `📍 ${escapeHtml(order.city)}\n` +
+                        `💰 ${order.total.toFixed(2)} MAD\n\n` +
+                        `📌 <b>Statut :</b> ${label}`
+
+                    if (message?.chat?.id && message?.message_id) {
+                        await editTelegramMessage(message.chat.id, message.message_id, updatedText, token, message.reply_markup)
                     }
-                })
-
-                const label = STATUS_LABELS[newStatus]
-                
-                // Répondre au callback
-                await answerCallbackQuery(callbackId, `✅ Statut mis à jour : ${label}`, token)
-
-                // Modifier le message pour refléter le changement
-                const shortId = orderId.slice(0, 8).toUpperCase()
-                const updatedText = `✅ <b>Commande #${shortId}</b>\n\n` +
-                    `👤 ${order.fullName}\n` +
-                    `📍 ${order.city}\n` +
-                    `💰 ${order.total.toFixed(2)} MAD\n\n` +
-                    `📌 <b>Statut :</b> ${label}`
-
-                if (message?.chat?.id && message?.message_id) {
-                    await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
+                } catch (error) {
+                    console.error('Order update failed:', error)
+                    await answerCallbackQuery(callbackId, '❌ Erreur : Commande introuvable', token)
                 }
             }
             
