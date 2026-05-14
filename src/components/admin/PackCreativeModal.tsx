@@ -80,6 +80,8 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
     const [showName, setShowName] = useState(true)
     const [showDescription, setShowDescription] = useState(true)
     const [layerOrder, setLayerOrder] = useState<string[]>([])
+    const [bgImage, setBgImage] = useState<string | null>(null)
+    const [bgOpacity, setBgOpacity] = useState(1)
 
     // State for editable texts
     const [editableTexts, setEditableTexts] = useState({
@@ -273,6 +275,8 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                     if (data.showPrice !== undefined) setShowPrice(data.showPrice)
                     if (data.showWhatsapp !== undefined) setShowWhatsapp(data.showWhatsapp)
                     if (data.whatsappScale) setWhatsappScale(data.whatsappScale)
+                    if (data.bgImage) setBgImage(data.bgImage)
+                    if (data.bgOpacity !== undefined) setBgOpacity(data.bgOpacity)
                     if (data.whatsappNumber) setEditableTexts(prev => ({ ...prev, whatsapp: String(data.whatsappNumber) }))
                     else if (pack?.whatsappNumber) setEditableTexts(prev => ({ ...prev, whatsapp: String(pack.whatsappNumber) }))
                 } catch (e) {
@@ -297,6 +301,8 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                 showPrice,
                 showWhatsapp,
                 whatsappScale,
+                bgImage,
+                bgOpacity,
                 whatsappNumber: editableTexts.whatsapp,
                 layerOrder
             }
@@ -333,29 +339,29 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
     if (!isOpen || !pack) return null
 
     // Convertit une URL image en base64 via canvas pour contourner CORS
-    const toBase64 = (url: string): Promise<string> => {
-        return new Promise((resolve) => {
-            const img = new window.Image()
-            img.crossOrigin = 'anonymous'
-            img.onload = () => {
-                const canvas = document.createElement('canvas')
-                canvas.width = img.naturalWidth
-                canvas.height = img.naturalHeight
-                canvas.getContext('2d')?.drawImage(img, 0, 0)
-                try {
-                    resolve(canvas.toDataURL('image/png'))
-                } catch {
-                    // Fallback to transparent pixel if dataURL fails
-                    resolve('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=')
-                }
+    const toBase64 = async (url: string): Promise<string> => {
+        try {
+            if (url.startsWith('data:')) return url;
+            
+            // Si c'est une URL externe, on passe par notre proxy pour éviter CORS
+            let targetUrl = url;
+            if (url.startsWith('http') && !url.includes(window.location.host)) {
+                targetUrl = `/api/proxy/image?url=${encodeURIComponent(url)}`;
             }
-            img.onerror = () => {
-                console.warn(`Failed to load image for base64 conversion: ${url}`)
-                // Resolve with a transparent pixel to avoid html-to-image failure
-                resolve('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=')
-            }
-            img.src = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now()
-        })
+
+            const res = await fetch(targetUrl);
+            if (!res.ok) throw new Error('Fetch failed');
+            const blob = await res.blob();
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        } catch (err) {
+            console.error("Base64 conversion error:", err);
+            return url;
+        }
     }
 
     // Remplace les src des images du poster par leur équivalent base64
@@ -381,7 +387,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
         try {
             setIsGenerating(true)
             originals = await patchImagesBase64(posterRef.current)
-            await new Promise(resolve => setTimeout(resolve, 400))
+            await new Promise(resolve => setTimeout(resolve, 800))
 
             let dataUrl = await htmlToImage.toPng(posterRef.current, {
                 quality: 1,
@@ -568,7 +574,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
         try {
             setIsGenerating(true)
             originals = await patchImagesBase64(posterRef.current)
-            await new Promise(resolve => setTimeout(resolve, 400))
+            await new Promise(resolve => setTimeout(resolve, 800))
 
             const dataUrl = await htmlToImage.toPng(posterRef.current, {
                 quality: 1,
@@ -827,16 +833,34 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                     <div className="flex-1 flex items-center justify-center p-4 sm:p-12 w-full">
                         <div
                             ref={posterRef}
-                            className={`relative shrink-0 ${format === 'story' ? 'w-[360px] h-[640px]' : 'w-[500px] h-[500px]'} ${currentTheme.bg} overflow-hidden flex flex-col p-8 transition-all duration-300`}
-                            style={{ boxShadow: '0 50px 100px -20px rgba(0,0,0,0.5)' }}
+                            className={`relative shrink-0 ${format === 'story' ? 'w-[360px] h-[640px]' : 'w-[500px] h-[500px]'} ${bgImage ? '' : currentTheme.bg} overflow-hidden flex flex-col p-8 transition-all duration-300`}
+                            style={{ 
+                                boxShadow: '0 50px 100px -20px rgba(0,0,0,0.5)',
+                            }}
                             onClick={(e) => {
                                 // Clic sur le fond = désélectionner tout
                                 if (e.target === e.currentTarget) setSelectedKeys(new Set())
                             }}
                         >
-                            {/* Decorative elements */}
-                            <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-white/5 blur-3xl pointer-events-none"></div>
-                            <div className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-black/20 blur-3xl pointer-events-none"></div>
+                            {/* Custom Background Image Layer */}
+                            {bgImage && (
+                                <div 
+                                    className="absolute inset-0 z-0 pointer-events-none"
+                                    style={{ 
+                                        backgroundImage: `url(${bgImage})`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center',
+                                        opacity: bgOpacity
+                                    }}
+                                />
+                            )}
+                            {/* Decorative elements (Hidden if bgImage exists) */}
+                            {!bgImage && (
+                                <>
+                                    <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-white/5 blur-3xl pointer-events-none"></div>
+                                    <div className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-black/20 blur-3xl pointer-events-none"></div>
+                                </>
+                            )}
 
                             {/* Top Bar Wrapper */}
                             <div className="flex justify-between items-start z-10 mb-8 select-none">
@@ -1315,6 +1339,57 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                         </span>
                                     </button>
                                 ))}
+                            </div>
+                        </div>
+
+                        {/* Background Image Upload */}
+                        <div className="pt-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 block ml-1">
+                                Image de Fond (Personnalisée)
+                            </label>
+                            <div className="space-y-3">
+                                <label className="flex items-center justify-center gap-3 w-full px-4 py-4 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-all group">
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        className="hidden" 
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0]
+                                            if (file) {
+                                                const reader = new FileReader()
+                                                reader.onload = (ev) => setBgImage(ev.target?.result as string)
+                                                reader.readAsDataURL(file)
+                                            }
+                                        }}
+                                    />
+                                    <ImageIcon className="w-5 h-5 text-gray-400 group-hover:text-indigo-600" />
+                                    <span className="text-[11px] font-black uppercase tracking-widest text-gray-600 group-hover:text-indigo-600">
+                                        {bgImage ? 'Changer le fond' : 'Uploader un fond'}
+                                    </span>
+                                </label>
+                                {bgImage && (
+                                    <>
+                                        <div className="pt-2">
+                                            <label className="flex justify-between text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
+                                                <span>Opacité du fond</span>
+                                                <span>{Math.round(bgOpacity * 100)}%</span>
+                                            </label>
+                                            <input 
+                                                type="range" 
+                                                min="0" max="1" step="0.05" 
+                                                value={bgOpacity}
+                                                onChange={(e) => setBgOpacity(parseFloat(e.target.value))}
+                                                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                            />
+                                        </div>
+                                        <button 
+                                            onClick={() => setBgImage(null)}
+                                            className="w-full py-2 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 transition"
+                                        >
+                                            Réinitialiser (Thème)
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
 

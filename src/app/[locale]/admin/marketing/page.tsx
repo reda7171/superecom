@@ -17,7 +17,10 @@ import {
     Instagram,
     Music,
     Send,
-    X
+    X,
+    Plus,
+    Upload,
+    Loader2
 } from 'lucide-react'
 import Image from 'next/image'
 
@@ -37,6 +40,10 @@ export default function MarketingPage() {
     const [filter, setFilter] = useState<'all' | 'creative' | 'pack' | 'desc'>('all')
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
+    const [uploading, setUploading] = useState(false)
+    const [uploadType, setUploadType] = useState<'CREATIVE' | 'PACK' | 'DESCRIPTION'>('CREATIVE')
+    const [uploadName, setUploadName] = useState('')
 
     const fetchAssets = async () => {
         setLoading(true)
@@ -81,24 +88,37 @@ export default function MarketingPage() {
     }
 
     const handlePublish = async (asset: Asset, platform: string) => {
+        // ... (existing handlePublish logic)
+    }
+
+    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        setUploading(true)
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('type', 'marketing')
+        formData.append('marketingType', uploadType)
+        formData.append('customName', uploadName || file.name)
+
         try {
-            const res = await fetch('/api/n8n/publish', {
+            const res = await fetch('/api/upload', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    platform: platform === 'all' ? 'both' : platform,
-                    customImageUrl: asset.url,
-                    bookId: asset.bookId,
-                    packId: asset.packId,
-                    isPack: asset.type === 'PACK',
-                    isDescription: asset.type === 'DESCRIPTION'
-                })
+                body: formData
             })
             const data = await res.json()
-            if (data.success) alert('✅ Envoyé à n8n pour publication')
-            else alert(`❌ Erreur: ${data.message || data.error}`)
+            if (data.success) {
+                await fetchAssets()
+                setIsUploadModalOpen(false)
+                setUploadName('')
+            } else {
+                alert(data.error || 'Erreur lors de l\'upload')
+            }
         } catch (error) {
-            alert('Erreur technique lors de la publication')
+            alert('Erreur technique lors de l\'upload')
+        } finally {
+            setUploading(false)
         }
     }
 
@@ -154,13 +174,22 @@ export default function MarketingPage() {
                     <p className="text-slate-500 mt-2 font-medium">Retrouvez toutes les images générées pour vos campagnes publicitaires.</p>
                 </div>
 
-                <button 
-                    onClick={fetchAssets}
-                    className="hidden md:flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition-all shadow-sm active:scale-95"
-                >
-                    <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                    Actualiser
-                </button>
+                <div className="flex items-center gap-3">
+                    <button 
+                        onClick={() => setIsUploadModalOpen(true)}
+                        className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Nouvelle Créative
+                    </button>
+                    <button 
+                        onClick={fetchAssets}
+                        className="hidden md:flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition-all shadow-sm active:scale-95"
+                    >
+                        <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                        Actualiser
+                    </button>
+                </div>
             </div>
 
             {/* Sticky Mobile Search Bar */}
@@ -348,6 +377,79 @@ export default function MarketingPage() {
                             </div>
                         </div>
                     ))}
+                </div>
+            )}
+            {/* Modal d'Upload */}
+            {isUploadModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsUploadModalOpen(false)} />
+                    <div className="relative bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="p-8">
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-2xl font-black text-slate-900">Ajouter une Créative</h2>
+                                <button onClick={() => setIsUploadModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                                    <X className="w-6 h-6 text-slate-400" />
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Nom de la créative (Facultatif)</label>
+                                    <input 
+                                        type="text"
+                                        placeholder="Ex: Pub Facebook Promo Ramadan"
+                                        value={uploadName}
+                                        onChange={(e) => setUploadName(e.target.value)}
+                                        className="w-full px-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-600 rounded-2xl outline-none font-bold text-slate-900 transition-all"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Type d'Asset</label>
+                                    <div className="grid grid-cols-3 gap-3">
+                                        {[
+                                            { id: 'CREATIVE', label: 'Pub', icon: Sparkles },
+                                            { id: 'PACK', label: 'Pack', icon: Filter },
+                                            { id: 'DESCRIPTION', label: 'Desc', icon: Quote }
+                                        ].map(type => (
+                                            <button
+                                                key={type.id}
+                                                onClick={() => setUploadType(type.id as any)}
+                                                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${
+                                                    uploadType === type.id 
+                                                        ? 'bg-indigo-50 border-indigo-600 text-indigo-600' 
+                                                        : 'bg-white border-slate-100 text-slate-400 hover:border-slate-200'
+                                                }`}
+                                            >
+                                                <type.icon className="w-5 h-5 mb-2" />
+                                                <span className="text-[10px] font-black uppercase tracking-wider">{type.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="pt-4">
+                                    <label className="relative group cursor-pointer">
+                                        <input 
+                                            type="file" 
+                                            accept="image/*"
+                                            onChange={handleUpload}
+                                            disabled={uploading}
+                                            className="hidden"
+                                        />
+                                        <div className="w-full flex items-center justify-center gap-3 px-8 py-5 bg-black text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 disabled:opacity-50">
+                                            {uploading ? (
+                                                <Loader2 className="w-5 h-5 animate-spin" />
+                                            ) : (
+                                                <Upload className="w-5 h-5" />
+                                            )}
+                                            {uploading ? 'Envoi en cours...' : 'Sélectionner l\'image'}
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

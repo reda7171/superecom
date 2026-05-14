@@ -69,12 +69,29 @@ export async function importOrdersFromExcel(formData: FormData) {
             
             if (!getVal('nom') && !getVal('num') && !getVal('total')) continue; // Skip completely empty rows
             
+            // Tentative de retrouver le livre par son titre pour avoir le costPrice
+            let bookId = null
+            let bookCostPrice = 0
+            
+            if (booksTitles) {
+                const book = await prisma.book.findFirst({
+                    where: { 
+                        title: { contains: booksTitles.toString().split(',')[0].trim() } 
+                    },
+                    select: { id: true, costPrice: true }
+                })
+                if (book) {
+                    bookId = book.id
+                    bookCostPrice = book.costPrice
+                }
+            }
+
             await prisma.order.create({
                 data: {
                     fullName: fullName.toString(),
                     phone: phone.toString(),
                     city: city.toString(),
-                    address: city.toString(), // Fallback address to city
+                    address: city.toString(),
                     total,
                     subtotal,
                     shippingFees,
@@ -85,8 +102,10 @@ export async function importOrdersFromExcel(formData: FormData) {
                         create: [
                             {
                                 type: 'BOOK',
+                                bookId: bookId,
                                 quantity: nbrLivre,
-                                price: nbrLivre > 0 ? subtotal / nbrLivre : subtotal
+                                price: nbrLivre > 0 ? subtotal / nbrLivre : subtotal,
+                                costPrice: bookCostPrice
                             }
                         ]
                     }

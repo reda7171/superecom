@@ -23,14 +23,17 @@ export default function BookDescriptionModal({ isOpen, onClose, book, format = '
     const [isGenerating, setIsGenerating] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
     const [theme, setTheme] = useState<'dark' | 'emerald' | 'gold' | 'purple'>('dark')
+    const [bgImage, setBgImage] = useState<string | null>(null)
+    const [bgOpacity, setBgOpacity] = useState(1)
 
     // Interactive States
     const [positions, setPositions] = useState({ book: { x: 0, y: 0 }, text: { x: 0, y: 0 } })
     const [dragging, setDragging] = useState<string | null>(null)
     const [offset, setOffset] = useState({ x: 0, y: 0 })
-    const [imageScale, setImageScale] = useState(1)
-    const [imageRotation, setImageRotation] = useState(0)
-    const [showCover, setShowCover] = useState(false)
+    const [imageScale, setImageScale] = useState(1.9)
+    const [imageRotation, setImageRotation] = useState(51)
+    const [imageOpacity, setImageOpacity] = useState(1)
+    const [showCover, setShowCover] = useState(true)
     const [showShadow, setShowShadow] = useState(true)
 
     // Publication States
@@ -103,7 +106,14 @@ export default function BookDescriptionModal({ isOpen, onClose, book, format = '
     const toBase64 = async (url: string): Promise<string> => {
         try {
             if (url.startsWith('data:')) return url;
-            const res = await fetch(url);
+            
+            // Si c'est une URL externe, on passe par notre proxy pour éviter CORS
+            let targetUrl = url;
+            if (url.startsWith('http') && !url.includes(window.location.host)) {
+                targetUrl = `/api/proxy/image?url=${encodeURIComponent(url)}`;
+            }
+
+            const res = await fetch(targetUrl);
             if (!res.ok) throw new Error('Fetch failed');
             const blob = await res.blob();
             return new Promise((resolve, reject) => {
@@ -113,23 +123,8 @@ export default function BookDescriptionModal({ isOpen, onClose, book, format = '
                 reader.readAsDataURL(blob);
             });
         } catch (err) {
-            return new Promise((resolve) => {
-                const img = new window.Image()
-                img.crossOrigin = 'anonymous'
-                img.onload = () => {
-                    const canvas = document.createElement('canvas')
-                    canvas.width = img.naturalWidth
-                    canvas.height = img.naturalHeight
-                    canvas.getContext('2d')?.drawImage(img, 0, 0)
-                    try {
-                        resolve(canvas.toDataURL('image/png'))
-                    } catch {
-                        resolve('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=')
-                    }
-                }
-                img.onerror = () => resolve('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=')
-                img.src = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now()
-            })
+            console.error("Base64 conversion error:", err);
+            return url;
         }
     }
 
@@ -327,11 +322,27 @@ export default function BookDescriptionModal({ isOpen, onClose, book, format = '
                 <div className="flex-1 bg-gray-100 p-8 flex items-center justify-center overflow-auto min-h-[400px]">
                     <div 
                         ref={posterRef}
-                        className={`relative ${format === 'story' ? 'w-[360px] min-h-[640px]' : 'w-[450px] min-h-[562px]'} ${currentTheme.bg} overflow-hidden flex flex-col items-center justify-center p-12 transition-all duration-300`}
+                        className={`relative ${format === 'story' ? 'w-[360px] min-h-[640px]' : 'w-[450px] min-h-[562px]'} ${bgImage ? '' : currentTheme.bg} overflow-hidden flex flex-col items-center justify-center p-12 transition-all duration-300`}
                     >
-                        {/* Decorative elements */}
-                        <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-white/5 blur-3xl pointer-events-none"></div>
-                        <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-black/40 blur-3xl pointer-events-none"></div>
+                        {/* Custom Background Image Layer */}
+                        {bgImage && (
+                            <div 
+                                className="absolute inset-0 z-0 pointer-events-none"
+                                style={{ 
+                                    backgroundImage: `url(${bgImage})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    opacity: bgOpacity
+                                }}
+                            />
+                        )}
+                        {/* Decorative elements (Only if no custom bg) */}
+                        {!bgImage && (
+                            <>
+                                <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-white/5 blur-3xl pointer-events-none"></div>
+                                <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-black/40 blur-3xl pointer-events-none"></div>
+                            </>
+                        )}
 
                         {showCover && (
                             <div 
@@ -349,7 +360,10 @@ export default function BookDescriptionModal({ isOpen, onClose, book, format = '
                                     })() || '/book-placeholder.png'} 
                                     alt={book.title} 
                                     className="w-32 object-cover rounded-md"
-                                    style={{ boxShadow: showShadow ? '0 25px 50px -12px rgba(0,0,0,0.7)' : 'none' }}
+                                    style={{ 
+                                        boxShadow: showShadow ? '0 25px 50px -12px rgba(0,0,0,0.7)' : 'none',
+                                        opacity: imageOpacity
+                                    }}
                                     crossOrigin="anonymous"
                                 />
                             </div>
@@ -446,6 +460,57 @@ export default function BookDescriptionModal({ isOpen, onClose, book, format = '
                             </div>
                         </div>
 
+                        {/* Background Image Upload */}
+                        <div className="pt-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 block">
+                                Image de Fond (Optionnelle)
+                            </label>
+                            <div className="space-y-3">
+                                <label className="flex items-center justify-center gap-3 w-full px-4 py-4 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-all group">
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        className="hidden" 
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0]
+                                            if (file) {
+                                                const reader = new FileReader()
+                                                reader.onload = (ev) => setBgImage(ev.target?.result as string)
+                                                reader.readAsDataURL(file)
+                                            }
+                                        }}
+                                    />
+                                    <ImageIcon className="w-5 h-5 text-gray-400 group-hover:text-indigo-600" />
+                                    <span className="text-[11px] font-black uppercase tracking-widest text-gray-600 group-hover:text-indigo-600">
+                                        {bgImage ? 'Changer le fond' : 'Uploader un fond'}
+                                    </span>
+                                </label>
+                                {bgImage && (
+                                    <>
+                                        <div className="pt-2">
+                                            <label className="flex justify-between text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
+                                                <span>Opacité du fond</span>
+                                                <span>{Math.round(bgOpacity * 100)}%</span>
+                                            </label>
+                                            <input 
+                                                type="range" 
+                                                min="0" max="1" step="0.05" 
+                                                value={bgOpacity}
+                                                onChange={(e) => setBgOpacity(parseFloat(e.target.value))}
+                                                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                            />
+                                        </div>
+                                        <button 
+                                            onClick={() => setBgImage(null)}
+                                            className="w-full py-2 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 transition"
+                                        >
+                                            Réinitialiser le fond
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
                         <div className="space-y-4 pt-4 border-t border-gray-100">
                             <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Typographie (Description)</h4>
                             
@@ -535,6 +600,19 @@ export default function BookDescriptionModal({ isOpen, onClose, book, format = '
                                             min="-180" max="180" step="1" 
                                             value={imageRotation}
                                             onChange={(e) => setImageRotation(parseFloat(e.target.value))}
+                                            className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="flex justify-between text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                                            <span>Opacité de l'image</span>
+                                            <span>{Math.round(imageOpacity * 100)}%</span>
+                                        </label>
+                                        <input 
+                                            type="range" 
+                                            min="0" max="1" step="0.05" 
+                                            value={imageOpacity}
+                                            onChange={(e) => setImageOpacity(parseFloat(e.target.value))}
                                             className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                                         />
                                     </div>

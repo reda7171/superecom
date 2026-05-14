@@ -59,7 +59,7 @@
           "parameters": [
             {
               "name": "access_token",
-              "value": "={{ $json.body.facebook_access_token }}"
+              "value": "={{ $('Webhook').item.json.body.facebook_access_token }}"
             }
           ]
         },
@@ -73,7 +73,7 @@
             },
             {
               "name": "message",
-              "value": "={{ $json.body.caption }}"
+              "value": "={{ $('Webhook').item.json.body.caption }}"
             },
             {
               "name": "published",
@@ -133,7 +133,7 @@
           "parameters": [
             {
               "name": "access_token",
-              "value": "={{ $json.body.facebook_access_token }}"
+              "value": "={{ $('Webhook').item.json.body.facebook_access_token }}"
             }
           ]
         },
@@ -147,7 +147,7 @@
             },
             {
               "name": "caption",
-              "value": "={{ $json.body.caption }}"
+              "value": "={{ $('Webhook').item.json.body.caption }}"
             }
           ]
         },
@@ -171,7 +171,7 @@
           "parameters": [
             {
               "name": "access_token",
-              "value": "={{ $json.body.facebook_access_token }}"
+              "value": "={{ $('Webhook').item.json.body.facebook_access_token }}"
             }
           ]
         },

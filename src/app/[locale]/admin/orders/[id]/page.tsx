@@ -114,10 +114,18 @@ export default async function OrderDetailsPage({
                                 <span>Total des articles (Prix de revient)</span>
                                 <span>
                                     {order.items.reduce((sum, item) => {
-                                        const itemCost = item.costPrice || (item.book?.costPrice || item.pack?.costPrice || 0)
+                                        // On utilise le prix de revient enregistré dans la commande, 
+                                        // sinon on retombe sur celui du livre actuel, sinon 0
+                                        const itemCost = (item.costPrice && item.costPrice > 0) 
+                                            ? item.costPrice 
+                                            : (item.book?.costPrice || item.pack?.costPrice || 0)
                                         return sum + (itemCost * item.quantity)
                                     }, 0).toFixed(2)} MAD
                                 </span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm text-gray-500 font-bold">
+                                <span>Frais de livraison</span>
+                                <span>{(order.shippingFees || 0).toFixed(2)} MAD</span>
                             </div>
                             <div className="flex justify-between items-center text-sm text-gray-500 font-bold">
                                 <span>Frais fixes (Étiquette, Sachet, Ads)</span>
@@ -135,10 +143,13 @@ export default async function OrderDetailsPage({
                                     {(
                                         order.total -
                                         order.items.reduce((sum, item) => {
-                                            const itemCost = item.costPrice || (item.book?.costPrice || item.pack?.costPrice || 0)
+                                            const itemCost = (item.costPrice && item.costPrice > 0) 
+                                                ? item.costPrice 
+                                                : (item.book?.costPrice || item.pack?.costPrice || 0)
                                             return sum + (itemCost * item.quantity)
                                         }, 0) -
-                                        2.65
+                                        2.65 -
+                                        (order.shippingFees || 0)
                                     ).toFixed(2)} MAD
                                 </span>
                             </div>

@@ -95,7 +95,12 @@ export async function getFinancialStats() {
     const orders = await prisma.order.findMany({
         where: { status: 'DELIVERED' },
         include: {
-            items: true
+            items: {
+                include: {
+                    book: { select: { costPrice: true } },
+                    pack: { select: { costPrice: true } }
+                }
+            }
         }
     })
 
@@ -105,9 +110,13 @@ export async function getFinancialStats() {
 
     for (const order of orders) {
         totalRevenue += order.total
-        totalFixedCosts += 2.65 // 1DH étiquette + 0.65 sachet + 1DH ads
+        totalFixedCosts += 2.65 + (order.shippingFees || 0)
         for (const item of order.items) {
-            totalCostOfGoodsSold += ((item as any).costPrice || 0) * item.quantity
+            // Utiliser le costPrice de l'item ou celui du produit s'il est à 0
+            const itemCost = ((item as any).costPrice && (item as any).costPrice > 0)
+                ? (item as any).costPrice
+                : ((item as any).book?.costPrice || (item as any).pack?.costPrice || 0)
+            totalCostOfGoodsSold += itemCost * item.quantity
         }
     }
 

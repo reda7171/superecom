@@ -2,6 +2,7 @@ import { writeFile, mkdir } from 'fs/promises'
 import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
 import { verifyAdmin } from '@/lib/actions/auth'
+import { prisma } from '@/lib/prisma'
 import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
 import { sanitizeFilename } from '@/lib/security'
 import { createHash } from 'crypto'
@@ -119,6 +120,11 @@ export async function POST(request: NextRequest) {
         const baseName = path.basename(file.name, fileExtension)
         const sanitizedName = sanitizeFilename(baseName)
 
+        // Gestion spécifique Marketing
+        const isMarketing = formData.get('type') === 'marketing'
+        const marketingType = formData.get('marketingType') as string || 'CREATIVE'
+        const customName = formData.get('customName') as string
+
         // Générer un hash unique pour éviter les collisions
         const hash = createHash('sha256')
             .update(processedBuffer)
@@ -126,8 +132,13 @@ export async function POST(request: NextRequest) {
             .digest('hex')
             .substring(0, 16)
 
-        // On force l'extension .jpg
-        const fileName = `${hash}-${sanitizedName}.jpg`
+        // Nom du fichier
+        let fileName = `${hash}-${sanitizedName}.jpg`
+        if (isMarketing) {
+            const prefix = marketingType === 'PACK' ? 'pack_' : marketingType === 'DESCRIPTION' ? 'desc_' : 'creative_'
+            const finalName = customName ? sanitizeFilename(customName) : sanitizedName
+            fileName = `${prefix}${hash}_${finalName}.jpg`
+        }
 
         // Créer le répertoire s'il n'existe pas
         const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'books')
@@ -149,6 +160,22 @@ export async function POST(request: NextRequest) {
 
         // Retourner l'URL publique
         const url = `/uploads/books/${fileName}`
+
+        // Si c'est du marketing, on enregistre en base
+        if (isMarketing) {
+            try {
+                await prisma.marketingAsset.create({
+                    data: {
+                        name: fileName,
+                        url: url,
+                        type: marketingType,
+                    }
+                })
+            } catch (dbError) {
+                console.error('[UPLOAD] DB sync failed:', dbError)
+                // On continue quand même car le fichier est écrit
+            }
+        }
 
         return NextResponse.json({ success: true, url })
     } catch (error: any) {

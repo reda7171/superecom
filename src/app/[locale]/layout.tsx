@@ -9,6 +9,7 @@ import { isFeatureEnabled, getSetting } from '@/lib/actions/site-settings';
 import { Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import Toaster from '@/components/Toaster';
+import Script from 'next/script';
 
 const WhatsAppButton = dynamic(() => import('@/components/WhatsAppButton'))
 const ChatBot = dynamic(() => import('@/components/ChatBot'))
@@ -159,7 +160,9 @@ export default async function LocaleLayout({
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} suppressHydrationWarning>
       <head>
         {/* Google Tag Manager */}
-        <script
+        <Script
+          id="gtm-script"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -174,7 +177,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           <meta name="google-site-verification" content={googleSearchConsoleId} />
         )}
         {injectedHeadTags && (
-          <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `</script>${injectedHeadTags}<script>` }} />
+          <Script 
+            id="injected-head-tags"
+            strategy="beforeInteractive"
+            dangerouslySetInnerHTML={{ __html: injectedHeadTags }} 
+          />
         )}
       </head>
       <body
@@ -185,8 +192,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MSD75KHT"
           height="0" width="0" style={{ display: 'none', visibility: 'hidden' }}></iframe></noscript>
         {/* End Google Tag Manager (noscript) */}
-        <script
+        <Script
+          id="schema-website"
           type="application/ld+json"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
@@ -204,8 +213,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             })
           }}
         />
-        <script
+        <Script
+          id="schema-org"
           type="application/ld+json"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',

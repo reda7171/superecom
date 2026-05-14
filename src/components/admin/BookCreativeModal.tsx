@@ -30,14 +30,17 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
     const [positions, setPositions] = useState({ badge: { x: 0, y: 0 }, logo: { x: 0, y: 0 }, book: { x: 0, y: 0 }, footer: { x: 0, y: 0 }, delivery: { x: 0, y: 0 } })
     const [dragging, setDragging] = useState<string | null>(null)
     const [offset, setOffset] = useState({ x: 0, y: 0 })
-    const [imageScale, setImageScale] = useState(1)
-    const [imageRotation, setImageRotation] = useState(0)
+    const [imageScale, setImageScale] = useState(1.9)
+    const [imageRotation, setImageRotation] = useState(51)
     const [logoScale, setLogoScale] = useState(3)
     const [showLogo, setShowLogo] = useState(true)
     const [showFreeDelivery, setShowFreeDelivery] = useState(false)
     const [showShadow, setShowShadow] = useState(true)
     const [showPrice, setShowPrice] = useState(true)
     const [showSolde, setShowSolde] = useState(false)
+    const [bgImage, setBgImage] = useState<string | null>(null)
+    const [bgOpacity, setBgOpacity] = useState(1)
+    const [imageOpacity, setImageOpacity] = useState(1)
 
     // Publication States
     const [platform, setPlatform] = useState<'facebook' | 'instagram' | 'tiktok' | 'all'>('all')
@@ -131,7 +134,14 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
     const toBase64 = async (url: string): Promise<string> => {
         try {
             if (url.startsWith('data:')) return url;
-            const res = await fetch(url);
+            
+            // Si c'est une URL externe, on passe par notre proxy pour éviter CORS
+            let targetUrl = url;
+            if (url.startsWith('http') && !url.includes(window.location.host)) {
+                targetUrl = `/api/proxy/image?url=${encodeURIComponent(url)}`;
+            }
+
+            const res = await fetch(targetUrl);
             if (!res.ok) throw new Error('Fetch failed');
             const blob = await res.blob();
             return new Promise((resolve, reject) => {
@@ -141,23 +151,9 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                 reader.readAsDataURL(blob);
             });
         } catch (err) {
-            return new Promise((resolve) => {
-                const img = new window.Image()
-                img.crossOrigin = 'anonymous'
-                img.onload = () => {
-                    const canvas = document.createElement('canvas')
-                    canvas.width = img.naturalWidth
-                    canvas.height = img.naturalHeight
-                    canvas.getContext('2d')?.drawImage(img, 0, 0)
-                    try {
-                        resolve(canvas.toDataURL('image/png'))
-                    } catch {
-                        resolve('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=')
-                    }
-                }
-                img.onerror = () => resolve('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=')
-                img.src = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now()
-            })
+            console.error("Base64 conversion error:", err);
+            // Fallback ultime si même le proxy échoue
+            return url;
         }
     }
 
@@ -506,12 +502,31 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                     {/* The Poster Container */}
                     <div 
                         ref={posterRef}
-                        className={`relative ${format === 'story' ? 'w-[360px] min-h-[640px]' : 'w-[400px] h-[500px]'} ${currentTheme.bg} overflow-hidden font-sans flex flex-col transition-all duration-300`}
-                        style={{ aspectRatio: format === 'story' ? '9/16' : '4/5', boxShadow: 'none' }}
+                        className={`relative ${format === 'story' ? 'w-[360px] min-h-[640px]' : 'w-[400px] h-[500px]'} ${bgImage ? '' : currentTheme.bg} overflow-hidden font-sans flex flex-col transition-all duration-300`}
+                        style={{ 
+                            aspectRatio: format === 'story' ? '9/16' : '4/5', 
+                            boxShadow: 'none',
+                        }}
                     >
-                        {/* Background Decor (Using basic radial gradients instead of blur for html2canvas compatibility) */}
-                        <div className="absolute top-[-50px] right-[-50px] w-64 h-64 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)' }}></div>
-                        <div className="absolute bottom-[-50px] left-[-50px] w-64 h-64 rounded-full" style={{ background: 'radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 70%)' }}></div>
+                        {/* Custom Background Image Layer */}
+                        {bgImage && (
+                            <div 
+                                className="absolute inset-0 z-0 pointer-events-none"
+                                style={{ 
+                                    backgroundImage: `url(${bgImage})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    opacity: bgOpacity
+                                }}
+                            />
+                        )}
+                        {/* Background Decor (Only if no custom bg) */}
+                        {!bgImage && (
+                            <>
+                                <div className="absolute top-[-50px] right-[-50px] w-64 h-64 rounded-full" style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)' }}></div>
+                                <div className="absolute bottom-[-50px] left-[-50px] w-64 h-64 rounded-full" style={{ background: 'radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 70%)' }}></div>
+                            </>
+                        )}
 
                         {/* Top Label & Logo */}
                         <div className="pt-8 px-8 flex justify-between items-start z-10 select-none">
@@ -602,7 +617,8 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                                     className="relative w-full h-auto object-cover rounded shadow-2xl transition-transform"
                                     style={{ 
                                         boxShadow: showShadow ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' : 'none',
-                                        transform: `scale(${imageScale}) rotate(${imageRotation}deg)` 
+                                        transform: `scale(${imageScale}) rotate(${imageRotation}deg)`,
+                                        opacity: imageOpacity
                                     }}
                                 />
                             </div>
@@ -735,6 +751,57 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                             </div>
                         </div>
 
+                        {/* Background Image Upload */}
+                        <div className="pt-2">
+                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">
+                                Image de Fond (Perso)
+                            </label>
+                            <div className="space-y-3">
+                                <label className="flex items-center justify-center gap-3 w-full px-4 py-4 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-all group">
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        className="hidden" 
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0]
+                                            if (file) {
+                                                const reader = new FileReader()
+                                                reader.onload = (ev) => setBgImage(ev.target?.result as string)
+                                                reader.readAsDataURL(file)
+                                            }
+                                        }}
+                                    />
+                                    <ImageIcon className="w-5 h-5 text-gray-400 group-hover:text-indigo-600" />
+                                    <span className="text-[11px] font-black uppercase tracking-widest text-gray-600 group-hover:text-indigo-600">
+                                        {bgImage ? 'Changer le fond' : 'Uploader un fond'}
+                                    </span>
+                                </label>
+                                {bgImage && (
+                                    <>
+                                        <div className="pt-2">
+                                            <label className="flex justify-between text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
+                                                <span>Opacité du fond</span>
+                                                <span>{Math.round(bgOpacity * 100)}%</span>
+                                            </label>
+                                            <input 
+                                                type="range" 
+                                                min="0" max="1" step="0.05" 
+                                                value={bgOpacity}
+                                                onChange={(e) => setBgOpacity(parseFloat(e.target.value))}
+                                                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                            />
+                                        </div>
+                                        <button 
+                                            onClick={() => setBgImage(null)}
+                                            className="w-full py-2 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 transition"
+                                        >
+                                            Réinitialiser le fond
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Taille de l'image
@@ -757,6 +824,20 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                                 min="-180" max="180" step="1"
                                 value={imageRotation}
                                 onChange={(e) => setImageRotation(parseInt(e.target.value))}
+                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="flex justify-between text-sm font-medium text-gray-700 mb-2">
+                                <span>Opacité de l'image</span>
+                                <span>{Math.round(imageOpacity * 100)}%</span>
+                            </label>
+                            <input 
+                                type="range" 
+                                min="0" max="1" step="0.05"
+                                value={imageOpacity}
+                                onChange={(e) => setImageOpacity(parseFloat(e.target.value))}
                                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                             />
                         </div>
