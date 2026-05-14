@@ -27,7 +27,14 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
     const [theme, setTheme] = useState<'dark' | 'light' | 'orange' | 'magenta' | 'emerald' | 'gold' | 'purple'>('dark')
 
     // Interactive States
-    const [positions, setPositions] = useState({ badge: { x: 0, y: 0 }, logo: { x: 0, y: 0 }, book: { x: 0, y: 0 }, footer: { x: 0, y: 0 }, delivery: { x: 0, y: 0 } })
+    const [positions, setPositions] = useState({ 
+        badge: { x: 0, y: 0 }, 
+        logo: { x: 0, y: 0 }, 
+        book: { x: 0, y: 0 }, 
+        footer: { x: 0, y: 0 }, 
+        delivery: { x: 0, y: 0 },
+        bg: { x: 0, y: 0 }
+    })
     const [dragging, setDragging] = useState<string | null>(null)
     const [offset, setOffset] = useState({ x: 0, y: 0 })
     const [imageScale, setImageScale] = useState(1.9)
@@ -511,13 +518,15 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                         {/* Custom Background Image Layer */}
                         {bgImage && (
                             <div 
-                                className="absolute inset-0 z-0 pointer-events-none"
+                                className={`absolute inset-0 z-0 cursor-move ${dragging === 'bg' ? '' : 'transition-transform'}`}
                                 style={{ 
                                     backgroundImage: `url(${bgImage})`,
                                     backgroundSize: 'cover',
                                     backgroundPosition: 'center',
-                                    opacity: bgOpacity
+                                    opacity: bgOpacity,
+                                    transform: `translate(${positions.bg.x}px, ${positions.bg.y}px) scale(1.1)`
                                 }}
+                                onMouseDown={(e) => handleMouseDown(e, 'bg')}
                             />
                         )}
                         {/* Background Decor (Only if no custom bg) */}

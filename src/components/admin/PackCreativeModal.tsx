@@ -53,7 +53,8 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
         description: { x: 0, y: 0 },
         limited: { x: 0, y: 0 },
         price: { x: 0, y: 160 },
-        whatsapp: { x: 0, y: 220 }
+        whatsapp: { x: 0, y: 220 },
+        bg: { x: 0, y: 0 }
     })
 
     const [dragging, setDragging] = useState<string | null>(null)
@@ -108,7 +109,8 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
         description: { x: 0, y: 0 },
         limited: { x: 0, y: 0 },
         price: { x: 0, y: 160 },
-        whatsapp: { x: 0, y: 220 }
+        whatsapp: { x: 0, y: 220 },
+        bg: { x: 0, y: 0 }
     })
     // Refs pour accéder aux éléments DOM directement
     const dragElemsRef = useRef<Record<string, HTMLElement | null>>({})
@@ -845,13 +847,15 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                             {/* Custom Background Image Layer */}
                             {bgImage && (
                                 <div 
-                                    className="absolute inset-0 z-0 pointer-events-none"
+                                    className={`absolute inset-0 z-0 cursor-move ${dragging === 'bg' ? '' : 'transition-transform'}`}
                                     style={{ 
                                         backgroundImage: `url(${bgImage})`,
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
-                                        opacity: bgOpacity
+                                        opacity: bgOpacity,
+                                        transform: `translate(${positions.bg?.x || 0}px, ${positions.bg?.y || 0}px) scale(1.1)` // Un léger scale pour éviter les bords blancs lors du drag
                                     }}
+                                    onMouseDown={(e) => handleMouseDown(e, 'bg')}
                                 />
                             )}
                             {/* Decorative elements (Hidden if bgImage exists) */}

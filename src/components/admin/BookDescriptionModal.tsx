@@ -27,7 +27,7 @@ export default function BookDescriptionModal({ isOpen, onClose, book, format = '
     const [bgOpacity, setBgOpacity] = useState(1)
 
     // Interactive States
-    const [positions, setPositions] = useState({ book: { x: 0, y: 0 }, text: { x: 0, y: 0 } })
+    const [positions, setPositions] = useState({ book: { x: 0, y: 0 }, text: { x: 0, y: 0 }, bg: { x: 0, y: 0 } })
     const [dragging, setDragging] = useState<string | null>(null)
     const [offset, setOffset] = useState({ x: 0, y: 0 })
     const [imageScale, setImageScale] = useState(1.9)
@@ -327,13 +327,15 @@ export default function BookDescriptionModal({ isOpen, onClose, book, format = '
                         {/* Custom Background Image Layer */}
                         {bgImage && (
                             <div 
-                                className="absolute inset-0 z-0 pointer-events-none"
+                                className={`absolute inset-0 z-0 cursor-move ${dragging === 'bg' ? '' : 'transition-transform'}`}
                                 style={{ 
                                     backgroundImage: `url(${bgImage})`,
                                     backgroundSize: 'cover',
                                     backgroundPosition: 'center',
-                                    opacity: bgOpacity
+                                    opacity: bgOpacity,
+                                    transform: `translate(${positions.bg.x}px, ${positions.bg.y}px) scale(1.1)`
                                 }}
+                                onMouseDown={(e) => handleMouseDown(e, 'bg')}
                             />
                         )}
                         {/* Decorative elements (Only if no custom bg) */}
