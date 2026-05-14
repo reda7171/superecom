@@ -13,6 +13,7 @@ import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui'
 import { fbPixelEvents } from '@/lib/facebook-pixel'
 import { getActiveGifts } from '@/lib/actions/gifts'
+import { getWithYouCities } from '@/lib/actions/delivery'
 
 interface CheckoutForm {
     firstName: string
@@ -42,9 +43,14 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
         lastName: user.fullName?.split(' ').slice(1).join(' ') || ''
     } : {}
 
-    const { register, handleSubmit, getValues, formState: { errors } } = useForm<CheckoutForm>({
+    const { register, handleSubmit, getValues, setValue, watch, formState: { errors } } = useForm<CheckoutForm>({
         defaultValues
     })
+
+    const [allCities, setAllCities] = useState<string[]>([])
+    const [filteredCities, setFilteredCities] = useState<string[]>([])
+    const [showCities, setShowCities] = useState(false)
+    const watchedCity = watch('city')
 
     const [abandonedCartId, setAbandonedCartId] = useState<string | null>(null)
 
@@ -89,7 +95,22 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
         setMounted(true)
         // Fetch active gifts
         getActiveGifts().then(setGifts)
+        // Fetch cities from WithYou
+        getWithYouCities().then(setAllCities)
     }, [])
+
+    useEffect(() => {
+        if (watchedCity && watchedCity.length > 0) {
+            const filtered = allCities.filter(c => 
+                c.toLowerCase().includes(watchedCity.toLowerCase())
+            )
+            setFilteredCities(filtered.slice(0, 8)) // Limiter à 8 suggestions
+            setShowCities(filtered.length > 0)
+        } else {
+            setFilteredCities([])
+            setShowCities(false)
+        }
+    }, [watchedCity, allCities])
 
     useEffect(() => {
         if (mounted && items.length > 0) {
@@ -281,13 +302,38 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                                <div className="space-y-3">
+                                <div className="space-y-3 relative city-suggestion-container">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('City')}</label>
                                     <input
                                         {...registerWithTracker('city', { required: t('Errors.CityRequired') })}
                                         placeholder={t('ChooseCity')}
+                                        autoComplete="off"
+                                        onFocus={() => {
+                                            if (watchedCity && filteredCities.length > 0) setShowCities(true)
+                                        }}
                                         className="w-full px-6 py-5 bg-pixio-cream/50 border-2 border-transparent rounded-[1.5rem] focus:bg-white focus:border-black outline-none transition-all font-black text-black"
                                     />
+                                    
+                                    {showCities && (
+                                        <div className="absolute z-[999] left-0 right-0 top-full mt-2 bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-gray-100 overflow-hidden max-h-[250px] overflow-y-auto custom-scrollbar">
+                                            {filteredCities.map((city, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    type="button"
+                                                    onMouseDown={(e) => {
+                                                        // Utiliser onMouseDown au lieu de onClick pour éviter les conflits de blur
+                                                        e.preventDefault()
+                                                        setValue('city', city)
+                                                        setShowCities(false)
+                                                    }}
+                                                    className="w-full px-6 py-4 text-left hover:bg-pixio-cream font-black text-xs uppercase tracking-widest transition-colors border-b border-gray-50 last:border-none"
+                                                >
+                                                    {city}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                    
                                     {errors.city && <p className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">{errors.city.message}</p>}
                                 </div>
                                 <div className="space-y-3">

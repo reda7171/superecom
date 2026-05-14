@@ -7,6 +7,8 @@ import Link from 'next/link';
 import POSProductCard from './POSProductCard';
 import { createPOSOrder } from '@/lib/actions/pos';
 import { useUIStore } from '@/store/ui';
+import { getWithYouCities } from '@/lib/actions/delivery';
+import { useEffect } from 'react';
 
 interface Product {
   id: string;
@@ -45,6 +47,27 @@ export default function POSClient({ books, packs }: POSClientProps) {
   const [discount, setDiscount] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  
+  const [allCities, setAllCities] = useState<string[]>([]);
+  const [filteredCities, setFilteredCities] = useState<string[]>([]);
+  const [showCities, setShowCities] = useState(false);
+
+  useEffect(() => {
+    getWithYouCities().then(setAllCities);
+  }, []);
+
+  useEffect(() => {
+    if (customer.city && customer.city.length > 0) {
+      const filtered = allCities.filter(c => 
+        c.toLowerCase().includes(customer.city.toLowerCase())
+      );
+      setFilteredCities(filtered.slice(0, 8));
+      setShowCities(filtered.length > 0);
+    } else {
+      setFilteredCities([]);
+      setShowCities(false);
+    }
+  }, [customer.city, allCities]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -345,13 +368,35 @@ export default function POSClient({ books, packs }: POSClientProps) {
                     onChange={e => setCustomer({...customer, phone: e.target.value})}
                     className="w-full px-6 py-4 text-[10px] font-black uppercase tracking-widest bg-white border border-gray-100 rounded-2xl focus:ring-4 focus:ring-black/5 focus:border-black outline-none transition-all shadow-sm"
                 />
-                <input
-                    type="text"
-                    placeholder="VILLE"
-                    value={customer.city}
-                    onChange={e => setCustomer({...customer, city: e.target.value})}
-                    className="w-full px-6 py-4 text-[10px] font-black uppercase tracking-widest bg-white border border-gray-100 rounded-2xl focus:ring-4 focus:ring-black/5 focus:border-black outline-none transition-all shadow-sm"
-                />
+                <div className="relative">
+                    <input
+                        type="text"
+                        placeholder="VILLE"
+                        value={customer.city}
+                        autoComplete="off"
+                        onChange={e => setCustomer({...customer, city: e.target.value})}
+                        onFocus={() => customer.city && filteredCities.length > 0 && setShowCities(true)}
+                        className="w-full px-6 py-4 text-[10px] font-black uppercase tracking-widest bg-white border border-gray-100 rounded-2xl focus:ring-4 focus:ring-black/5 focus:border-black outline-none transition-all shadow-sm"
+                    />
+                    {showCities && (
+                        <div className="absolute z-[999] left-0 right-0 top-full mt-1 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-gray-100 overflow-hidden max-h-[200px] overflow-y-auto custom-scrollbar">
+                            {filteredCities.map((city, idx) => (
+                                <button
+                                    key={idx}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        setCustomer({...customer, city});
+                                        setShowCities(false);
+                                    }}
+                                    className="w-full px-6 py-3 text-left hover:bg-gray-50 font-black text-[9px] uppercase tracking-widest transition-colors border-b border-gray-50 last:border-none"
+                                >
+                                    {city}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
             <input
                 type="text"

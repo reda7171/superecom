@@ -78,11 +78,41 @@ class WithYouService {
      * Liste des villes
      */
     async getCities() {
-        const res = await this.request('/getville')
-        if (res?.data) {
-             return res.data.map((v: any) => v.ville)
+        try {
+            const res = await this.request('/getville')
+            console.log('[WithYou] Raw cities response:', JSON.stringify(res).substring(0, 500))
+            
+            let cityList: string[] = []
+
+            if (Array.isArray(res)) {
+                cityList = res.map((v: any) => v.ville || v)
+            } else if (res?.data && Array.isArray(res.data)) {
+                cityList = res.data.map((v: any) => v.ville || v)
+            }
+
+            // Filtrer les doublons et les valeurs vides
+            cityList = Array.from(new Set(cityList.filter(v => v && typeof v === 'string')))
+
+            if (cityList.length > 0) return cityList
+
+            // Fallback si l'API ne renvoie rien
+            return [
+                "Casablanca", "Rabat", "Marrakech", "Fes", "Tangier", "Agadir", "Meknes", "Oujda", "Kenitra", "Tetouan",
+                "Safi", "Mohammedia", "Khouribga", "El Jadida", "Beni Mellal", "Nador", "Taza", "Settat", "Berrechid",
+                "Khemisset", "Inezgane", "Ksar El Kebir", "Larache", "Guelmim", "Berkane", "Khenifra", "Sidi Kacem",
+                "Sidi Slimane", "Errachidia", "Taroudant", "Ouarzazate", "Tiznit", "Youssoufia", "Ben Guerir", "Tan-Tan",
+                "Ouazzane", "Guercif", "Dakhla", "Laayoune"
+            ]
+        } catch (error) {
+            console.error('[WithYou] Error fetching cities:', error)
+            return [
+                "Casablanca", "Rabat", "Marrakech", "Fes", "Tangier", "Agadir", "Meknes", "Oujda", "Kenitra", "Tetouan",
+                "Safi", "Mohammedia", "Khouribga", "El Jadida", "Beni Mellal", "Nador", "Taza", "Settat", "Berrechid",
+                "Khemisset", "Inezgane", "Ksar El Kebir", "Larache", "Guelmim", "Berkane", "Khenifra", "Sidi Kacem",
+                "Sidi Slimane", "Errachidia", "Taroudant", "Ouarzazate", "Tiznit", "Youssoufia", "Ben Guerir", "Tan-Tan",
+                "Ouazzane", "Guercif", "Dakhla", "Laayoune"
+            ]
         }
-        return []
     }
 
     /**

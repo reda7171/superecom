@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from '@/i18n/routing'
 import { Edit, Trash2, Eye, EyeOff, Search, Check, X, Edit3, ImageIcon, FileDown, GripVertical, LayoutGrid, List } from 'lucide-react'
-import { deleteBook, toggleBookStatus, bulkDeleteBooks, updateBookQuick, updateBookOrder } from '@/lib/actions/books'
+import { deleteBook, toggleBookStatus, bulkDeleteBooks, updateBookQuick, updateBookOrder, bulkUpdateBookPrices } from '@/lib/actions/books'
 import { useRouter, usePathname } from 'next/navigation'
 import ImageWithFallback from '@/components/ImageWithFallback'
 import BookCreativeModal from '@/components/admin/BookCreativeModal'
@@ -43,6 +43,8 @@ export default function BooksTable({ books, pageNumber, totalProviderPages, init
     const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null)
     const [orderedBooks, setOrderedBooks] = useState(books)
     const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
+    const [bulkPrice, setBulkPrice] = useState<string>('')
+    const [isUpdatingPrice, setIsUpdatingPrice] = useState(false)
     const router = useRouter()
     const pathname = usePathname()
 
@@ -146,6 +148,27 @@ export default function BooksTable({ books, pageNumber, totalProviderPages, init
 
         if (result.success) {
             setSelectedIds([])
+        } else {
+            alert(result.error)
+        }
+    }
+
+    const handleBulkPriceUpdate = async () => {
+        if (selectedIds.length === 0 || !bulkPrice) return
+        const price = Number(bulkPrice)
+        if (isNaN(price)) return alert('Prix invalide')
+        
+        if (!confirm(`Êtes-vous sûr de vouloir changer le prix de ${selectedIds.length} livre(s) à ${price} MAD ?`)) return
+
+        setIsUpdatingPrice(true)
+        const result = await bulkUpdateBookPrices(selectedIds, price)
+        setIsUpdatingPrice(false)
+
+        if (result.success) {
+            setBulkPrice('')
+            setSelectedIds([])
+            setToast({ msg: `✅ Prix mis à jour pour ${selectedIds.length} livres`, ok: true })
+            setTimeout(() => setToast(null), 4000)
         } else {
             alert(result.error)
         }
@@ -318,11 +341,33 @@ export default function BooksTable({ books, pageNumber, totalProviderPages, init
                 <>
                     {selectedIds.length > 0 && (
                         <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200 mx-4 mt-4 flex-wrap">
-                            <span className="text-sm font-medium text-gray-700">{selectedIds.length} livre(s) sélectionné(s)</span>
+                            <span className="text-sm font-black text-gray-900">{selectedIds.length} livre(s) sélectionnés</span>
+                            
+                            <div className="h-6 w-px bg-gray-300 mx-2 hidden sm:block"></div>
+
+                            <div className="flex items-center gap-2">
+                                <input 
+                                    type="number" 
+                                    placeholder="Nouveau prix..."
+                                    value={bulkPrice}
+                                    onChange={(e) => setBulkPrice(e.target.value)}
+                                    className="w-32 px-3 py-2 text-xs font-bold border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                                <button
+                                    onClick={handleBulkPriceUpdate}
+                                    disabled={isUpdatingPrice || !bulkPrice}
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition shadow-sm disabled:opacity-50"
+                                >
+                                    {isUpdatingPrice ? 'Mise à jour...' : 'Changer Prix'}
+                                </button>
+                            </div>
+
+                            <div className="h-6 w-px bg-gray-300 mx-2 hidden sm:block"></div>
+
                             {/* Bouton export Jumia */}
                             <button
                                 onClick={handleExportJumia}
-                                className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-orange-600 transition"
+                                className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-600 transition"
                                 title="Exporter au format Excel Jumia Vendor"
                             >
                                 <FileDown className="w-4 h-4" />
@@ -331,10 +376,10 @@ export default function BooksTable({ books, pageNumber, totalProviderPages, init
                             <button
                                 onClick={handleBulkDelete}
                                 disabled={bulkLoading}
-                                className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-700 transition"
+                                className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-700 transition"
                             >
                                 <Trash2 className="w-4 h-4" />
-                                {bulkLoading ? 'Suppression...' : 'Supprimer la sélection'}
+                                {bulkLoading ? 'Suppression...' : 'Supprimer'}
                             </button>
                         </div>
                     )}

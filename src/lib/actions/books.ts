@@ -483,3 +483,29 @@ export async function updateBookOrder(orderedIds: string[], pageOffset: number =
         return { success: false, error: 'Impossible de mettre à jour l\'ordre' }
     }
 }
+/**
+ * Mettre à jour les prix en masse
+ */
+export async function bulkUpdateBookPrices(ids: string[], newPrice: number) {
+    try {
+        await verifyAdmin()
+        await prisma.book.updateMany({
+            where: { id: { in: ids } },
+            data: { price: Number(newPrice) },
+        })
+
+        revalidatePath('/admin/books')
+        revalidatePath('/')
+
+        await createAuditLog({
+            action: 'BULK_UPDATE_PRICE',
+            entity: 'BOOK',
+            details: `Prix mis à jour pour ${ids.length} livres: ${newPrice} MAD`,
+        })
+
+        return { success: true }
+    } catch (error: any) {
+        console.error('Erreur lors de la mise à jour des prix en masse:', error)
+        return { success: false, error: 'Impossible de mettre à jour les prix' }
+    }
+}
