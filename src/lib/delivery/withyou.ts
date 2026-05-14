@@ -33,11 +33,20 @@ class WithYouService {
     private async request(endpoint: string, data: any = {}) {
         const url = `${BASE_URL}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`
 
-        const body = {
-            key: this.config.key,
-            token: this.config.token,
-            ...data
-        }
+        // Utilisation de URLSearchParams car beaucoup d'API marocaines préfèrent le format form-data/urlencoded au JSON brut
+        const params = new URLSearchParams()
+        params.append('key', this.config.key)
+        params.append('token', this.config.token)
+        
+        Object.entries(data).forEach(([k, v]) => {
+            if (typeof v === 'object') {
+                params.append(k, JSON.stringify(v))
+            } else {
+                params.append(k, String(v))
+            }
+        })
+
+        console.log(`[WithYou] Calling ${url}`)
 
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 15000)
@@ -45,16 +54,25 @@ class WithYouService {
         try {
             const response = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
+                headers: { 
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json'
+                },
+                body: params.toString(),
                 signal: controller.signal
             })
 
             const bodyText = await response.text()
+            console.log(`[WithYou] Response status: ${response.status}`)
+            
             let parsed
             try {
                 parsed = JSON.parse(bodyText)
             } catch (e) {
+                // Si c'est du HTML, on log les 200 premiers caractères pour voir l'erreur
+                if (bodyText.includes('<!DOCTYPE html>')) {
+                    console.error(`[WithYou] Received HTML instead of JSON from ${endpoint}. Possible 404 or wrong endpoint.`)
+                }
                 return bodyText
             }
 

@@ -16,46 +16,54 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 export async function POST(req: Request) {
+    let currentCallbackId: string | null = null
+    let currentToken: string | null = null
+
     try {
         const { searchParams } = new URL(req.url)
         const queryToken = searchParams.get('token')
         
         const body = await req.json()
+        console.log('[TELEGRAM WEBHOOK] Incoming Body:', JSON.stringify(body))
         
         // Récupérer le token depuis la DB
         const tokenSetting = await prisma.siteSettings.findUnique({ where: { key: 'telegram_bot_token' } })
         const token = tokenSetting?.value || process.env.TELEGRAM_BOT_TOKEN || ''
+        currentToken = token
 
-        // Sécurisation : accepter si le token dans l'URL correspond au bot token
-        // OU si aucun token n'est fourni (Telegram envoie via HTTPS donc fiable)
         if (!token) {
             console.error('[SECURITY] Bot token not configured')
             return NextResponse.json({ error: 'Not configured' }, { status: 500 })
         }
+
         if (queryToken && queryToken !== token) {
-            console.error('[SECURITY] Unauthorized Telegram Webhook attempt')
+            console.error('[SECURITY] Unauthorized Telegram Webhook attempt: Token mismatch')
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
         // Traitement des callback_query (boutons)
         if (body.callback_query) {
             const { id: callbackId, data, message } = body.callback_query
+            currentCallbackId = callbackId
             const { escapeHtml } = await import('@/lib/telegram')
             
+            console.log(`[TELEGRAM CALLBACK] Received ID: ${callbackId}, Data: ${data}`)
+
             // Format attendu: os:{orderId}:{STATUS}
             if (data && data.startsWith('os:')) {
                 const parts = data.split(':')
                 const orderId = parts[1]
                 const newStatus = parts[2]
                 
-                // Valider le statut
+                console.log(`[TELEGRAM STATUS] Updating order ${orderId} to status: ${newStatus}`)
+
                 if (!STATUS_LABELS[newStatus]) {
-                    await answerCallbackQuery(callbackId, 'Statut invalide', token)
+                    console.warn(`[TELEGRAM] Status label not found for: ${newStatus}`)
+                    await answerCallbackQuery(callbackId, '❌ Statut invalide', token)
                     return NextResponse.json({ ok: true })
                 }
 
                 try {
-                    // Mettre à jour la commande dans la DB
                     const order = await prisma.order.update({
                         where: { id: orderId },
                         data: {
@@ -70,12 +78,10 @@ export async function POST(req: Request) {
                         }
                     })
 
+                    console.log(`[TELEGRAM] Order ${orderId} successfully updated to ${newStatus}`)
                     const label = STATUS_LABELS[newStatus]
-                    
-                    // Répondre au callback
-                    await answerCallbackQuery(callbackId, `✅ Statut mis à jour : ${label}`, token)
+                    await answerCallbackQuery(callbackId, `✅ Statut : ${label}`, token)
 
-                    // Modifier le message pour refléter le changement (en gardant les boutons)
                     const shortId = orderId.slice(0, 8).toUpperCase()
                     const updatedText = `✅ <b>Commande #${shortId}</b>\n\n` +
                         `👤 ${escapeHtml(order.fullName)}\n` +
@@ -87,33 +93,29 @@ export async function POST(req: Request) {
                         await editTelegramMessage(message.chat.id, message.message_id, updatedText, token, message.reply_markup)
                     }
                 } catch (error) {
-                    console.error('Order update failed:', error)
-                    await answerCallbackQuery(callbackId, '❌ Erreur : Commande introuvable', token)
+                    console.error('[TELEGRAM] Database error during status update:', error)
+                    await answerCallbackQuery(callbackId, '❌ Erreur : Commande introuvable ou erreur DB', token)
                 }
             }
             
             // Format: sw:{orderId}
-            if (data && data.startsWith('sw:')) {
+            else if (data && data.startsWith('sw:')) {
                 const [, orderId] = data.split(':')
                 const { syncOrderToWithYou } = await import('@/lib/actions/admin-orders')
 
                 try {
                     const result = await syncOrderToWithYou(orderId)
-                    
                     if (result.success) {
                         await answerCallbackQuery(callbackId, `🚀 Expédié WithYou avec succès !`, token)
-                        
-                        // Mettre à jour le message
                         const order = await prisma.order.findUnique({ where: { id: orderId } })
                         if (order && message?.chat?.id && message?.message_id) {
                             const shortId = orderId.slice(0, 8).toUpperCase()
                             const updatedText = `✅ <b>Commande #${shortId} EXPÉDIÉE</b>\n\n` +
-                                `👤 ${order.fullName}\n` +
-                                `📍 ${order.city}\n` +
+                                `👤 ${escapeHtml(order.fullName)}\n` +
+                                `📍 ${escapeHtml(order.city)}\n` +
                                 `💰 ${order.total.toFixed(2)} MAD\n\n` +
                                 `🚀 <b>WithYou Tracking :</b> <code>${order.trackingID}</code>\n` +
                                 `📌 <b>Statut :</b> Confirmée`
-                                
                             await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
                         }
                     } else {
@@ -123,9 +125,9 @@ export async function POST(req: Request) {
                     await answerCallbackQuery(callbackId, `❌ Erreur système : ${error.message}`, token)
                 }
             }
-
+            
             // Format: approve_review:{reviewId}
-            if (data && data.startsWith('approve_review:')) {
+            else if (data && data.startsWith('approve_review:')) {
                 const [, reviewId] = data.split(':')
                 const review = await prisma.review.update({
                     where: { id: reviewId },
@@ -146,7 +148,7 @@ export async function POST(req: Request) {
             }
 
             // Format: delete_review:{reviewId}
-            if (data && data.startsWith('delete_review:')) {
+            else if (data && data.startsWith('delete_review:')) {
                 const [, reviewId] = data.split(':')
                 await prisma.review.delete({ where: { id: reviewId } })
                 
@@ -157,6 +159,11 @@ export async function POST(req: Request) {
                     await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
                 }
             }
+            
+            // Sécurité : toujours répondre pour arrêter le chargement du bouton
+            else {
+                await answerCallbackQuery(callbackId, 'Action reçue', token)
+            }
         }
 
         // Traitement des messages textes (Commandes)
@@ -166,11 +173,11 @@ export async function POST(req: Request) {
             const chatId = body.message.chat.id
             const { sendTelegramMessage } = await import('@/lib/telegram')
 
-            // 📊 COMMANDE /STATS
+            console.log(`[TELEGRAM MESSAGE] Received from ${chatId}: ${text}`)
+
             if (text.startsWith('/STATS') || text === 'BILAN') {
                 const now = new Date()
                 const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-                
                 const [orderCount, revenue] = await Promise.all([
                     prisma.order.count({ where: { createdAt: { gte: firstDayOfMonth }, status: { not: 'CANCELLED' } } }),
                     prisma.order.aggregate({
@@ -178,16 +185,12 @@ export async function POST(req: Request) {
                         _sum: { total: true }
                     })
                 ])
-
                 const replyText = `📊 <b>STATS DU MOIS</b>\n\n` +
                                   `📅 Période : <b>${firstDayOfMonth.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</b>\n` +
                                   `📦 Commandes : <b>${orderCount}</b>\n` +
                                   `💰 CA estimé : <b>${(revenue._sum.total || 0).toFixed(2)} MAD</b>`
-
                 await sendTelegramMessage(replyText, chatId.toString(), token)
             }
-
-            // 📦 COMMANDE /STOCK [NOM]
             else if (text.startsWith('/STOCK')) {
                 const query = rawText.split(' ').slice(1).join(' ')
                 if (!query) {
@@ -198,7 +201,6 @@ export async function POST(req: Request) {
                         take: 5,
                         select: { title: true, stock: true, price: true }
                     })
-
                     if (books.length === 0) {
                         await sendTelegramMessage(`❌ Aucun livre trouvé pour "${query}"`, chatId.toString(), token)
                     } else {
@@ -207,8 +209,6 @@ export async function POST(req: Request) {
                     }
                 }
             }
-
-            // 👤 COMMANDE /SEARCH [NOM/TEL]
             else if (text.startsWith('/SEARCH')) {
                 const query = rawText.split(' ').slice(1).join(' ')
                 if (!query) {
@@ -225,7 +225,6 @@ export async function POST(req: Request) {
                         orderBy: { createdAt: 'desc' },
                         select: { fullName: true, phone: true, city: true, address: true }
                     })
-
                     if (customers.length === 0) {
                         await sendTelegramMessage(`❌ Aucun client trouvé pour "${query}"`, chatId.toString(), token)
                     } else {
@@ -238,7 +237,10 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ ok: true })
     } catch (error) {
-        console.error('Telegram webhook error:', error)
+        console.error('[TELEGRAM WEBHOOK ERROR]:', error)
+        if (currentCallbackId && currentToken) {
+            try { await answerCallbackQuery(currentCallbackId, '❌ Erreur interne serveur', currentToken) } catch {}
+        }
         return NextResponse.json({ ok: true })
     }
 }
