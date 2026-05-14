@@ -12,10 +12,7 @@ const STATUS_LABELS: Record<string, string> = {
     CANCELLED: 'Annulée',
     IN_TRANSIT: 'En transit',
     OUT_FOR_DELIVERY: 'En cours de livraison',
-    FAILED: 'Échec',
-}
-
-export async function POST(req: Request) {
+    FAILED: 'Échec'export async function POST(req: Request) {
     let currentCallbackId: string | null = null
     let currentToken: string | null = null
 
@@ -126,40 +123,6 @@ export async function POST(req: Request) {
                 }
             }
             
-            // Format: approve_review:{reviewId}
-            else if (data && data.startsWith('approve_review:')) {
-                const [, reviewId] = data.split(':')
-                const review = await prisma.review.update({
-                    where: { id: reviewId },
-                    data: { isApproved: true },
-                    include: { book: { select: { title: true } } }
-                })
-                
-                await answerCallbackQuery(callbackId, '✅ Avis approuvé !', token)
-                const updatedText = `✅ <b>Avis Approuvé</b>\n\n` +
-                    `👤 <b>Client:</b> ${review.fullName}\n` +
-                    `📖 <b>Livre:</b> ${review.book.title}\n` +
-                    `⭐ <b>Note:</b> ${review.rating}/5\n` +
-                    `💬 <i>${review.comment}</i>`
-
-                if (message?.chat?.id && message?.message_id) {
-                    await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
-                }
-            }
-
-            // Format: delete_review:{reviewId}
-            else if (data && data.startsWith('delete_review:')) {
-                const [, reviewId] = data.split(':')
-                await prisma.review.delete({ where: { id: reviewId } })
-                
-                await answerCallbackQuery(callbackId, '🗑️ Avis supprimé !', token)
-                const updatedText = `🗑️ <b>Avis Supprimé</b>\n\nL'avis a été définitivement retiré.`
-
-                if (message?.chat?.id && message?.message_id) {
-                    await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
-                }
-            }
-            
             // Sécurité : toujours répondre pour arrêter le chargement du bouton
             else {
                 await answerCallbackQuery(callbackId, 'Action reçue', token)
@@ -241,6 +204,12 @@ export async function POST(req: Request) {
         if (currentCallbackId && currentToken) {
             try { await answerCallbackQuery(currentCallbackId, '❌ Erreur interne serveur', currentToken) } catch {}
         }
+        return NextResponse.json({ ok: true })
+    }
+}
+sponse.json({ ok: true })
+    } catch (error) {
+        console.error('Telegram webhook error:', error)
         return NextResponse.json({ ok: true })
     }
 }

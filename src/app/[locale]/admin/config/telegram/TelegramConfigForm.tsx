@@ -29,6 +29,7 @@ export default function TelegramConfigForm({ initialBotToken, initialChatId, app
     const [loading, setLoading] = useState(false)
     const [testLoading, setTestLoading] = useState(false)
     const [webhookLoading, setWebhookLoading] = useState(false)
+    const [customAppUrl, setCustomAppUrl] = useState(appUrl)
     const [message, setMessage] = useState('')
     const router = useRouter()
 
@@ -82,7 +83,7 @@ export default function TelegramConfigForm({ initialBotToken, initialChatId, app
         setWebhookLoading(true)
         setMessage('')
         try {
-            const webhookUrl = `${appUrl}/api/webhooks/telegram`
+            const webhookUrl = `${customAppUrl.replace(/\/$/, '')}/api/webhooks/telegram`
             const res = await fetch('/api/telegram/set-webhook', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -136,6 +137,25 @@ export default function TelegramConfigForm({ initialBotToken, initialChatId, app
                     placeholder="-1001234567890"
                 />
                 <p className="mt-1 text-xs text-gray-500">ID du groupe ou channel. Utilisez @userinfobot pour le trouver.</p>
+            </div>
+
+            <div className="p-5 bg-yellow-50 rounded-2xl border border-yellow-100">
+                <label htmlFor="webhookUrl" className="block text-sm font-bold text-yellow-900 mb-2">
+                    URL de base pour Webhook (HTTPS requis)
+                </label>
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        id="webhookUrl"
+                        value={customAppUrl}
+                        onChange={(e) => setCustomAppUrl(e.target.value)}
+                        className="flex-1 px-4 py-3 rounded-xl border border-yellow-200 focus:ring-2 focus:ring-yellow-500 outline-none transition-all"
+                        placeholder="https://votre-ngrok.ngrok-free.app"
+                    />
+                </div>
+                <p className="mt-2 text-[10px] text-yellow-700 font-bold uppercase italic">
+                    Pour le développement local, utilisez votre URL ngrok ci-dessus.
+                </p>
             </div>
 
             <div className="pt-6 border-t border-gray-100">
