@@ -127,7 +127,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://graph.facebook.com/v19.0/{{ $('Webhook').item.json.body.instagram_account_id }}/media",
+        "url": "={{ 'https://graph.facebook.com/v19.0/' + ($('Webhook').item.json.body.instagram_account_id || '869754449565702') + '/media' }}",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -165,7 +165,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://graph.facebook.com/v19.0/{{ $('Webhook').item.json.body.instagram_account_id }}/media_publish",
+        "url": "={{ 'https://graph.facebook.com/v19.0/' + ($('Webhook').item.json.body.instagram_account_id || '869754449565702') + '/media_publish' }}",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [

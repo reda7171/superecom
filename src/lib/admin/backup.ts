@@ -55,7 +55,7 @@ export async function createBackup() {
     
     // Commande mysqldump
     // --column-statistics=0 est souvent nécessaire pour les versions récentes de mysql client vs serveurs anciens
-    const command = `mysqldump --ssl-mode=DISABLED -h ${config.host} -P ${config.port} -u ${config.user} -p${config.password} ${config.database} > "${filepath}"`
+    const command = `mysqldump --skip-ssl -h ${config.host} -P ${config.port} -u ${config.user} -p${config.password} ${config.database} > "${filepath}"`
     
     try {
         await execAsync(command)

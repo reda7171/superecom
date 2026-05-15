@@ -244,8 +244,8 @@ export async function POST(req: Request) {
                         packId: itemType === 'PACK' ? itemId : null,
                         format: 'story',
                         platform: platform,
-                        instagramId: instagramId,
-                        facebookPageId: facebookPageId,
+                        instagram_account_id: instagramId,
+                        facebook_page_id: facebookPageId,
                         source: 'telegram-bot-action'
                     }
 
