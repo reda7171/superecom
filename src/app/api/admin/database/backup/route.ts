@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
             const writeStream = fs.createWriteStream(tempPath)
             
             const mysqldump = spawn('mysqldump', [
+                '--ssl-mode=DISABLED',
                 '-h', host,
                 '-P', port,
                 '-u', user,
