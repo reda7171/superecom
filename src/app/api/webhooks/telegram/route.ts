@@ -422,7 +422,7 @@ export async function POST(req: Request) {
             const chatId = body.message.chat.id
             console.log(`[TELEGRAM MESSAGE] Received from ${chatId}: ${text}`)
 
-            if (text === '/BILAN' || text === 'BILAN' || text === '/STATS') {
+            if (text.startsWith('/BILAN') || text === 'BILAN' || text.startsWith('/STATS')) {
                 const replyText = `📊 <b>Centre de Rapports Riwaya</b>\n\nQue souhaitez-vous consulter ?`
                 const replyMarkup = {
                     inline_keyboard: [
@@ -440,35 +440,43 @@ export async function POST(req: Request) {
                 }
                 await sendTelegramMessage(replyText, chatId.toString(), token, replyMarkup)
             }
-            else if (text === '/GENERER' || text === 'GENERER' || text === '/MARKETING') {
-                const latestCreatives = await prisma.marketingAsset.findMany({
-                    take: 5,
-                    orderBy: { createdAt: 'desc' },
-                    select: { id: true, name: true, bookId: true, packId: true, type: true }
-                })
+            else if (text.startsWith('/GENERER') || text === 'GENERER' || text.startsWith('/MARKETING')) {
+                console.log(`[TELEGRAM] Executing /GENERER for chat ${chatId}`)
+                try {
+                    const latestCreatives = await prisma.marketingAsset.findMany({
+                        take: 5,
+                        orderBy: { createdAt: 'desc' },
+                        select: { id: true, name: true, bookId: true, packId: true, type: true }
+                    })
+                    
+                    console.log(`[TELEGRAM] Found ${latestCreatives.length} creatives`)
 
-                if (latestCreatives.length === 0) {
-                    await sendTelegramMessage(`💡 Aucune créative trouvée. Générez-en d'abord depuis l'admin marketing.`, chatId.toString(), token)
-                    return NextResponse.json({ ok: true })
+                    if (latestCreatives.length === 0) {
+                        await sendTelegramMessage(`💡 Aucune créative trouvée dans l'admin marketing.`, chatId.toString(), token)
+                        return NextResponse.json({ ok: true })
+                    }
+
+                    const buttons = latestCreatives.map(c => {
+                        const label = c.name.split('_').slice(1, -1).join(' ') || c.name
+                        const typeLabel = c.type === 'PACK' ? '📦' : '✨'
+                        return [{ 
+                            text: `${typeLabel} ${label}`, 
+                            callback_data: `prep_creative:${c.bookId || c.packId}:${c.type === 'PACK' ? 'PACK' : 'BOOK'}` 
+                        }]
+                    })
+
+                    const replyMarkup = {
+                        inline_keyboard: [
+                            ...buttons,
+                            [{ text: '🔍 Voir tout sur le site', url: `${process.env.NEXT_PUBLIC_APP_URL}/fr/admin/marketing` }]
+                        ]
+                    }
+
+                    await sendTelegramMessage(`🚀 <b>Marketing Riwaya</b>\n\nChoisissez une créative enregistrée pour la publier :`, chatId.toString(), token, replyMarkup)
+                } catch (error: any) {
+                    console.error('[TELEGRAM ERROR] /GENERER failed:', error)
+                    await sendTelegramMessage(`❌ Erreur technique lors de la récupération des créatives : ${error.message}`, chatId.toString(), token)
                 }
-
-                const buttons = latestCreatives.map(c => {
-                    const label = c.name.split('_').slice(1, -1).join(' ') || c.name
-                    const typeLabel = c.type === 'PACK' ? '📦' : '✨'
-                    return [{ 
-                        text: `${typeLabel} ${label}`, 
-                        callback_data: `prep_creative:${c.bookId || c.packId}:${c.type === 'PACK' ? 'PACK' : 'BOOK'}` 
-                    }]
-                })
-
-                const replyMarkup = {
-                    inline_keyboard: [
-                        ...buttons,
-                        [{ text: '🔍 Voir tout sur le site', url: `${process.env.NEXT_PUBLIC_APP_URL}/fr/admin/marketing` }]
-                    ]
-                }
-
-                await sendTelegramMessage(`🚀 <b>Marketing Riwaya</b>\n\nChoisissez une créative enregistrée pour la publier :`, chatId.toString(), token, replyMarkup)
             }
             else if (text.startsWith('/STOCK')) {
                 const query = rawText.split(' ').slice(1).join(' ')
