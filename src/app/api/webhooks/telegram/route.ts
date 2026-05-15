@@ -443,63 +443,60 @@ export async function POST(req: Request) {
                 await sendTelegramMessage(replyText, chatId.toString(), token, replyMarkup)
             }
             else if (text.startsWith('/GENERER') || text === 'GENERER' || text.startsWith('/MARKETING')) {
-                console.log(`[TELEGRAM] Executing /GENERER for chat ${chatId}`)
+                console.log(`[TELEGRAM] Command /GENERER received from chat ${chatId}`)
+                
+                // Envoyer un accusé de réception immédiat
+                await sendTelegramMessage(`🔍 Recherche de créatives sur le serveur...`, chatId.toString(), token)
+
                 try {
-                    // 1. Tenter la DB d'abord
-                    let creatives = await prisma.marketingAsset.findMany({
-                        take: 8,
-                        orderBy: { createdAt: 'desc' },
-                        select: { name: true, bookId: true, packId: true, type: true }
-                    })
+                    let creatives: any[] = []
+                    
+                    // 1. Scanner le disque (Priorité car l'utilisateur dit qu'elles sont là)
+                    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'books')
+                    console.log(`[TELEGRAM] Scanning directory: ${uploadDir}`)
+                    
+                    try {
+                        const files = await fs.readdir(uploadDir)
+                        console.log(`[TELEGRAM] Found ${files.length} total files in directory`)
+                        
+                        const marketingFiles = files.filter(f => 
+                            f.startsWith('creative_') || f.startsWith('pack_') || f.startsWith('desc_') || f.includes('pack')
+                        ).sort().reverse().slice(0, 10)
 
-                    // 2. Si vide, scanner le disque
-                    if (creatives.length === 0) {
-                        const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'books')
-                        try {
-                            const files = await fs.readdir(uploadDir)
-                            const marketingFiles = files.filter(f => 
-                                f.startsWith('creative_') || f.startsWith('pack_') || f.startsWith('desc_')
-                            ).slice(0, 8)
-
-                            if (marketingFiles.length > 0) {
-                                // Pré-charger pour le matching
-                                const [allBooks, allPacks] = await Promise.all([
-                                    prisma.book.findMany({ select: { id: true, title: true } }),
-                                    prisma.pack.findMany({ select: { id: true, name: true } })
-                                ])
-                                const getSlug = (t: string) => t.replace(/[^a-z0-9]/gi, '_').toLowerCase()
-
-                                creatives = marketingFiles.map(file => {
-                                    let type = 'CREATIVE'
-                                    if (file.startsWith('pack_')) type = 'PACK'
-                                    const nameParts = file.split('_')
-                                    const slug = nameParts.length >= 3 ? nameParts.slice(1, -1).join('_') : ''
-                                    
-                                    let bookId = null
-                                    let packId = null
-                                    if (type === 'PACK') {
-                                        packId = allPacks.find(p => getSlug(p.name) === slug)?.id || null
-                                    } else {
-                                        bookId = allBooks.find(b => getSlug(b.title) === slug)?.id || null
-                                    }
-
-                                    return { name: file, bookId, packId, type }
-                                })
-                            }
-                        } catch (fsErr) {
-                            console.error('[TELEGRAM] Disk scan failed:', fsErr)
+                        if (marketingFiles.length > 0) {
+                            creatives = marketingFiles.map(file => ({
+                                name: file,
+                                type: file.startsWith('pack') ? 'PACK' : 'BOOK'
+                            }))
                         }
+                    } catch (fsErr: any) {
+                        console.error('[TELEGRAM] Disk scan error:', fsErr)
+                        // Ne pas bloquer, on tentera la DB après
+                    }
+
+                    // 2. Tenter la DB si le disque n'a rien donné
+                    if (creatives.length === 0) {
+                        const dbAssets = await prisma.marketingAsset.findMany({
+                            take: 10,
+                            orderBy: { createdAt: 'desc' }
+                        })
+                        creatives = dbAssets.map(a => ({
+                            name: a.name,
+                            type: a.type,
+                            bookId: a.bookId,
+                            packId: a.packId
+                        }))
                     }
 
                     if (creatives.length === 0) {
-                        await sendTelegramMessage(`💡 Aucune image trouvée dans /public/uploads/books/ (commençant par creative_, pack_ ou desc_).`, chatId.toString(), token)
+                        await sendTelegramMessage(`⚠️ Aucune créative trouvée dans <code>/public/uploads/books/</code>.\n\nFichiers attendus : commençant par <code>creative_</code> ou <code>pack_</code>.`, chatId.toString(), token)
                         return NextResponse.json({ ok: true })
                     }
 
                     const buttons = creatives.map(c => {
-                        const label = c.name.split('_').slice(1, -1).join(' ') || c.name
+                        const label = c.name.length > 30 ? c.name.substring(0, 27) + '...' : c.name
                         const typeLabel = c.type === 'PACK' ? '📦' : '✨'
-                        const itemId = c.bookId || c.packId || 'manual' // Fallback si non trouvé
+                        const itemId = (c as any).bookId || (c as any).packId || 'manual'
                         return [{ 
                             text: `${typeLabel} ${label}`, 
                             callback_data: `prep_creative:${itemId}:${c.type === 'PACK' ? 'PACK' : 'BOOK'}` 
@@ -509,14 +506,14 @@ export async function POST(req: Request) {
                     const replyMarkup = {
                         inline_keyboard: [
                             ...buttons,
-                            [{ text: '🔍 Voir tout sur le site', url: `${process.env.NEXT_PUBLIC_APP_URL}/fr/admin/marketing` }]
+                            [{ text: '🔍 Voir tout le site', url: `${process.env.NEXT_PUBLIC_APP_URL}/fr/admin/marketing` }]
                         ]
                     }
 
-                    await sendTelegramMessage(`🚀 <b>Marketing Riwaya</b>\n\nChoisissez une créative (du disque ou DB) :`, chatId.toString(), token, replyMarkup)
+                    await sendTelegramMessage(`🚀 <b>Marketing Riwaya</b>\n\nVoici les dernières créatives trouvées :`, chatId.toString(), token, replyMarkup)
                 } catch (error: any) {
                     console.error('[TELEGRAM ERROR] /GENERER failed:', error)
-                    await sendTelegramMessage(`❌ Erreur : ${error.message}`, chatId.toString(), token)
+                    await sendTelegramMessage(`❌ Erreur lors du scan : ${error.message}`, chatId.toString(), token)
                 }
             }
             else if (text.startsWith('/STOCK')) {
