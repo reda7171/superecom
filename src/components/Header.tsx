@@ -134,11 +134,11 @@ export default function Header({ user, notificationDropdown, navigation, feature
         { href: '/books', label: t('Books') },
         { href: '/authors', label: t('Authors') },
         { href: '/blog', label: t('Journal'), isJournal: true },
-        ...(features.packs !== false ? [{ href: '/packs', label: t('Packs') }] : []),
-        ...(features.digital !== false ? [{ href: '/livres-numeriques', label: t('Digital') }] : []),
-        ...(features.kids !== false ? [{ href: '/mon-enfant', label: t('Kids') }] : []),
-        ...(features.usb !== false ? [{ href: '/cle-usb', label: t('UsbKey') }] : []),
-        ...(features.exchange !== false ? [{ href: '/community/market', label: t('Community') }] : []),
+        ...(features.packs === true ? [{ href: '/packs', label: t('Packs') }] : []),
+        ...(features.digital === true ? [{ href: '/livres-numeriques', label: t('Digital') }] : []),
+        ...(features.kids === true ? [{ href: '/mon-enfant', label: t('Kids') }] : []),
+        ...(features.usb === true ? [{ href: '/cle-usb', label: t('UsbKey') }] : []),
+        ...(features.exchange === true ? [{ href: '/community/market', label: t('Community') }] : []),
         { href: '/', label: t('Home') },
     ]
 
@@ -149,13 +149,13 @@ export default function Header({ user, notificationDropdown, navigation, feature
                 const label = item.label.toLowerCase()
 
                 // Filtrer les items selon les features désactivées (vérifie URL et Label)
-                if ((url.includes('packs') || label.includes('packs')) && features.packs === false) return false
-                if ((url.includes('enfant') || label.includes('enfant')) && features.kids === false) return false
-                if ((url.includes('usb') || url.includes('fameux') || label.includes('usb') || label.includes('fameux')) && features.usb === false) return false
-                if ((url.includes('numerique') || url.includes('pdf') || label.includes('pdf')) && features.digital === false) return false
-                if ((url.includes('community') || url.includes('echange') || label.includes('echange')) && features.exchange === false) return false
-                if ((url.includes('vendeur') || label.includes('vendeur')) && features.seller === false) return false
-                if ((url.includes('reading') || url.includes('lecture') || label.includes('lecture')) && features.readingList === false) return false
+                if ((url.includes('packs') || label.includes('packs')) && features.packs !== true) return false
+                if ((url.includes('enfant') || label.includes('enfant')) && features.kids !== true) return false
+                if ((url.includes('usb') || url.includes('fameux') || label.includes('usb') || label.includes('fameux')) && features.usb !== true) return false
+                if ((url.includes('numerique') || url.includes('pdf') || label.includes('pdf')) && features.digital !== true) return false
+                if ((url.includes('community') || url.includes('echange') || label.includes('echange')) && features.exchange !== true) return false
+                if ((url.includes('vendeur') || label.includes('vendeur')) && features.seller !== true) return false
+                if ((url.includes('reading') || url.includes('lecture') || label.includes('lecture')) && features.readingList !== true) return false
                 
                 return true
             })

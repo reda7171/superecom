@@ -22,7 +22,7 @@ interface CosmosBooksProps {
 
 // Dimensions canvas rectangulaires (paysage) — moins d'espace vertical
 const CANVAS_W = 700
-const CANVAS_H = 560
+const CANVAS_H = 450
 
 // Orbites : rayon, vitesse, sens
 const ORBITS = [
@@ -305,6 +305,7 @@ export default function CosmosBooks({
           cursor: dragging ? 'grabbing' : 'grab',
           opacity: dragging?.idx === 'center' ? 0.35 : 1,
           transition: 'transform 0.3s ease, opacity 0.2s',
+          touchAction: 'none',
         }}
       >
         <div className={`cosmos-center-card${swapFlash === 'center' ? ' cosmos-swap-flash' : ''}`}>
@@ -372,6 +373,7 @@ export default function CosmosBooks({
               cursor: dragging ? 'grabbing' : 'grab',
               outline: isTarget ? '2px dashed #f5c842' : 'none',
               borderRadius: 10,
+              touchAction: 'none',
             }}
           >
             <div style={{ width: size, height: size * 1.35, position: 'relative', borderRadius: 10, overflow: 'hidden' }}>
@@ -429,7 +431,7 @@ export default function CosmosBooks({
       )}
 
       <style jsx>{`
-        .cosmos-wrapper { background: transparent; touch-action: none; }
+        .cosmos-wrapper { background: transparent; touch-action: pan-y; }
         .cosmos-glow {
           position: absolute; inset: 0; border-radius: 50%;
           background: radial-gradient(ellipse at center, rgba(250,240,210,0.6) 0%, rgba(255,255,255,0) 70%);

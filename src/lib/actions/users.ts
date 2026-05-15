@@ -89,3 +89,41 @@ export async function createUserAdmin(data: any) {
         return { success: false, error: 'Erreur lors de la création' }
     }
 }
+
+export async function getLoginHistory(userId: string) {
+    try {
+        await verifyAdmin()
+        const history = await prisma.loginHistory.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' },
+            take: 50 // Limiter aux 50 dernières connexions
+        })
+        return { success: true, data: history }
+    } catch (error) {
+        return { success: false, error: 'Impossible de récupérer l\'historique des connexions' }
+    }
+}
+
+export async function getGlobalLoginHistory() {
+    try {
+        await verifyAdmin()
+        const history = await prisma.loginHistory.findMany({
+            include: {
+                user: {
+                    select: {
+                        email: true,
+                        fullName: true,
+                        role: true
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 100
+        })
+        return { success: true, data: history }
+    } catch (error) {
+        return { success: false, error: 'Impossible de récupérer l\'historique global' }
+    }
+}
+
+

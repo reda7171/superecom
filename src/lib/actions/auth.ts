@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import crypto from 'crypto'
@@ -108,6 +108,21 @@ export async function login(email: string, password: string): Promise<LoginResul
             entity: 'AUTH',
             details: `Connexion réussie: ${user.email}`
         })
+
+        // Enregistrer l'historique de connexion (standard)
+        try {
+            const headersList = await headers()
+            const userAgent = headersList.get('user-agent')
+            await prisma.loginHistory.create({
+                data: {
+                    userId: user.id,
+                    ip: ip,
+                    userAgent: userAgent
+                }
+            })
+        } catch (e) {
+            console.error('Error recording login history:', e)
+        }
 
         if (user.role !== 'INFLUENCER') {
             try {

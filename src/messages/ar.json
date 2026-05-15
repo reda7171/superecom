@@ -969,7 +969,11 @@
             "AddressLabel": "العنوان / نقطة اللقاء",
             "AddressPlaceholder": "مثال: مقهى فينيسيا، شارع الزرقطوني...",
             "NeighborhoodLabel": "الحي",
-            "NeighborhoodPlaceholder": "مثال: المعاريف، راسين..."
+            "NeighborhoodPlaceholder": "مثال: المعاريف، راسين...",
+            "NewPasswordLabel": "كلمة مرور جديدة",
+            "NewPasswordPlaceholder": "اتركها فارغة إذا لم تكن تريد التغيير",
+            "ConfirmPasswordLabel": "تأكيد كلمة المرور",
+            "ConfirmPasswordPlaceholder": "كرر كلمة المرور الجديدة"
         },
         "Ratings": {
             "Title": "تقييم التبادل",

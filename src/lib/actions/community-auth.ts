@@ -81,6 +81,21 @@ export async function register(formData: FormData): Promise<AuthResult> {
             console.error('Telegram notification error:', e)
         }
 
+        // Enregistrer l'historique de connexion
+        try {
+            const headersList = await headers()
+            const userAgent = headersList.get('user-agent')
+            await prisma.loginHistory.create({
+                data: {
+                    userId: user.id,
+                    ip: ip,
+                    userAgent: userAgent
+                }
+            })
+        } catch (e) {
+            console.error('Error recording login history:', e)
+        }
+
         // Auto-login
         await createSession(user.id)
 
@@ -125,6 +140,21 @@ export async function login(formData: FormData): Promise<AuthResult> {
 
         if (!isValid) {
             return { success: false, error: 'Email ou mot de passe incorrect' }
+        }
+
+        // Enregistrer l'historique de connexion
+        try {
+            const headersList = await headers()
+            const userAgent = headersList.get('user-agent')
+            await prisma.loginHistory.create({
+                data: {
+                    userId: user.id,
+                    ip: ip,
+                    userAgent: userAgent
+                }
+            })
+        } catch (e) {
+            console.error('Error recording login history:', e)
         }
 
         await createSession(user.id)

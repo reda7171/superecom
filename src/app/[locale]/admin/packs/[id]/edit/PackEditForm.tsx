@@ -16,6 +16,7 @@ interface Book {
     image?: string
     category?: string | null
     active: boolean
+    stock: number
 }
 
 interface PackEditFormProps {
@@ -44,6 +45,7 @@ export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFor
     const [searchQuery, setSearchQuery] = useState('')
     const [name, setName] = useState(pack.name)
     const [description, setDescription] = useState(pack.description)
+    const [onlyAvailable, setOnlyAvailable] = useState(true)
 
     function toggleBook(bookId: string) {
         setSelectedBooks(prev =>
@@ -110,10 +112,12 @@ export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFor
     const totalOriginalPrice = selectedBooksData.reduce((sum, b) => sum + b.price, 0)
 
     // Filter and group books
-    const filteredBooks = books.filter(book => 
-        book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        book.author.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const filteredBooks = books.filter(book => {
+        const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             book.author.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesAvailability = onlyAvailable ? (book.active && book.stock > 0) : true
+        return matchesSearch && matchesAvailability
+    })
 
     const groupedBooks = filteredBooks.reduce((acc, book) => {
         const category = book.category || 'Non catégorisé'
@@ -278,13 +282,27 @@ export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFor
                                 <h2 className="text-lg font-semibold text-gray-900">
                                     Sélectionner les livres ({selectedBooks.length} sélectionné{selectedBooks.length > 1 ? 's' : ''})
                                 </h2>
-                                <button
-                                    type="button"
-                                    onClick={toggleAll}
-                                    className="text-sm text-blue-600 hover:text-blue-800 font-medium mt-1"
-                                >
-                                    {selectedBooks.length === books.length ? 'Tout désélectionner' : 'Tout sélectionner'}
-                                </button>
+                                <div className="flex items-center gap-4 mt-1">
+                                    <button
+                                        type="button"
+                                        onClick={toggleAll}
+                                        className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                    >
+                                        {selectedBooks.length === books.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                                    </button>
+                                    <label className="flex items-center gap-2 cursor-pointer group ml-4">
+                                        <div className="relative">
+                                            <input
+                                                type="checkbox"
+                                                checked={onlyAvailable}
+                                                onChange={(e) => setOnlyAvailable(e.target.checked)}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-8 h-4 bg-gray-200 rounded-full peer peer-checked:bg-green-500 transition-all after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4 shadow-inner"></div>
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-green-600 transition-colors">Disponible</span>
+                                    </label>
+                                </div>
                             </div>
                             <div className="w-full sm:w-64">
                                 <input 
@@ -337,7 +355,12 @@ export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFor
                                                                 <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded">Inactif</span>
                                                             )}
                                                         </p>
-                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{book.author}</p>
+                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                                            {book.author}
+                                                            <span className={`ml-3 ${book.stock > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                                                Stock: {book.stock}
+                                                            </span>
+                                                        </p>
                                                     </div>
                                                     <span className="text-sm font-black text-black ml-2">{book.price} MAD</span>
                                                 </label>

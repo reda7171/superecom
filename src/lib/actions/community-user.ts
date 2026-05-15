@@ -18,6 +18,13 @@ const ProfileSchema = z.object({
     instagram: z.string().optional().nullable(),
     facebook: z.string().optional().nullable(),
     twitter: z.string().optional().nullable(),
+    password: z.string().optional().refine(val => !val || val.length >= 6, {
+        message: 'Le mot de passe doit contenir au moins 6 caractères'
+    }),
+    confirmPassword: z.string().optional()
+}).refine(data => !data.password || data.password === data.confirmPassword, {
+    message: 'Les mots de passe ne correspondent pas',
+    path: ['confirmPassword']
 })
 
 export async function updateProfile(formData: FormData) {
@@ -79,6 +86,8 @@ export async function updateProfile(formData: FormData) {
         instagram: formData.get('instagram'),
         facebook: formData.get('facebook'),
         twitter: formData.get('twitter'),
+        password: formData.get('password') || undefined,
+        confirmPassword: formData.get('confirmPassword') || undefined,
     }
 
     const validated = ProfileSchema.safeParse(data)
@@ -89,19 +98,26 @@ export async function updateProfile(formData: FormData) {
     }
 
     try {
+        const updateData: any = {
+            fullName: validated.data.fullName,
+            city: validated.data.city,
+            address: validated.data.address,
+            neighborhood: validated.data.neighborhood,
+            image: validated.data.image,
+            bio: validated.data.bio,
+            instagram: validated.data.instagram,
+            facebook: validated.data.facebook,
+            twitter: validated.data.twitter,
+        }
+
+        if (validated.data.password) {
+            const bcrypt = (await import('bcryptjs')).default
+            updateData.password = await bcrypt.hash(validated.data.password, 10)
+        }
+
         await prisma.user.update({
             where: { id: user.id },
-            data: {
-                fullName: validated.data.fullName,
-                city: validated.data.city,
-                address: validated.data.address,
-                neighborhood: validated.data.neighborhood,
-                image: validated.data.image,
-                bio: validated.data.bio,
-                instagram: validated.data.instagram,
-                facebook: validated.data.facebook,
-                twitter: validated.data.twitter,
-            },
+            data: updateData,
         })
 
         revalidatePath('/community')

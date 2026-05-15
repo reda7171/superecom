@@ -896,7 +896,11 @@
             "AddressLabel": "Adresse de rencontre / Point de repère",
             "AddressPlaceholder": "Ex: Café Venise, Bd Zerktouni...",
             "NeighborhoodLabel": "Quartier",
-            "NeighborhoodPlaceholder": "Ex: Maârif, Racine..."
+            "NeighborhoodPlaceholder": "Ex: Maârif, Racine...",
+            "NewPasswordLabel": "Nouveau mot de passe",
+            "NewPasswordPlaceholder": "Laisser vide pour ne pas changer",
+            "ConfirmPasswordLabel": "Confirmer le mot de passe",
+            "ConfirmPasswordPlaceholder": "Répéter le mot de passe"
         },
         "Ratings": {
             "Title": "Évaluer l'échange",

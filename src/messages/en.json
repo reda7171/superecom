@@ -896,7 +896,11 @@
             "AddressLabel": "Meeting Address / Landmark",
             "AddressPlaceholder": "Ex: Venice Cafe, Zerktouni Blvd...",
             "NeighborhoodLabel": "Neighborhood",
-            "NeighborhoodPlaceholder": "Ex: Maârif, Racine..."
+            "NeighborhoodPlaceholder": "Ex: Maârif, Racine...",
+            "NewPasswordLabel": "New Password",
+            "NewPasswordPlaceholder": "Leave blank to keep current",
+            "ConfirmPasswordLabel": "Confirm Password",
+            "ConfirmPasswordPlaceholder": "Repeat new password"
         },
         "Ratings": {
             "Title": "Rate the Exchange",

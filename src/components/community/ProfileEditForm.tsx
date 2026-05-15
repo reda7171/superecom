@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from '@/i18n/routing'
 import { useTranslations } from 'next-intl'
 import { updateProfile } from '@/lib/actions/community-user'
-import { User, MapPin, Loader2, Save, RefreshCw, Instagram, Facebook, Twitter, FileText, Plus } from 'lucide-react'
+import { User, MapPin, Loader2, Save, RefreshCw, Instagram, Facebook, Twitter, FileText, Plus, Lock } from 'lucide-react'
 import { MOROCCO_CITIES } from '@/lib/constants/cities'
 
 interface UserProps {
@@ -299,6 +299,41 @@ export default function ProfileEditForm({ user }: { user: UserProps }) {
                                 placeholder="@username"
                                 className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:border-black outline-none text-xs font-bold"
                             />
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Security Section */}
+                <div className="space-y-4 pt-6 border-t border-gray-100">
+                    <h3 className="text-sm font-black uppercase tracking-widest text-black">{tc('Password')}</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Nouveau mot de passe */}
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('NewPasswordLabel')}</label>
+                            <div className="relative">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
+                                <input
+                                    type="password"
+                                    name="password"
+                                    placeholder={t('NewPasswordPlaceholder')}
+                                    className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Confirmer le mot de passe */}
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('ConfirmPasswordLabel')}</label>
+                            <div className="relative">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
+                                <input
+                                    type="password"
+                                    name="confirmPassword"
+                                    placeholder={t('ConfirmPasswordPlaceholder')}
+                                    className="w-full pl-12 pr-6 py-4 bg-gray-50/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

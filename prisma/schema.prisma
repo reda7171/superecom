@@ -87,6 +87,7 @@ model User {
   pageViews         PageView[]
   coupons           Coupon[]       @relation("AffiliateCoupons")
   comments          Comment[]
+  loginHistory      LoginHistory[]
 
   // Marketplace relations
   sellerBooks      Book[]      @relation("SellerBooks")
@@ -98,6 +99,20 @@ model User {
   @@index([createdAt])
   @@map("users")
 }
+
+model LoginHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  ip        String?
+  userAgent String?  @db.LongText
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("login_history")
+}
+
 
 model Book {
   id              String        @id @default(uuid())

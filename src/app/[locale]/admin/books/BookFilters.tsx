@@ -19,6 +19,23 @@ export default function BookFilters({
     const [localSearch, setLocalSearch] = useState(searchQuery)
     const router = useRouter()
     const pathname = usePathname()
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    useEffect(() => {
+        if (!mounted) return
+
+        const timer = setTimeout(() => {
+            if (localSearch !== searchQuery) {
+                handleApplyFilters(localSearch, filterParam)
+            }
+        }, 500)
+
+        return () => clearTimeout(timer)
+    }, [localSearch, mounted])
 
     const handleApplyFilters = (newSearch: string, newFilter: string) => {
         const params = new URLSearchParams()

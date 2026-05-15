@@ -20,6 +20,7 @@ interface Book {
     image?: string
     category?: string | null
     active: boolean
+    stock: number
 }
 
 export default function PackForm({ books, whatsappPhone }: { books: Book[], whatsappPhone?: string }) {
@@ -74,7 +75,7 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
     const filteredBooks = books.filter(book => {
         const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                              book.author.toLowerCase().includes(searchQuery.toLowerCase())
-        const matchesAvailability = onlyAvailable ? book.active : true
+        const matchesAvailability = onlyAvailable ? (book.active && book.stock > 0) : true
         return matchesSearch && matchesAvailability
     })
 
@@ -374,7 +375,12 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
                                                                 <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded">Inactif</span>
                                                             )}
                                                         </p>
-                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{book.author}</p>
+                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                                            {book.author} 
+                                                            <span className={`ml-3 ${book.stock > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                                                Stock: {book.stock}
+                                                            </span>
+                                                        </p>
                                                     </div>
                                                     <span className="text-sm font-black text-black ml-2">{book.price} MAD</span>
                                                 </label>
