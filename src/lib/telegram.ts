@@ -139,6 +139,61 @@ export async function sendOrderNotification(order: {
     return results[0]
 }
 
+/**
+ * Envoyer une photo unique
+ */
+export async function sendTelegramPhoto(photoUrl: string, caption: string, chatId?: string, botToken?: string, keyboard?: any) {
+    const token = botToken || (await prisma.siteSettings.findUnique({ where: { key: 'telegram_bot_token' } }))?.value || process.env.TELEGRAM_BOT_TOKEN
+    const id = chatId || (await prisma.siteSettings.findUnique({ where: { key: 'telegram_chat_id' } }))?.value
+    
+    if (!token || !id) return null
+
+    const chatIds = String(id).split(',').map(i => i.trim()).filter(i => i.length > 0)
+    
+    const promises = chatIds.map(cid => 
+        fetch(`${TELEGRAM_API}${token}/sendPhoto`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: cid,
+                photo: photoUrl,
+                caption,
+                parse_mode: 'HTML',
+                reply_markup: keyboard
+            })
+        }).then(res => res.json())
+    )
+
+    const results = await Promise.all(promises)
+    return results[0]
+}
+
+/**
+ * Envoyer un album (MediaGroup)
+ */
+export async function sendTelegramMediaGroup(media: { type: 'photo', media: string, caption?: string }[], chatId?: string, botToken?: string) {
+    const token = botToken || (await prisma.siteSettings.findUnique({ where: { key: 'telegram_bot_token' } }))?.value || process.env.TELEGRAM_BOT_TOKEN
+    const id = chatId || (await prisma.siteSettings.findUnique({ where: { key: 'telegram_chat_id' } }))?.value
+    
+    if (!token || !id || media.length === 0) return null
+
+    const chatIds = String(id).split(',').map(i => i.trim()).filter(i => i.length > 0)
+    
+    const promises = chatIds.map(cid => 
+        fetch(`${TELEGRAM_API}${token}/sendMediaGroup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: cid,
+                media: media.map(m => ({ ...m, parse_mode: 'HTML' }))
+            })
+        }).then(res => res.json())
+    )
+
+    const results = await Promise.all(promises)
+    return results[0]
+}
+
 // Répondre à un callback (bouton pressé)
 export async function answerCallbackQuery(callbackQueryId: string, text: string, token: string) {
     await fetch(`${TELEGRAM_API}${token}/answerCallbackQuery`, {

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { answerCallbackQuery, editTelegramMessage, sendTelegramMessage } from '@/lib/telegram'
+import { answerCallbackQuery, editTelegramMessage, sendTelegramMessage, sendTelegramPhoto, sendTelegramMediaGroup } from '@/lib/telegram'
 import { OrderStatus } from '@prisma/client'
 import fs from 'fs/promises'
 import path from 'path'
@@ -499,17 +499,28 @@ export async function POST(req: Request) {
                         return NextResponse.json({ ok: true })
                     }
 
+                    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
+
+                    // Envoyer un album des 3 dernières images pour l'aperçu
+                    if (creatives.length > 0) {
+                        const album = creatives.slice(0, 3).map(c => ({
+                            type: 'photo' as const,
+                            media: `${siteUrl}/uploads/books/${c.name}`,
+                            caption: `📸 Aperçu : ${c.name}`
+                        }))
+                        await sendTelegramMediaGroup(album, chatId.toString(), token)
+                    }
+
                     const buttons = creatives.map(c => {
                         const label = c.name.length > 30 ? c.name.substring(0, 27) + '...' : c.name
                         const typeLabel = c.type === 'PACK' ? '📦' : '✨'
                         const itemId = (c as any).bookId || (c as any).packId || 'manual'
                         return [{ 
                             text: `${typeLabel} ${label}`, 
-                            callback_data: `prep_creative:${itemId}:${c.type === 'PACK' ? 'PACK' : 'BOOK'}` 
+                            callback_data: `prep_creative:${itemId}:${c.type === 'PACK' ? 'PACK' : 'BOOK'}`.substring(0, 64)
                         }]
                     })
 
-                    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
                     const replyMarkup = {
                         inline_keyboard: [
                             ...buttons,
@@ -518,7 +529,7 @@ export async function POST(req: Request) {
                     }
 
                     console.log(`[TELEGRAM] Sending final menu to ${chatId}`)
-                    const result = await sendTelegramMessage(`🚀 <b>Marketing Riwaya</b>\n\nVoici les dernières créatives trouvées :`, chatId.toString(), token, replyMarkup)
+                    const result = await sendTelegramMessage(`🚀 <b>Marketing Riwaya</b>\n\nChoisissez une créative ci-dessus pour la publier :`, chatId.toString(), token, replyMarkup)
                     console.log(`[TELEGRAM] Final menu send result:`, result ? 'SUCCESS' : 'FAILED')
                 } catch (error: any) {
                     console.error('[TELEGRAM ERROR] /GENERER failed:', error)
