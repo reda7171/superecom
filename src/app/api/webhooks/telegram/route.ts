@@ -205,19 +205,47 @@ export async function POST(req: Request) {
                     if (!order || order.items.length === 0) throw new Error('Commande ou articles introuvables')
                     
                     const firstItem = order.items[0]
+                    const itemId = firstItem.bookId || firstItem.packId
+                    const itemType = firstItem.bookId ? 'BOOK' : 'PACK'
+
+                    const replyMarkup = {
+                        inline_keyboard: [
+                            [
+                                { text: '📸 Instagram', callback_data: `pub_creative:${itemId}:${itemType}:instagram` },
+                                { text: '📘 Facebook', callback_data: `pub_creative:${itemId}:${itemType}:facebook` }
+                            ],
+                            [
+                                { text: '🎵 TikTok', callback_data: `pub_creative:${itemId}:${itemType}:tiktok` },
+                                { text: '✈️ Telegram', callback_data: `pub_creative:${itemId}:${itemType}:telegram` }
+                            ]
+                        ]
+                    }
+
+                    await answerCallbackQuery(callbackId, `📱 Choisissez la plateforme`, token)
+                    if (message?.chat?.id && message?.message_id) {
+                        await editTelegramMessage(message.chat.id, message.message_id, `📱 <b>Destination du Visuel</b>\n\nSur quelle plateforme souhaitez-vous publier ce visuel ?`, token, replyMarkup)
+                    }
+                } catch (error: any) {
+                    await answerCallbackQuery(callbackId, `❌ Erreur : ${error.message}`, token)
+                }
+            }
+
+            // Format: pub_creative:{id}:{type}:{platform}
+            else if (data && data.startsWith('pub_creative:')) {
+                const [, itemId, itemType, platform] = data.split(':')
+                try {
                     const payload = {
-                        bookId: firstItem.bookId,
-                        packId: firstItem.packId,
+                        bookId: itemType === 'BOOK' ? itemId : null,
+                        packId: itemType === 'PACK' ? itemId : null,
                         format: 'story',
-                        platform: 'telegram',
+                        platform: platform,
                         source: 'telegram-bot-action'
                     }
 
                     const n8nWebhookUrl = (await prisma.siteSettings.findUnique({ where: { key: 'n8n_webhook_url' } }))?.value || process.env.N8N_WEBHOOK_URL
-                    
                     if (!n8nWebhookUrl) throw new Error('n8n non configuré')
 
-                    await answerCallbackQuery(callbackId, `✨ Génération en cours...`, token)
+                    await answerCallbackQuery(callbackId, `🚀 Publication ${platform} lancée...`, token)
 
                     fetch(n8nWebhookUrl, {
                         method: 'POST',
@@ -225,11 +253,34 @@ export async function POST(req: Request) {
                         body: JSON.stringify(payload)
                     }).catch(console.error)
 
+                    if (message?.chat?.id && message?.message_id) {
+                        await editTelegramMessage(message.chat.id, message.message_id, `⏳ <b>Génération en cours...</b>\n\nVotre visuel pour <b>${platform.toUpperCase()}</b> est en cours de création via n8n.`, token)
+                    }
                 } catch (error: any) {
                     await answerCallbackQuery(callbackId, `❌ Erreur : ${error.message}`, token)
                 }
             }
 
+            // Format: prep_creative:{itemId}:{itemType}
+            else if (data && data.startsWith('prep_creative:')) {
+                const [, itemId, itemType] = data.split(':')
+                const replyMarkup = {
+                    inline_keyboard: [
+                        [
+                            { text: '📸 Instagram', callback_data: `pub_creative:${itemId}:${itemType}:instagram` },
+                            { text: '📘 Facebook', callback_data: `pub_creative:${itemId}:${itemType}:facebook` }
+                        ],
+                        [
+                            { text: '🎵 TikTok', callback_data: `pub_creative:${itemId}:${itemType}:tiktok` },
+                            { text: '✈️ Telegram', callback_data: `pub_creative:${itemId}:${itemType}:telegram` }
+                        ]
+                    ]
+                }
+                if (message?.chat?.id && message?.message_id) {
+                    await editTelegramMessage(message.chat.id, message.message_id, `📱 <b>Destination du Visuel</b>\n\nSur quelle plateforme souhaitez-vous publier ?`, token, replyMarkup)
+                }
+            }
+            
             // Format: approve_review:{reviewId}
             else if (data && data.startsWith('approve_review:')) {
                 const [, reviewId] = data.split(':')
@@ -388,6 +439,36 @@ export async function POST(req: Request) {
                     ]
                 }
                 await sendTelegramMessage(replyText, chatId.toString(), token, replyMarkup)
+            }
+            else if (text === '/GENERER' || text === 'GENERER' || text === '/MARKETING') {
+                const latestCreatives = await prisma.marketingAsset.findMany({
+                    take: 5,
+                    orderBy: { createdAt: 'desc' },
+                    select: { id: true, name: true, bookId: true, packId: true, type: true }
+                })
+
+                if (latestCreatives.length === 0) {
+                    await sendTelegramMessage(`💡 Aucune créative trouvée. Générez-en d'abord depuis l'admin marketing.`, chatId.toString(), token)
+                    return NextResponse.json({ ok: true })
+                }
+
+                const buttons = latestCreatives.map(c => {
+                    const label = c.name.split('_').slice(1, -1).join(' ') || c.name
+                    const typeLabel = c.type === 'PACK' ? '📦' : '✨'
+                    return [{ 
+                        text: `${typeLabel} ${label}`, 
+                        callback_data: `prep_creative:${c.bookId || c.packId}:${c.type === 'PACK' ? 'PACK' : 'BOOK'}` 
+                    }]
+                })
+
+                const replyMarkup = {
+                    inline_keyboard: [
+                        ...buttons,
+                        [{ text: '🔍 Voir tout sur le site', url: `${process.env.NEXT_PUBLIC_APP_URL}/fr/admin/marketing` }]
+                    ]
+                }
+
+                await sendTelegramMessage(`🚀 <b>Marketing Riwaya</b>\n\nChoisissez une créative enregistrée pour la publier :`, chatId.toString(), token, replyMarkup)
             }
             else if (text.startsWith('/STOCK')) {
                 const query = rawText.split(' ').slice(1).join(' ')
