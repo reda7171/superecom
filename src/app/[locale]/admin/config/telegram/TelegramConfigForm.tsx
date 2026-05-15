@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { updateSetting } from '@/lib/actions/site-settings'
-import { Save, Send, Webhook, Trash2, Loader2 } from 'lucide-react'
+import { Save, Send, Webhook, Trash2, Loader2, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 interface Props {
@@ -22,6 +22,8 @@ interface Props {
         statsVisitors: boolean
         statsRegistrations: boolean
         statsTopViews: boolean
+        instagramId: string
+        facebookPageId: string
     }
 }
 
@@ -58,6 +60,8 @@ export default function TelegramConfigForm({ initialBotToken, initialChatId, app
             await updateSetting('telegram_stats_visitors', String(settings.statsVisitors), 'config', 'Stats Visiteurs (Bilan)')
             await updateSetting('telegram_stats_registrations', String(settings.statsRegistrations), 'config', 'Stats Inscriptions (Bilan)')
             await updateSetting('telegram_stats_top_views', String(settings.statsTopViews), 'config', 'Stats Vues (Bilan)')
+            await updateSetting('marketing_instagram_id', settings.instagramId, 'config', 'Instagram Account ID')
+            await updateSetting('marketing_facebook_page_id', settings.facebookPageId, 'config', 'Facebook Page ID')
 
             setMessage('Configuration enregistrée avec succès !')
             router.refresh()
@@ -198,6 +202,42 @@ export default function TelegramConfigForm({ initialBotToken, initialChatId, app
                             </label>
                         </div>
                     ))}
+                </div>
+            </div>
+
+            {/* Marketing IDs */}
+            <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
+                <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 bg-pink-50 rounded-2xl flex items-center justify-center">
+                        <Sparkles className="w-6 h-6 text-pink-600" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-black text-gray-900 tracking-tight">Marketing Automation</h2>
+                        <p className="text-sm text-gray-400 font-bold">IDs nécessaires pour n8n et la publication sociale</p>
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest px-1">Instagram Business ID</label>
+                        <input 
+                            type="text" 
+                            value={settings.instagramId}
+                            onChange={(e) => setSettings({ ...settings, instagramId: e.target.value })}
+                            placeholder="Ex: 17841401234567890"
+                            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-pink-600 rounded-2xl outline-none font-bold text-gray-900 transition-all"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest px-1">Facebook Page ID</label>
+                        <input 
+                            type="text" 
+                            value={settings.facebookPageId}
+                            onChange={(e) => setSettings({ ...settings, facebookPageId: e.target.value })}
+                            placeholder="Ex: 102345678901234"
+                            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-600 rounded-2xl outline-none font-bold text-gray-900 transition-all"
+                        />
+                    </div>
                 </div>
             </div>
 

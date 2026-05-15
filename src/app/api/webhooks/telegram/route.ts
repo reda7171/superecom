@@ -236,11 +236,16 @@ export async function POST(req: Request) {
             else if (data && data.startsWith('pub_creative:')) {
                 const [, itemId, itemType, platform] = data.split(':')
                 try {
+                    const instagramId = (await prisma.siteSettings.findUnique({ where: { key: 'marketing_instagram_id' } }))?.value
+                    const facebookPageId = (await prisma.siteSettings.findUnique({ where: { key: 'marketing_facebook_page_id' } }))?.value
+
                     const payload = {
                         bookId: itemType === 'BOOK' ? itemId : null,
                         packId: itemType === 'PACK' ? itemId : null,
                         format: 'story',
                         platform: platform,
+                        instagramId: instagramId,
+                        facebookPageId: facebookPageId,
                         source: 'telegram-bot-action'
                     }
 

@@ -34,6 +34,8 @@ export default async function TelegramConfigPage() {
         statsVisitors: await getSetting('telegram_stats_visitors') === 'true',
         statsRegistrations: await getSetting('telegram_stats_registrations') === 'true',
         statsTopViews: await getSetting('telegram_stats_top_views') === 'true',
+        instagramId: await getSetting('marketing_instagram_id') || '',
+        facebookPageId: await getSetting('marketing_facebook_page_id') || '',
     }
 
     const webhookBaseUrl = await getSetting('telegram_webhook_base_url') || ''
