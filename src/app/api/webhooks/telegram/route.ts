@@ -509,14 +509,17 @@ export async function POST(req: Request) {
                         }]
                     })
 
+                    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
                     const replyMarkup = {
                         inline_keyboard: [
                             ...buttons,
-                            [{ text: '🔍 Voir tout le site', url: `${process.env.NEXT_PUBLIC_APP_URL}/fr/admin/marketing` }]
+                            [{ text: '🔍 Voir tout le site', url: `${siteUrl}/fr/admin/marketing` }]
                         ]
                     }
 
-                    await sendTelegramMessage(`🚀 <b>Marketing Riwaya</b>\n\nVoici les dernières créatives trouvées :`, chatId.toString(), token, replyMarkup)
+                    console.log(`[TELEGRAM] Sending final menu to ${chatId}`)
+                    const result = await sendTelegramMessage(`🚀 <b>Marketing Riwaya</b>\n\nVoici les dernières créatives trouvées :`, chatId.toString(), token, replyMarkup)
+                    console.log(`[TELEGRAM] Final menu send result:`, result ? 'SUCCESS' : 'FAILED')
                 } catch (error: any) {
                     console.error('[TELEGRAM ERROR] /GENERER failed:', error)
                     await sendTelegramMessage(`❌ Erreur lors du scan : ${error.message}`, chatId.toString(), token)
