@@ -460,19 +460,25 @@ export async function POST(req: Request) {
                         console.log(`[TELEGRAM] Found ${files.length} total files in directory`)
                         
                         const marketingFiles = files.filter(f => 
-                            f.startsWith('creative_') || f.startsWith('pack_') || f.startsWith('desc_') || f.includes('pack')
+                            f.toLowerCase().startsWith('creative_') || 
+                            f.toLowerCase().startsWith('pack_') || 
+                            f.toLowerCase().startsWith('desc_') || 
+                            f.toLowerCase().includes('pack')
                         ).sort().reverse().slice(0, 10)
+
+                        console.log(`[TELEGRAM] Filtered ${marketingFiles.length} marketing files:`, marketingFiles)
 
                         if (marketingFiles.length > 0) {
                             creatives = marketingFiles.map(file => ({
                                 name: file,
-                                type: file.startsWith('pack') ? 'PACK' : 'BOOK'
+                                type: (file.toLowerCase().includes('pack')) ? 'PACK' : 'BOOK'
                             }))
                         }
                     } catch (fsErr: any) {
                         console.error('[TELEGRAM] Disk scan error:', fsErr)
-                        // Ne pas bloquer, on tentera la DB après
                     }
+
+                    console.log(`[TELEGRAM] Final creatives list size: ${creatives.length}`)
 
                     // 2. Tenter la DB si le disque n'a rien donné
                     if (creatives.length === 0) {
