@@ -217,7 +217,7 @@ export async function updateBookQuick(
 
         if (updated.stock < 3) {
             const { sendLowStockNotification } = await import('@/lib/telegram')
-            sendLowStockNotification({ title: updated.title, stock: updated.stock }).catch(console.error)
+            sendLowStockNotification({ id: updated.id, title: updated.title, stock: updated.stock }).catch(console.error)
         }
 
         revalidatePath('/admin/books')

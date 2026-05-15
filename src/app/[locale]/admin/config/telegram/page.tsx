@@ -31,9 +31,13 @@ export default async function TelegramConfigPage() {
         notifyLowStock: await getSetting('telegram_notify_low_stock') !== 'false', // Défaut true
         notifyDailySummary: await getSetting('telegram_notify_daily_summary') !== 'false', // Défaut true
         notifyReviews: await getSetting('telegram_notify_reviews') !== 'false', // Défaut true
+        statsVisitors: await getSetting('telegram_stats_visitors') === 'true',
+        statsRegistrations: await getSetting('telegram_stats_registrations') === 'true',
+        statsTopViews: await getSetting('telegram_stats_top_views') === 'true',
     }
 
-    const appUrl = (await getSetting('site_url')) || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || ''
+    const webhookBaseUrl = await getSetting('telegram_webhook_base_url') || ''
+    const appUrl = webhookBaseUrl || (await getSetting('site_url')) || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || ''
 
     return (
         <div className="space-y-12">

@@ -32,6 +32,7 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
     const [isFreeDelivery, setIsFreeDelivery] = useState(false)
     const [shippingFees, setShippingFees] = useState(30)
     const [searchQuery, setSearchQuery] = useState('')
+    const [onlyAvailable, setOnlyAvailable] = useState(true)
 
     function toggleBook(bookId: string) {
         setSelectedBooks(prev =>
@@ -70,10 +71,12 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
     const totalOriginalPrice = selectedBooksData.reduce((sum, b) => sum + b.price, 0)
 
     // Filter and group books
-    const filteredBooks = books.filter(book => 
-        book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        book.author.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const filteredBooks = books.filter(book => {
+        const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             book.author.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesAvailability = onlyAvailable ? book.active : true
+        return matchesSearch && matchesAvailability
+    })
 
     const groupedBooks = filteredBooks.reduce((acc, book) => {
         const category = book.category || 'Non catégorisé'
@@ -306,6 +309,18 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
                                     >
                                         🎲 4 au hasard
                                     </button>
+                                    <label className="flex items-center gap-2 cursor-pointer group">
+                                        <div className="relative">
+                                            <input
+                                                type="checkbox"
+                                                checked={onlyAvailable}
+                                                onChange={(e) => setOnlyAvailable(e.target.checked)}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-8 h-4 bg-gray-200 rounded-full peer peer-checked:bg-green-500 transition-all after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4 shadow-inner"></div>
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-green-600 transition-colors">Disponible</span>
+                                    </label>
                                 </div>
                             </div>
                             <div className="w-full sm:w-64">

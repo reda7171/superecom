@@ -112,6 +112,9 @@ export async function sendOrderNotification(order: {
                 { text: '🔄 Retournée', callback_data: `os:${order.id}:RETURNED` }
             ],
             [
+                { text: '✨ Générer Visuel', callback_data: `gen_creative:${order.id}` }
+            ],
+            [
                 { text: '❌ Annuler', callback_data: `os:${order.id}:CANCELLED` }
             ]
         ]
@@ -289,7 +292,7 @@ export async function sendReviewNotification(review: { id: string, fullName: str
 /**
  * Alerte stock faible
  */
-export async function sendLowStockNotification(book: { title: string, stock: number }) {
+export async function sendLowStockNotification(book: { id: string, title: string, stock: number }) {
     const botToken = await getTelegramToken()
     const chatId = await getTelegramChatId()
     if (!botToken || !chatId) return
@@ -300,7 +303,19 @@ export async function sendLowStockNotification(book: { title: string, stock: num
     const text = `⚠️ <b>Alerte Stock Faible</b>\n\n` +
         `📖 <b>Livre:</b> ${book.title}\n` +
         `📦 <b>Stock restant:</b> <b>${book.stock}</b>\n\n` +
-        `<i>Il est temps de prévoir un réapprovisionnement.</i>`
+        `<i>Action rapide disponible :</i>`
 
-    return sendTelegramMessage(text)
+    const replyMarkup = {
+        inline_keyboard: [
+            [
+                { text: '🏷️ Promo Flash (-10%)', callback_data: `promo_flash:${book.id}` },
+            ],
+            [
+                { text: '📦 Restock +10', callback_data: `restock:${book.id}:10` },
+                { text: '🚫 Masquer', callback_data: `hide_book:${book.id}` }
+            ]
+        ]
+    }
+
+    return sendTelegramMessage(text, undefined, undefined, replyMarkup)
 }

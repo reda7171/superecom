@@ -176,13 +176,24 @@ export default function AuthorsList({ initialAuthors }: { initialAuthors: Author
                                     )}
                                 </td>
                                 <td className="px-6 md:px-10 py-6 text-right">
-                                    <button 
-                                        onClick={() => setEditingAuthor(author)}
-                                        className="inline-flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-black text-white rounded-lg md:rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all active:scale-95 shadow-xl sm:opacity-0 sm:group-hover:opacity-100"
-                                    >
-                                        <Edit2 className="w-3 h-3" />
-                                        <span className="hidden sm:inline">Modifier</span>
-                                    </button>
+                                    <div className="flex items-center justify-end gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                        <a 
+                                            href={`/authors/${encodeURIComponent(author.name)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 px-3 md:px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-blue-100 transition-all active:scale-95 border border-blue-100"
+                                        >
+                                            <Globe className="w-3 h-3" />
+                                            <span className="hidden sm:inline">Visualiser</span>
+                                        </a>
+                                        <button 
+                                            onClick={() => setEditingAuthor(author)}
+                                            className="inline-flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-black text-white rounded-lg md:rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all active:scale-95 shadow-xl"
+                                        >
+                                            <Edit2 className="w-3 h-3" />
+                                            <span className="hidden sm:inline">Modifier</span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

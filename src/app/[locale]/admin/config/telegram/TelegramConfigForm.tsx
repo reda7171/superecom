@@ -19,6 +19,9 @@ interface Props {
         notifyLowStock: boolean
         notifyDailySummary: boolean
         notifyReviews: boolean
+        statsVisitors: boolean
+        statsRegistrations: boolean
+        statsTopViews: boolean
     }
 }
 
@@ -40,6 +43,7 @@ export default function TelegramConfigForm({ initialBotToken, initialChatId, app
         try {
             await updateSetting('telegram_bot_token', botToken, 'config', 'Telegram Bot Token')
             await updateSetting('telegram_chat_id', chatId, 'config', 'Telegram Chat ID')
+            await updateSetting('telegram_webhook_base_url', customAppUrl, 'config', 'URL Base Webhook Telegram')
             
             // Sauvegarder les paramètres de notification
             await updateSetting('telegram_notify_orders', String(settings.notifyOrders), 'config', 'Notif Commandes')
@@ -51,6 +55,9 @@ export default function TelegramConfigForm({ initialBotToken, initialChatId, app
             await updateSetting('telegram_notify_low_stock', String(settings.notifyLowStock), 'config', 'Notif Stock Faible')
             await updateSetting('telegram_notify_daily_summary', String(settings.notifyDailySummary), 'config', 'Résumé Journalier')
             await updateSetting('telegram_notify_reviews', String(settings.notifyReviews), 'config', 'Notif Avis Clients')
+            await updateSetting('telegram_stats_visitors', String(settings.statsVisitors), 'config', 'Stats Visiteurs (Bilan)')
+            await updateSetting('telegram_stats_registrations', String(settings.statsRegistrations), 'config', 'Stats Inscriptions (Bilan)')
+            await updateSetting('telegram_stats_top_views', String(settings.statsTopViews), 'config', 'Stats Vues (Bilan)')
 
             setMessage('Configuration enregistrée avec succès !')
             router.refresh()
@@ -171,6 +178,9 @@ export default function TelegramConfigForm({ initialBotToken, initialChatId, app
                         { id: 'notifyDailySummary', label: 'Résumé Journalier', desc: 'Récapitulatif des ventes chaque soir à 22h' },
                         { id: 'notifyHomeVisit', label: 'Visite Accueil', desc: 'Alertes quand quelqu\'un arrive sur le site' },
                         { id: 'notifySearch', label: 'Recherches & Filtres', desc: 'Alertes lors de recherches dans le catalogue' },
+                        { id: 'statsVisitors', label: 'Stats: Visiteurs uniques', desc: 'Inclure le trafic dans le /bilan' },
+                        { id: 'statsRegistrations', label: 'Stats: Inscriptions', desc: 'Inclure les nouveaux comptes dans le /bilan' },
+                        { id: 'statsTopViews', label: 'Stats: Livres les plus vus', desc: 'Inclure le top consultations dans le /bilan' },
                     ].map((item) => (
                         <div key={item.id} className="flex items-center justify-between p-5 bg-gray-50 rounded-2xl border border-gray-100 transition-all hover:bg-white hover:shadow-lg hover:border-blue-100 group">
                             <div className="flex-1 pr-6">

@@ -30,48 +30,59 @@ class WithYouService {
         }
     }
 
-    private async request(endpoint: string, data: any = {}) {
-        const url = `${BASE_URL}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`
+    private async request(endpoint: string, data: any = {}, method: 'POST' | 'GET' = 'POST') {
+        let url = `${BASE_URL}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`
 
-        // Utilisation de URLSearchParams car beaucoup d'API marocaines préfèrent le format form-data/urlencoded au JSON brut
-        const params = new URLSearchParams()
-        params.append('key', this.config.key)
-        params.append('token', this.config.token)
-        
-        Object.entries(data).forEach(([k, v]) => {
-            if (typeof v === 'object') {
-                params.append(k, JSON.stringify(v))
-            } else {
-                params.append(k, String(v))
-            }
-        })
-
-        console.log(`[WithYou] Calling ${url}`)
+        const bodyData: any = {
+            key: this.config.key,
+            token: this.config.token,
+            ...data
+        }
 
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 15000)
 
         try {
-            const response = await fetch(url, {
-                method: 'POST',
+            const fetchOptions: RequestInit = {
+                method,
                 headers: { 
-                    'Content-Type': 'application/x-www-form-urlencoded',
                     'Accept': 'application/json'
                 },
-                body: params.toString(),
                 signal: controller.signal
-            })
+            }
 
+            if (method === 'GET') {
+                const params = new URLSearchParams()
+                Object.entries(bodyData).forEach(([k, v]) => {
+                    if (typeof v === 'object') {
+                        params.append(k, JSON.stringify(v))
+                    } else {
+                        params.append(k, String(v))
+                    }
+                })
+                url += `?${params.toString()}`
+            } else {
+                // Pour POST, on utilise JSON par défaut comme dans la doc
+                fetchOptions.headers = {
+                    ...fetchOptions.headers,
+                    'Content-Type': 'application/json'
+                }
+                fetchOptions.body = JSON.stringify(bodyData)
+            }
+
+            console.log(`[WithYou] ${method} ${url}`)
+
+            const response = await fetch(url, fetchOptions)
             const bodyText = await response.text()
+            
             console.log(`[WithYou] Response status: ${response.status}`)
             
             let parsed
             try {
                 parsed = JSON.parse(bodyText)
             } catch (e) {
-                // Si c'est du HTML, on log les 200 premiers caractères pour voir l'erreur
                 if (bodyText.includes('<!DOCTYPE html>')) {
-                    console.error(`[WithYou] Received HTML instead of JSON from ${endpoint}. Possible 404 or wrong endpoint.`)
+                    console.error(`[WithYou] Received HTML instead of JSON from ${endpoint}.`)
                 }
                 return bodyText
             }
@@ -97,8 +108,8 @@ class WithYouService {
      */
     async getCities() {
         try {
-            const res = await this.request('/getville')
-            console.log('[WithYou] Raw cities response:', JSON.stringify(res).substring(0, 500))
+            const res = await this.request('/getville', {}, 'GET')
+            console.log('[WithYou] Raw cities response type:', typeof res)
             
             let cityList: string[] = []
 
@@ -145,21 +156,21 @@ class WithYouService {
      * Modifier statut
      */
     async updateStatus(codetracking: string, status: string) {
-        return this.request('/updatstatus', { codetracking, status })
+        return this.request('/updatstatus', { codetracking, status }, 'POST')
     }
 
     /**
      * Obtenir tous les statuts possibles
      */
     async getAllStatus() {
-        return this.request('/getallstatus')
+        return this.request('/getallstatus', {}, 'GET')
     }
 
     /**
      * Obtenir le statut des colis
      */
     async getStatus(trackingIDs: string[]) {
-        return this.request('/getstatus', { data: trackingIDs })
+        return this.request('/getstatus', { data: trackingIDs }, 'GET')
     }
 }
 

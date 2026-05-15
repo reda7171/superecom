@@ -176,6 +176,7 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
                     if (updatedBook.stock < 3) {
                         const { sendLowStockNotification } = await import('@/lib/telegram')
                         sendLowStockNotification({ 
+                            id: updatedBook.id,
                             title: updatedBook.title, 
                             stock: updatedBook.stock 
                         }).catch(console.error)

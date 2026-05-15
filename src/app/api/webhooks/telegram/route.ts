@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { answerCallbackQuery, editTelegramMessage } from '@/lib/telegram'
+import { answerCallbackQuery, editTelegramMessage, sendTelegramMessage } from '@/lib/telegram'
 import { OrderStatus } from '@prisma/client'
 
 const STATUS_LABELS: Record<string, string> = {
@@ -126,6 +126,110 @@ export async function POST(req: Request) {
                 }
             }
             
+            // Format: promo_flash:{bookId}
+            else if (data && data.startsWith('promo_flash:')) {
+                const [, bookId] = data.split(':')
+                try {
+                    const book = await prisma.book.findUnique({ where: { id: bookId } })
+                    if (!book) throw new Error('Livre introuvable')
+                    
+                    const newPrice = Math.round(book.price * 0.9) // -10%
+                    await prisma.book.update({
+                        where: { id: bookId },
+                        data: { price: newPrice }
+                    })
+
+                    await answerCallbackQuery(callbackId, `🏷️ Promo appliquée : ${newPrice} MAD`, token)
+                    if (message?.chat?.id && message?.message_id) {
+                        const updatedText = `🏷️ <b>PROMO FLASH APPLIQUÉE (-10%)</b>\n\n` +
+                                            `📖 <b>Livre:</b> ${escapeHtml(book.title)}\n` +
+                                            `💰 <b>Ancien prix:</b> ${book.price} MAD\n` +
+                                            `🔥 <b>Nouveau prix:</b> ${newPrice} MAD\n` +
+                                            `📦 <b>Stock:</b> ${book.stock}`
+                        await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
+                    }
+                } catch (error: any) {
+                    await answerCallbackQuery(callbackId, `❌ Erreur : ${error.message}`, token)
+                }
+            }
+
+            // Format: restock:{bookId}:{amount}
+            else if (data && data.startsWith('restock:')) {
+                const [, bookId, amount] = data.split(':')
+                try {
+                    const book = await prisma.book.update({
+                        where: { id: bookId },
+                        data: { stock: { increment: parseInt(amount) } }
+                    })
+                    await answerCallbackQuery(callbackId, `📦 Stock mis à jour : ${book.stock}`, token)
+                    if (message?.chat?.id && message?.message_id) {
+                        const updatedText = `✅ <b>RÉAPPROVISIONNEMENT EFFECTUÉ</b>\n\n` +
+                                            `📖 <b>Livre:</b> ${escapeHtml(book.title)}\n` +
+                                            `📦 <b>Nouveau stock:</b> <b>${book.stock}</b>`
+                        await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
+                    }
+                } catch (error: any) {
+                    await answerCallbackQuery(callbackId, `❌ Erreur : ${error.message}`, token)
+                }
+            }
+
+            // Format: hide_book:{bookId}
+            else if (data && data.startsWith('hide_book:')) {
+                const [, bookId] = data.split(':')
+                try {
+                    const book = await prisma.book.update({
+                        where: { id: bookId },
+                        data: { active: false }
+                    })
+                    await answerCallbackQuery(callbackId, `🚫 Livre masqué du site`, token)
+                    if (message?.chat?.id && message?.message_id) {
+                        const updatedText = `🚫 <b>LIVRE MASQUÉ DU SITE</b>\n\n` +
+                                            `📖 <b>Livre:</b> ${escapeHtml(book.title)}\n` +
+                                            `📌 Statut: <b>INACTIF</b>`
+                        await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
+                    }
+                } catch (error: any) {
+                    await answerCallbackQuery(callbackId, `❌ Erreur : ${error.message}`, token)
+                }
+            }
+            
+            // Format: gen_creative:{orderId}
+            else if (data && data.startsWith('gen_creative:')) {
+                const [, orderId] = data.split(':')
+                try {
+                    const order = await prisma.order.findUnique({
+                        where: { id: orderId },
+                        include: { items: { include: { book: true, pack: true } } }
+                    })
+                    
+                    if (!order || order.items.length === 0) throw new Error('Commande ou articles introuvables')
+                    
+                    const firstItem = order.items[0]
+                    const payload = {
+                        bookId: firstItem.bookId,
+                        packId: firstItem.packId,
+                        format: 'story',
+                        platform: 'telegram',
+                        source: 'telegram-bot-action'
+                    }
+
+                    const n8nWebhookUrl = (await prisma.siteSettings.findUnique({ where: { key: 'n8n_webhook_url' } }))?.value || process.env.N8N_WEBHOOK_URL
+                    
+                    if (!n8nWebhookUrl) throw new Error('n8n non configuré')
+
+                    await answerCallbackQuery(callbackId, `✨ Génération en cours...`, token)
+
+                    fetch(n8nWebhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }).catch(console.error)
+
+                } catch (error: any) {
+                    await answerCallbackQuery(callbackId, `❌ Erreur : ${error.message}`, token)
+                }
+            }
+
             // Format: approve_review:{reviewId}
             else if (data && data.startsWith('approve_review:')) {
                 const [, reviewId] = data.split(':')
@@ -160,6 +264,100 @@ export async function POST(req: Request) {
                 }
             }
             
+            // Format: stats:{period}
+            else if (data && data.startsWith('stats:')) {
+                const [, period] = data.split(':')
+                const now = new Date()
+                let start = new Date(now.setHours(0, 0, 0, 0))
+                let end = new Date(now.setHours(23, 59, 59, 999))
+                let label = "Aujourd'hui"
+
+                if (period === 'yesterday') {
+                    start = new Date(now.setDate(now.getDate() - 1))
+                    start.setHours(0,0,0,0)
+                    end = new Date(start)
+                    end.setHours(23,59,59,999)
+                    label = "Hier"
+                } else if (period === 'month') {
+                    start = new Date(now.getFullYear(), now.getMonth(), 1)
+                    label = "Ce Mois"
+                }
+
+                if (period === 'top5') {
+                    const topBooks = await prisma.orderItem.groupBy({
+                        by: ['bookId'],
+                        where: { bookId: { not: null }, order: { status: { not: 'CANCELLED' } } },
+                        _count: { bookId: true },
+                        orderBy: { _count: { bookId: 'desc' } },
+                        take: 5
+                    })
+
+                    const books = await Promise.all(topBooks.map(async (item) => {
+                        const book = await prisma.book.findUnique({ where: { id: item.bookId! }, select: { title: true } })
+                        return `🏆 <b>${book?.title || 'Livre inconnu'}</b> : ${item._count.bookId} ventes`
+                    }))
+
+                    const text = `🥇 <b>TOP 5 DES VENTES</b>\n\n${books.join('\n')}`
+                    await answerCallbackQuery(callbackId, '🏆 Top 5 généré', token)
+                    await sendTelegramMessage(text, message?.chat?.id.toString(), token)
+                } else {
+                    // Récupérer les paramètres pour savoir quoi afficher
+                    const showVisitors = (await prisma.siteSettings.findUnique({ where: { key: 'telegram_stats_visitors' } }))?.value === 'true'
+                    const showRegistrations = (await prisma.siteSettings.findUnique({ where: { key: 'telegram_stats_registrations' } }))?.value === 'true'
+                    const showViews = (await prisma.siteSettings.findUnique({ where: { key: 'telegram_stats_top_views' } }))?.value === 'true'
+
+                    const [count, revenue, visitors, registrations] = await Promise.all([
+                        prisma.order.count({ where: { createdAt: { gte: start, lte: end }, status: { not: 'CANCELLED' } } }),
+                        prisma.order.aggregate({
+                            where: { createdAt: { gte: start, lte: end }, status: { not: 'CANCELLED' } },
+                            _sum: { total: true }
+                        }),
+                        showVisitors ? prisma.pageView.groupBy({
+                            by: ['sessionId'],
+                            where: { createdAt: { gte: start, lte: end } }
+                        }).then(res => res.length) : Promise.resolve(0),
+                        showRegistrations ? prisma.user.count({
+                            where: { createdAt: { gte: start, lte: end }, role: 'USER' }
+                        }) : Promise.resolve(0)
+                    ])
+
+                    let text = `📊 <b>RAPPORT : ${label.toUpperCase()}</b>\n\n` +
+                               `📦 Commandes : <b>${count}</b>\n` +
+                               `💰 CA Estimé : <b>${(revenue._sum.total || 0).toFixed(2)} MAD</b>`
+                    
+                    if (showVisitors) text += `\n👥 Visiteurs Uniques : <b>${visitors}</b>`
+                    if (showRegistrations) text += `\n👤 Inscriptions : <b>${registrations}</b>`
+
+                    if (showViews) {
+                        const topViews = await prisma.pageView.groupBy({
+                            by: ['url'],
+                            where: { 
+                                createdAt: { gte: start, lte: end },
+                                url: { contains: '/books/' }
+                            },
+                            _count: { url: true },
+                            orderBy: { _count: { url: 'desc' } },
+                            take: 3
+                        })
+                        
+                        if (topViews.length > 0) {
+                            text += `\n\n👀 <b>LIVRES LES PLUS CONSULTÉS :</b>`
+                            for (const view of topViews) {
+                                // Extraire le titre du livre de l'URL si possible ou juste l'URL
+                                const bookId = view.url.split('/').pop()?.split('?')[0]
+                                if (bookId && bookId.length > 20) {
+                                    const book = await prisma.book.findUnique({ where: { id: bookId }, select: { title: true } })
+                                    text += `\n• ${escapeHtml(book?.title || 'Livre')} (<b>${view._count.url}</b> vues)`
+                                }
+                            }
+                        }
+                    }
+                    
+                    await answerCallbackQuery(callbackId, `Stats ${label} envoyées`, token)
+                    await sendTelegramMessage(text, message?.chat?.id.toString(), token)
+                }
+            }
+            
             // Sécurité : toujours répondre pour arrêter le chargement du bouton
             else {
                 await answerCallbackQuery(callbackId, 'Action reçue', token)
@@ -171,25 +369,25 @@ export async function POST(req: Request) {
             const rawText = body.message.text.trim()
             const text = rawText.toUpperCase()
             const chatId = body.message.chat.id
-            const { sendTelegramMessage } = await import('@/lib/telegram')
-
             console.log(`[TELEGRAM MESSAGE] Received from ${chatId}: ${text}`)
 
-            if (text.startsWith('/STATS') || text === 'BILAN') {
-                const now = new Date()
-                const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-                const [orderCount, revenue] = await Promise.all([
-                    prisma.order.count({ where: { createdAt: { gte: firstDayOfMonth }, status: { not: 'CANCELLED' } } }),
-                    prisma.order.aggregate({
-                        where: { createdAt: { gte: firstDayOfMonth }, status: { not: 'CANCELLED' } },
-                        _sum: { total: true }
-                    })
-                ])
-                const replyText = `📊 <b>STATS DU MOIS</b>\n\n` +
-                                  `📅 Période : <b>${firstDayOfMonth.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</b>\n` +
-                                  `📦 Commandes : <b>${orderCount}</b>\n` +
-                                  `💰 CA estimé : <b>${(revenue._sum.total || 0).toFixed(2)} MAD</b>`
-                await sendTelegramMessage(replyText, chatId.toString(), token)
+            if (text === '/BILAN' || text === 'BILAN' || text === '/STATS') {
+                const replyText = `📊 <b>Centre de Rapports Riwaya</b>\n\nQue souhaitez-vous consulter ?`
+                const replyMarkup = {
+                    inline_keyboard: [
+                        [
+                            { text: "📅 Aujourd'hui", callback_data: 'stats:today' },
+                            { text: '🗓️ Hier', callback_data: 'stats:yesterday' }
+                        ],
+                        [
+                            { text: '📅 Ce Mois', callback_data: 'stats:month' }
+                        ],
+                        [
+                            { text: '🏆 Top 5 Livres', callback_data: 'stats:top5' }
+                        ]
+                    ]
+                }
+                await sendTelegramMessage(replyText, chatId.toString(), token, replyMarkup)
             }
             else if (text.startsWith('/STOCK')) {
                 const query = rawText.split(' ').slice(1).join(' ')
