@@ -379,9 +379,40 @@ export async function POST(req: Request) {
                         }) : Promise.resolve(0)
                     ])
 
+                    let jumiaCount = 0
+                    let jumiaRevenue = 0
+                    try {
+                        const { JumiaAPI } = await import('@/lib/jumia-api')
+                        const jumia = await JumiaAPI.getInstance()
+                        if (jumia) {
+                            const response = await jumia.getOrders(100, 0)
+                            const jumiaOrders = response?.orders || response?.data?.orders || []
+                            
+                            const filtered = jumiaOrders.filter((o: any) => {
+                                const createdAt = o.createdAt || o.CreatedAt
+                                if (!createdAt) return false
+                                const d = new Date(createdAt)
+                                const status = o.status || o.Status || ''
+                                return d >= start && d <= end && status !== 'canceled' && status !== 'CANCELLED'
+                            })
+                            
+                            jumiaCount = filtered.length
+                            jumiaRevenue = filtered.reduce((sum: number, o: any) => {
+                                const price = Number(o.totalAmountLocal?.value || o.Price || o.GrandTotal || 0)
+                                return sum + price
+                            }, 0)
+                        }
+                    } catch (e) {
+                        console.error('Erreur stats Jumia:', e)
+                    }
+
                     let text = `📊 <b>RAPPORT : ${label.toUpperCase()}</b>\n\n` +
-                               `📦 Commandes : <b>${count}</b>\n` +
-                               `💰 CA Estimé : <b>${(revenue._sum.total || 0).toFixed(2)} MAD</b>`
+                               `📦 Commandes Site : <b>${count}</b>\n` +
+                               `💰 CA Site : <b>${(revenue._sum.total || 0).toFixed(2)} MAD</b>`
+                    
+                    text += `\n\n🟠 <b>JUMIA :</b>\n` +
+                            `📦 Commandes : <b>${jumiaCount}</b>\n` +
+                            `💰 CA Jumia : <b>${jumiaRevenue.toFixed(2)} MAD</b>`
                     
                     if (showVisitors) text += `\n👥 Visiteurs Uniques : <b>${visitors}</b>`
                     if (showRegistrations) text += `\n👤 Inscriptions : <b>${registrations}</b>`

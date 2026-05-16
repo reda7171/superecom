@@ -6,6 +6,7 @@ import { normalizeImage } from '@/lib/utils'
 import CatalogButton from '@/components/admin/CatalogButton'
 import CatalogImageButton from '@/components/admin/CatalogImageButton'
 import EmptyLibraryButton from '@/components/admin/EmptyLibraryButton'
+import SyncJumiaStockButton from '@/components/admin/SyncJumiaStockButton'
 
 import { Prisma } from '@prisma/client'
 
@@ -92,6 +93,7 @@ export default async function BooksPage({ searchParams }: { searchParams: Promis
                         En attente
                     </Link>
                     <div className="flex gap-2">
+                        <SyncJumiaStockButton />
                         <CatalogButton />
                         <CatalogImageButton />
                     </div>

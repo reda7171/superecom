@@ -245,19 +245,15 @@ export async function getCommunityUser() {
     }
 }
 
-/**
- * Vérifie si un utilisateur community est éligible au système d'échange
- * Règle: Avoir passé au moins une commande (basé sur l'email ou le téléphone)
- */
-export async function checkExchangeEligibility(user: any): Promise<boolean> {
-    if (!user) return false
-    if (user.role === 'ADMIN') return true
+export async function getUserOrderCount(user: any): Promise<number> {
+    if (!user) return 0
+    if (user.role === 'ADMIN') return 999
 
     const conditions: any[] = []
     if (user.email) conditions.push({ email: user.email })
     if (user.phone) conditions.push({ phone: user.phone })
 
-    if (conditions.length === 0) return false
+    if (conditions.length === 0) return 0
 
     const orderCount = await prisma.order.count({
         where: {
@@ -265,5 +261,29 @@ export async function checkExchangeEligibility(user: any): Promise<boolean> {
         }
     })
 
-    return orderCount > 0
+    return orderCount
+}
+
+/**
+ * Vérifie si un utilisateur community est éligible au système d'échange
+ * Règle: Avoir passé au moins une commande (basé sur l'email ou le téléphone)
+ * ET n'avoir jamais fait d'échange (1 seule fois)
+ */
+export async function checkExchangeEligibility(user: any): Promise<boolean> {
+    if (!user) return false
+    if (user.role === 'ADMIN') return true
+
+    const orderCount = await getUserOrderCount(user)
+    if (orderCount === 0) return false
+
+    const exchangeCount = await prisma.exchange.count({
+        where: {
+            OR: [
+                { requesterId: user.id },
+                { responderId: user.id }
+            ]
+        }
+    })
+
+    return exchangeCount < 1
 }

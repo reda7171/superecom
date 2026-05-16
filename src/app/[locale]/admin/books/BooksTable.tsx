@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Link } from '@/i18n/routing'
-import { Edit, Trash2, Eye, EyeOff, Search, Check, X, Edit3, ImageIcon, FileDown, GripVertical, LayoutGrid, List } from 'lucide-react'
+import { Edit, Trash2, Eye, EyeOff, Search, Check, X, Edit3, ImageIcon, FileDown, GripVertical, LayoutGrid, List, Upload } from 'lucide-react'
 import { deleteBook, toggleBookStatus, bulkDeleteBooks, updateBookQuick, updateBookOrder, bulkUpdateBookPrices } from '@/lib/actions/books'
 import { useRouter, usePathname } from 'next/navigation'
 import ImageWithFallback from '@/components/ImageWithFallback'
@@ -211,11 +211,33 @@ export default function BooksTable({ books, pageNumber, totalProviderPages, init
             a.download = `jumia_export_${new Date().toISOString().split('T')[0]}.xlsx`
             a.click()
             URL.revokeObjectURL(url)
-            setToast({ msg: `✅ Export Jumia : ${selectedIds.length} livre(s) exporté(s)`, ok: true })
-            setTimeout(() => setToast(null), 4000)
         } catch {
             setToast({ msg: '❌ Erreur lors de l\'export Jumia', ok: false })
             setTimeout(() => setToast(null), 5000)
+        }
+    }
+
+    // Publier vers Jumia
+    const handlePublishJumia = async () => {
+        if (selectedIds.length === 0) return
+        if (!confirm(`Publier ${selectedIds.length} livre(s) sur Jumia ?`)) return
+
+        setBulkLoading(true)
+        try {
+            const { publishBooksToJumia } = await import('@/lib/actions/jumia')
+            const result = await publishBooksToJumia(selectedIds)
+            if (result.success) {
+                setToast({ msg: `✅ ${result.message}`, ok: true })
+                setSelectedIds([])
+            } else {
+                setToast({ msg: `❌ ${result.message}`, ok: false })
+            }
+            setTimeout(() => setToast(null), 5000)
+        } catch (error) {
+            setToast({ msg: '❌ Erreur de publication', ok: false })
+            setTimeout(() => setToast(null), 5000)
+        } finally {
+            setBulkLoading(false)
         }
     }
 
@@ -371,7 +393,16 @@ export default function BooksTable({ books, pageNumber, totalProviderPages, init
                                 title="Exporter au format Excel Jumia Vendor"
                             >
                                 <FileDown className="w-4 h-4" />
-                                Export Jumia
+                                Export
+                            </button>
+                            <button
+                                onClick={handlePublishJumia}
+                                disabled={bulkLoading}
+                                className="flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-700 transition"
+                                title="Publier directement via l'API Jumia"
+                            >
+                                <Upload className="w-4 h-4" />
+                                Publier Jumia
                             </button>
                             <button
                                 onClick={handleBulkDelete}

@@ -12,9 +12,10 @@ interface MarketClientSectionProps {
     smartMatches: any[]
     search?: string
     city?: string
+    isBlurred?: boolean
 }
 
-export default function MarketClientSection({ initialBooks, smartMatches, search, city }: MarketClientSectionProps) {
+export default function MarketClientSection({ initialBooks, smartMatches, search, city, isBlurred }: MarketClientSectionProps) {
     const [isPending, setIsPending] = useState(false)
     const t = useTranslations('Community.Market')
 
@@ -47,7 +48,7 @@ export default function MarketClientSection({ initialBooks, smartMatches, search
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                 {smartMatches.map((book: any) => (
-                                    <MarketBookCard key={book.id} book={book} isSmartMatch />
+                                    <MarketBookCard key={book.id} book={book} isSmartMatch isBlurred={isBlurred} />
                                 ))}
                             </div>
                         </div>
@@ -63,7 +64,7 @@ export default function MarketClientSection({ initialBooks, smartMatches, search
                     {initialBooks.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                             {initialBooks.map((book: any) => (
-                                <MarketBookCard key={book.id} book={book} />
+                                <MarketBookCard key={book.id} book={book} isBlurred={isBlurred} />
                             ))}
                         </div>
                     ) : (

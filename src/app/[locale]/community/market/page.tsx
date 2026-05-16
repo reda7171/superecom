@@ -1,4 +1,5 @@
 import { getMarketBooks, getSmartMatches } from '@/lib/actions/community-market'
+import { getCommunityUser, getUserOrderCount } from '@/lib/actions/community-auth'
 import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/FooterWithFeatures'
 import MarketClientSection from '@/components/community/MarketClientSection'
@@ -15,8 +16,15 @@ export default async function MarketPage({
     const city = typeof params.city === 'string' ? params.city : undefined
     const t = await getTranslations('Community.Market')
 
+    const user = await getCommunityUser()
+    const orderCount = await getUserOrderCount(user)
+    const isBlurred = orderCount === 0
+
+    // Si l'utilisateur n'a pas de commande, on force la recherche sur sa ville
+    const effectiveCity = isBlurred ? (user?.city || city) : city
+
     const [books, smartMatches] = await Promise.all([
-        getMarketBooks({ search, city }),
+        getMarketBooks({ search, city: effectiveCity }),
         getSmartMatches()
     ])
 
@@ -38,7 +46,8 @@ export default async function MarketPage({
                     initialBooks={books}
                     smartMatches={smartMatches}
                     search={search}
-                    city={city}
+                    city={effectiveCity}
+                    isBlurred={isBlurred}
                 />
             </main>
 
