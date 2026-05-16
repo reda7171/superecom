@@ -57,7 +57,7 @@ export default function AddManualBookReadingList() {
             {!isOpen ? (
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-all active:scale-95 shadow-lg shadow-black/10"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-all active:scale-95 shadow-lg shadow-black/10"
                 >
                     <Plus className="w-5 h-5" />
                     Ajouter un livre hors catalogue

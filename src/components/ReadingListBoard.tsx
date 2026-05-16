@@ -9,9 +9,12 @@ import { useUIStore } from '@/store/ui'
 
 import { useTranslations } from 'next-intl'
 import { normalizeImage } from '@/lib/utils'
+import GenerateReadingCard from './GenerateReadingCard'
 
 interface ReadingListBoardProps {
     initialItems: any[]
+    user: any
+    children?: React.ReactNode
 }
 
 const statusConfig = {
@@ -22,9 +25,10 @@ const statusConfig = {
     [ReadingStatus.DROPPED]: { icon: Trash2, color: 'bg-red-100 text-red-600' }
 }
 
-export default function ReadingListBoard({ initialItems }: ReadingListBoardProps) {
+export default function ReadingListBoard({ initialItems, user, children }: ReadingListBoardProps) {
     const t = useTranslations('Community.ReadingList')
     const [items, setItems] = useState(initialItems)
+    const [activeTab, setActiveTab] = useState<ReadingStatus>(ReadingStatus.READING)
     const { showNotification } = useUIStore()
 
     const handleUpdateStatus = async (id: string, newStatus: ReadingStatus) => {
@@ -169,10 +173,50 @@ export default function ReadingListBoard({ initialItems }: ReadingListBoardProps
     }
 
     return (
-        <div className="flex flex-col md:flex-row gap-6 overflow-x-auto pb-6 items-start">
-            {renderColumn(ReadingStatus.TO_READ)}
-            {renderColumn(ReadingStatus.READING)}
-            {renderColumn(ReadingStatus.COMPLETED)}
+        <div className="space-y-8">
+            {/* Navigation Tabs (All Screens) */}
+            <div className="flex bg-gray-100/80 p-1.5 rounded-2xl gap-1.5 backdrop-blur-sm sticky top-4 z-10 shadow-sm border border-white/50">
+                {[ReadingStatus.TO_READ, ReadingStatus.READING, ReadingStatus.COMPLETED].map((status) => {
+                    const { icon: Icon } = statusConfig[status];
+                    const isActive = activeTab === status;
+                    return (
+                        <button
+                            key={status}
+                            onClick={() => setActiveTab(status)}
+                            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs md:text-sm font-black transition-all duration-300 ${
+                                isActive 
+                                    ? 'bg-white text-black shadow-lg shadow-black/5 scale-[1.02]' 
+                                    : 'text-gray-500 hover:text-gray-700 hover:bg-white/40'
+                            }`}
+                        >
+                            <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-600' : 'text-gray-400'}`} />
+                            <span className="hidden sm:inline">{t(`Status.${status}`)}</span>
+                            <span className="sm:hidden">{t(`Status.${status}`).split(' ')[0]}</span>
+                        </button>
+                    )
+                })}
+            </div>
+
+            {/* Card Generation Section */}
+            <GenerateReadingCard user={user} items={items} />
+
+            {/* Manual Add Button/Form */}
+            <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+                {children}
+            </div>
+
+            {/* Desktop Board / Mobile Active Column */}
+            <div className="flex flex-col md:flex-row gap-6 items-start pb-10">
+                <div className={`${activeTab === ReadingStatus.TO_READ ? 'flex' : 'hidden md:flex'} flex-col w-full`}>
+                    {renderColumn(ReadingStatus.TO_READ)}
+                </div>
+                <div className={`${activeTab === ReadingStatus.READING ? 'flex' : 'hidden md:flex'} flex-col w-full`}>
+                    {renderColumn(ReadingStatus.READING)}
+                </div>
+                <div className={`${activeTab === ReadingStatus.COMPLETED ? 'flex' : 'hidden md:flex'} flex-col w-full`}>
+                    {renderColumn(ReadingStatus.COMPLETED)}
+                </div>
+            </div>
         </div>
     )
 }
