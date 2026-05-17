@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { X, Send, Clock, Facebook, Instagram, FileText, AlignLeft, Music, ImageIcon, Quote, Download, Eye } from 'lucide-react'
+import { X, Send, Clock, Facebook, Instagram, FileText, AlignLeft, Music, ImageIcon, Quote, Download, Eye, Sliders } from 'lucide-react'
 import * as htmlToImage from 'html-to-image'
 import { normalizeImage } from '@/lib/utils'
 
@@ -40,6 +40,12 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
     const [positions, setPositions] = useState({ text: { x: 0, y: 0 }, book: { x: 0, y: 0 } })
     const [dragging, setDragging] = useState<string | null>(null)
     const [offset, setOffset] = useState({ x: 0, y: 0 })
+    
+    // New parameters
+    const [bgOpacity, setBgOpacity] = useState(60)
+    const [bookSize, setBookSize] = useState(100) // % size
+    const [bgImage, setBgImage] = useState('')
+    const [textOpacity, setTextOpacity] = useState(100)
 
     useEffect(() => {
         if (isOpen && book) {
@@ -176,10 +182,10 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
         : book.description
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden">
+        <div className="fixed inset-0 z-[200] flex flex-col bg-white">
+            <div className="flex flex-col h-full w-full">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50 flex-none">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                             <Send className="w-4 h-4 text-white" />
@@ -194,19 +200,19 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
                     </button>
                 </div>
 
-                <div className="flex flex-col lg:flex-row max-h-[85vh]">
+                <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
                     {/* Left side: Creative Builder */}
-                    <div className="flex-1 bg-gray-100 p-6 flex flex-col items-center justify-center overflow-auto border-r border-gray-100">
-                        <div className="mb-4 flex gap-4 w-full justify-center">
+                    <div className="flex-1 bg-gray-100 p-6 flex flex-col items-center justify-center overflow-auto border-r border-gray-100 relative">
+                        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 flex gap-4 w-full justify-center">
                             <button 
                                 onClick={() => setUseCustomCreative(false)}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold transition ${!useCustomCreative ? 'bg-black text-white' : 'bg-white text-gray-500 border border-gray-200'}`}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm ${!useCustomCreative ? 'bg-black text-white' : 'bg-white text-gray-500 border border-gray-200'}`}
                             >
                                 Couverture Simple
                             </button>
                             <button 
                                 onClick={() => setUseCustomCreative(true)}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold transition ${useCustomCreative ? 'bg-indigo-600 text-white' : 'bg-white text-gray-500 border border-gray-200'}`}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm ${useCustomCreative ? 'bg-indigo-600 text-white' : 'bg-white text-gray-500 border border-gray-200'}`}
                             >
                                 Image de Construction
                             </button>
@@ -215,18 +221,21 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
                         {useCustomCreative ? (
                             <div 
                                 ref={posterRef}
-                                className={`relative ${format === 'story' ? 'w-[280px] h-[500px]' : 'w-[350px] h-[437px]'} shadow-2xl overflow-hidden rounded-xl bg-gradient-to-br transition-all duration-500 ${
+                                className={`relative ${format === 'story' ? 'w-[320px] h-[568px]' : 'w-[400px] h-[500px]'} shadow-2xl overflow-hidden rounded-xl bg-gradient-to-br transition-all duration-500 mt-12 ${
+                                    bgImage ? 'text-white' :
                                     theme === 'dark' ? 'from-slate-900 to-black text-white' :
                                     theme === 'emerald' ? 'from-emerald-900 to-green-950 text-white' :
                                     theme === 'gold' ? 'from-amber-900 to-orange-950 text-white' :
                                     'from-indigo-900 to-purple-900 text-white'
                                 }`}
+                                style={bgImage ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
                             >
+                                {bgImage && <div className="absolute inset-0 bg-black" style={{ opacity: bgOpacity / 100 }}></div>}
                                 <div className="absolute inset-0 bg-white/5 blur-3xl pointer-events-none"></div>
                                 
                                 <div 
                                     className="absolute z-10 cursor-move p-4 text-center w-full"
-                                    style={{ transform: `translate(${positions.text.x}px, ${positions.text.y}px)` }}
+                                    style={{ transform: `translate(${positions.text.x}px, ${positions.text.y}px)`, opacity: textOpacity / 100 }}
                                     onMouseDown={(e) => handleMouseDown(e, 'text')}
                                 >
                                     <Quote className="w-8 h-8 text-white/20 mb-2 mx-auto" />
@@ -250,8 +259,8 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
                                 </div>
 
                                 <div 
-                                    className="absolute bottom-8 left-1/2 -translate-x-1/2 cursor-move z-10"
-                                    style={{ transform: `translate(${positions.book.x - (350/2) + 175}px, ${positions.book.y}px)` }}
+                                    className="absolute bottom-10 left-1/2 -translate-x-1/2 cursor-move z-10 flex flex-col items-center"
+                                    style={{ transform: `translate(${positions.book.x}px, ${positions.book.y}px)` }}
                                     onMouseDown={(e) => handleMouseDown(e, 'book')}
                                 >
                                     <img 
@@ -262,14 +271,15 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
                                             }
                                             return img;
                                         })() || '/book-placeholder.png'} 
-                                        className="w-24 h-auto rounded shadow-2xl" 
+                                        className="h-auto rounded shadow-2xl pointer-events-none" 
+                                        style={{ width: `${(96 * bookSize) / 100}px` }}
                                         alt=""
                                         crossOrigin="anonymous"
                                     />
                                 </div>
                             </div>
                         ) : (
-                            <div className="w-[300px] h-[450px] shadow-2xl rounded-xl overflow-hidden">
+                            <div className="w-[300px] h-[450px] shadow-2xl rounded-xl overflow-hidden mt-12">
                                 <img 
                                     src={(() => {
                                         const img = normalizeImage(book.image);
@@ -285,101 +295,171 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
                             </div>
                         )}
 
-                        {useCustomCreative && (
-                            <div className="mt-4 flex gap-2">
-                                {(['dark', 'emerald', 'gold', 'purple'] as const).map(t => (
-                                    <button 
-                                        key={t}
-                                        onClick={() => setTheme(t)}
-                                        className={`w-8 h-8 rounded-full border-2 transition ${theme === t ? 'border-white ring-2 ring-indigo-500' : 'border-transparent'} ${
-                                            t === 'dark' ? 'bg-slate-900' : t === 'emerald' ? 'bg-emerald-800' : t === 'gold' ? 'bg-amber-700' : 'bg-indigo-800'
-                                        }`}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                        <p className="mt-2 text-[10px] text-gray-400 italic">Glissez les éléments et cliquez pour éditer le texte</p>
+                        <p className="mt-4 text-[10px] text-gray-400 italic">Glissez les éléments et cliquez pour éditer le texte</p>
                     </div>
 
                     {/* Right side: Options */}
-                    <div className="w-full lg:w-[350px] p-6 space-y-5 overflow-y-auto custom-scrollbar">
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Plateforme</label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {([
-                                    { val: 'facebook', label: 'Facebook', Icon: Facebook, color: 'blue' },
-                                    { val: 'instagram', label: 'Instagram', Icon: Instagram, color: 'pink' },
-                                    { val: 'tiktok', label: 'TikTok', Icon: Music, color: 'black' },
-                                    { val: 'all', label: 'Toutes', Icon: Send, color: 'gray' },
-                                ] as const).map(({ val, label, Icon, color }) => (
+                    <div className="w-full lg:w-[420px] bg-white border-l border-gray-100 flex flex-col overflow-hidden">
+                        <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Plateforme</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {([
+                                        { val: 'facebook', label: 'Facebook', Icon: Facebook, color: 'blue' },
+                                        { val: 'instagram', label: 'Instagram', Icon: Instagram, color: 'pink' },
+                                        { val: 'tiktok', label: 'TikTok', Icon: Music, color: 'black' },
+                                        { val: 'all', label: 'Toutes', Icon: Send, color: 'gray' },
+                                    ] as const).map(({ val, label, Icon, color }) => (
+                                        <button
+                                            key={val}
+                                            onClick={() => setPlatform(val)}
+                                            className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition
+                                                ${platform === val
+                                                    ? `border-${color === 'black' ? 'slate-900' : color + '-500'} bg-${color === 'black' ? 'slate-900' : color + '-50'} text-${color === 'black' ? 'white' : color + '-700'} ring-1 ring-${color === 'black' ? 'slate-900' : color + '-500'}`
+                                                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                                        >
+                                            <Icon className="w-4 h-4" />
+                                            {label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Description à utiliser */}
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Texte n8n (Captions)</label>
+                                <div className="flex gap-2">
                                     <button
-                                        key={val}
-                                        onClick={() => setPlatform(val)}
-                                        className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition
-                                            ${platform === val
-                                                ? `border-${color === 'black' ? 'slate-900' : color + '-500'} bg-${color === 'black' ? 'slate-900' : color + '-50'} text-${color === 'black' ? 'white' : color + '-700'} ring-1 ring-${color === 'black' ? 'slate-900' : color + '-500'}`
-                                                : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                                        onClick={() => setUseDescription('short')}
+                                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition
+                                            ${useDescription === 'short' ? 'border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                                     >
-                                        <Icon className="w-4 h-4" />
-                                        {label}
+                                        <FileText className="w-4 h-4" />
+                                        Résumé
                                     </button>
-                                ))}
+                                    <button
+                                        onClick={() => setUseDescription('long')}
+                                        disabled={!book.longDescription}
+                                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed
+                                            ${useDescription === 'long' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 ring-1 ring-indigo-500' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                                    >
+                                        <AlignLeft className="w-4 h-4" />
+                                        Détails
+                                    </button>
+                                </div>
                             </div>
+
+                            {useCustomCreative && (
+                                <div className="space-y-5 pt-4 border-t border-gray-100">
+                                    <h4 className="font-bold text-sm text-gray-900 flex items-center gap-2">
+                                        <Sliders className="w-4 h-4" />
+                                        Personnalisation visuelle
+                                    </h4>
+                                    
+                                    {!bgImage && (
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Thème de couleur</label>
+                                            <div className="flex gap-2">
+                                                {(['dark', 'emerald', 'gold', 'purple'] as const).map(t => (
+                                                    <button 
+                                                        key={t}
+                                                        onClick={() => setTheme(t)}
+                                                        className={`w-8 h-8 rounded-full border-2 transition ${theme === t ? 'border-white ring-2 ring-indigo-500' : 'border-transparent'} ${
+                                                            t === 'dark' ? 'bg-slate-900' : t === 'emerald' ? 'bg-emerald-800' : t === 'gold' ? 'bg-amber-700' : 'bg-indigo-800'
+                                                        }`}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Image de fond (URL)</label>
+                                        <input 
+                                            type="text" 
+                                            value={bgImage}
+                                            onChange={e => setBgImage(e.target.value)}
+                                            placeholder="https://exemple.com/image.jpg"
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+
+                                    {bgImage && (
+                                        <div>
+                                            <label className="flex justify-between text-xs font-bold text-gray-500 uppercase mb-2">
+                                                <span>Filtre sombre (Opacité)</span>
+                                                <span>{bgOpacity}%</span>
+                                            </label>
+                                            <input 
+                                                type="range" 
+                                                min="0" max="100" 
+                                                value={bgOpacity}
+                                                onChange={e => setBgOpacity(Number(e.target.value))}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div>
+                                        <label className="flex justify-between text-xs font-bold text-gray-500 uppercase mb-2">
+                                            <span>Taille de couverture</span>
+                                            <span>{bookSize}%</span>
+                                        </label>
+                                        <input 
+                                            type="range" 
+                                            min="30" max="250" 
+                                            value={bookSize}
+                                            onChange={e => setBookSize(Number(e.target.value))}
+                                            className="w-full"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="flex justify-between text-xs font-bold text-gray-500 uppercase mb-2">
+                                            <span>Opacité du texte</span>
+                                            <span>{textOpacity}%</span>
+                                        </label>
+                                        <input 
+                                            type="range" 
+                                            min="0" max="100" 
+                                            value={textOpacity}
+                                            onChange={e => setTextOpacity(Number(e.target.value))}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Programmation */}
+                            <div className="pt-4 border-t border-gray-100">
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                                    <Clock className="inline w-3 h-3 mr-1" />
+                                    Programmer
+                                </label>
+                                <input
+                                    type="datetime-local"
+                                    value={scheduleAt}
+                                    onChange={e => setScheduleAt(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            {/* Résultat */}
+                            {result && (
+                                <div className={`p-3 rounded-xl text-sm font-medium ${result.success ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                                    {result.success ? '✅ ' : '❌ '}{result.message || result.error}
+                                </div>
+                            )}
                         </div>
 
-                        {/* Description à utiliser */}
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Texte n8n (Captions)</label>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setUseDescription('short')}
-                                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition
-                                        ${useDescription === 'short' ? 'border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                                >
-                                    <FileText className="w-4 h-4" />
-                                    Résumé
-                                </button>
-                                <button
-                                    onClick={() => setUseDescription('long')}
-                                    disabled={!book.longDescription}
-                                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed
-                                        ${useDescription === 'long' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 ring-1 ring-indigo-500' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                                >
-                                    <AlignLeft className="w-4 h-4" />
-                                    Détails
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Programmation */}
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                                <Clock className="inline w-3 h-3 mr-1" />
-                                Programmer
-                            </label>
-                            <input
-                                type="datetime-local"
-                                value={scheduleAt}
-                                onChange={e => setScheduleAt(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        {/* Résultat */}
-                        {result && (
-                            <div className={`p-3 rounded-xl text-sm font-medium ${result.success ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
-                                {result.success ? '✅ ' : '❌ '}{result.message || result.error}
-                            </div>
-                        )}
-
-                        <div className="flex flex-col gap-2 pt-4">
+                        <div className="p-6 bg-gray-50 border-t border-gray-100 flex flex-col gap-2">
                             <button
                                 onClick={handlePreview}
                                 disabled={isGenerating || loading}
                                 className="w-full py-3 bg-gray-800 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-black transition active:scale-95 disabled:opacity-50"
                             >
                                 <Eye className="w-4 h-4" />
-                                {isGenerating ? 'Génération...' : 'Visualiser'}
+                                {isGenerating ? 'Génération...' : 'Aperçu'}
                             </button>
                             <button
                                 onClick={handlePublish}
