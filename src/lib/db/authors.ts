@@ -7,6 +7,7 @@ export interface AuthorData {
     image?: string | null
     bookCount: number
     sampleBookImage?: string | null
+    hasAvailableBooks: boolean
 }
 
 /**
@@ -29,6 +30,14 @@ export async function getAuthorsData(): Promise<AuthorData[]> {
                     }
                 }
             })
+
+            // Récupérer les auteurs ayant au moins un livre en stock
+            const authorsWithStock = await prisma.book.findMany({
+                where: { active: true, stock: { gt: 0 } },
+                select: { author: true },
+                distinct: ['author']
+            })
+            const availableAuthorsSet = new Set(authorsWithStock.map(a => a.author))
 
             // 2. Récupérer tous les profils d'auteurs
             const profiles = await prisma.authorProfile.findMany()
@@ -60,7 +69,8 @@ export async function getAuthorsData(): Promise<AuthorData[]> {
                     bio: profile?.bio,
                     image: profile?.image,
                     bookCount: stat._count._all,
-                    sampleBookImage: sampleBook?.image
+                    sampleBookImage: sampleBook?.image,
+                    hasAvailableBooks: availableAuthorsSet.has(stat.author)
                 }
             })
         },

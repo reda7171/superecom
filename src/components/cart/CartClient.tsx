@@ -29,7 +29,9 @@ export default function CartClient({ minOrderAmount = 0, recommendedBooks = [] }
 
     const totalPrice = getTotalPrice()
     const totalItems = getTotalItems()
-    const shippingFee = totalPrice >= 500 ? 0 : 30
+    const hasOnlyDigital = items.length > 0 && items.every(item => item.type === 'DIGITAL')
+    const hasFreeShippingItem = items.some(item => item.shippingFees === 0)
+    const shippingFee = (hasOnlyDigital || hasFreeShippingItem || totalPrice >= 500) ? 0 : 30
     const finalTotal = totalPrice + shippingFee
     const isMinAmountReached = totalPrice >= minOrderAmount
 

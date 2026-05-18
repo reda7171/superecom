@@ -107,12 +107,12 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
         // Appliquer la réduction si elle est fournie par le client (après validation)
         let discount = sanitizedData.discount || 0
 
-        // Logique de livraison synchronisée avec le client: Gratuit si > 500 MAD (avant réduction)
-        let shippingFees = subtotal >= 500 ? 0 : 30
-        let total = Math.max(0, subtotal - discount + shippingFees)
+        const hasOnlyDigital = sanitizedData.items.length > 0 && sanitizedData.items.every(item => item.type === 'DIGITAL')
 
         // Création commande transactionnelle
         const order = await prisma.$transaction(async (tx) => {
+            let hasFreeShippingItem = false
+
             // Récupérer les prix de revient (costPrice) pour chaque article
             const itemsWithCost = await Promise.all(data.items.map(async (item) => {
                 let costPrice = 0
@@ -125,12 +125,19 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
                 } else if (item.type === 'PACK') {
                     const pack = await tx.pack.findUnique({
                         where: { id: item.productId },
-                        select: { costPrice: true }
+                        select: { costPrice: true, shippingFees: true }
                     })
                     costPrice = pack?.costPrice || 0
+                    if (pack?.shippingFees === 0) {
+                        hasFreeShippingItem = true
+                    }
                 }
                 return { ...item, costPrice }
             }))
+
+            // Logique de livraison synchronisée avec le client
+            let shippingFees = (hasOnlyDigital || hasFreeShippingItem || subtotal >= 500) ? 0 : 30
+            let total = Math.max(0, subtotal - discount + shippingFees)
 
             // Créer la commande
             const newOrder = await (tx.order as any).create({

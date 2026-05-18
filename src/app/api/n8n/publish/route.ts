@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
         // OWASP A04: Rate Limiting
         const ip = await getIpIdentifier()
-        const limiter = await rateLimit(`n8n_publish_${ip}`, { limit: 5, windowMs: 60000 })
+        const limiter = await rateLimit(`n8n_publish_${ip}`, { limit: 20, windowMs: 60000 })
         if (!limiter.success) {
             return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
         }
@@ -147,9 +147,9 @@ export async function POST(req: NextRequest) {
         // Envoyer au webhook n8n
         console.log('[N8N PUBLISH] Sending payload to:', N8N_WEBHOOK_URL);
         
-        // Timeout de 10 secondes pour éviter de bloquer le serveur
+        // Timeout de 60 secondes (n8n publie sur les réseaux sociaux, ça prend du temps)
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
 
         let n8nRes;
         try {

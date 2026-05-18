@@ -96,6 +96,18 @@ export async function getBooks(filters?: BookFilters) {
             // Pagination manuelle après recherche
             return results.slice(skip, skip + limit)
         }
+        // Si inStock est strict, on ne fait pas la pagination complexe qui ramène les ruptures
+        if (filters?.inStock) {
+            return await prisma.book.findMany({
+                where,
+                orderBy: [
+                    { displayOrder: 'asc' },
+                    { createdAt: 'desc' }
+                ],
+                skip,
+                take: limit,
+            })
+        }
 
         // Pagination complexe pour mettre les "stock == 0" à la fin tout en gardant displayOrder
         const inStockWhere = { ...where, stock: { gt: 0 } }

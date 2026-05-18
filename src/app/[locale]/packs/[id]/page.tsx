@@ -294,7 +294,8 @@ export default async function PackDetailPage({
                                             title: pack.name,
                                             price: pack.price,
                                             image: pack.image || pack.books[0]?.book.image || '',
-                                            type: 'PACK'
+                                            type: 'PACK',
+                                            shippingFees: pack.shippingFees
                                         }}
                                         className="!py-8 text-xs font-black uppercase tracking-[0.3em] !rounded-full shadow-2xl hover:shadow-black/20"
                                     />

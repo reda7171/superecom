@@ -31,12 +31,16 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
         badge: { x: 0, y: 0 }, 
         logo: { x: 0, y: 0 }, 
         book: { x: 0, y: 0 }, 
-        footer: { x: 0, y: 0 }, 
+        title: { x: 0, y: 0 }, 
+        author: { x: 0, y: 0 }, 
+        price: { x: 0, y: 0 }, 
         delivery: { x: 0, y: 0 },
         bg: { x: 0, y: 0 }
     })
     const [dragging, setDragging] = useState<string | null>(null)
     const [offset, setOffset] = useState({ x: 0, y: 0 })
+    // Quel élément est en mode édition (double-clic requis)
+    const [editing, setEditing] = useState<string | null>(null)
     const [imageScale, setImageScale] = useState(1.9)
     const [imageRotation, setImageRotation] = useState(51)
     const [logoScale, setLogoScale] = useState(3)
@@ -72,9 +76,9 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
     }
 
     const handleMouseDown = (e: React.MouseEvent, key: string) => {
-        // Prevent drag if we are clicking an editable text
-        if ((e.target as HTMLElement).isContentEditable || (e.target as HTMLElement).closest('[contenteditable="true"]')) return
-        e.preventDefault() // prevent text selection while dragging
+        // Si on est en mode édition pour cet élément, ne pas démarrer le drag
+        if (editing === key) return
+        e.preventDefault()
         setDragging(key)
         const pos = positions[key as keyof typeof positions]
         setOffset({ x: e.clientX - pos.x, y: e.clientY - pos.y })
@@ -100,7 +104,7 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
     useEffect(() => {
         if (!isOpen) {
             setTheme('dark') // reset
-            setPositions({ badge: { x: 0, y: 0 }, logo: { x: 0, y: 0 }, book: { x: 0, y: 0 }, footer: { x: 0, y: 0 }, delivery: { x: 0, y: 0 }, bg: { x: 0, y: 0 } })
+            setPositions({ badge: { x: 0, y: 0 }, logo: { x: 0, y: 0 }, book: { x: 0, y: 0 }, title: { x: 0, y: 0 }, author: { x: 0, y: 0 }, price: { x: 0, y: 0 }, delivery: { x: 0, y: 0 }, bg: { x: 0, y: 0 } })
             setImageScale(1)
             setImageRotation(0)
             setLogoScale(3)
@@ -633,38 +637,59 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                             </div>
                         </div>
 
-                        {/* Bottom Content */}
+                        {/* Titre - déplacer par glisser, éditer par double-clic */}
                         <div 
-                            className={`pb-10 flex flex-col items-center text-center relative z-10 cursor-move w-fit mx-auto ${dragging === 'footer' ? '' : 'transition-transform active:scale-95'}`}
-                            style={{ transform: `translate(${positions.footer.x}px, ${positions.footer.y}px)` }}
-                            onMouseDown={(e) => handleMouseDown(e, 'footer')}
+                            className={`absolute bottom-28 left-0 right-0 flex justify-center z-10 ${editing === 'title' ? 'cursor-text' : 'cursor-move'} select-none ${dragging === 'title' ? '' : 'transition-transform active:scale-95'}`}
+                            style={{ transform: `translate(${positions.title.x}px, ${positions.title.y}px)` }}
+                            onMouseDown={(e) => handleMouseDown(e, 'title')}
+                            onDoubleClick={() => setEditing('title')}
+                            title="Double-clic pour éditer"
                         >
                             <h2 
-                                contentEditable
+                                contentEditable={editing === 'title'}
                                 suppressContentEditableWarning
-                                onBlur={(e) => handleTextChange('title', e.currentTarget.textContent || '')}
-                                className={`text-3xl font-black mb-2 leading-tight ${currentTheme.text} drop-shadow-md outline-none`}
+                                onBlur={(e) => { handleTextChange('title', e.currentTarget.textContent || ''); setEditing(null) }}
+                                className={`text-3xl font-black leading-tight ${currentTheme.text} drop-shadow-md outline-none text-center ${editing === 'title' ? 'ring-2 ring-white/50 rounded px-1' : ''}`}
                             >
                                 {editableTexts.title}
                             </h2>
+                        </div>
+
+                        {/* Auteur - déplacer par glisser, éditer par double-clic */}
+                        <div 
+                            className={`absolute bottom-20 left-0 right-0 flex justify-center z-10 ${editing === 'author' ? 'cursor-text' : 'cursor-move'} select-none ${dragging === 'author' ? '' : 'transition-transform active:scale-95'}`}
+                            style={{ transform: `translate(${positions.author.x}px, ${positions.author.y}px)` }}
+                            onMouseDown={(e) => handleMouseDown(e, 'author')}
+                            onDoubleClick={() => setEditing('author')}
+                            title="Double-clic pour éditer"
+                        >
                             <p 
-                                contentEditable
+                                contentEditable={editing === 'author'}
                                 suppressContentEditableWarning
-                                onBlur={(e) => handleTextChange('author', e.currentTarget.textContent || '')}
-                                className={`text-lg font-medium opacity-80 mb-6 ${currentTheme.text} outline-none`}
+                                onBlur={(e) => { handleTextChange('author', e.currentTarget.textContent || ''); setEditing(null) }}
+                                className={`text-lg font-medium opacity-80 ${currentTheme.text} outline-none text-center ${editing === 'author' ? 'ring-2 ring-white/50 rounded px-1' : ''}`}
                             >
                                 {editableTexts.author}
                             </p>
-                            
-                            {showPrice && (
+                        </div>
+
+                        {/* Prix - déplacer par glisser, éditer par double-clic */}
+                        {showPrice && (
+                            <div 
+                                className={`absolute bottom-6 left-0 right-0 flex justify-center z-10 ${editing === 'price' ? 'cursor-text' : 'cursor-move'} select-none ${dragging === 'price' ? '' : 'transition-transform active:scale-95'}`}
+                                style={{ transform: `translate(${positions.price.x}px, ${positions.price.y}px)` }}
+                                onMouseDown={(e) => handleMouseDown(e, 'price')}
+                                onDoubleClick={() => setEditing('price')}
+                                title="Double-clic pour éditer"
+                            >
                                 <div className="flex items-center justify-center gap-3">
                                     {showSolde && (
-                                        <div className="text-red-500 font-bold text-2xl line-through drop-shadow-md flex items-baseline gap-1 mt-1">
+                                        <div className="text-red-500 font-bold text-2xl line-through drop-shadow-md flex items-baseline gap-1">
                                             <span 
-                                                contentEditable
+                                                contentEditable={editing === 'price'}
                                                 suppressContentEditableWarning
-                                                onBlur={(e) => handleTextChange('oldPrice', e.currentTarget.textContent || '')}
-                                                className="outline-none"
+                                                onBlur={(e) => { handleTextChange('oldPrice', e.currentTarget.textContent || ''); setEditing(null) }}
+                                                className={`outline-none ${editing === 'price' ? 'ring-2 ring-white/50 rounded px-0.5' : ''}`}
                                             >
                                                 {editableTexts.oldPrice}
                                             </span>
@@ -673,18 +698,18 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                                     )}
                                     <div className={`${currentTheme.accent} font-black text-4xl drop-shadow-lg flex items-baseline gap-1`}>
                                         <span 
-                                            contentEditable
+                                            contentEditable={editing === 'price'}
                                             suppressContentEditableWarning
-                                            onBlur={(e) => handleTextChange('price', e.currentTarget.textContent || '')}
-                                            className="outline-none"
+                                            onBlur={(e) => { handleTextChange('price', e.currentTarget.textContent || ''); setEditing(null) }}
+                                            className={`outline-none ${editing === 'price' ? 'ring-2 ring-white/50 rounded px-0.5' : ''}`}
                                         >
                                             {editableTexts.price}
                                         </span>
                                         <span className="text-xl">MAD</span>
                                     </div>
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

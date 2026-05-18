@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { 
+import { useState, useEffect, useCallback } from 'react'
+import { ChevronLeft, ChevronRight, 
     Sparkles, 
     Image as ImageIcon, 
     Trash2, 
@@ -44,6 +44,16 @@ export default function MarketingPage() {
     const [uploading, setUploading] = useState(false)
     const [uploadType, setUploadType] = useState<'CREATIVE' | 'PACK' | 'DESCRIPTION'>('CREATIVE')
     const [uploadName, setUploadName] = useState('')
+    // Sélection multiple
+    const [selectedAssets, setSelectedAssets] = useState<string[]>([])
+    const [selectionMode, setSelectionMode] = useState(false)
+    const [bulkPublishing, setBulkPublishing] = useState(false)
+    const [bulkPlatform, setBulkPlatform] = useState<'facebook' | 'instagram' | 'all'>('all')
+    // Modal diapo preview
+    const [bulkPreviewOpen, setBulkPreviewOpen] = useState(false)
+    const [slideIndex, setSlideIndex] = useState(0)
+    const [captions, setCaptions] = useState<Record<string, string>>({})
+    const [publishProgress, setPublishProgress] = useState<Record<string, 'idle' | 'loading' | 'ok' | 'error'>>({}) 
 
     const fetchAssets = async () => {
         setLoading(true)
@@ -88,7 +98,78 @@ export default function MarketingPage() {
     }
 
     const handlePublish = async (asset: Asset, platform: string) => {
-        // ... (existing handlePublish logic)
+        try {
+            const res = await fetch('/api/n8n/publish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customImageUrl: asset.url,
+                    platform: platform === 'all' ? 'both' : platform,
+                    format: 'post'
+                })
+            })
+            const data = await res.json()
+            if (!data.success) alert(`Erreur: ${data.error || 'Publication échouée'}`)
+        } catch {
+            alert('Erreur technique lors de la publication')
+        }
+    }
+
+    // Basculer sélection d'un asset
+    const toggleSelect = (name: string) => {
+        setSelectedAssets(prev =>
+            prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]
+        )
+    }
+
+    // Ouvrir le modal diapo avant publication
+    const openBulkPreview = () => {
+        if (selectedAssets.length === 0) return
+        setSlideIndex(0)
+        setPublishProgress({})
+        setBulkPreviewOpen(true)
+    }
+
+    // Publication groupée depuis le modal
+    const handleBulkPublish = async () => {
+        const selected = assets.filter(a => selectedAssets.includes(a.name))
+        setBulkPublishing(true)
+        const progress: Record<string, 'idle' | 'loading' | 'ok' | 'error'> = {}
+        selected.forEach(a => { progress[a.name] = 'loading' })
+        setPublishProgress({ ...progress })
+
+        for (const asset of selected) {
+            try {
+                const res = await fetch('/api/n8n/publish', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customImageUrl: asset.url,
+                        customCaption: captions[asset.name] || '',
+                        platform: bulkPlatform === 'all' ? 'both' : bulkPlatform,
+                        format: 'post'
+                    })
+                })
+                const data = await res.json()
+                progress[asset.name] = data.success ? 'ok' : 'error'
+            } catch {
+                progress[asset.name] = 'error'
+            }
+            setPublishProgress({ ...progress })
+            if (selected.indexOf(asset) < selected.length - 1) {
+                await new Promise(r => setTimeout(r, 1500))
+            }
+        }
+        setBulkPublishing(false)
+        const ok = Object.values(progress).filter(s => s === 'ok').length
+        const total = selected.length
+        if (ok === total) {
+            setTimeout(() => {
+                setBulkPreviewOpen(false)
+                setSelectedAssets([])
+                setSelectionMode(false)
+            }, 1500)
+        }
     }
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,7 +255,40 @@ export default function MarketingPage() {
                     <p className="text-slate-500 mt-2 font-medium">Retrouvez toutes les images générées pour vos campagnes publicitaires.</p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
+                    {/* Mode sélection */}
+                    <button
+                        onClick={() => { setSelectionMode(s => !s); setSelectedAssets([]) }}
+                        className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm border transition-all active:scale-95 ${
+                            selectionMode ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                        }`}
+                    >
+                        <Filter className="w-4 h-4" />
+                        {selectionMode ? `Sélection (${selectedAssets.length})` : 'Sélectionner'}
+                    </button>
+
+                    {/* Publier la sélection */}
+                    {selectionMode && selectedAssets.length > 0 && (
+                        <div className="flex items-center gap-2">
+                            <select
+                                value={bulkPlatform}
+                                onChange={e => setBulkPlatform(e.target.value as any)}
+                                className="px-3 py-3 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 bg-white outline-none"
+                            >
+                                <option value="all">Toutes plateformes</option>
+                                <option value="facebook">Facebook</option>
+                                <option value="instagram">Instagram</option>
+                            </select>
+                            <button
+                                onClick={openBulkPreview}
+                                className="flex items-center gap-2 px-5 py-3 bg-green-600 text-white rounded-xl font-bold text-sm hover:bg-green-700 transition-all active:scale-95"
+                            >
+                                <Eye className="w-4 h-4" />
+                                Prévisualiser {selectedAssets.length} créative{selectedAssets.length > 1 ? 's' : ''}
+                            </button>
+                        </div>
+                    )}
+
                     <button 
                         onClick={() => setIsUploadModalOpen(true)}
                         className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95"
@@ -272,11 +386,24 @@ export default function MarketingPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 pt-16 lg:pt-0">
-                    {filteredAssets.map((asset) => (
+                    {filteredAssets.map((asset) => {
+                        const isSelected = selectedAssets.includes(asset.name)
+                        return (
                         <div 
                             key={asset.name}
-                            className="group relative bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+                            className={`group relative bg-white rounded-3xl border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${
+                                isSelected ? 'border-indigo-500 ring-2 ring-indigo-400' : 'border-slate-100'
+                            }`}
+                            onClick={selectionMode ? () => toggleSelect(asset.name) : undefined}
                         >
+                            {/* Checkbox sélection */}
+                            {selectionMode && (
+                                <div className={`absolute top-3 left-3 z-20 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                                    isSelected ? 'bg-indigo-600 border-indigo-600' : 'bg-white/80 border-slate-300'
+                                }`}>
+                                    {isSelected && <span className="text-white text-xs font-black">✓</span>}
+                                </div>
+                            )}
                             {/* Image Preview */}
                             <div className="aspect-[4/5] relative bg-slate-900 overflow-hidden">
                                 <Image 
@@ -376,7 +503,8 @@ export default function MarketingPage() {
                                 </div>
                             </div>
                         </div>
-                    ))}
+                        )
+                    })}
                 </div>
             )}
             {/* Modal d'Upload */}
@@ -452,6 +580,127 @@ export default function MarketingPage() {
                     </div>
                 </div>
             )}
+            {/* Modal diapo preview + publication groupée */}
+            {bulkPreviewOpen && (() => {
+                const selected = assets.filter(a => selectedAssets.includes(a.name))
+                const current = selected[slideIndex]
+                const status = current ? publishProgress[current.name] : null
+                return (
+                    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                        <div className="bg-white w-full max-w-2xl mx-4 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+                            {/* Header */}
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-sm font-black text-slate-400 uppercase tracking-widest">
+                                        {slideIndex + 1} / {selected.length}
+                                    </span>
+                                    <span className="text-sm font-bold text-slate-700 truncate max-w-[200px]">{current?.name}</span>
+                                </div>
+                                <button onClick={() => setBulkPreviewOpen(false)} className="p-2 hover:bg-slate-100 rounded-full">
+                                    <X className="w-5 h-5 text-slate-500" />
+                                </button>
+                            </div>
+
+                            {/* Diapo image + statut */}
+                            <div className="relative flex-1 bg-slate-900 flex items-center justify-center min-h-[300px]">
+                                {current && (
+                                    <Image
+                                        src={current.url.startsWith('http') ? current.url : current.url.startsWith('/') ? current.url : `/${current.url}`}
+                                        alt={current.name}
+                                        fill
+                                        className="object-contain"
+                                    />
+                                )}
+                                {/* Statut overlay */}
+                                {status === 'loading' && (
+                                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                        <Loader2 className="w-10 h-10 text-white animate-spin" />
+                                    </div>
+                                )}
+                                {status === 'ok' && (
+                                    <div className="absolute inset-0 bg-green-600/70 flex items-center justify-center">
+                                        <span className="text-white text-4xl font-black">✓</span>
+                                    </div>
+                                )}
+                                {status === 'error' && (
+                                    <div className="absolute inset-0 bg-red-600/70 flex items-center justify-center">
+                                        <span className="text-white text-4xl font-black">✕</span>
+                                    </div>
+                                )}
+                                {/* Navigation */}
+                                <button
+                                    onClick={() => setSlideIndex(i => Math.max(0, i - 1))}
+                                    disabled={slideIndex === 0}
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg disabled:opacity-30 hover:bg-white transition"
+                                >
+                                    <ChevronLeft className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={() => setSlideIndex(i => Math.min(selected.length - 1, i + 1))}
+                                    disabled={slideIndex === selected.length - 1}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg disabled:opacity-30 hover:bg-white transition"
+                                >
+                                    <ChevronRight className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            {/* Miniatures */}
+                            <div className="flex gap-2 px-4 py-3 bg-slate-50 border-b border-slate-100 overflow-x-auto">
+                                {selected.map((a, i) => {
+                                    const s = publishProgress[a.name]
+                                    return (
+                                        <button
+                                            key={a.name}
+                                            onClick={() => setSlideIndex(i)}
+                                            className={`relative w-12 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition ${
+                                                i === slideIndex ? 'border-indigo-500' : 'border-transparent'
+                                            }`}
+                                        >
+                                            <Image src={a.url.startsWith('http') ? a.url : a.url.startsWith('/') ? a.url : `/${a.url}`} alt={a.name} fill className="object-cover" />
+                                            {s === 'ok' && <div className="absolute inset-0 bg-green-500/60 flex items-center justify-center"><span className="text-white text-xs font-black">✓</span></div>}
+                                            {s === 'error' && <div className="absolute inset-0 bg-red-500/60 flex items-center justify-center"><span className="text-white text-xs font-black">✕</span></div>}
+                                            {s === 'loading' && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><Loader2 className="w-3 h-3 text-white animate-spin" /></div>}
+                                        </button>
+                                    )
+                                })}
+                            </div>
+
+                            {/* Caption */}
+                            <div className="px-6 py-4">
+                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Caption pour cette image</label>
+                                <textarea
+                                    rows={3}
+                                    placeholder="Texte de la publication (optionnel)..."
+                                    value={current ? (captions[current.name] || '') : ''}
+                                    onChange={e => current && setCaptions(prev => ({ ...prev, [current.name]: e.target.value }))}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium text-slate-900 outline-none focus:border-indigo-400 resize-none"
+                                />
+                            </div>
+
+                            {/* Footer actions */}
+                            <div className="px-6 pb-6 flex items-center gap-3">
+                                <select
+                                    value={bulkPlatform}
+                                    onChange={e => setBulkPlatform(e.target.value as any)}
+                                    className="px-4 py-3 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 bg-white outline-none"
+                                >
+                                    <option value="all">Toutes plateformes</option>
+                                    <option value="facebook">Facebook</option>
+                                    <option value="instagram">Instagram</option>
+                                </select>
+                                <button
+                                    onClick={handleBulkPublish}
+                                    disabled={bulkPublishing}
+                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl font-black text-sm hover:bg-green-700 transition-all active:scale-95 disabled:opacity-60"
+                                >
+                                    {bulkPublishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                                    Publier {selected.length} créative{selected.length > 1 ? 's' : ''}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            })()}
         </div>
     )
 }

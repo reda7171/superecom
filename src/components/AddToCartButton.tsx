@@ -14,6 +14,7 @@ interface AddToCartButtonProps {
         price: number
         image: string
         type: 'BOOK' | 'PACK'
+        shippingFees?: number
     }
     variant?: 'primary' | 'secondary'
     className?: string
@@ -46,6 +47,7 @@ export default function AddToCartButton({
                         title: product.title,
                         price: product.price,
                         image: product.image,
+                        shippingFees: product.shippingFees,
                     })
 
                     // Facebook Pixel Tracking

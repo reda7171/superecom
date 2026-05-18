@@ -142,7 +142,8 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
 
     const subtotal = getTotalPrice()
     const hasOnlyDigital = items.length > 0 && items.every(item => item.type === 'DIGITAL')
-    const shippingFee = hasOnlyDigital ? 0 : (subtotal >= 500 ? 0 : 30)
+    const hasFreeShippingItem = items.some(item => item.shippingFees === 0)
+    const shippingFee = (hasOnlyDigital || hasFreeShippingItem || subtotal >= 500) ? 0 : 30
 
     let discountAmount = 0
     if (coupon) {

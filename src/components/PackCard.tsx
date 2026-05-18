@@ -14,6 +14,7 @@ interface PackCardProps {
     description?: string | null
     price: number
     image: string | null
+    shippingFees?: number
     books: Array<{
         book: {
             id: string
@@ -31,6 +32,7 @@ export default function PackCard({
     price,
     image,
     books,
+    shippingFees,
 }: PackCardProps) {
     const t = useTranslations('Packs')
     const tCommon = useTranslations('Common')
@@ -142,7 +144,8 @@ export default function PackCard({
                                     title: name,
                                     price,
                                     image: image || (books.length > 0 ? books[0].book.image : '/images/placeholder-pack.jpg'),
-                                    booksCount: books.length
+                                    booksCount: books.length,
+                                    shippingFees,
                                 })
                                 openCart()
                                 showNotification(tCommon('AddedToCartSuccess'), 'success')

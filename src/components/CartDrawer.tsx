@@ -29,8 +29,10 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     const totalItems = getTotalItems()
     
     // Si tous les articles sont numériques, pas de frais de livraison
+    // Si un article (ex: pack) a les frais de livraison gratuits, tout le panier est gratuit
     const hasOnlyDigital = items.length > 0 && items.every(item => item.type === 'DIGITAL')
-    const shippingFee = hasOnlyDigital ? 0 : (totalPrice >= 500 ? 0 : 30)
+    const hasFreeShippingItem = items.some(item => item.shippingFees === 0)
+    const shippingFee = (hasOnlyDigital || hasFreeShippingItem || totalPrice >= 500) ? 0 : 30
     const finalTotal = totalPrice + shippingFee
 
     return (

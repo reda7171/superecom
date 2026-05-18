@@ -79,7 +79,10 @@ export default async function AuthorsPage({ params }: { params: Promise<{ locale
                                     <ScrollReveal key={author.name} delay={idx * 100} animation="animate-reveal-up">
                                         <div className="group relative bg-white p-8 rounded-[3rem] border border-gray-50 hover:border-black transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
                                             <div className="flex flex-col items-center text-center">
-                                                <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 mb-6 border-4 border-white shadow-xl group-hover:scale-110 transition-transform duration-500">
+                                                <Link 
+                                                    href={`/authors/${encodeURIComponent(author.name)}`}
+                                                    className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 mb-6 border-4 border-white shadow-xl group-hover:scale-110 transition-transform duration-500 block cursor-pointer"
+                                                >
                                                     {(author.image || author.sampleBookImage) ? (
                                                         <img 
                                                             src={author.image || author.sampleBookImage!} 
@@ -91,7 +94,7 @@ export default async function AuthorsPage({ params }: { params: Promise<{ locale
                                                             <Users className="w-8 h-8 text-gray-300" />
                                                         </div>
                                                     )}
-                                                </div>
+                                                </Link>
                                                 <h3 className="text-xl font-black text-black mb-2 line-clamp-1">{author.name}</h3>
                                                 <p className="text-xs font-black text-pixio-pink uppercase tracking-widest mb-4">
                                                     {t('BooksCount', { count: author.bookCount })}

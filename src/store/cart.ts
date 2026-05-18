@@ -10,6 +10,7 @@ export interface CartItem {
     image: string
     // Optionnel : pour les packs
     booksCount?: number
+    shippingFees?: number
 }
 
 interface CartStore {

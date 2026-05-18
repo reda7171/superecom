@@ -12,6 +12,7 @@ interface AuthorData {
     image?: string | null
     bookCount: number
     sampleBookImage?: string | null
+    hasAvailableBooks: boolean
 }
 
 interface AuthorsListClientProps {
@@ -22,15 +23,25 @@ interface AuthorsListClientProps {
 export default function AuthorsListClient({ authors, locale }: AuthorsListClientProps) {
     const t = useTranslations('AuthorsPage')
     const [search, setSearch] = useState('')
+    const [filterAvailable, setFilterAvailable] = useState(true)
 
     const filteredAuthors = useMemo(() => {
-        if (!search) return authors
-        const s = search.toLowerCase()
-        return authors.filter(a => 
-            a.name.toLowerCase().includes(s) || 
-            a.bio?.toLowerCase().includes(s)
-        )
-    }, [authors, search])
+        let result = authors
+
+        if (filterAvailable) {
+            result = result.filter(a => a.hasAvailableBooks)
+        }
+
+        if (search) {
+            const s = search.toLowerCase()
+            result = result.filter(a => 
+                a.name.toLowerCase().includes(s) || 
+                a.bio?.toLowerCase().includes(s)
+            )
+        }
+
+        return result
+    }, [authors, search, filterAvailable])
 
     // Group authors by first letter for a nice index
     const groupedAuthors = useMemo(() => {
@@ -48,17 +59,30 @@ export default function AuthorsListClient({ authors, locale }: AuthorsListClient
     return (
         <section className="py-20 bg-gray-50/50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Search Bar */}
                 <div className="mb-16">
-                    <div className="relative max-w-2xl mx-auto">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
-                        <input 
-                            type="text"
-                            placeholder={t('SearchPlaceholder')}
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-16 pr-8 py-6 bg-white border-none rounded-full shadow-2xl shadow-black/5 text-lg font-medium outline-none focus:ring-2 focus:ring-black transition-all"
-                        />
+                    <div className="relative max-w-2xl mx-auto flex flex-col sm:flex-row items-center gap-4">
+                        <div className="relative flex-grow w-full">
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
+                            <input 
+                                type="text"
+                                placeholder={t('SearchPlaceholder')}
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-full pl-16 pr-8 py-6 bg-white border-none rounded-full shadow-2xl shadow-black/5 text-lg font-medium outline-none focus:ring-2 focus:ring-black transition-all"
+                            />
+                        </div>
+                        {/* Toggle Disponible */}
+                        <button
+                            onClick={() => setFilterAvailable(!filterAvailable)}
+                            className={`flex items-center gap-3 px-6 py-4 rounded-full font-black text-sm uppercase tracking-widest transition-all whitespace-nowrap shadow-xl ${
+                                filterAvailable 
+                                    ? 'bg-black text-white' 
+                                    : 'bg-white text-gray-400 hover:text-black'
+                            }`}
+                        >
+                            <div className={`w-3 h-3 rounded-full ${filterAvailable ? 'bg-green-400' : 'bg-gray-300'}`}></div>
+                            Disponible
+                        </button>
                     </div>
                 </div>
 
