@@ -62,10 +62,10 @@ export default function FooterClient({ features = {}, siteLogo = null, socials =
                     <div className="space-y-6">
                         <Link href="/" className="flex items-center gap-2 group">
                             {siteLogo ? (
-                                <img 
-                                    src={siteLogo} 
-                                    alt="Riwaya Logo" 
-                                    className="h-8 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105"
+                                <img
+                                    src={siteLogo}
+                                    alt="Riwaya Logo"
+                                    className="h-8 w-auto object-contain invert transition-transform group-hover:scale-105"
                                 />
                             ) : (
                                 <>

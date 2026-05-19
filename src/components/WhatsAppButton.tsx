@@ -31,17 +31,21 @@ export default function WhatsAppButton({ phone }: WhatsAppButtonProps) {
         en: 'Hello Riwaya, I am interested in these books:\n{books}\nHow much is the total price with delivery?',
         ar: 'مرحباً رواية، أنا مهتم بهذه الكتب:\n{books}\nكم السعر الإجمالي مع التوصيل؟'
     }
- 
-    const baseMsg = messages[locale] || messages.fr
-    
-    let booksList = ''
+
+    let finalMessage = ''
     if (items.length > 0) {
-        booksList = items.map(item => `- ${item.title} (x${item.quantity})`).join('\n')
+        const baseMsg = messages[locale] || messages.fr
+        const booksList = items.map(item => `- ${item.title} (x${item.quantity})`).join('\n')
+        finalMessage = baseMsg.replace('{books}', booksList)
     } else {
-        booksList = locale === 'ar' ? 'أريد تصفح مكتبتكم' : (locale === 'en' ? 'I want to browse your library' : 'Je souhaite découvrir votre bibliothèque')
+        const emptyMessages: Record<string, string> = {
+            fr: 'Bonjour Riwaya, je souhaite découvrir votre bibliothèque et en savoir plus sur vos livres.',
+            en: 'Hello Riwaya, I would like to browse your library and know more about your books.',
+            ar: 'مرحباً رواية، أود تصفح مكتبتكم ومعرفة المزيد عن كتبكم.'
+        }
+        finalMessage = emptyMessages[locale] || emptyMessages.fr
     }
- 
-    const finalMessage = baseMsg.replace('{books}', booksList)
+
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(finalMessage)}`
  
     return (

@@ -25,7 +25,13 @@ interface CheckoutForm {
     comment?: string
 }
 
-export default function CheckoutClient({ user }: { user?: { fullName?: string | null; email: string; image?: string | null } | null }) {
+export default function CheckoutClient({ 
+    user,
+    minOrderAmount = 0
+}: { 
+    user?: { fullName?: string | null; email: string; image?: string | null } | null;
+    minOrderAmount?: number;
+}) {
     const router = useRouter()
     const { items, getTotalPrice, clearCart } = useCartStore()
     const { showNotification } = useUIStore()
@@ -129,10 +135,13 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
     const [isSuccess, setIsSuccess] = useState(false)
 
     useEffect(() => {
-        if (mounted && items.length === 0 && !isSuccess) {
-            router.replace('/cart')
+        if (mounted && !isSuccess) {
+            const currentSubtotal = getTotalPrice()
+            if (items.length === 0 || (minOrderAmount > 0 && currentSubtotal <= minOrderAmount)) {
+                router.replace('/cart')
+            }
         }
-    }, [mounted, items.length, router, isSuccess])
+    }, [mounted, items.length, minOrderAmount, router, isSuccess, getTotalPrice])
 
     if (!mounted) return null
 
@@ -165,6 +174,13 @@ export default function CheckoutClient({ user }: { user?: { fullName?: string | 
         setIsSubmitting(true)
         setError(null)
         fbPixelEvents.addPaymentInfo()
+
+        if (minOrderAmount > 0 && subtotal <= minOrderAmount) {
+            setError(`Le montant minimum du panier pour commander est de ${minOrderAmount} MAD.`)
+            showNotification(`Le montant minimum du panier pour commander est de ${minOrderAmount} MAD.`, 'error')
+            setIsSubmitting(false)
+            return
+        }
 
         try {
             const orderItems = [

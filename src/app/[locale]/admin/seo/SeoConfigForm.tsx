@@ -93,10 +93,14 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
         setLoading(true)
         setMessage('')
         try {
-            await updateMultipleSettings(
+            const res = await updateMultipleSettings(
                 Object.entries(form).map(([key, value]) => ({ key, value, category: 'seo' }))
             )
-            setMessage('Configuration SEO sauvegardée avec succès !')
+            if (res.success) {
+                setMessage('Configuration SEO sauvegardée avec succès !')
+            } else {
+                setMessage(`Erreur lors de la sauvegarde : ${res.error}`)
+            }
         } catch {
             setMessage('Erreur lors de la sauvegarde.')
         } finally {
@@ -403,11 +407,36 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
                 {openSection === 'technical' && (
                     <div className="p-6 space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="sm:col-span-2 flex items-center gap-4">
-                                {form.seo_favicon_url && (
-                                    <img src={form.seo_favicon_url} className="w-10 h-10 rounded-lg border border-gray-200 object-contain shrink-0" alt="favicon" onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
-                                )}
-                                {field('Favicon URL', 'seo_favicon_url', '/favicon.ico')}
+                            <div className="sm:col-span-2">
+                                <label className="block text-xs font-black text-gray-600 uppercase tracking-widest mb-1.5">Favicon (URL)</label>
+                                <div className="flex gap-4 items-center">
+                                    {form.seo_favicon_url && (
+                                        <div className="w-12 h-12 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 p-1">
+                                            <img src={form.seo_favicon_url} className="max-w-full max-h-full object-contain" alt="favicon" onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
+                                        </div>
+                                    )}
+                                    <div className="flex-1 space-y-2">
+                                        <input
+                                            type="url"
+                                            value={form.seo_favicon_url}
+                                            onChange={e => update('seo_favicon_url', e.target.value)}
+                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white"
+                                            placeholder="/favicon.ico"
+                                        />
+                                        <div className="relative mt-2">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleImageUpload(e, 'seo_favicon_url')}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            />
+                                            <div className="w-full px-4 py-2.5 border border-dashed border-gray-300 rounded-xl bg-gray-50 flex items-center justify-center text-xs font-bold text-gray-600 hover:bg-gray-100 hover:border-black transition-colors cursor-pointer">
+                                                <ImageIcon className="w-4 h-4 mr-2" />
+                                                Uploader un Favicon
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             {field('Couleur thème (theme-color)', 'seo_theme_color', '#000000', 'color')}
                             {field('Viewport', 'seo_viewport', 'width=device-width, initial-scale=1')}

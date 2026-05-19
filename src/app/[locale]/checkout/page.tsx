@@ -2,9 +2,11 @@ import { getCommunityUser } from '@/lib/actions/community-auth'
 import HeaderWithUser from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import CheckoutClient from '@/components/checkout/CheckoutClient'
+import { getSetting } from '@/lib/actions/site-settings'
 
 export default async function CheckoutPage() {
     const user = await getCommunityUser()
+    const minAmount = await getSetting('min_order_amount', '0')
 
     const userProps = user ? {
         fullName: user.fullName,
@@ -15,7 +17,7 @@ export default async function CheckoutPage() {
     return (
         <div className="min-h-screen bg-pixio-cream">
             <HeaderWithUser />
-            <CheckoutClient user={userProps} />
+            <CheckoutClient user={userProps} minOrderAmount={Number(minAmount)} />
             <Footer />
         </div>
     )

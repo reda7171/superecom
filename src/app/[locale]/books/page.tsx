@@ -33,6 +33,7 @@ interface SearchParams {
     search?: string
     language?: string
     inStock?: string
+    author?: string
 }
 
 export default async function BooksPage({
@@ -98,6 +99,7 @@ export default async function BooksPage({
         active: true,
         language: params.language,
         inStock: params.inStock === undefined ? true : params.inStock === 'true',
+        author: params.author,
     };
 
     const [books, totalCount, categories, categoryConfig, authors, adsenseEnabled, adsensePublisherId, adsenseSlotBetweenBooks] = await Promise.all([
@@ -174,6 +176,7 @@ export default async function BooksPage({
                                         active: true,
                                         language: params.language,
                                         inStock: params.inStock === undefined ? true : params.inStock === 'true',
+                                        author: params.author,
                                         page: 1,
                                         limit: 12
                                     }}

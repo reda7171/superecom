@@ -104,6 +104,18 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
         // Calcul du total côté serveur pour sécurité
         let subtotal = sanitizedData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
 
+        // Validation du montant minimum du panier
+        const minOrderAmountSetting = await prisma.siteSettings.findUnique({
+            where: { key: 'min_order_amount' }
+        })
+        const minOrderAmount = minOrderAmountSetting ? Number(minOrderAmountSetting.value) : 0
+        if (minOrderAmount > 0 && subtotal <= minOrderAmount) {
+            return { 
+                success: false, 
+                error: `Le montant minimum du panier pour passer commande est de ${minOrderAmount} MAD.` 
+            }
+        }
+
         // Appliquer la réduction si elle est fournie par le client (après validation)
         let discount = sanitizedData.discount || 0
 

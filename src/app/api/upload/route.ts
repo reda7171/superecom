@@ -103,17 +103,43 @@ export async function POST(request: NextRequest) {
         }
 
         // --- OPTIMISATION SHARP ---
-        // On convertit tout en JPEG pour la compatibilité maximale (notamment Instagram)
+        // Conserver la transparence pour PNG/WebP/GIF, sinon convertir en JPEG pour les livres/marketing
         let processedBuffer: Buffer
+        let targetExtension = '.jpg'
+
+        if (file.type === 'image/png') {
+            targetExtension = '.png'
+        } else if (file.type === 'image/webp') {
+            targetExtension = '.webp'
+        } else if (file.type === 'image/gif') {
+            targetExtension = '.gif'
+        }
+
         try {
-            processedBuffer = await sharp(buffer)
-                .jpeg({ quality: 85, mozjpeg: true }) // Excellente compatibilité et compression
-                .resize(1200, 1600, { fit: 'inside', withoutEnlargement: true })
-                .toBuffer()
+            let sharpInstance = sharp(buffer)
+            if (targetExtension === '.png') {
+                processedBuffer = await sharpInstance
+                    .png({ compressionLevel: 8 })
+                    .resize(1200, 1600, { fit: 'inside', withoutEnlargement: true })
+                    .toBuffer()
+            } else if (targetExtension === '.webp') {
+                processedBuffer = await sharpInstance
+                    .webp({ quality: 85 })
+                    .resize(1200, 1600, { fit: 'inside', withoutEnlargement: true })
+                    .toBuffer()
+            } else if (targetExtension === '.gif') {
+                // Pour les GIF, on ne redimensionne pas pour garder l'animation intacte
+                processedBuffer = await sharpInstance.toBuffer()
+            } else {
+                processedBuffer = await sharpInstance
+                    .jpeg({ quality: 85, mozjpeg: true })
+                    .resize(1200, 1600, { fit: 'inside', withoutEnlargement: true })
+                    .toBuffer()
+            }
         } catch (sharpError) {
             console.error('[UPLOAD] Sharp processing failed:', sharpError)
-            // Fallback sur le buffer original si sharp échoue
             processedBuffer = buffer
+            targetExtension = fileExtension
         }
 
         // OWASP A03: Sanitize filename pour éviter path traversal
@@ -133,11 +159,11 @@ export async function POST(request: NextRequest) {
             .substring(0, 16)
 
         // Nom du fichier
-        let fileName = `${hash}-${sanitizedName}.jpg`
+        let fileName = `${hash}-${sanitizedName}${targetExtension}`
         if (isMarketing) {
             const prefix = marketingType === 'PACK' ? 'pack_' : marketingType === 'DESCRIPTION' ? 'desc_' : 'creative_'
             const finalName = customName ? sanitizeFilename(customName) : sanitizedName
-            fileName = `${prefix}${hash}_${finalName}.jpg`
+            fileName = `${prefix}${hash}_${finalName}${targetExtension}`
         }
 
         // Créer le répertoire s'il n'existe pas

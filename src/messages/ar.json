@@ -484,7 +484,8 @@
         "SharePerspective": "شارك وجهة نظرك مع مجتمعنا الفكري.",
         "Reflections": "{count} تأملات",
         "RecommendedReads": "قراءات مقترحة",
-        "ExploreAll": "استكشف الكل"
+        "ExploreAll": "استكشف الكل",
+        "FrequentlyBoughtTogether": "اشتره مع"
     },
     "Cart": {
         "Title": "سلتك",

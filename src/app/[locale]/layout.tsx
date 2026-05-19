@@ -29,10 +29,31 @@ const outfit = Outfit({
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const siteUrl = await getSetting('site_url') || 'https://riwaya.store';
+  
+  // Dynamic SEO configurations from database
+  const seoTitle = await getSetting('seo_default_title');
+  const seoDescription = await getSetting('seo_default_description');
+  const seoKeywords = await getSetting('seo_default_keywords');
+  const seoAuthor = await getSetting('seo_author') || 'Riwaya Team';
+  const seoOgImage = await getSetting('seo_og_image') || '/og-image.jpg';
+  const seoOgWidth = await getSetting('seo_og_image_width') || '1200';
+  const seoOgHeight = await getSetting('seo_og_image_height') || '630';
+  const seoOgAlt = await getSetting('seo_og_image_alt');
+  const seoOgType = await getSetting('seo_og_type') || 'website';
+  const seoTwitterHandle = await getSetting('seo_twitter_handle') || '@riwaya_ma';
+  const seoTwitterCard = await getSetting('seo_twitter_card') || 'summary_large_image';
+  const seoTwitterImage = await getSetting('seo_twitter_image') || seoOgImage;
+  const seoRobotsMeta = await getSetting('seo_robots_meta') || 'index, follow';
+  const seoFavicon = await getSetting('seo_favicon_url') || '/favicon.ico';
+  const googleVerification = await getSetting('seo_google_verification');
+  const bingVerification = await getSetting('seo_bing_verification');
+  const yandexVerification = await getSetting('seo_yandex_verification');
+  const pinterestVerification = await getSetting('seo_pinterest_verification');
+
   const t = await getTranslations({ locale, namespace: 'HomePage.seo' });
 
-  const title = t('Title') || "Riwaya | Librairie en Ligne au Maroc - Livres, Packs & Échange de Livres";
-  const description = t('Description') || "Découvrez Riwaya, la librairie en ligne n°1 au Maroc. Achetez des livres de développement personnel, business, philosophie et romans. Échangez vos livres avec notre communauté. Livraison rapide partout au Maroc, paiement à la livraison.";
+  const title = seoTitle || t('Title') || "Riwaya | Librairie en Ligne au Maroc - Livres, Packs & Échange de Livres";
+  const description = seoDescription || t('Description') || "Découvrez Riwaya, la librairie en ligne n°1 au Maroc. Achetez des livres de développement personnel, business, philosophie et romans. Échangez vos livres avec notre communauté. Livraison rapide partout au Maroc, paiement à la livraison.";
 
   const keywordsFr = [
     "livres maroc", "librairie en ligne maroc", "achat livres maroc", "riwaya",
@@ -49,8 +70,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     "تبادل الكتب المغرب", "توصيل الكتب", "الدفع عند الاستلام", "توصيل مجاني"
   ];
 
-  const keywords = locale === 'ar' ? keywordsAr : keywordsFr;
+  const baseKeywords = locale === 'ar' ? keywordsAr : keywordsFr;
+  const keywords = seoKeywords ? seoKeywords.split(',').map(k => k.trim()) : baseKeywords;
   const ogLocale = locale === 'ar' ? 'ar_MA' : locale === 'en' ? 'en_MA' : 'fr_MA';
+
+  const canIndex = seoRobotsMeta.includes('index');
+  const canFollow = seoRobotsMeta.includes('follow');
 
   return {
     metadataBase: new URL(siteUrl),
@@ -60,7 +85,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     },
     description: description,
     keywords: keywords,
-    authors: [{ name: "Riwaya Team", url: siteUrl }],
+    authors: [{ name: seoAuthor, url: siteUrl }],
     creator: "Riwaya",
     publisher: "Riwaya",
     applicationName: "Riwaya",
@@ -76,45 +101,45 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       siteName: "Riwaya",
       locale: ogLocale,
       alternateLocale: ["fr_MA", "ar_MA", "en_MA"].filter(l => l !== ogLocale),
-      type: "website",
+      type: seoOgType as any || "website",
       images: [
         {
-          url: '/og-image.jpg',
-          width: 1200,
-          height: 630,
-          alt: title,
+          url: seoOgImage,
+          width: parseInt(seoOgWidth) || 1200,
+          height: parseInt(seoOgHeight) || 630,
+          alt: seoOgAlt || title,
         },
       ],
     },
     twitter: {
-      card: "summary_large_image",
+      card: seoTwitterCard as any || "summary_large_image",
       title: title,
       description: description,
-      creator: "@riwaya_ma",
-      images: ["/twitter-image.jpg"],
+      creator: seoTwitterHandle,
+      images: [seoTwitterImage],
     },
     robots: {
-      index: true,
-      follow: true,
+      index: canIndex,
+      follow: canFollow,
       googleBot: {
-        index: true,
-        follow: true,
+        index: canIndex,
+        follow: canFollow,
         'max-video-preview': -1,
         'max-image-preview': 'large',
         'max-snippet': -1,
       },
     },
     icons: {
-      icon: '/favicon.ico',
+      icon: seoFavicon,
       shortcut: '/favicon-16x16.png',
       apple: '/apple-touch-icon.png',
     },
     manifest: '/site.webmanifest',
     category: 'books',
     verification: {
-      google: 'verification_token',
-      yandex: 'yandex_verification',
-      yahoo: 'yahoo_verification',
+      google: googleVerification || undefined,
+      yandex: yandexVerification || undefined,
+      yahoo: undefined,
     },
   };
 }
@@ -151,7 +176,7 @@ export default async function LocaleLayout({
   const siteUrl = await getSetting('site_url') || 'https://riwaya.store';
   const injectedHeadTags = await getSetting('seo_injected_head_tags');
   const fbPixelId = await getSetting('facebook_pixel_id') || process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
-  const googleSearchConsoleId = await getSetting('google_search_console_id');
+  const googleSearchConsoleId = await getSetting('google_search_console_id') || await getSetting('seo_google_verification');
   const googleAnalyticsId = await getSetting('google_analytics_id');
   const adsenseId = await getSetting('adsense_publisher_id');
   const adsenseEnabled = await getSetting('adsense_enabled');

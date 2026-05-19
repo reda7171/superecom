@@ -11,6 +11,7 @@ interface BooksFiltersProps {
         search?: string
         language?: string
         inStock?: string
+        author?: string
     }
     categories: string[]
     authors: string[]
@@ -37,7 +38,8 @@ export default function BooksFilters({ params, categories, authors, languages, t
     const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value
         const newParams = new URLSearchParams()
-        if (value) newParams.set('search', value)
+        if (value) newParams.set('author', value)
+        if (params.search) newParams.set('search', params.search)
         if (params.category) newParams.set('category', params.category)
         if (params.language) newParams.set('language', params.language)
         if (params.inStock) newParams.set('inStock', params.inStock)
@@ -48,6 +50,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
         const value = e.target.checked
         const newParams = new URLSearchParams()
         if (params.search) newParams.set('search', params.search)
+        if (params.author) newParams.set('author', params.author)
         if (params.category) newParams.set('category', params.category)
         if (params.language) newParams.set('language', params.language)
         newParams.set('inStock', value ? 'true' : 'false')
@@ -92,7 +95,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                 </label>
                 <div className="relative group">
                     <select
-                        value={params.search || ''}
+                        value={params.author || ''}
                         onChange={handleAuthorChange}
                         aria-label="Sélectionner un auteur"
                         className="w-full px-6 py-4 bg-[#F8F9FA] border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-sm text-gray-800 appearance-none"
@@ -141,7 +144,12 @@ export default function BooksFilters({ params, categories, authors, languages, t
                 {openSections.langs && (
                     <div className="flex flex-wrap gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
                         <Link
-                            href={params.category ? `/books?category=${params.category}${params.inStock ? '&inStock=true' : ''}` : `/books${params.inStock ? '?inStock=true' : ''}`}
+                            href={`/books?${new URLSearchParams({
+                                ...(params.category ? { category: params.category } : {}),
+                                ...(params.search ? { search: params.search } : {}),
+                                ...(params.author ? { author: params.author } : {}),
+                                ...(params.inStock ? { inStock: params.inStock } : {}),
+                            }).toString()}`}
                             scroll={false}
                             className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${!params.language
                                 ? 'bg-black text-white shadow-lg'
@@ -157,6 +165,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                                 href={`/books?${new URLSearchParams({
                                     ...(params.category ? { category: params.category } : {}),
                                     ...(params.search ? { search: params.search } : {}),
+                                    ...(params.author ? { author: params.author } : {}),
                                     ...(params.inStock ? { inStock: params.inStock } : {}),
                                     language: lang.code
                                 }).toString()}`}
@@ -189,7 +198,12 @@ export default function BooksFilters({ params, categories, authors, languages, t
                 {openSections.cats && (
                     <div className="flex flex-wrap gap-2 lg:flex-col lg:gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
                         <Link
-                            href={params.language ? `/books?language=${params.language}${params.inStock ? '&inStock=true' : ''}` : `/books${params.inStock ? '?inStock=true' : ''}`}
+                            href={`/books?${new URLSearchParams({
+                                ...(params.language ? { language: params.language } : {}),
+                                ...(params.search ? { search: params.search } : {}),
+                                ...(params.author ? { author: params.author } : {}),
+                                ...(params.inStock ? { inStock: params.inStock } : {}),
+                            }).toString()}`}
                             scroll={false}
                             className={`px-4 py-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${!params.category
                                 ? 'bg-black text-white shadow-lg'
@@ -206,6 +220,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                                     category: category,
                                     ...(params.language ? { language: params.language } : {}),
                                     ...(params.search ? { search: params.search } : {}),
+                                    ...(params.author ? { author: params.author } : {}),
                                     ...(params.inStock ? { inStock: params.inStock } : {})
                                 }).toString()}`}
                                 scroll={false}
@@ -263,7 +278,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                         {/* Search Author Select (Condensed) */}
                         <div className="flex-1 relative">
                             <select
-                                value={params.search || ''}
+                                value={params.author || ''}
                                 onChange={handleAuthorChange}
                                 aria-label="Sélectionner un auteur"
                                 className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-900 focus:ring-0 appearance-none"
@@ -281,7 +296,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                         <button
                             onClick={() => setIsMobileMenuOpen(true)}
                             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                                params.category || params.language || params.inStock 
+                                params.category || params.language || params.author || params.inStock 
                                 ? 'bg-black text-white shadow-lg' 
                                 : 'bg-gray-100 text-gray-900'
                             }`}
@@ -289,14 +304,14 @@ export default function BooksFilters({ params, categories, authors, languages, t
                         >
                             <SlidersHorizontal className="w-4 h-4" />
                             <span className="hidden sm:inline">{t('Filters')}</span>
-                            {(params.category || params.language || params.inStock) && (
+                            {(params.category || params.language || params.author || params.inStock) && (
                                 <span className="w-2 h-2 rounded-full bg-red-500" />
                             )}
                         </button>
                     </div>
 
                     {/* Active Chips Horizontal Scroll */}
-                    {(params.category || params.language || params.search || params.inStock) && (
+                    {(params.category || params.language || params.search || params.author || params.inStock) && (
                         <div className="flex gap-2 overflow-x-auto py-2 no-scrollbar">
                             {params.category && (
                                 <div className="flex-shrink-0 px-3 py-1.5 bg-black text-white rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
@@ -305,6 +320,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                                         href={`/books?${new URLSearchParams({
                                             ...(params.language ? { language: params.language } : {}),
                                             ...(params.search ? { search: params.search } : {}),
+                                            ...(params.author ? { author: params.author } : {}),
                                             ...(params.inStock ? { inStock: params.inStock } : {})
                                         }).toString()}`} 
                                         scroll={false}
@@ -318,6 +334,22 @@ export default function BooksFilters({ params, categories, authors, languages, t
                                     <Link 
                                         href={`/books?${new URLSearchParams({
                                             ...(params.category ? { category: params.category } : {}),
+                                            ...(params.search ? { search: params.search } : {}),
+                                            ...(params.author ? { author: params.author } : {}),
+                                            ...(params.inStock ? { inStock: params.inStock } : {})
+                                        }).toString()}`} 
+                                        scroll={false}
+                                        className="opacity-50"
+                                    >×</Link>
+                                </div>
+                            )}
+                            {params.author && (
+                                <div className="flex-shrink-0 px-3 py-1.5 bg-black text-white rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
+                                    {params.author}
+                                    <Link 
+                                        href={`/books?${new URLSearchParams({
+                                            ...(params.category ? { category: params.category } : {}),
+                                            ...(params.language ? { language: params.language } : {}),
                                             ...(params.search ? { search: params.search } : {}),
                                             ...(params.inStock ? { inStock: params.inStock } : {})
                                         }).toString()}`} 
@@ -334,6 +366,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                                             ...(params.category ? { category: params.category } : {}),
                                             ...(params.search ? { search: params.search } : {}),
                                             ...(params.language ? { language: params.language } : {}),
+                                            ...(params.author ? { author: params.author } : {}),
                                             inStock: 'false'
                                         }).toString()}`} 
                                         scroll={false}

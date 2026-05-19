@@ -411,7 +411,7 @@ export default async function BookDetailPage({
                             {/* Frequently Bought Together (Upsell/Cross-sell) */}
                             {frequentlyBoughtTogether.length > 0 && (
                                 <div className="mt-12 bg-gray-50 p-4 sm:p-6 rounded-[2rem] border border-gray-100 shadow-sm relative overflow-hidden">
-                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-black mb-6">SOUVENT ACHETÉS ENSEMBLE</h3>
+                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-black mb-6">{tBook('FrequentlyBoughtTogether')}</h3>
                                     <div className="flex flex-col gap-3 sm:gap-4">
                                         {frequentlyBoughtTogether.map(fbBook => (
                                             <div key={fbBook.id} className="flex items-center gap-3 sm:gap-4 bg-white p-2.5 sm:p-3 rounded-[1.5rem] shadow-sm hover:shadow-md transition-shadow">

@@ -35,7 +35,8 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
         author: { x: 0, y: 0 }, 
         price: { x: 0, y: 0 }, 
         delivery: { x: 0, y: 0 },
-        bg: { x: 0, y: 0 }
+        bg: { x: 0, y: 0 },
+        whatsapp: { x: 0, y: 0 }
     })
     const [dragging, setDragging] = useState<string | null>(null)
     const [offset, setOffset] = useState({ x: 0, y: 0 })
@@ -48,7 +49,9 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
     const [showFreeDelivery, setShowFreeDelivery] = useState(false)
     const [showShadow, setShowShadow] = useState(true)
     const [showPrice, setShowPrice] = useState(true)
-    const [showSolde, setShowSolde] = useState(false)
+    const [showSolde, setShowSolde] = useState(true)
+    const [showWhatsapp, setShowWhatsapp] = useState(true)
+    const [whatsappScale, setWhatsappScale] = useState(1)
     const [bgImage, setBgImage] = useState<string | null>(null)
     const [bgOpacity, setBgOpacity] = useState(1)
     const [imageOpacity, setImageOpacity] = useState(1)
@@ -68,7 +71,8 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
         price: book?.price?.toString() || '0',
         oldPrice: (book?.price ? Math.round(book.price * 1.3) : 0).toString(),
         delivery_line1: 'Livraison',
-        delivery_line2: 'Gratuite'
+        delivery_line2: 'Gratuite',
+        whatsapp: '+212 600 00 00 00'
     })
 
     const handleTextChange = (key: string, value: string) => {
@@ -84,6 +88,15 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
         setOffset({ x: e.clientX - pos.x, y: e.clientY - pos.y })
     }
 
+    const handleTouchStart = (e: React.TouchEvent, key: string) => {
+        if (editing === key) return
+        e.preventDefault()
+        const touch = e.touches[0]
+        setDragging(key)
+        const pos = positions[key as keyof typeof positions]
+        setOffset({ x: touch.clientX - pos.x, y: touch.clientY - pos.y })
+    }
+
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
             if (!dragging) return
@@ -91,27 +104,40 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
         }
         const handleMouseUp = () => setDragging(null)
 
+        const handleTouchMove = (e: TouchEvent) => {
+            if (!dragging) return
+            const touch = e.touches[0]
+            setPositions(prev => ({ ...prev, [dragging]: { x: touch.clientX - offset.x, y: touch.clientY - offset.y } }))
+        }
+        const handleTouchEnd = () => setDragging(null)
+
         if (dragging) {
             window.addEventListener('mousemove', handleMouseMove)
             window.addEventListener('mouseup', handleMouseUp)
+            window.addEventListener('touchmove', handleTouchMove, { passive: false })
+            window.addEventListener('touchend', handleTouchEnd)
         }
         return () => {
             window.removeEventListener('mousemove', handleMouseMove)
             window.removeEventListener('mouseup', handleMouseUp)
+            window.removeEventListener('touchmove', handleTouchMove)
+            window.removeEventListener('touchend', handleTouchEnd)
         }
     }, [dragging, offset])
 
     useEffect(() => {
         if (!isOpen) {
             setTheme('dark') // reset
-            setPositions({ badge: { x: 0, y: 0 }, logo: { x: 0, y: 0 }, book: { x: 0, y: 0 }, title: { x: 0, y: 0 }, author: { x: 0, y: 0 }, price: { x: 0, y: 0 }, delivery: { x: 0, y: 0 }, bg: { x: 0, y: 0 } })
+            setPositions({ badge: { x: 0, y: 0 }, logo: { x: 0, y: 0 }, book: { x: 0, y: 0 }, title: { x: 0, y: 0 }, author: { x: 0, y: 0 }, price: { x: 0, y: 0 }, delivery: { x: 0, y: 0 }, bg: { x: 0, y: 0 }, whatsapp: { x: 0, y: 0 } })
             setImageScale(1)
             setImageRotation(0)
             setLogoScale(3)
             setShowFreeDelivery(false)
             setShowShadow(true)
             setShowPrice(true)
-            setShowSolde(false)
+            setShowSolde(true)
+            setShowWhatsapp(true)
+            setWhatsappScale(1)
         } else if (book) {
             setEditableTexts({
                 badge: book.category || 'Recommandation',
@@ -120,13 +146,26 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                 price: book.price.toString(),
                 oldPrice: Math.round(book.price * 1.3).toString(),
                 delivery_line1: 'Livraison',
-                delivery_line2: 'Gratuite'
+                delivery_line2: 'Gratuite',
+                whatsapp: '+212 600 00 00 00'
             })
+            // Fetch site settings for WhatsApp phone number
+            fetch('/api/admin/settings')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.settings?.contact_phone) {
+                        setEditableTexts(prev => ({ ...prev, whatsapp: data.settings.contact_phone }))
+                    }
+                })
+                .catch(console.error)
             // Fetch full book details for preview
             fetch(`/api/admin/books/${book.id}`).then(res => res.json()).then(data => {
                 if (data.success) {
                     setFullBookData(data.book)
-                    setCaption(useDescription === 'long' ? (data.book.longDescription || data.book.description) : data.book.description)
+                    const baseDesc = useDescription === 'long' ? (data.book.longDescription || data.book.description) : data.book.description
+                    const productUrl = `${window.location.origin}/fr/books/${data.book.id}`
+                    const hashtags = `#riwaya #lecture #livre #maroc #culture ${data.book.category ? `#${data.book.category.toLowerCase().replace(/\s+/g, '')}` : ''}`
+                    setCaption(`${baseDesc}\n\n📖 Lien pour commander : ${productUrl}\n💰 Prix : ${data.book.price} MAD\n🚚 Paiement à la livraison + Livraison rapide !\n\n${hashtags}`)
                 }
             }).catch(console.error)
         }
@@ -135,7 +174,10 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
     // Update caption when description type changes
     useEffect(() => {
         if (fullBookData) {
-            setCaption(useDescription === 'long' ? (fullBookData.longDescription || fullBookData.description) : fullBookData.description)
+            const baseDesc = useDescription === 'long' ? (fullBookData.longDescription || fullBookData.description) : fullBookData.description
+            const productUrl = `${window.location.origin}/fr/books/${fullBookData.id}`
+            const hashtags = `#riwaya #lecture #livre #maroc #culture ${fullBookData.category ? `#${fullBookData.category.toLowerCase().replace(/\s+/g, '')}` : ''}`
+            setCaption(`${baseDesc}\n\n📖 Lien pour commander : ${productUrl}\n💰 Prix : ${fullBookData.price} MAD\n🚚 Paiement à la livraison + Livraison rapide !\n\n${hashtags}`)
         }
     }, [useDescription, fullBookData])
 
@@ -528,9 +570,11 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                                     backgroundSize: 'cover',
                                     backgroundPosition: 'center',
                                     opacity: bgOpacity,
-                                    transform: `translate(${positions.bg.x}px, ${positions.bg.y}px) scale(1.1)`
+                                    transform: `translate(${positions.bg.x}px, ${positions.bg.y}px) scale(1.1)`,
+                                    touchAction: 'none'
                                 }}
                                 onMouseDown={(e) => handleMouseDown(e, 'bg')}
+                                onTouchStart={(e) => handleTouchStart(e, 'bg')}
                             />
                         )}
                         {/* Background Decor (Only if no custom bg) */}
@@ -545,8 +589,9 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                         <div className="pt-8 px-8 flex justify-between items-start z-10 select-none">
                             <div 
                                 className={`cursor-move ${dragging === 'badge' ? '' : 'transition-transform active:scale-95'}`}
-                                style={{ transform: `translate(${positions.badge.x}px, ${positions.badge.y}px)` }}
+                                style={{ transform: `translate(${positions.badge.x}px, ${positions.badge.y}px)`, touchAction: 'none' }}
                                 onMouseDown={(e) => handleMouseDown(e, 'badge')}
+                                onTouchStart={(e) => handleTouchStart(e, 'badge')}
                             >
                                 <div className={`${currentTheme.cardBg} px-4 py-1.5 rounded-full ${currentTheme.border} border backdrop-blur-md`}>
                                     <p 
@@ -563,8 +608,9 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                             {showLogo && (
                                 <div 
                                     className={`cursor-move ${dragging === 'logo' ? '' : 'transition-transform active:scale-95'} opacity-90`}
-                                    style={{ transform: `translate(${positions.logo.x}px, ${positions.logo.y}px)` }}
+                                    style={{ transform: `translate(${positions.logo.x}px, ${positions.logo.y}px)`, touchAction: 'none' }}
                                     onMouseDown={(e) => handleMouseDown(e, 'logo')}
+                                    onTouchStart={(e) => handleTouchStart(e, 'logo')}
                                 >
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img 
@@ -581,10 +627,14 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                         {showFreeDelivery && (
                              <div 
                                 className={`flex flex-col items-center select-none absolute top-32 right-8 cursor-move z-20 ${dragging === 'delivery' ? '' : 'transition-transform active:scale-95'}`}
-                                style={{ transform: `translate(${positions.delivery.x}px, ${positions.delivery.y}px)` }}
+                                style={{ transform: `translate(${positions.delivery.x}px, ${positions.delivery.y}px)`, touchAction: 'none' }}
                                 onMouseDown={(e) => {
                                     e.stopPropagation();
                                     handleMouseDown(e, 'delivery');
+                                }}
+                                onTouchStart={(e) => {
+                                    e.stopPropagation();
+                                    handleTouchStart(e, 'delivery');
                                 }}
                              >
                                 <span className="text-5xl mb-1 filter drop-shadow-2xl">🚚</span>
@@ -610,12 +660,13 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                         )}
 
                         {/* Center Content (Book Cover) */}
-                        <div 
-                            className={`flex-1 flex items-center justify-center px-12 ${format === 'story' ? 'py-12' : 'py-6'} relative z-10 cursor-move ${dragging === 'book' ? '' : 'transition-transform active:scale-95'}`}
-                            style={{ transform: `translate(${positions.book.x}px, ${positions.book.y}px)` }}
-                            onMouseDown={(e) => handleMouseDown(e, 'book')}
-                        >
-                            <div className={`relative w-full ${format === 'story' ? 'max-w-[220px]' : 'max-w-[200px]'} mx-auto perspective-1000`}>
+                        <div className={`flex-1 flex items-center justify-center px-12 ${format === 'story' ? 'py-12' : 'py-6'} relative z-30 pointer-events-none`}>
+                            <div 
+                                className={`relative w-full ${format === 'story' ? 'max-w-[220px]' : 'max-w-[200px]'} mx-auto perspective-1000 cursor-move pointer-events-auto ${dragging === 'book' ? '' : 'transition-transform active:scale-95'}`}
+                                style={{ transform: `translate(${positions.book.x}px, ${positions.book.y}px)`, touchAction: 'none' }}
+                                onMouseDown={(e) => handleMouseDown(e, 'book')}
+                                onTouchStart={(e) => handleTouchStart(e, 'book')}
+                            >
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img 
                                     src={(() => {
@@ -639,9 +690,10 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
 
                         {/* Titre - déplacer par glisser, éditer par double-clic */}
                         <div 
-                            className={`absolute bottom-28 left-0 right-0 flex justify-center z-10 ${editing === 'title' ? 'cursor-text' : 'cursor-move'} select-none ${dragging === 'title' ? '' : 'transition-transform active:scale-95'}`}
-                            style={{ transform: `translate(${positions.title.x}px, ${positions.title.y}px)` }}
+                            className={`absolute bottom-36 left-1/2 z-10 ${editing === 'title' ? 'cursor-text' : 'cursor-move'} select-none ${dragging === 'title' ? '' : 'transition-transform active:scale-95'}`}
+                            style={{ transform: `translate(calc(-50% + ${positions.title.x}px), ${positions.title.y}px)`, touchAction: 'none' }}
                             onMouseDown={(e) => handleMouseDown(e, 'title')}
+                            onTouchStart={(e) => handleTouchStart(e, 'title')}
                             onDoubleClick={() => setEditing('title')}
                             title="Double-clic pour éditer"
                         >
@@ -657,9 +709,10 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
 
                         {/* Auteur - déplacer par glisser, éditer par double-clic */}
                         <div 
-                            className={`absolute bottom-20 left-0 right-0 flex justify-center z-10 ${editing === 'author' ? 'cursor-text' : 'cursor-move'} select-none ${dragging === 'author' ? '' : 'transition-transform active:scale-95'}`}
-                            style={{ transform: `translate(${positions.author.x}px, ${positions.author.y}px)` }}
+                            className={`absolute bottom-28 left-1/2 z-10 ${editing === 'author' ? 'cursor-text' : 'cursor-move'} select-none ${dragging === 'author' ? '' : 'transition-transform active:scale-95'}`}
+                            style={{ transform: `translate(calc(-50% + ${positions.author.x}px), ${positions.author.y}px)`, touchAction: 'none' }}
                             onMouseDown={(e) => handleMouseDown(e, 'author')}
+                            onTouchStart={(e) => handleTouchStart(e, 'author')}
                             onDoubleClick={() => setEditing('author')}
                             title="Double-clic pour éditer"
                         >
@@ -676,9 +729,10 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                         {/* Prix - déplacer par glisser, éditer par double-clic */}
                         {showPrice && (
                             <div 
-                                className={`absolute bottom-6 left-0 right-0 flex justify-center z-10 ${editing === 'price' ? 'cursor-text' : 'cursor-move'} select-none ${dragging === 'price' ? '' : 'transition-transform active:scale-95'}`}
-                                style={{ transform: `translate(${positions.price.x}px, ${positions.price.y}px)` }}
+                                className={`absolute bottom-16 left-1/2 z-10 ${editing === 'price' ? 'cursor-text' : 'cursor-move'} select-none ${dragging === 'price' ? '' : 'transition-transform active:scale-95'}`}
+                                style={{ transform: `translate(calc(-50% + ${positions.price.x}px), ${positions.price.y}px)`, touchAction: 'none' }}
                                 onMouseDown={(e) => handleMouseDown(e, 'price')}
+                                onTouchStart={(e) => handleTouchStart(e, 'price')}
                                 onDoubleClick={() => setEditing('price')}
                                 title="Double-clic pour éditer"
                             >
@@ -707,6 +761,32 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                                         </span>
                                         <span className="text-xl">MAD</span>
                                     </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* WhatsApp — drag + double-clic pour éditer */}
+                        {showWhatsapp && (
+                            <div 
+                                className={`absolute bottom-4 left-1/2 z-10 ${editing === 'whatsapp' ? 'cursor-text' : 'cursor-move'} select-none transition-transform active:scale-95`}
+                                style={{ transform: `translate(calc(-50% + ${positions.whatsapp.x}px), ${positions.whatsapp.y}px) scale(${whatsappScale})`, touchAction: 'none' }}
+                                onMouseDown={(e) => handleMouseDown(e, 'whatsapp')}
+                                onTouchStart={(e) => handleTouchStart(e, 'whatsapp')}
+                                onDoubleClick={() => setEditing('whatsapp')}
+                                title="Double-clic pour éditer"
+                            >
+                                <div className="flex items-center justify-center gap-2 px-4 py-2 bg-[#25D366] text-white rounded-full shadow-lg">
+                                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                                    </svg>
+                                    <span 
+                                        contentEditable={editing === 'whatsapp'}
+                                        suppressContentEditableWarning
+                                        onBlur={(e) => { handleTextChange('whatsapp', e.currentTarget.textContent || ''); setEditing(null) }}
+                                        className="text-sm font-black outline-none"
+                                    >
+                                        {editableTexts.whatsapp}
+                                    </span>
                                 </div>
                             </div>
                         )}
@@ -890,6 +970,20 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                             />
                         </div>
 
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Taille du WhatsApp
+                            </label>
+                            <input 
+                                type="range" 
+                                min="0.5" max="2" step="0.1"
+                                value={whatsappScale}
+                                onChange={(e) => setWhatsappScale(parseFloat(e.target.value))}
+                                disabled={!showWhatsapp}
+                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 disabled:opacity-50"
+                            />
+                        </div>
+
                         <div className="flex flex-col gap-2">
                             <label className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100 transition">
                                 <input 
@@ -939,6 +1033,16 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                                     className="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"
                                 />
                                 <span className="text-sm font-medium text-gray-800">Prix de Solde (Barré)</span>
+                            </label>
+
+                            <label className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+                                <input 
+                                    type="checkbox" 
+                                    checked={showWhatsapp}
+                                    onChange={(e) => setShowWhatsapp(e.target.checked)}
+                                    className="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                                />
+                                <span className="text-sm font-medium text-gray-800">Afficher WhatsApp</span>
                             </label>
                         </div>
 

@@ -75,8 +75,8 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
     const [showFreeDelivery, setShowFreeDelivery] = useState(pack?.isFreeDelivery || false)
     const [showPlus, setShowPlus] = useState(false)
     const [showPrice, setShowPrice] = useState(true)
-    const [showSolde, setShowSolde] = useState(false)
-    const [showWhatsapp, setShowWhatsapp] = useState(false)
+    const [showSolde, setShowSolde] = useState(true)
+    const [showWhatsapp, setShowWhatsapp] = useState(true)
     const [whatsappScale, setWhatsappScale] = useState(1)
     const [showName, setShowName] = useState(true)
     const [showDescription, setShowDescription] = useState(true)
@@ -181,6 +181,42 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
         setDragging(key)
     }
 
+    const handleTouchStart = (e: React.TouchEvent, key: string) => {
+        if ((e.target as HTMLElement).isContentEditable || (e.target as HTMLElement).closest('[contenteditable="true"]')) return
+        e.preventDefault()
+
+        const touch = e.touches[0]
+
+        // Clic simple = désélectionner tout sauf l'élément actuel
+        setSelectedKeys(prev => {
+            if (!prev.has(key)) return new Set([key])
+            return prev
+        })
+
+        if (key.startsWith('book_')) {
+            const bookId = key.replace('book_', '')
+            setLayerOrder(prev => {
+                if (!prev.includes(bookId)) return prev
+                const newOrder = prev.filter(id => id !== bookId)
+                newOrder.push(bookId)
+                return newOrder
+            })
+        }
+
+        const pos = positionsRef.current[key] || { x: 0, y: 0 }
+        dragKeyRef.current = key
+        dragStartRef.current = { mx: touch.clientX, my: touch.clientY, px: pos.x, py: pos.y }
+
+        const currentSelected = selectedKeys.has(key) ? selectedKeys : new Set([key])
+        groupStartRef.current = {}
+        currentSelected.forEach(k => {
+            const p = positionsRef.current[k] || { x: 0, y: 0 }
+            groupStartRef.current[k] = { px: p.x, py: p.y }
+        })
+
+        setDragging(key)
+    }
+
     useEffect(() => {
         const onMouseMove = (e: MouseEvent) => {
             const key = dragKeyRef.current
@@ -188,6 +224,23 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
             const { mx, my } = dragStartRef.current
             const dx = e.clientX - mx
             const dy = e.clientY - my
+
+            // Déplacer tous les éléments du groupe
+            Object.entries(groupStartRef.current).forEach(([k, { px, py }]) => {
+                const x = px + dx
+                const y = py + dy
+                applyTransform(k, x, y)
+                positionsRef.current[k] = { x, y }
+            })
+        }
+
+        const onTouchMove = (e: TouchEvent) => {
+            const key = dragKeyRef.current
+            if (!key) return
+            const touch = e.touches[0]
+            const { mx, my } = dragStartRef.current
+            const dx = touch.clientX - mx
+            const dy = touch.clientY - my
 
             // Déplacer tous les éléments du groupe
             Object.entries(groupStartRef.current).forEach(([k, { px, py }]) => {
@@ -214,12 +267,16 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
 
         window.addEventListener('mousemove', onMouseMove)
         window.addEventListener('mouseup', onMouseUp)
+        window.addEventListener('touchmove', onTouchMove, { passive: false })
+        window.addEventListener('touchend', onMouseUp)
         return () => {
             window.removeEventListener('mousemove', onMouseMove)
             window.removeEventListener('mouseup', onMouseUp)
+            window.removeEventListener('touchmove', onTouchMove)
+            window.removeEventListener('touchend', onMouseUp)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [selectedKeys])
 
     // Suppression des éléments sélectionnés via Delete / Backspace
     useEffect(() => {
@@ -323,6 +380,23 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                 price: pack.price.toString(),
                 oldPrice: Math.round(pack.price * 1.3).toString()
             }))
+
+            // Fetch site settings for WhatsApp phone number
+            fetch('/api/admin/settings')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.settings?.contact_phone) {
+                        setEditableTexts(prev => {
+                            const saved = localStorage.getItem('riwaya_pack_editor_settings')
+                            const hasSavedWhatsapp = saved && JSON.parse(saved).whatsappNumber
+                            if (!hasSavedWhatsapp && !pack?.whatsappNumber) {
+                                return { ...prev, whatsapp: data.settings.contact_phone }
+                            }
+                            return prev
+                        })
+                    }
+                })
+                .catch(console.error)
 
             const titles = pack.books.map(b => `• ${b.title}`).join('\n')
             const packUrl = pack.id ? `https://riwaya.store/fr/packs/${pack.id}` : 'https://riwaya.store/fr/packs'
@@ -853,9 +927,11 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         opacity: bgOpacity,
-                                        transform: `translate(${positions.bg?.x || 0}px, ${positions.bg?.y || 0}px) scale(1.1)` // Un léger scale pour éviter les bords blancs lors du drag
+                                        transform: `translate(${positions.bg?.x || 0}px, ${positions.bg?.y || 0}px) scale(1.1)`, // Un léger scale pour éviter les bords blancs lors du drag
+                                        touchAction: 'none'
                                     }}
                                     onMouseDown={(e) => handleMouseDown(e, 'bg')}
+                                    onTouchStart={(e) => handleTouchStart(e, 'bg')}
                                 />
                             )}
                             {/* Decorative elements (Hidden if bgImage exists) */}
@@ -874,9 +950,11 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                     style={{
                                         transform: `translate(${positionsRef.current.badge?.x || 0}px, ${positionsRef.current.badge?.y || 0}px)`,
                                         outline: selectedKeys.has('badge') ? '2px solid #3b82f6' : 'none',
-                                        outlineOffset: '3px'
+                                        outlineOffset: '3px',
+                                        touchAction: 'none'
                                     }}
                                     onMouseDown={(e) => handleMouseDown(e, 'badge')}
+                                    onTouchStart={(e) => handleTouchStart(e, 'badge')}
                                 >
                                     <p
                                         contentEditable
@@ -894,9 +972,11 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                         style={{
                                             transform: `translate(${positionsRef.current.logo?.x || 0}px, ${positionsRef.current.logo?.y || 0}px)`,
                                             outline: selectedKeys.has('logo') ? '2px solid #3b82f6' : 'none',
-                                            outlineOffset: '4px'
+                                            outlineOffset: '4px',
+                                            touchAction: 'none'
                                         }}
                                         onMouseDown={(e) => handleMouseDown(e, 'logo')}
+                                        onTouchStart={(e) => handleTouchStart(e, 'logo')}
                                     >
                                         <div
                                             className="opacity-90"
@@ -919,11 +999,16 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                         style={{
                                             transform: `translate(${positionsRef.current.delivery?.x || 0}px, ${positionsRef.current.delivery?.y || 0}px)`,
                                             outline: selectedKeys.has('delivery') ? '2px solid #3b82f6' : 'none',
-                                            outlineOffset: '4px'
+                                            outlineOffset: '4px',
+                                            touchAction: 'none'
                                         }}
                                         onMouseDown={(e) => {
                                             e.stopPropagation();
                                             handleMouseDown(e, 'delivery');
+                                        }}
+                                        onTouchStart={(e) => {
+                                            e.stopPropagation();
+                                            handleTouchStart(e, 'delivery');
                                         }}
                                     >
                                         <span className="text-5xl mb-1 filter drop-shadow-2xl">🚚</span>
@@ -971,9 +1056,11 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                                 transform: `translate(${positionsRef.current[`book_${book.id}`]?.x || 0}px, ${positionsRef.current[`book_${book.id}`]?.y || 0}px) scale(${imageScale}) rotate(${rot}deg)`,
                                                 width: '140px',
                                                 outline: selectedKeys.has(`book_${book.id}`) ? '2px solid #3b82f6' : 'none',
-                                                outlineOffset: '3px'
+                                                outlineOffset: '3px',
+                                                touchAction: 'none'
                                             }}
                                             onMouseDown={(e) => handleMouseDown(e, `book_${book.id}`)}
+                                            onTouchStart={(e) => handleTouchStart(e, `book_${book.id}`)}
                                         >
                                             <img
                                                 src={(() => {
@@ -999,8 +1086,10 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                         style={{
                                             transform: `translate(${positionsRef.current.plus?.x || 0}px, ${positionsRef.current.plus?.y || 0}px) scale(${plusScale})`,
                                             color: currentTheme.text.includes('white') ? '#fff' : '#000',
+                                            touchAction: 'none'
                                         }}
                                         onMouseDown={(e) => handleMouseDown(e, 'plus')}
+                                        onTouchStart={(e) => handleTouchStart(e, 'plus')}
                                     >
                                         <span className="text-7xl font-black drop-shadow-2xl">+</span>
                                     </div>
@@ -1011,8 +1100,8 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                             {showName && (
                                 <div
                                     ref={el => { dragElemsRef.current['title'] = el }}
-                                    className="absolute z-20 cursor-move select-none"
-                                    style={{ bottom: '120px', left: '50%', transform: `translate(calc(-50% + ${positionsRef.current.title?.x || 0}px), ${positionsRef.current.title?.y || 0}px)` }}
+                                    className="absolute z-20 cursor-move select-none w-fit max-w-[300px]"
+                                    style={{ bottom: '120px', left: '50%', transform: `translate(calc(-50% + ${positionsRef.current.title?.x || 0}px), ${positionsRef.current.title?.y || 0}px)`, touchAction: 'none' }}
                                 >
                                     <h2
                                         contentEditable
@@ -1020,7 +1109,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                         onBlur={(e) => { handleTextChange('name', e.currentTarget.textContent || ''); setEditingKey(null) }}
                                         id="editable-title"
                                         dir="auto"
-                                        className={`text-3xl font-black leading-tight whitespace-normal ${currentTheme.text} outline-none focus:ring-1 focus:ring-white/20 px-1 text-center w-[300px] break-words`}
+                                        className={`text-3xl font-black leading-tight whitespace-normal ${currentTheme.text} outline-none focus:ring-1 focus:ring-white/20 px-1 text-center max-w-[300px] w-fit break-words`}
                                         style={{
                                             textRendering: 'optimizeLegibility',
                                             WebkitFontSmoothing: 'antialiased'
@@ -1033,6 +1122,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                         <div
                                             className="absolute inset-0 cursor-move z-10"
                                             onMouseDown={(e) => handleMouseDown(e, 'title')}
+                                            onTouchStart={(e) => handleTouchStart(e, 'title')}
                                             onDoubleClick={() => {
                                                 setEditingKey('title')
                                                 setTimeout(() => document.getElementById('editable-title')?.focus(), 50)
@@ -1046,8 +1136,8 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                             {showDescription && (
                                 <div
                                     ref={el => { dragElemsRef.current['description'] = el }}
-                                    className="absolute z-20 cursor-move select-none"
-                                    style={{ bottom: '95px', left: '50%', transform: `translate(calc(-50% + ${positionsRef.current.description?.x || 0}px), ${positionsRef.current.description?.y || 0}px)` }}
+                                    className="absolute z-20 cursor-move select-none w-fit max-w-[300px]"
+                                    style={{ bottom: '95px', left: '50%', transform: `translate(calc(-50% + ${positionsRef.current.description?.x || 0}px), ${positionsRef.current.description?.y || 0}px)`, touchAction: 'none' }}
                                 >
                                     <p
                                         contentEditable
@@ -1055,7 +1145,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                         onBlur={(e) => { handleTextChange('description', e.currentTarget.textContent || ''); setEditingKey(null) }}
                                         id="editable-description"
                                         dir="auto"
-                                        className="text-white/60 text-xs font-bold uppercase italic outline-none focus:text-white whitespace-normal text-center w-[300px] break-words"
+                                        className="text-white/60 text-xs font-bold uppercase italic outline-none focus:text-white whitespace-normal text-center max-w-[300px] w-fit break-words"
                                         style={{
                                             textRendering: 'optimizeLegibility',
                                             WebkitFontSmoothing: 'antialiased'
@@ -1067,6 +1157,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                         <div
                                             className="absolute inset-0 cursor-move z-10"
                                             onMouseDown={(e) => handleMouseDown(e, 'description')}
+                                            onTouchStart={(e) => handleTouchStart(e, 'description')}
                                             onDoubleClick={() => {
                                                 setEditingKey('description')
                                                 setTimeout(() => document.getElementById('editable-description')?.focus(), 50)
@@ -1080,7 +1171,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                             <div
                                 ref={el => { dragElemsRef.current['limited'] = el }}
                                 className="absolute z-20 cursor-move select-none"
-                                style={{ bottom: '68px', left: '50%', transform: `translate(calc(-50% + ${positionsRef.current.limited?.x || 0}px), ${positionsRef.current.limited?.y || 0}px)` }}
+                                style={{ bottom: '68px', left: '50%', transform: `translate(calc(-50% + ${positionsRef.current.limited?.x || 0}px), ${positionsRef.current.limited?.y || 0}px)`, touchAction: 'none' }}
                             >
                                 <p
                                     contentEditable
@@ -1095,6 +1186,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                     <div
                                         className="absolute inset-0 cursor-move z-10"
                                         onMouseDown={(e) => handleMouseDown(e, 'limited')}
+                                        onTouchStart={(e) => handleTouchStart(e, 'limited')}
                                         onDoubleClick={() => {
                                             setEditingKey('limited')
                                             setTimeout(() => document.getElementById('editable-limited')?.focus(), 50)
@@ -1108,7 +1200,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                 <div
                                     ref={el => { dragElemsRef.current['price'] = el }}
                                     className="absolute z-20 cursor-move select-none flex items-center justify-center gap-3"
-                                    style={{ bottom: '24px', left: '50%', transform: `translate(calc(-50% + ${positionsRef.current.price?.x || 0}px), ${positionsRef.current.price?.y || 0}px)` }}
+                                    style={{ bottom: '24px', left: '50%', transform: `translate(calc(-50% + ${positionsRef.current.price?.x || 0}px), ${positionsRef.current.price?.y || 0}px)`, touchAction: 'none' }}
                                 >
                                     {showSolde && (
                                         <div className="text-red-500 font-bold text-3xl line-through drop-shadow-md flex items-baseline gap-1 mt-1">
@@ -1140,6 +1232,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                         <div
                                             className="absolute inset-0 cursor-move z-10"
                                             onMouseDown={(e) => handleMouseDown(e, 'price')}
+                                            onTouchStart={(e) => handleTouchStart(e, 'price')}
                                             onDoubleClick={() => {
                                                 setEditingKey('price')
                                                 setTimeout(() => document.getElementById('editable-price')?.focus(), 50)
@@ -1154,7 +1247,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                 <div
                                     ref={el => { dragElemsRef.current['whatsapp'] = el }}
                                     className="absolute z-20 cursor-move select-none flex items-center justify-center gap-2 px-4 py-2 bg-[#25D366] text-white rounded-full shadow-lg"
-                                    style={{ bottom: '20px', left: '50%', transform: `translate(calc(-50% + ${positionsRef.current.whatsapp?.x || 0}px), ${positionsRef.current.whatsapp?.y || 0}px) scale(${whatsappScale})` }}
+                                    style={{ bottom: '20px', left: '50%', transform: `translate(calc(-50% + ${positionsRef.current.whatsapp?.x || 0}px), ${positionsRef.current.whatsapp?.y || 0}px) scale(${whatsappScale})`, touchAction: 'none' }}
                                 >
                                     <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
@@ -1172,6 +1265,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                         <div
                                             className="absolute inset-0 cursor-move z-10"
                                             onMouseDown={(e) => handleMouseDown(e, 'whatsapp')}
+                                            onTouchStart={(e) => handleTouchStart(e, 'whatsapp')}
                                             onDoubleClick={() => {
                                                 setEditingKey('whatsapp')
                                                 setTimeout(() => document.getElementById('editable-whatsapp')?.focus(), 50)
@@ -1193,7 +1287,8 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                             top: '50%', left: '50%',
                                             transform: `translate(calc(-50% + ${positionsRef.current[ctKey]?.x || 0}px), calc(-50% + ${positionsRef.current[ctKey]?.y || 0}px))`,
                                             outline: selectedKeys.has(ctKey) ? '2px solid #3b82f6' : 'none',
-                                            outlineOffset: '3px'
+                                            outlineOffset: '3px',
+                                            touchAction: 'none'
                                         }}
                                     >
                                         <p
@@ -1214,6 +1309,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                             <div
                                                 className="absolute inset-0 cursor-move z-10"
                                                 onMouseDown={(e) => handleMouseDown(e, ctKey)}
+                                                onTouchStart={(e) => handleTouchStart(e, ctKey)}
                                                 onDoubleClick={() => {
                                                     setEditingKey(ctKey)
                                                     setTimeout(() => document.getElementById(`editable-${ctKey}`)?.focus(), 50)

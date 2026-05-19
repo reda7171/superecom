@@ -33,7 +33,7 @@ export default function CartClient({ minOrderAmount = 0, recommendedBooks = [] }
     const hasFreeShippingItem = items.some(item => item.shippingFees === 0)
     const shippingFee = (hasOnlyDigital || hasFreeShippingItem || totalPrice >= 500) ? 0 : 30
     const finalTotal = totalPrice + shippingFee
-    const isMinAmountReached = totalPrice >= minOrderAmount
+    const isMinAmountReached = totalPrice > minOrderAmount
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 pb-40">
@@ -221,17 +221,17 @@ export default function CartClient({ minOrderAmount = 0, recommendedBooks = [] }
                             {isMinAmountReached ? (
                                 <Link
                                     href="/checkout"
-                                    className="w-full h-24 flex items-center justify-center gap-6 bg-black text-white text-[12px] font-black uppercase tracking-[0.4em] rounded-full hover:bg-gray-800 transition-all shadow-2xl hover:shadow-black/20 group active:scale-95 mb-10"
+                                    className="w-full h-24 relative flex items-center justify-center bg-black text-white text-[12px] font-black uppercase tracking-[0.4em] rounded-full hover:bg-gray-800 transition-all shadow-2xl hover:shadow-black/20 group active:scale-95 mb-10"
                                 >
-                                    <span>{t('BeginCheckout')}</span>
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                                    <span className="text-center">{t('BeginCheckout')}</span>
+                                    <ArrowRight className="absolute right-8 top-1/2 -translate-y-1/2 w-5 h-5 group-hover:translate-x-2 transition-transform rtl:left-8 rtl:right-auto rtl:rotate-180 rtl:group-hover:-translate-x-2" />
                                 </Link>
                             ) : (
                                 <div
-                                    className="w-full h-24 flex items-center justify-center gap-6 bg-gray-100 text-gray-400 text-[12px] font-black uppercase tracking-[0.4em] rounded-full cursor-not-allowed mb-10"
+                                    className="w-full h-24 relative flex items-center justify-center bg-gray-100 text-gray-400 text-[12px] font-black uppercase tracking-[0.4em] rounded-full cursor-not-allowed mb-10"
                                 >
-                                    <span>{t('BeginCheckout')}</span>
-                                    <ArrowRight className="w-5 h-5" />
+                                    <span className="text-center">{t('BeginCheckout')}</span>
+                                    <ArrowRight className="absolute right-8 top-1/2 -translate-y-1/2 w-5 h-5 rtl:left-8 rtl:right-auto rtl:rotate-180" />
                                 </div>
                             )}
 

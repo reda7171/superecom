@@ -102,7 +102,7 @@ export default async function BlogPage({
                                             src={post.coverImage}
                                             alt={post.title}
                                             fill
-                                            className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                            className="object-contain group-hover:scale-105 transition-transform duration-700 p-2 bg-slate-50"
                                             unoptimized
                                         />
                                     ) : (

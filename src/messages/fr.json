@@ -484,7 +484,8 @@
         "SharePerspective": "Partagez votre perspective avec notre communauté intellectuelle.",
         "Reflections": "{count} Réflexions",
         "RecommendedReads": "Lectures Recommandées",
-        "ExploreAll": "Tout explorer"
+        "ExploreAll": "Tout explorer",
+        "FrequentlyBoughtTogether": "Achetez-le avec"
     },
     "Cart": {
         "Title": "Votre Panier",
