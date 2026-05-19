@@ -23,6 +23,10 @@ export default function EditAccessoryPage({
         stock: '0',
         image: '',
         category: 'BOOKMARK',
+        materials: '',
+        dimensions: '',
+        weight: '',
+        warranty: '',
         active: true
     })
 
@@ -38,6 +42,10 @@ export default function EditAccessoryPage({
                     stock: data.stock.toString(),
                     image: data.image || '',
                     category: data.category,
+                    materials: data.materials || '',
+                    dimensions: data.dimensions || '',
+                    weight: data.weight || '',
+                    warranty: data.warranty || '',
                     active: data.active
                 })
                 setIsLoading(false)
@@ -137,6 +145,56 @@ export default function EditAccessoryPage({
                                     value={formData.costPrice}
                                     onChange={e => setFormData({ ...formData, costPrice: e.target.value })}
                                     className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                        <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest border-b border-slate-50 pb-3">Caractéristiques techniques (Optionnel)</h3>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Matériaux / Matière</label>
+                                <input
+                                    type="text"
+                                    value={formData.materials}
+                                    onChange={e => setFormData({ ...formData, materials: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
+                                    placeholder="Ex: Cuir véritable / Métal"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Dimensions</label>
+                                <input
+                                    type="text"
+                                    value={formData.dimensions}
+                                    onChange={e => setFormData({ ...formData, dimensions: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
+                                    placeholder="Ex: 12 x 3 cm"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Poids / Capacité</label>
+                                <input
+                                    type="text"
+                                    value={formData.weight}
+                                    onChange={e => setFormData({ ...formData, weight: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
+                                    placeholder="Ex: 64 Go / 150g"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Garantie</label>
+                                <input
+                                    type="text"
+                                    value={formData.warranty}
+                                    onChange={e => setFormData({ ...formData, warranty: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
+                                    placeholder="Ex: 1 an"
                                 />
                             </div>
                         </div>

@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, use } from 'react'
+import { useState, use, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ChevronLeft, Save, Package, Image as ImageIcon } from 'lucide-react'
+import { ChevronLeft, Save, Image as ImageIcon, Upload, Link2 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function NewAccessoryPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = use(params)
@@ -12,6 +13,9 @@ export default function NewAccessoryPage({ params }: { params: Promise<{ locale:
     const defaultCategory = searchParams.get('category')?.toUpperCase() || 'BOOKMARK'
 
     const [isSaving, setIsSaving] = useState(false)
+    const [imageTab, setImageTab] = useState<'upload' | 'url'>('upload')
+    const [isUploading, setIsUploading] = useState(false)
+    const fileInputRef = useRef<HTMLInputElement>(null)
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -20,8 +24,32 @@ export default function NewAccessoryPage({ params }: { params: Promise<{ locale:
         stock: '0',
         image: '',
         category: defaultCategory,
+        materials: '',
+        dimensions: '',
+        weight: '',
+        warranty: '',
         active: true
     })
+
+    /* Upload fichier vers /api/admin/upload */
+    async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0]
+        if (!file) return
+        setIsUploading(true)
+        try {
+            const data = new FormData()
+            data.append('file', file)
+            const res = await fetch('/api/admin/upload', { method: 'POST', body: data })
+            if (res.ok) {
+                const json = await res.json()
+                setFormData(prev => ({ ...prev, image: json.url }))
+            } else {
+                alert('Erreur upload')
+            }
+        } finally {
+            setIsUploading(false)
+        }
+    }
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
@@ -117,6 +145,56 @@ export default function NewAccessoryPage({ params }: { params: Promise<{ locale:
                             </div>
                         </div>
                     </div>
+
+                    <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                        <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-widest border-b border-slate-50 pb-3">Caractéristiques techniques (Optionnel)</h3>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Matériaux / Matière</label>
+                                <input
+                                    type="text"
+                                    value={formData.materials}
+                                    onChange={e => setFormData({ ...formData, materials: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
+                                    placeholder="Ex: Cuir véritable / Métal"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Dimensions</label>
+                                <input
+                                    type="text"
+                                    value={formData.dimensions}
+                                    onChange={e => setFormData({ ...formData, dimensions: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
+                                    placeholder="Ex: 12 x 3 cm"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Poids / Capacité</label>
+                                <input
+                                    type="text"
+                                    value={formData.weight}
+                                    onChange={e => setFormData({ ...formData, weight: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
+                                    placeholder="Ex: 64 Go / 150g"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Garantie</label>
+                                <input
+                                    type="text"
+                                    value={formData.warranty}
+                                    onChange={e => setFormData({ ...formData, warranty: e.target.value })}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold"
+                                    placeholder="Ex: 1 an"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Sidebar Info */}
@@ -132,6 +210,7 @@ export default function NewAccessoryPage({ params }: { params: Promise<{ locale:
                                 <option value="BOOKMARK">Marque-page</option>
                                 <option value="LIBRARY">Bibliothèque</option>
                                 <option value="USB">Clé USB</option>
+                                <option value="FURNITURE">Fourniture bureau</option>
                                 <option value="ACCESSORY">Autre accessoire</option>
                             </select>
                         </div>
@@ -146,18 +225,72 @@ export default function NewAccessoryPage({ params }: { params: Promise<{ locale:
                             />
                         </div>
 
+                        {/* Image : onglets Upload / URL */}
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">URL de l'image</label>
-                            <div className="relative group">
-                                <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                                <input
-                                    type="text"
-                                    value={formData.image}
-                                    onChange={e => setFormData({ ...formData, image: e.target.value })}
-                                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                                    placeholder="https://..."
-                                />
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Image</label>
+
+                            {/* Onglets */}
+                            <div className="flex rounded-xl overflow-hidden border border-slate-200 mb-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setImageTab('upload')}
+                                    className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold transition-all ${
+                                        imageTab === 'upload' ? 'bg-blue-600 text-white' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
+                                    }`}
+                                >
+                                    <Upload className="w-3.5 h-3.5" /> Uploader
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setImageTab('url')}
+                                    className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold transition-all ${
+                                        imageTab === 'url' ? 'bg-blue-600 text-white' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
+                                    }`}
+                                >
+                                    <Link2 className="w-3.5 h-3.5" /> URL
+                                </button>
                             </div>
+
+                            {imageTab === 'upload' ? (
+                                <div>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={isUploading}
+                                        className="w-full border-2 border-dashed border-slate-200 rounded-xl py-6 flex flex-col items-center gap-2 text-slate-400 hover:border-blue-400 hover:text-blue-500 transition-all disabled:opacity-50"
+                                    >
+                                        <Upload className="w-6 h-6" />
+                                        <span className="text-xs font-bold">
+                                            {isUploading ? 'Upload en cours...' : 'Cliquer pour choisir un fichier'}
+                                        </span>
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="relative group">
+                                    <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <input
+                                        type="text"
+                                        value={formData.image}
+                                        onChange={e => setFormData({ ...formData, image: e.target.value })}
+                                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                        placeholder="https://..."
+                                    />
+                                </div>
+                            )}
+
+                            {/* Preview */}
+                            {formData.image && (
+                                <div className="mt-3 relative w-full h-32 rounded-xl overflow-hidden border border-slate-100">
+                                    <Image src={formData.image} alt="preview" fill className="object-cover" unoptimized />
+                                </div>
+                            )}
                         </div>
                     </div>
 

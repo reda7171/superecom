@@ -902,6 +902,10 @@ model ExtraProduct {
   stock       Int      @default(0)
   image       String?  @db.VarChar(500)
   category    String   @default("ACCESSORY") // BOOKMARK, FURNITURE, USB, etc.
+  materials   String?  @db.VarChar(255)
+  dimensions  String?  @db.VarChar(255)
+  weight      String?  @db.VarChar(255)
+  warranty    String?  @db.VarChar(255)
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -13,7 +13,7 @@ interface AddToCartButtonProps {
         title: string
         price: number
         image: string
-        type: 'BOOK' | 'PACK'
+        type: 'BOOK' | 'PACK' | 'ACCESSORY'
         shippingFees?: number
     }
     variant?: 'primary' | 'secondary'

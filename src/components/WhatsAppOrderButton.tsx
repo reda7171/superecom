@@ -4,7 +4,7 @@ interface Props {
     title: string
     price: number
     phone?: string // numéro depuis les settings
-    type?: 'book' | 'pack'
+    type?: 'book' | 'pack' | 'accessory'
 }
 
 export default function WhatsAppOrderButton({ title, price, phone, type = 'book' }: Props) {
@@ -13,6 +13,8 @@ export default function WhatsAppOrderButton({ title, price, phone, type = 'book'
     // Message en Darija
     const message = type === 'pack'
         ? `Salam, bghit nchri had lpack: "${title}" b ${price} MAD. Wach kayn?`
+        : type === 'accessory'
+        ? `Salam, bghit nchri had l'accessoire: "${title}" b ${price} MAD. Wach kayn?`
         : `Salam, bghit had lktab: "${title}" b ${price} MAD. Wach kayn?`
 
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`

@@ -109,9 +109,16 @@ export default function AdminLayout({
         { name: 'Affiliés', href: `/${lang}/admin/affiliates`, icon: Share2 },
         { name: 'Analytics', href: `/${lang}/admin/analytics`, icon: BarChart3 },
         { name: 'Marketing', href: `/${lang}/admin/marketing`, icon: Sparkles },
-        { name: 'Marque-pages', href: `/${lang}/admin/accessories/bookmarks`, icon: Bookmark },
-        { name: 'Bibliothèques', href: `/${lang}/admin/accessories/library`, icon: Library },
-        { name: 'Clés USB', href: `/${lang}/admin/accessories/usb`, icon: Usb },
+        {
+            name: 'Accessoires',
+            href: `/${lang}/admin/accessories`,
+            icon: Bookmark,
+            children: [
+                { name: 'Marque-pages', href: `/${lang}/admin/accessories/bookmarks`, icon: Bookmark },
+                { name: 'Bibliothèques', href: `/${lang}/admin/accessories/library`, icon: Library },
+                { name: 'Clés USB', href: `/${lang}/admin/accessories/usb`, icon: Usb },
+            ]
+        },
         { name: 'Menus', href: `/${lang}/admin/menus`, icon: GripVertical },
         { name: 'Finance', href: `/${lang}/admin/finance`, icon: Banknote },
         { name: 'Traffic', href: `/${lang}/admin/traffic`, icon: TrendingUp },

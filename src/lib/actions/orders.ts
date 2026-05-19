@@ -18,7 +18,7 @@ const OrderSchema = z.object({
     items: z.array(z.object({
         productId: z.string().uuid(),
         quantity: z.number().int().positive('La quantité doit être supérieure à 0').max(100),
-        type: z.enum(['BOOK', 'PACK', 'GIFT', 'DIGITAL']),
+        type: z.enum(['BOOK', 'PACK', 'GIFT', 'DIGITAL', 'ACCESSORY']),
         price: z.number().min(0, 'Le prix doit être positif ou nul').max(100000)
     })).min(1, 'Panier vide').max(50),
     couponCode: z.string().max(50).optional(),
@@ -131,6 +131,12 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
                     if (pack?.shippingFees === 0) {
                         hasFreeShippingItem = true
                     }
+                } else if (item.type === 'ACCESSORY') {
+                    const ext = await tx.extraProduct.findUnique({
+                        where: { id: item.productId },
+                        select: { costPrice: true }
+                    })
+                    costPrice = ext?.costPrice || 0
                 }
                 return { ...item, costPrice }
             }))
@@ -164,6 +170,7 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
                             packId: item.type === 'PACK' ? item.productId : null,
                             giftId: item.type === 'GIFT' ? item.productId : null,
                             digitalProductId: item.type === 'DIGITAL' ? item.productId : null,
+                            extraProductId: item.type === 'ACCESSORY' ? item.productId : null,
                             quantity: item.quantity,
                             price: item.price,
                             costPrice: item.costPrice
@@ -172,7 +179,7 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
                 }
             })
 
-            // Mettre à jour le stock des livres
+            // Mettre à jour le stock des livres et accessoires
             for (const item of data.items) {
                 if (item.type === 'BOOK') {
                     const updatedBook = await tx.book.update({
@@ -188,6 +195,11 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
                             stock: updatedBook.stock 
                         }).catch(console.error)
                     }
+                } else if (item.type === 'ACCESSORY') {
+                    await tx.extraProduct.update({
+                        where: { id: item.productId },
+                        data: { stock: { decrement: item.quantity } }
+                    })
                 }
             }
 

@@ -18,7 +18,8 @@
     "db:push": "prisma db push",
     "db:reset": "prisma migrate reset",
     "setup": "npm run docker:up && timeout /t 10 && npm run prisma:migrate && npm run prisma:seed",
-    "bundle": "node scripts/bundle-standalone.js"
+    "bundle": "node scripts/bundle-standalone.js",
+    "build:safe": "node scripts/build-safe.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

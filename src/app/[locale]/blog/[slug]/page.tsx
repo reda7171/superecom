@@ -115,10 +115,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             />
 
             {/* === HERO === */}
-            <section className="relative bg-[#0f0f0f] overflow-hidden">
+            <section className="relative bg-slate-50 overflow-hidden border-b border-slate-100">
                 {/* Image de fond floutée */}
                 {post.coverImage && (
-                    <div className="absolute inset-0 opacity-20">
+                    <div className="absolute inset-0 opacity-[0.03] grayscale">
                         <Image
                             src={post.coverImage}
                             alt=""
@@ -130,27 +130,27 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                     </div>
                 )}
 
-                <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
+                <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
                     {/* Fil d'Ariane + btn admin */}
                     <div className="flex items-center justify-between mb-10">
-                        <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
-                            <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
+                        <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                            <Link href="/blog" className="hover:text-slate-900 transition-colors">Blog</Link>
                             <span>/</span>
                             {post.category && (
                                 <>
-                                    <Link href={`/blog?category=${post.category}`} className="hover:text-white transition-colors">{post.category}</Link>
+                                    <Link href={`/blog?category=${post.category}`} className="hover:text-slate-900 transition-colors">{post.category}</Link>
                                     <span>/</span>
                                 </>
                             )}
-                            <span className="text-white/60 truncate max-w-[200px]">{post.title}</span>
+                            <span className="text-slate-500 truncate max-w-[200px]">{post.title}</span>
                         </nav>
 
                         {isAdmin && (
                             <Link
                                 href={`/admin/posts/${post.id}`}
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-white/20 transition-all backdrop-blur-sm"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-slate-50 transition-all shadow-sm"
                             >
-                                <Pencil className="w-3 h-3 text-amber-400" />
+                                <Pencil className="w-3 h-3 text-indigo-600" />
                                 Modifier
                             </Link>
                         )}
@@ -161,7 +161,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                         <div className="mb-6">
                             <Link
                                 href={`/blog?category=${post.category}`}
-                                className="inline-block px-4 py-1.5 bg-amber-400 text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-amber-300 transition-colors"
+                                className="inline-block px-4 py-1.5 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-indigo-100 transition-colors"
                             >
                                 {post.category}
                             </Link>
@@ -169,32 +169,32 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                     )}
 
                     {/* Titre principal */}
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1] tracking-tighter mb-8 max-w-4xl">
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-slate-900 leading-[1] tracking-tighter mb-8 max-w-4xl">
                         {post.title}
                     </h1>
 
                     {/* Extrait */}
                     {post.excerpt && (
-                        <p className="text-lg md:text-xl text-white/60 leading-relaxed mb-10 max-w-3xl font-medium">
+                        <p className="text-lg md:text-xl text-slate-500 leading-relaxed mb-10 max-w-3xl font-medium">
                             {post.excerpt}
                         </p>
                     )}
 
                     {/* Méta */}
-                    <div className="flex flex-wrap items-center gap-6 text-[11px] font-bold uppercase tracking-[0.15em] text-white/40 border-t border-white/10 pt-8">
+                    <div className="flex flex-wrap items-center gap-6 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 border-t border-slate-200 pt-8">
                         {post.author?.fullName && (
-                            <span className="flex items-center gap-2 text-white/70">
+                            <span className="flex items-center gap-2 text-slate-700">
                                 {post.author.image ? (
                                     <Image
                                         src={post.author.image}
                                         alt={post.author.fullName}
                                         width={28}
                                         height={28}
-                                        className="rounded-full object-cover ring-2 ring-white/20"
+                                        className="rounded-full object-cover ring-2 ring-slate-200"
                                     />
                                 ) : (
-                                    <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center">
-                                        <User className="w-3.5 h-3.5" />
+                                    <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center">
+                                        <User className="w-3.5 h-3.5 text-slate-500" />
                                     </div>
                                 )}
                                 {post.author.fullName}
@@ -202,23 +202,23 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                         )}
                         {post.publishedAt && (
                             <span className="flex items-center gap-2">
-                                <Calendar className="w-3.5 h-3.5" />
+                                <Calendar className="w-3.5 h-3.5 text-indigo-500" />
                                 {new Date(post.publishedAt).toLocaleDateString('fr-FR', {
                                     day: 'numeric', month: 'long', year: 'numeric'
                                 })}
                             </span>
                         )}
                         <span className="flex items-center gap-2">
-                            <Clock className="w-3.5 h-3.5" />
+                            <Clock className="w-3.5 h-3.5 text-indigo-500" />
                             {readingTime} min de lecture
                         </span>
                         <span className="flex items-center gap-2">
-                            <Eye className="w-3.5 h-3.5" />
+                            <Eye className="w-3.5 h-3.5 text-indigo-500" />
                             {post.viewCount} vues
                         </span>
                         {post._count?.comments > 0 && (
                             <span className="flex items-center gap-2">
-                                <MessageSquare className="w-3.5 h-3.5" />
+                                <MessageSquare className="w-3.5 h-3.5 text-indigo-500" />
                                 {post._count.comments} commentaires
                             </span>
                         )}
@@ -228,13 +228,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
             {/* === IMAGE COVER grande === */}
             {post.coverImage && (
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-0">
-                    <div className="relative aspect-[21/9] w-full overflow-hidden shadow-2xl">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 mb-8">
+                    <div className="relative aspect-[21/9] w-full overflow-hidden rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] ring-1 ring-gray-900/5 bg-slate-50">
                         <Image
                             src={post.coverImage}
                             alt={post.title}
                             fill
-                            className="object-cover"
+                            className="object-contain"
                             priority
                             unoptimized
                         />
@@ -257,16 +257,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                         <article
                             id="article-content"
                             className="prose prose-lg max-w-none
-                                prose-headings:font-black prose-headings:tracking-tight prose-headings:text-[#0f0f0f]
+                                prose-headings:font-black prose-headings:tracking-tight prose-headings:text-slate-900
                                 prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:pb-4 prose-h2:border-b prose-h2:border-gray-100
                                 prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4
                                 prose-p:text-gray-600 prose-p:leading-[1.9] prose-p:text-[17px]
-                                prose-a:text-black prose-a:font-semibold prose-a:no-underline prose-a:border-b-2 prose-a:border-amber-400 hover:prose-a:bg-amber-50 prose-a:transition-colors
-                                prose-blockquote:border-l-4 prose-blockquote:border-amber-400 prose-blockquote:bg-amber-50 prose-blockquote:rounded-r-2xl prose-blockquote:py-4 prose-blockquote:not-italic
+                                prose-a:text-indigo-600 prose-a:font-semibold prose-a:no-underline prose-a:border-b-2 prose-a:border-indigo-600 hover:prose-a:bg-indigo-50 prose-a:transition-colors
+                                prose-blockquote:border-l-4 prose-blockquote:border-indigo-500 prose-blockquote:bg-indigo-50 prose-blockquote:rounded-r-2xl prose-blockquote:py-4 prose-blockquote:not-italic
                                 prose-blockquote:text-gray-700 prose-blockquote:font-medium
-                                prose-strong:text-black
+                                prose-strong:text-slate-900
                                 prose-code:bg-gray-100 prose-code:px-2 prose-code:py-0.5 prose-code:rounded-md prose-code:text-sm prose-code:text-rose-600
-                                prose-pre:bg-[#0f0f0f] prose-pre:rounded-2xl prose-pre:shadow-xl
+                                prose-pre:bg-slate-900 prose-pre:rounded-2xl prose-pre:shadow-xl
                                 prose-img:rounded-2xl prose-img:shadow-lg prose-img:mx-auto
                                 prose-ul:space-y-2 prose-ol:space-y-2
                                 prose-li:text-gray-600 prose-li:leading-relaxed
@@ -289,7 +289,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                             <Link
                                                 key={tag}
                                                 href={`/blog?search=${encodeURIComponent(tag)}`}
-                                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-600 text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-[#0f0f0f] hover:text-white transition-all"
+                                                className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-600 text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-slate-900 hover:text-white transition-all"
                                             >
                                                 <Tag className="w-3 h-3" />
                                                 {tag}
@@ -303,10 +303,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
                         {/* === Bio Auteur === */}
                         {post.author && (
-                            <div className="mt-16 p-8 bg-[#0f0f0f] rounded-3xl text-white">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-6">À propos de l'auteur</p>
+                            <div className="mt-16 p-8 bg-slate-50 border border-slate-100 rounded-3xl text-slate-900">
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6">À propos de l'auteur</p>
                                 <div className="flex items-start gap-6">
-                                    <div className="w-16 h-16 rounded-2xl bg-white/10 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                                    <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
                                         {post.author.image ? (
                                             <Image
                                                 src={post.author.image}
@@ -316,13 +316,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                                 className="object-cover w-full h-full"
                                             />
                                         ) : (
-                                            <User className="w-7 h-7 text-white/40" />
+                                            <User className="w-7 h-7 text-slate-400" />
                                         )}
                                     </div>
                                     <div>
                                         <h3 className="text-lg font-black mb-1">{post.author.fullName}</h3>
                                         {post.author.bio && (
-                                            <p className="text-sm text-white/60 leading-relaxed">{post.author.bio}</p>
+                                            <p className="text-sm text-slate-500 leading-relaxed">{post.author.bio}</p>
                                         )}
                                     </div>
                                 </div>
@@ -350,45 +350,45 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                             </div>
 
                             {/* Méta article */}
-                            <div className="bg-[#0f0f0f] rounded-3xl p-6 text-white">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-5">Infos article</p>
+                            <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 text-slate-900">
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-5">Infos article</p>
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-3 text-sm">
-                                        <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                                            <Clock className="w-3.5 h-3.5 text-amber-400" />
+                                        <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
+                                            <Clock className="w-3.5 h-3.5 text-indigo-500" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider">Lecture</p>
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Lecture</p>
                                             <p className="font-bold">{readingTime} minutes</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 text-sm">
-                                        <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                                            <Eye className="w-3.5 h-3.5 text-amber-400" />
+                                        <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
+                                            <Eye className="w-3.5 h-3.5 text-indigo-500" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider">Vues</p>
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Vues</p>
                                             <p className="font-bold">{post.viewCount.toLocaleString()}</p>
                                         </div>
                                     </div>
                                     {post._count?.comments > 0 && (
                                         <div className="flex items-center gap-3 text-sm">
-                                            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                                                <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
+                                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
+                                                <MessageSquare className="w-3.5 h-3.5 text-indigo-500" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider">Commentaires</p>
+                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Commentaires</p>
                                                 <p className="font-bold">{post._count.comments}</p>
                                             </div>
                                         </div>
                                     )}
                                     {post.publishedAt && (
                                         <div className="flex items-center gap-3 text-sm">
-                                            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                                                <Calendar className="w-3.5 h-3.5 text-amber-400" />
+                                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
+                                                <Calendar className="w-3.5 h-3.5 text-indigo-500" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider">Publié le</p>
+                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Publié le</p>
                                                 <p className="font-bold">{new Date(post.publishedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                                             </div>
                                         </div>
@@ -405,7 +405,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                             <Link
                                                 key={tag}
                                                 href={`/blog?search=${encodeURIComponent(tag)}`}
-                                                className="px-3 py-1.5 bg-white border border-gray-200 text-gray-500 text-[10px] font-bold uppercase tracking-wider rounded-full hover:bg-[#0f0f0f] hover:text-white hover:border-[#0f0f0f] transition-all"
+                                                className="px-3 py-1.5 bg-white border border-gray-200 text-gray-500 text-[10px] font-bold uppercase tracking-wider rounded-full hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all"
                                             >
                                                 {tag}
                                             </Link>
@@ -417,13 +417,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                             {/* CTA Blog */}
                             <Link
                                 href="/blog"
-                                className="group flex items-center justify-between p-5 bg-amber-400 rounded-3xl hover:bg-amber-300 transition-colors"
+                                className="group flex items-center justify-between p-5 bg-indigo-50 border border-indigo-100 rounded-3xl hover:bg-indigo-100 transition-colors"
                             >
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/60 mb-1">Explorer</p>
-                                    <p className="font-black text-black text-sm">Tous les articles</p>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-1">Explorer</p>
+                                    <p className="font-black text-indigo-900 text-sm">Tous les articles</p>
                                 </div>
-                                <div className="w-9 h-9 bg-black rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <div className="w-9 h-9 bg-indigo-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                                     <BookOpen className="w-4 h-4 text-white" />
                                 </div>
                             </Link>
@@ -437,12 +437,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 <section className="bg-gray-50 py-20 border-t border-gray-100">
                     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between mb-12">
-                            <h2 className="text-3xl font-black text-[#0f0f0f] tracking-tight">
+                            <h2 className="text-3xl font-black text-slate-900 tracking-tight">
                                 Articles similaires
                             </h2>
                             <Link
                                 href="/blog"
-                                className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-black transition-colors"
+                                className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-slate-900 transition-colors"
                             >
                                 Voir tout <ArrowRight className="w-3.5 h-3.5" />
                             </Link>
@@ -461,7 +461,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                                 src={related.coverImage}
                                                 alt={related.title}
                                                 fill
-                                                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                                className="object-contain group-hover:scale-105 transition-transform duration-700 p-2"
                                                 unoptimized
                                             />
                                         ) : (
@@ -471,7 +471,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                         )}
                                         {related.category && (
                                             <div className="absolute top-4 left-4">
-                                                <span className="px-3 py-1 bg-amber-400 text-black text-[9px] font-black uppercase tracking-[0.25em] rounded-full">
+                                                <span className="px-3 py-1 bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-[0.25em] rounded-full">
                                                     {related.category}
                                                 </span>
                                             </div>
@@ -486,7 +486,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                                 </span>
                                             )}
                                         </div>
-                                        <h3 className="font-black text-[#0f0f0f] text-lg leading-tight mb-3 group-hover:text-amber-600 transition-colors line-clamp-2">
+                                        <h3 className="font-black text-slate-900 text-lg leading-tight mb-3 group-hover:text-indigo-600 transition-colors line-clamp-2">
                                             {related.title}
                                         </h3>
                                         {related.excerpt && (
@@ -495,11 +495,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                             </p>
                                         )}
                                         <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 group-hover:text-black transition-colors">
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-slate-900 transition-colors">
                                                 Lire l'article
                                             </span>
-                                            <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-[#0f0f0f] transition-colors">
-                                                <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-white -rotate-45 group-hover:rotate-0 transition-all" />
+                                            <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-indigo-600 transition-colors">
+                                                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-white -rotate-45 group-hover:rotate-0 transition-all" />
                                             </div>
                                         </div>
                                     </div>

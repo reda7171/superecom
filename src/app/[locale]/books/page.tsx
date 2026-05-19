@@ -97,7 +97,7 @@ export default async function BooksPage({
         maxPrice: priceFilter.maxPrice,
         active: true,
         language: params.language,
-        inStock: params.inStock === 'true',
+        inStock: params.inStock === undefined ? true : params.inStock === 'true',
     };
 
     const [books, totalCount, categories, categoryConfig, authors, adsenseEnabled, adsensePublisherId, adsenseSlotBetweenBooks] = await Promise.all([
@@ -173,7 +173,7 @@ export default async function BooksPage({
                                         maxPrice: priceFilter.maxPrice,
                                         active: true,
                                         language: params.language,
-                                        inStock: params.inStock === 'true',
+                                        inStock: params.inStock === undefined ? true : params.inStock === 'true',
                                         page: 1,
                                         limit: 12
                                     }}

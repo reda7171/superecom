@@ -38,6 +38,10 @@ export async function PATCH(
                 stock: data.stock !== undefined ? parseInt(data.stock) : undefined,
                 image: data.image,
                 category: data.category,
+                materials: data.materials,
+                dimensions: data.dimensions,
+                weight: data.weight,
+                warranty: data.warranty,
                 active: data.active
             }
         })

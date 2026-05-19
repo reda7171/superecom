@@ -33,6 +33,10 @@ export async function POST(request: NextRequest) {
                 stock: parseInt(data.stock || 0),
                 image: data.image,
                 category: data.category || 'ACCESSORY',
+                materials: data.materials,
+                dimensions: data.dimensions,
+                weight: data.weight,
+                warranty: data.warranty,
                 active: data.active !== undefined ? data.active : true
             }
         })

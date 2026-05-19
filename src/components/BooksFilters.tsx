@@ -50,7 +50,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
         if (params.search) newParams.set('search', params.search)
         if (params.category) newParams.set('category', params.category)
         if (params.language) newParams.set('language', params.language)
-        if (value) newParams.set('inStock', 'true')
+        newParams.set('inStock', value ? 'true' : 'false')
         router.push(`/books?${newParams.toString()}`)
     }
 
@@ -115,7 +115,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                         <input 
                             type="checkbox" 
                             className="sr-only peer"
-                            checked={params.inStock === 'true'}
+                            checked={params.inStock === undefined ? true : params.inStock === 'true'}
                             onChange={handleInStockChange}
                         />
                         <div className="w-10 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
@@ -326,14 +326,15 @@ export default function BooksFilters({ params, categories, authors, languages, t
                                     >×</Link>
                                 </div>
                             )}
-                            {params.inStock && (
+                            {(params.inStock === undefined || params.inStock === 'true') && (
                                 <div className="flex-shrink-0 px-3 py-1.5 bg-black text-white rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
                                     Disponible
                                     <Link 
                                         href={`/books?${new URLSearchParams({
                                             ...(params.category ? { category: params.category } : {}),
                                             ...(params.search ? { search: params.search } : {}),
-                                            ...(params.language ? { language: params.language } : {})
+                                            ...(params.language ? { language: params.language } : {}),
+                                            inStock: 'false'
                                         }).toString()}`} 
                                         scroll={false}
                                         className="opacity-50"
