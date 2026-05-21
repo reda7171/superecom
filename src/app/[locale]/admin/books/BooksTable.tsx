@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { Link } from '@/i18n/routing'
-import { Edit, Trash2, Eye, EyeOff, Search, Check, X, Edit3, ImageIcon, FileDown, GripVertical, LayoutGrid, List, Upload } from 'lucide-react'
+import { Edit, Trash2, Eye, EyeOff, Search, Check, X, Edit3, ImageIcon, FileDown, GripVertical, LayoutGrid, List, Upload, Send, MessageSquare } from 'lucide-react'
 import { deleteBook, toggleBookStatus, bulkDeleteBooks, updateBookQuick, updateBookOrder, bulkUpdateBookPrices } from '@/lib/actions/books'
 import { useRouter, usePathname } from 'next/navigation'
 import ImageWithFallback from '@/components/ImageWithFallback'
 import BookCreativeModal from '@/components/admin/BookCreativeModal'
 import BookDescriptionModal from '@/components/admin/BookDescriptionModal'
 import N8nPublishModal from '@/components/admin/N8nPublishModal'
+import BulkPublishModal from '@/components/admin/BulkPublishModal'
+import CaptionPreviewModal from '@/components/admin/CaptionPreviewModal'
 import { normalizeImage } from '@/lib/utils'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
 
@@ -39,12 +41,14 @@ export default function BooksTable({ books, pageNumber, totalProviderPages, init
     const [descriptionFormat, setDescriptionFormat] = useState<'post' | 'story'>('post')
     const [n8nBook, setN8nBook] = useState<Book | null>(null)
     const [n8nFormat, setN8nFormat] = useState<'post' | 'story'>('post')
+    const [previewCaptionBook, setPreviewCaptionBook] = useState<Book | null>(null)
     const [quickPublishing, setQuickPublishing] = useState<string | null>(null)
     const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null)
     const [orderedBooks, setOrderedBooks] = useState(books)
     const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
     const [bulkPrice, setBulkPrice] = useState<string>('')
     const [isUpdatingPrice, setIsUpdatingPrice] = useState(false)
+    const [isBulkPublishOpen, setIsBulkPublishOpen] = useState(false)
     const router = useRouter()
     const pathname = usePathname()
 
@@ -405,6 +409,15 @@ export default function BooksTable({ books, pageNumber, totalProviderPages, init
                                 Publier Jumia
                             </button>
                             <button
+                                onClick={() => setIsBulkPublishOpen(true)}
+                                disabled={bulkLoading}
+                                className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-purple-700 transition"
+                                title="Publier en boucle sur les réseaux sociaux (n8n)"
+                            >
+                                <Send className="w-4 h-4" />
+                                Publier Réseaux
+                            </button>
+                            <button
                                 onClick={handleBulkDelete}
                                 disabled={bulkLoading}
                                 className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-700 transition"
@@ -598,6 +611,13 @@ export default function BooksTable({ books, pageNumber, totalProviderPages, init
                                                                                 <Eye className="w-4 h-4" />
                                                                             </Link>
                                                                             <button
+                                                                                onClick={() => setPreviewCaptionBook(book)}
+                                                                                className="text-yellow-600 hover:text-yellow-900 p-2 hover:bg-yellow-50 rounded transition-colors"
+                                                                                title="Prévisualiser la Caption"
+                                                                            >
+                                                                                <MessageSquare className="w-4 h-4" />
+                                                                            </button>
+                                                                            <button
                                                                                 onClick={() => { setCreativeFormat('post'); setCreativeBook(book); }}
                                                                                 className="text-purple-600 hover:text-purple-900 p-2 hover:bg-purple-50 rounded transition-colors"
                                                                                 title="Générer un Post (FB/Insta)"
@@ -777,6 +797,16 @@ export default function BooksTable({ books, pageNumber, totalProviderPages, init
                 onClose={() => setN8nBook(null)}
                 book={n8nBook}
                 format={n8nFormat}
+            />
+            <BulkPublishModal
+                isOpen={isBulkPublishOpen}
+                onClose={() => setIsBulkPublishOpen(false)}
+                books={books.filter(b => selectedIds.includes(b.id))}
+            />
+            <CaptionPreviewModal
+                isOpen={!!previewCaptionBook}
+                onClose={() => setPreviewCaptionBook(null)}
+                book={previewCaptionBook}
             />
         </div>
     )
