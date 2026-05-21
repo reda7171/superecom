@@ -234,7 +234,9 @@ export default function BulkPublishModal({ books, isOpen, onClose }: BulkPublish
                                         <CheckCircle className="w-5 h-5 text-green-500" />
                                     )}
                                     {status?.status === 'error' && (
-                                        <XCircle className="w-5 h-5 text-red-500" title={status.message} />
+                                        <span title={status.message}>
+                                            <XCircle className="w-5 h-5 text-red-500" />
+                                        </span>
                                     )}
                                     {!status && !isCurrent && (
                                         <Clock className="w-4 h-4 text-gray-300" />
