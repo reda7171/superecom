@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, Download, ImageIcon, Loader2, Type, Palette, LayoutGrid, Book as BookIcon, CheckCircle2 } from 'lucide-react'
+import { X, Download, ImageIcon, Loader2, Type, Palette, LayoutGrid, Book as BookIcon, CheckCircle2, Globe } from 'lucide-react'
 import { getAllBooksForCatalog } from '@/lib/actions/books'
 import { normalizeImage } from '@/lib/utils'
 import * as htmlToImage from 'html-to-image'
@@ -31,7 +31,8 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
         textColor: '#111827',
         pattern: 'none',
         columns: 3,
-        selectedCategory: 'all'
+        selectedCategory: 'all',
+        groupByLanguage: true
     })
     const captureRef = useRef<HTMLDivElement>(null)
 
@@ -53,9 +54,50 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
         ? allBooks 
         : allBooks.filter(b => b.category === config.selectedCategory)
 
-    const chunkedBooks = Array.from({ length: Math.ceil(filteredBooks.length / BOOKS_PER_PAGE) }, (_, i) =>
-        filteredBooks.slice(i * BOOKS_PER_PAGE, i * BOOKS_PER_PAGE + BOOKS_PER_PAGE)
-    )
+    const languageNames: { [key: string]: string } = {
+        fr: 'Langue : Français',
+        ar: 'اللغة : العربية',
+        en: 'Language : English'
+    }
+
+    const getChunkedBooks = () => {
+        const chunkedBooksBase = Array.from({ length: Math.ceil(filteredBooks.length / BOOKS_PER_PAGE) }, (_, i) =>
+            filteredBooks.slice(i * BOOKS_PER_PAGE, i * BOOKS_PER_PAGE + BOOKS_PER_PAGE)
+        )
+
+        if (!config.groupByLanguage) {
+            return chunkedBooksBase.map(chunk => ({
+                language: 'all',
+                books: chunk
+            }))
+        }
+
+        const booksByLanguage: { [key: string]: any[] } = {}
+        filteredBooks.forEach(book => {
+            const lang = book.language || 'fr'
+            if (!booksByLanguage[lang]) {
+                booksByLanguage[lang] = []
+            }
+            booksByLanguage[lang].push(book)
+        })
+
+        const chunks: { language: string; books: any[] }[] = []
+        const sortedLanguages = Object.keys(booksByLanguage).sort()
+        sortedLanguages.forEach(lang => {
+            const list = booksByLanguage[lang]
+            const count = Math.ceil(list.length / BOOKS_PER_PAGE)
+            for (let i = 0; i < count; i++) {
+                chunks.push({
+                    language: lang,
+                    books: list.slice(i * BOOKS_PER_PAGE, i * BOOKS_PER_PAGE + BOOKS_PER_PAGE)
+                })
+            }
+        })
+
+        return chunks
+    }
+
+    const chunkedBooks = getChunkedBooks()
 
     const categories = Array.from(new Set(allBooks.map(b => b.category).filter(Boolean))).sort()
 
@@ -182,6 +224,19 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                                     ))}
                                 </div>
                             </div>
+
+                            <div>
+                                <label className="text-[10px] uppercase text-gray-400 font-black tracking-widest block mb-3">Langue</label>
+                                <label className="flex items-center gap-2 cursor-pointer py-1">
+                                    <input 
+                                        type="checkbox"
+                                        checked={config.groupByLanguage}
+                                        onChange={(e) => setConfig({...config, groupByLanguage: e.target.checked})}
+                                        className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                    />
+                                    <span className="text-sm font-semibold text-gray-700">Regrouper par langue</span>
+                                </label>
+                            </div>
                         </div>
 
                         <div className="pt-8 space-y-4">
@@ -206,9 +261,14 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                              <div className="w-[1200px] p-24 flex flex-col items-center relative min-h-[1400px]">
                                 <div style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: 0.1, ...getPatternStyle(config.pattern, config.backgroundColor) }}></div>
                                 <div className="relative z-10 w-full flex flex-col items-center">
-                                    <h1 dir="auto" className="text-[140px] font-black uppercase text-center mb-10" style={{ color: config.primaryColor }}>{config.title}</h1>
+                                    <h1 dir="auto" className="text-[140px] font-black uppercase text-center mb-6" style={{ color: config.primaryColor }}>{config.title}</h1>
+                                    {config.groupByLanguage && chunkedBooks[currentChunkIdx]?.language !== 'all' && (
+                                        <p className="text-4xl font-black mb-10 uppercase tracking-wider text-center" style={{ color: config.primaryColor }}>
+                                            {languageNames[chunkedBooks[currentChunkIdx]?.language]}
+                                        </p>
+                                    )}
                                     <div className="w-full grid gap-12" style={{ gridTemplateColumns: `repeat(${config.columns}, minmax(0, 1fr))` }}>
-                                        {(chunkedBooks[currentChunkIdx] || []).map((book, idx) => (
+                                        {(chunkedBooks[currentChunkIdx]?.books || []).map((book: any, idx: number) => (
                                             <div key={idx} className="flex flex-col items-center">
                                                 <div className="w-full aspect-[2/3] bg-white rounded-[60px] mb-8 overflow-hidden border-8 border-white shadow-2xl">
                                                     {book.image ? <img src={normalizeImage(book.image)} className="w-full h-full object-cover" /> : <BookIcon className="w-20 h-20 text-gray-200" />}
@@ -257,15 +317,22 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                                 </span>
                             </div>
                         )}
-                        <h1 dir="auto" style={{ fontSize: '180px', fontWeight: '950', color: config.primaryColor, textTransform: 'uppercase', letterSpacing: '-6px', margin: '0 0 50px 0', lineHeight: '0.9', textAlign: 'center' }}>
+                        <h1 dir="auto" style={{ fontSize: '180px', fontWeight: '950', color: config.primaryColor, textTransform: 'uppercase', letterSpacing: '-6px', margin: '0 0 30px 0', lineHeight: '0.9', textAlign: 'center' }}>
                             {config.title}
                         </h1>
+                        {config.groupByLanguage && chunkedBooks[currentChunkIdx]?.language !== 'all' && (
+                            <div style={{ marginBottom: '50px' }}>
+                                <span style={{ fontSize: '48px', fontWeight: '950', color: config.textColor, letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.8 }}>
+                                    {languageNames[chunkedBooks[currentChunkIdx]?.language]}
+                                </span>
+                            </div>
+                        )}
                         <div style={{ height: '30px', width: '400px', backgroundColor: config.primaryColor, margin: '0 auto', borderRadius: '15px' }}></div>
                     </div>
 
                     {/* Grid */}
                     <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: '140px 60px', justifyContent: 'center' }}>
-                        {(chunkedBooks[currentChunkIdx] || []).map((book, idx) => {
+                        {(chunkedBooks[currentChunkIdx]?.books || []).map((book: any, idx: number) => {
                             const cellWidth = Math.floor((1040 - (config.columns - 1) * 60) / config.columns)
                             return (
                                 <div key={idx} style={{ width: `${cellWidth}px`, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

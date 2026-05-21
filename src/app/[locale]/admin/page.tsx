@@ -167,7 +167,7 @@ export default async function AdminDashboard(props: { params: Promise<{ locale: 
     const lowStockBooks = await getLowStockBooks()
     const badgeStats = await getBadgeStats()
     const topPerformers = await getTopPerformers()
-    const n8nBaseUrl = await getSetting('n8n_base_url') || 'http://localhost:5678'
+    const n8nBaseUrl = await getSetting('n8n_base_url') || 'http://167.86.108.246:5678/'
 
     const statCards = [
         {

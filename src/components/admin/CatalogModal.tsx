@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FileText, X, Printer, LayoutList, Type, Loader2, ImageIcon, Book as BookIcon, Filter, Palette, Grid3X3 } from 'lucide-react'
+import { FileText, X, Printer, LayoutList, Type, Loader2, ImageIcon, Book as BookIcon, Filter, Palette, Grid3X3, Globe } from 'lucide-react'
 import { getAllBooksForCatalog } from '@/lib/actions/books'
 import { normalizeImage } from '@/lib/utils'
 
@@ -25,7 +25,8 @@ export default function CatalogModal({ isOpen: initialIsOpen, onClose, triggerEv
         backgroundColor: '#ffffff',
         pattern: 'none',
         showPrice: true,
-        selectedCategory: 'all'
+        selectedCategory: 'all',
+        groupByLanguage: true
     })
 
     useEffect(() => {
@@ -97,7 +98,42 @@ export default function CatalogModal({ isOpen: initialIsOpen, onClose, triggerEv
         }, 500)
     }
 
-    const bookPages = chunkBooks(filteredBooks, config.booksPerPage)
+    const languageNames: { [key: string]: string } = {
+        fr: 'Langue : Français',
+        ar: 'اللغة : العربية',
+        en: 'Language : English'
+    }
+
+    const getBookPages = () => {
+        if (!config.groupByLanguage) {
+            return chunkBooks(filteredBooks, config.booksPerPage).map(chunk => ({
+                language: 'all',
+                books: chunk
+            }))
+        }
+
+        const booksByLanguage: { [key: string]: any[] } = {}
+        filteredBooks.forEach(book => {
+            const lang = book.language || 'fr'
+            if (!booksByLanguage[lang]) {
+                booksByLanguage[lang] = []
+            }
+            booksByLanguage[lang].push(book)
+        })
+
+        const pages: { language: string; books: any[] }[] = []
+        const sortedLanguages = Object.keys(booksByLanguage).sort()
+        sortedLanguages.forEach(lang => {
+            const chunks = chunkBooks(booksByLanguage[lang], config.booksPerPage)
+            chunks.forEach(chunk => {
+                pages.push({ language: lang, books: chunk })
+            })
+        })
+
+        return pages
+    }
+
+    const bookPages = getBookPages()
     const numRows = Math.ceil(config.booksPerPage / 2)
     const rowHeight = (25 / numRows).toFixed(2)
 
@@ -181,7 +217,7 @@ export default function CatalogModal({ isOpen: initialIsOpen, onClose, triggerEv
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-3 gap-4">
                             <div className="space-y-4">
                                 <h3 className="font-semibold text-gray-900 border-b pb-2 flex items-center gap-2">
                                     <Filter className="w-4 h-4 text-blue-600" /> Catégorie
@@ -208,6 +244,22 @@ export default function CatalogModal({ isOpen: initialIsOpen, onClose, triggerEv
                                     <option value="12">12/page</option>
                                     <option value="18">18/page</option>
                                 </select>
+                            </div>
+                            <div className="space-y-4">
+                                <h3 className="font-semibold text-gray-900 border-b pb-2 flex items-center gap-2">
+                                    <Globe className="w-4 h-4 text-blue-600" /> Langue
+                                </h3>
+                                <div className="flex items-center h-10">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input 
+                                            type="checkbox"
+                                            checked={config.groupByLanguage}
+                                            onChange={(e) => setConfig({...config, groupByLanguage: e.target.checked})}
+                                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700">Regrouper par langue</span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -255,10 +307,17 @@ export default function CatalogModal({ isOpen: initialIsOpen, onClose, triggerEv
                 </div>
 
                 {/* Book Pages */}
-                {bookPages.map((pageBooks, pageIdx) => (
+                {bookPages.map(({ language, books }, pageIdx) => (
                     <div key={pageIdx} className="w-full h-[29.7cm] p-10 page-break overflow-hidden flex flex-col pt-12" style={{ ...getPatternStyle() }}>
+                        {config.groupByLanguage && language !== 'all' && (
+                            <div className="flex items-center justify-between border-b pb-2 mb-4" style={{ borderColor: config.primaryColor + '33' }}>
+                                <span className="text-xs font-black uppercase tracking-widest" style={{ color: config.primaryColor }}>
+                                    {languageNames[language] || language}
+                                </span>
+                            </div>
+                        )}
                         <div className="grid grid-cols-2 gap-6 flex-1">
-                            {pageBooks.map((book, idx) => (
+                            {books.map((book, idx) => (
                                 <div 
                                     key={idx} 
                                     className="flex gap-4 border border-gray-100 rounded-2xl p-4 break-inside-avoid shadow-sm"

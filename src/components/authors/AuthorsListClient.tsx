@@ -23,7 +23,7 @@ interface AuthorsListClientProps {
 export default function AuthorsListClient({ authors, locale }: AuthorsListClientProps) {
     const t = useTranslations('AuthorsPage')
     const [search, setSearch] = useState('')
-    const [filterAvailable, setFilterAvailable] = useState(true)
+    const [filterAvailable, setFilterAvailable] = useState(false)
 
     const filteredAuthors = useMemo(() => {
         let result = authors

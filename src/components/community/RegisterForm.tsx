@@ -55,6 +55,11 @@ export default function RegisterForm() {
                     </div>
 
                     <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('Phone')}</label>
+                        <input name="phone" type="tel" required className="w-full px-6 py-4 bg-pixio-cream/50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-black" placeholder="0612345678" />
+                    </div>
+
+                    <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t('Password')}</label>
                         <div className="relative">
                             <input

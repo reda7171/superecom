@@ -403,7 +403,23 @@
         "Includes": "كتب متضمنة",
         "RegularPrice": "السعر العادي",
         "PackPrice": "سعر الباقة",
-        "AddSelection": "أضف المختارات"
+        "AddSelection": "أضف المختارات",
+        "CustomPack": {
+            "BannerTitle": "أنشئ باقتك الخاصة",
+            "BannerDesc": "اختر كتبك المفضلة واحصل على خصم حصري. ابتداءً من 3 كتب!",
+            "BannerBtn": "تكوين باقتي",
+            "ModalTitle": "كوّن باقتك الخاصة",
+            "SelectBooks": "اختر كتبك",
+            "Selected": "تم الاختيار",
+            "Discount10": "تم تطبيق خصم 10% (3+ كتب)",
+            "Discount15": "تم تطبيق خصم 15% (5+ كتب)",
+            "AddMoreFor10": "أضف {count} كتاب(كتب) إضافية لخصم -10%",
+            "AddMoreFor15": "أضف {count} كتاب(كتب) إضافية لخصم -15%",
+            "AddToCart": "أضف الباقة للسلة ({price} درهم)",
+            "SearchPlaceholder": "ابحث عن كتاب...",
+            "NoBooksFound": "لم يتم العثور على أي كتاب.",
+            "CartPrefix": "[باقة مخصصة]"
+        }
     },
     "FAQ": {
         "Title": "أسئلة مكررة",
@@ -685,6 +701,7 @@
         "FullName": "الاسم الكامل",
         "Email": "البريد الإلكتروني",
         "Password": "كلمة المرور",
+        "Phone": "رقم الهاتف",
         "City": "المدينة",
         "CityPlaceholder": "الدار البيضاء، الرباط...",
         "ChooseCity": "اختر مدينتك",

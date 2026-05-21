@@ -247,6 +247,7 @@ export async function deleteTelegramWebhook(token: string) {
 export async function sendUserRegistrationNotification(user: {
     fullName: string
     email: string
+    phone?: string
     city: string
     role?: string
 }) {
@@ -263,6 +264,7 @@ export async function sendUserRegistrationNotification(user: {
     const text = `👤 <b>Nouveau Compte Créé</b>\n\n` +
         `📛 <b>Nom:</b> ${user.fullName}\n` +
         `📧 <b>Email:</b> ${user.email}\n` +
+        (user.phone ? `📞 <b>Téléphone:</b> ${user.phone}\n` : '') +
         `📍 <b>Ville:</b> ${user.city}\n` +
         `🌍 <b>Pays/Ville (IP):</b> ${location}\n` +
         `🔑 <b>Rôle:</b> ${user.role || 'USER'}\n` +

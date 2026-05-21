@@ -2,8 +2,15 @@ import { getTranslations } from 'next-intl/server'
 import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import { Mail, Phone, MapPin, MessageCircle, Send, Clock, Globe } from 'lucide-react'
+import { getAllSettings } from '@/lib/actions/site-settings'
 
 export default async function ContactPage() {
+    // Récupérer les paramètres du site
+    const settings = await getAllSettings()
+    const email = settings.contact_email || 'admin@riwaya.store'
+    const phone = settings.contact_phone || '+212 600-000000'
+    const address = settings.contact_address || 'Casablanca, Maroc'
+
     return (
         <div className="min-h-screen bg-pixio-cream">
             <Header />
@@ -32,21 +39,21 @@ export default async function ContactPage() {
                                     <Mail className="w-5 h-5" />
                                 </div>
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">Email Direct</h3>
-                                <p className="text-sm font-black text-black">admin@riwaya.store</p>
+                                <p className="text-sm font-black text-black">{email}</p>
                             </div>
                             <div className="space-y-4 group">
                                 <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg group-hover:bg-black group-hover:text-white transition-all duration-500">
                                     <Phone className="w-5 h-5" />
                                 </div>
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">Téléphone</h3>
-                                <p className="text-sm font-black text-black">+212 600-000000</p>
+                                <p className="text-sm font-black text-black">{phone}</p>
                             </div>
                             <div className="space-y-4 group">
                                 <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg group-hover:bg-black group-hover:text-white transition-all duration-500">
                                     <MapPin className="w-5 h-5" />
                                 </div>
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">Siège Social</h3>
-                                <p className="text-sm font-black text-black">Casablanca, Maroc</p>
+                                <p className="text-sm font-black text-black">{address}</p>
                             </div>
                             <div className="space-y-4 group">
                                 <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg group-hover:bg-black group-hover:text-white transition-all duration-500">

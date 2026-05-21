@@ -10,6 +10,7 @@ import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
 const RegisterSchema = z.object({
     fullName: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
     email: z.string().email('Email invalide'),
+    phone: z.string().min(8, 'Le numéro de téléphone doit contenir au moins 8 chiffres'),
     password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
     city: z.string().min(2, 'La ville est requise'),
 })
@@ -37,6 +38,7 @@ export async function register(formData: FormData): Promise<AuthResult> {
     const rawData = {
         fullName: formData.get('fullName'),
         email: formData.get('email'),
+        phone: formData.get('phone'),
         password: formData.get('password'),
         city: formData.get('city'),
     }
@@ -61,6 +63,7 @@ export async function register(formData: FormData): Promise<AuthResult> {
             data: {
                 fullName: data.fullName,
                 email: data.email,
+                phone: data.phone,
                 password: hashedPassword,
                 city: data.city,
                 role: 'USER' as any, // Cast car enum généré peut-être pas à jour dans l'IDE
@@ -74,6 +77,7 @@ export async function register(formData: FormData): Promise<AuthResult> {
             await sendUserRegistrationNotification({
                 fullName: user.fullName || '',
                 email: user.email,
+                phone: user.phone || '',
                 city: user.city || '',
                 role: 'LECTEUR'
             })

@@ -406,7 +406,7 @@ export async function getAllBooksForCatalog() {
     try {
         await verifyAdmin()
         const books = await prisma.book.findMany({
-            where: { active: true },
+            where: { active: true, stock: { gt: 0 } },
             orderBy: { title: 'asc' },
             select: {
                 id: true,
@@ -416,6 +416,7 @@ export async function getAllBooksForCatalog() {
                 image: true,
                 description: true,
                 category: true,
+                language: true,
             }
         })
 

@@ -403,7 +403,23 @@
         "Includes": "Titles included",
         "RegularPrice": "Regular Price",
         "PackPrice": "Pack Price",
-        "AddSelection": "Add Selection"
+        "AddSelection": "Add Selection",
+        "CustomPack": {
+            "BannerTitle": "Create Your Own Pack",
+            "BannerDesc": "Select your favorite books and get an exclusive discount. Starting from 3 books!",
+            "BannerBtn": "Build my pack",
+            "ModalTitle": "Build Your Custom Pack",
+            "SelectBooks": "Select your books",
+            "Selected": "Selected",
+            "Discount10": "10% discount applied (3+ books)",
+            "Discount15": "15% discount applied (5+ books)",
+            "AddMoreFor10": "Add {count} more book(s) for -10%",
+            "AddMoreFor15": "Add {count} more book(s) for -15%",
+            "AddToCart": "Add pack to cart ({price} MAD)",
+            "SearchPlaceholder": "Search for a book...",
+            "NoBooksFound": "No books found.",
+            "CartPrefix": "[Custom Pack]"
+        }
     },
     "FAQ": {
         "Title": "Frequently Asked Questions",
@@ -685,6 +701,7 @@
         "FullName": "Full Name",
         "Email": "Email",
         "Password": "Password",
+        "Phone": "Phone number",
         "City": "City",
         "CityPlaceholder": "Casablanca, Rabat...",
         "ChooseCity": "Select a city",
@@ -999,7 +1016,7 @@
     },
     "Blog": {
         "Badge": "Journal",
-        "Title": "Riwaya.Mag",
+        "Title": "Riwaya.store",
         "Subtitle": "Inspiration, Culture & Ideas for the Modern Mind",
         "NoPosts": "No articles published yet.",
         "ComingSoon": "Come back soon to discover our upcoming publications.",

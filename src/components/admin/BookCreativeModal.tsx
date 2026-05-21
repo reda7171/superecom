@@ -150,10 +150,12 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                 whatsapp: '+212 600 00 00 00'
             })
             // Fetch site settings for WhatsApp phone number
+            let whatsappPhone = '+212 600 00 00 00'
             fetch('/api/admin/settings')
                 .then(res => res.json())
                 .then(data => {
                     if (data.success && data.settings?.contact_phone) {
+                        whatsappPhone = data.settings.contact_phone
                         setEditableTexts(prev => ({ ...prev, whatsapp: data.settings.contact_phone }))
                     }
                 })
@@ -164,8 +166,10 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
                     setFullBookData(data.book)
                     const baseDesc = useDescription === 'long' ? (data.book.longDescription || data.book.description) : data.book.description
                     const productUrl = `${window.location.origin}/fr/books/${data.book.id}`
+                    const waPhone = whatsappPhone.replace(/[^0-9+]/g, '')
+                    const waLink = `https://wa.me/${waPhone.startsWith('+') ? waPhone.slice(1) : waPhone}`
                     const hashtags = `#riwaya #lecture #livre #maroc #culture ${data.book.category ? `#${data.book.category.toLowerCase().replace(/\s+/g, '')}` : ''}`
-                    setCaption(`${baseDesc}\n\n📖 Lien pour commander : ${productUrl}\n💰 Prix : ${data.book.price} MAD\n🚚 Paiement à la livraison + Livraison rapide !\n\n${hashtags}`)
+                    setCaption(`${baseDesc}\n\n📖 Lien pour commander : ${productUrl}\n💰 Prix : ${data.book.price} MAD\n🚚 Paiement à la livraison + Livraison rapide !\n\n💬 Commander via WhatsApp : ${waLink}\n\n${hashtags}`)
                 }
             }).catch(console.error)
         }
@@ -176,10 +180,12 @@ export default function BookCreativeModal({ isOpen, onClose, book, format = 'pos
         if (fullBookData) {
             const baseDesc = useDescription === 'long' ? (fullBookData.longDescription || fullBookData.description) : fullBookData.description
             const productUrl = `${window.location.origin}/fr/books/${fullBookData.id}`
+            const waPhone = editableTexts.whatsapp.replace(/[^0-9+]/g, '')
+            const waLink = `https://wa.me/${waPhone.startsWith('+') ? waPhone.slice(1) : waPhone}`
             const hashtags = `#riwaya #lecture #livre #maroc #culture ${fullBookData.category ? `#${fullBookData.category.toLowerCase().replace(/\s+/g, '')}` : ''}`
-            setCaption(`${baseDesc}\n\n📖 Lien pour commander : ${productUrl}\n💰 Prix : ${fullBookData.price} MAD\n🚚 Paiement à la livraison + Livraison rapide !\n\n${hashtags}`)
+            setCaption(`${baseDesc}\n\n📖 Lien pour commander : ${productUrl}\n💰 Prix : ${fullBookData.price} MAD\n🚚 Paiement à la livraison + Livraison rapide !\n\n💬 Commander via WhatsApp : ${waLink}\n\n${hashtags}`)
         }
-    }, [useDescription, fullBookData])
+    }, [useDescription, fullBookData, editableTexts.whatsapp])
 
     if (!isOpen || !book) return null
 
