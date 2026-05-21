@@ -1,4 +1,5 @@
 import { getBooks, getBookCategories, getBooksCount, getAllAuthors } from '@/lib/db/books'
+import { getPopularPacks } from '@/lib/db/packs'
 import { getCategoryConfigByName } from '@/lib/actions/categories'
 import { getSetting } from '@/lib/actions/site-settings'
 import { parsePriceFilter } from '@/lib/utils/search'
@@ -102,7 +103,7 @@ export default async function BooksPage({
         author: params.author,
     };
 
-    const [books, totalCount, categories, categoryConfig, authors, adsenseEnabled, adsensePublisherId, adsenseSlotBetweenBooks] = await Promise.all([
+    const [books, totalCount, categories, categoryConfig, authors, adsenseEnabled, adsensePublisherId, adsenseSlotBetweenBooks, popularPacks] = await Promise.all([
         getBooks(filterObj),
         getBooksCount(filterObj),
         getBookCategories(),
@@ -110,7 +111,8 @@ export default async function BooksPage({
         getAllAuthors(),
         getSetting('adsense_enabled'),
         getSetting('adsense_publisher_id'),
-        getSetting('adsense_slot_between_books')
+        getSetting('adsense_slot_between_books'),
+        getPopularPacks(5)
     ])
 
     const languages = [
@@ -185,6 +187,7 @@ export default async function BooksPage({
                                         publisherId: adsensePublisherId || '',
                                         slotId: adsenseSlotBetweenBooks || ''
                                     }}
+                                    packsCTA={popularPacks}
                                 />
                             </>
                         )}

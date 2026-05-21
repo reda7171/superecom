@@ -6,6 +6,9 @@ import { fetchBooks } from '@/lib/actions/books'
 import BookCard from '@/components/BookCard'
 import AdBanner from '@/components/AdBanner'
 import { Book } from '@prisma/client'
+import { Link } from '@/i18n/routing'
+import { Package, ArrowRight, Sparkles } from 'lucide-react'
+import ImageWithFallback from '@/components/ImageWithFallback'
 
 interface InfiniteBookListProps {
     initialBooks: Book[]
@@ -15,14 +18,23 @@ interface InfiniteBookListProps {
         publisherId: string
         slotId: string
     }
+    packsCTA?: any[]
 }
 
-export default function InfiniteBookList({ initialBooks, initialFilters, adsense }: InfiniteBookListProps) {
+export default function InfiniteBookList({ initialBooks, initialFilters, adsense, packsCTA = [] }: InfiniteBookListProps) {
     const [books, setBooks] = useState<Book[]>(initialBooks)
     const [page, setPage] = useState(2)
     const [hasMore, setHasMore] = useState(true)
     const [loading, setLoading] = useState(false)
     const observerTarget = useRef<HTMLDivElement>(null)
+
+    // Pack aléatoire sélectionné uniquement côté client pour éviter l'hydratation mismatch
+    const [randomPack, setRandomPack] = useState<any>(null)
+    useEffect(() => {
+        if (packsCTA && packsCTA.length > 0) {
+            setRandomPack(packsCTA[Math.floor(Math.random() * packsCTA.length)])
+        }
+    }, [packsCTA])
 
     // Reset state when initialBooks changes (filtering)
     useEffect(() => {
@@ -82,14 +94,89 @@ export default function InfiniteBookList({ initialBooks, initialFilters, adsense
                     // Afficher une pub tous les 8 livres (après la 2ème ligne sur desktop)
                     const showAd = adsense?.enabled && adsense?.publisherId && adsense?.slotId && index > 0 && index % 8 === 0
 
+                    // Afficher un CTA pack tous les 12 livres (index 11, 23, 35...)
+                    const isCtaPosition = index > 0 && (index + 1) % 12 === 0;
+                    const ctaIndex = Math.floor(index / 12);
+                    let ctaBlock = null;
+
+                    if (isCtaPosition) {
+                        // Alterner entre le pack aléatoire (si dispo) et le custom pack builder
+                        if (ctaIndex % 2 === 0 && randomPack) {
+                            const pack = randomPack;
+                            ctaBlock = (
+                                <div className="col-span-2 md:col-span-3 xl:col-span-4 bg-gradient-to-r from-purple-900 to-indigo-900 rounded-[2.5rem] p-6 md:p-10 text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10 shadow-2xl my-4">
+                                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+                                    
+                                    <div className="flex-1 relative z-10 text-center md:text-left">
+                                        <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-md mb-4 border border-white/10">
+                                            <Sparkles className="w-4 h-4 text-purple-300" />
+                                            <span className="text-xs font-bold uppercase tracking-widest text-purple-100">Offre Spéciale</span>
+                                        </div>
+                                        <h3 className="text-2xl md:text-4xl font-black mb-3">{pack.name}</h3>
+                                        <div className="flex items-center justify-center md:justify-start gap-3 mb-6">
+                                            <span className="text-3xl md:text-4xl font-black text-purple-300">{pack.price} MAD</span>
+                                        </div>
+                                        <Link 
+                                            href={`/packs/${pack.id}`} 
+                                            className="inline-flex items-center gap-2 bg-white text-purple-900 px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 shadow-xl"
+                                        >
+                                            Découvrir le pack
+                                            <ArrowRight className="w-4 h-4" />
+                                        </Link>
+                                    </div>
+
+                                    <div className="flex -space-x-4 md:-space-x-8 relative z-10 items-center justify-center">
+                                        {pack.books.slice(0, 4).map((pb: any, i: number) => (
+                                            <div key={pb.id} className="w-24 h-36 md:w-32 md:h-48 rounded-xl overflow-hidden shadow-2xl border-2 border-white/20 transform transition-transform hover:-translate-y-4 hover:rotate-2 relative z-10" style={{ zIndex: 10 - i }}>
+                                                <ImageWithFallback 
+                                                    src={pb.book.image || ''} 
+                                                    alt={pb.book.title} 
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        } else {
+                            ctaBlock = (
+                                <div className="col-span-2 md:col-span-3 xl:col-span-4 bg-pixio-cream rounded-[2.5rem] p-6 md:p-10 border border-black/5 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm my-4">
+                                    <div className="flex-1 text-center md:text-left">
+                                        <div className="inline-flex items-center gap-2 bg-black/5 px-4 py-2 rounded-full mb-4">
+                                            <Package className="w-4 h-4 text-black" />
+                                            <span className="text-xs font-bold uppercase tracking-widest text-black">Personnalisé</span>
+                                        </div>
+                                        <h3 className="text-2xl md:text-3xl font-black mb-3 text-black">Composez votre propre Pack</h3>
+                                        <p className="text-gray-600 text-sm font-medium mb-6 max-w-md">
+                                            Sélectionnez les livres de votre choix et profitez de réductions exclusives sur votre pack personnalisé.
+                                        </p>
+                                        <Link 
+                                            href="/packs?custom=true" 
+                                            className="inline-flex items-center gap-2 bg-black text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-gray-900 transition-all shadow-xl"
+                                        >
+                                            Créer mon pack
+                                            <ArrowRight className="w-4 h-4" />
+                                        </Link>
+                                    </div>
+                                    <div className="hidden md:flex items-center justify-center relative w-48 h-48">
+                                        <div className="absolute inset-0 border-4 border-dashed border-black/10 rounded-full animate-spin-slow"></div>
+                                        <Package className="w-20 h-20 text-black/20" />
+                                    </div>
+                                </div>
+                            );
+                        }
+                    }
+
                     return (
                         <React.Fragment key={book.id}>
+                            <BookCard {...book} />
+                            {ctaBlock}
                             {showAd && (
                                 <div className="col-span-2 md:col-span-3 xl:col-span-4 py-4">
                                     <AdBanner publisherId={adsense.publisherId} slotId={adsense.slotId} />
                                 </div>
                             )}
-                            <BookCard {...book} />
                         </React.Fragment>
                     )
                 })}
