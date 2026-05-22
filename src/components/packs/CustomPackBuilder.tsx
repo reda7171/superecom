@@ -45,19 +45,27 @@ export default function CustomPackBuilder({ availableBooks }: CustomPackBuilderP
     const discountPercentage = selectedBooks.length >= 5 ? 15 : selectedBooks.length >= 3 ? 10 : 0
     const subtotal = selectedBooks.reduce((sum, b) => sum + b.price, 0)
     const discountAmount = (subtotal * discountPercentage) / 100
-    const finalPrice = subtotal - discountAmount
+    const rawFinalPrice = subtotal - discountAmount
+    const finalPrice = Math.round(rawFinalPrice * 2) / 2
 
     const handleAddToCart = () => {
         if (selectedBooks.length < 3) return
 
-        selectedBooks.forEach(book => {
-            // Apply the proportional discount to each book
-            const discountedPrice = book.price * (1 - discountPercentage / 100)
+        let remainingTotal = finalPrice;
+
+        selectedBooks.forEach((book, index) => {
+            let itemPrice;
+            if (index === selectedBooks.length - 1) {
+                itemPrice = Number(remainingTotal.toFixed(2));
+            } else {
+                itemPrice = Number(((book.price / subtotal) * finalPrice).toFixed(2));
+                remainingTotal -= itemPrice;
+            }
             
             addItem({
                 id: book.id,
                 title: `${t('CustomPack.CartPrefix')} ${book.title}`,
-                price: discountedPrice,
+                price: itemPrice,
                 image: book.image || '',
                 type: 'BOOK'
             })
