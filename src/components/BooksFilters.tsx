@@ -1,6 +1,110 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+
+function AuthorCombobox({ 
+    authors, 
+    currentAuthor, 
+    onChange, 
+    isCondensed = false, 
+    allAuthorsText 
+}: { 
+    authors: string[], 
+    currentAuthor: string, 
+    onChange: (author: string) => void, 
+    isCondensed?: boolean, 
+    allAuthorsText: string 
+}) {
+    const [isOpen, setIsOpen] = useState(false)
+    const [search, setSearch] = useState('')
+    const selectRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+                setIsOpen(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
+
+    const filteredAuthors = authors.filter(a => a.toLowerCase().includes(search.toLowerCase()))
+
+    return (
+        <div className={`relative ${isCondensed ? 'flex-1' : ''}`} ref={selectRef}>
+            <div 
+                className="relative cursor-pointer"
+                onClick={() => {
+                    if (!isOpen) {
+                        setIsOpen(true);
+                        setSearch('');
+                    } else {
+                        setIsOpen(false);
+                    }
+                }}
+            >
+                {isCondensed && <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />}
+                
+                {isOpen ? (
+                    <input
+                        type="text"
+                        autoFocus
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        className={isCondensed 
+                            ? "w-full pl-10 pr-4 py-2.5 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-900 focus:ring-0 outline-none" 
+                            : "w-full px-6 py-4 bg-white border-2 border-black rounded-2xl outline-none font-bold text-sm text-gray-800"
+                        }
+                        placeholder="Rechercher..."
+                    />
+                ) : (
+                    <div className={isCondensed
+                        ? "w-full pl-10 pr-8 py-2.5 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-900 overflow-hidden text-ellipsis whitespace-nowrap"
+                        : "w-full px-6 pr-10 py-4 bg-[#F8F9FA] border-2 border-transparent rounded-2xl font-bold text-sm text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap"
+                    }>
+                        {currentAuthor || allAuthorsText}
+                    </div>
+                )}
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                    <ChevronDown className="w-4 h-4" />
+                </div>
+            </div>
+
+            {isOpen && (
+                <div className="absolute z-[60] left-0 right-0 mt-1 bg-white border border-gray-100 rounded-xl shadow-2xl max-h-60 overflow-auto">
+                    <ul className="py-1">
+                        <li
+                            className={`px-4 py-3 hover:bg-gray-50 cursor-pointer text-xs font-bold ${!currentAuthor ? 'text-black' : 'text-gray-500'}`}
+                            onClick={() => {
+                                setIsOpen(false);
+                                onChange('');
+                            }}
+                        >
+                            {allAuthorsText}
+                        </li>
+                        {filteredAuthors.map((author) => (
+                            <li
+                                key={author}
+                                className={`px-4 py-3 hover:bg-gray-50 cursor-pointer text-xs font-bold ${currentAuthor === author ? 'text-black' : 'text-gray-500'}`}
+                                onClick={() => {
+                                    setIsOpen(false);
+                                    onChange(author);
+                                }}
+                            >
+                                {author}
+                            </li>
+                        ))}
+                        {filteredAuthors.length === 0 && (
+                            <li className="px-4 py-3 text-xs text-gray-400 italic">Aucun auteur trouvé</li>
+                        )}
+                    </ul>
+                </div>
+            )}
+        </div>
+    )
+}
 import { Filter, SlidersHorizontal, Globe, User, X, ChevronDown, Search } from 'lucide-react'
 import { Link, usePathname, useRouter } from '@/i18n/routing'
 import { useTranslations } from 'next-intl'
@@ -35,8 +139,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-    const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value
+    const handleAuthorChange = (value: string) => {
         const newParams = new URLSearchParams()
         if (value) newParams.set('author', value)
         if (params.search) newParams.set('search', params.search)
@@ -93,22 +196,12 @@ export default function BooksFilters({ params, categories, authors, languages, t
                     <User className="w-3 h-3" />
                     {t('SearchItems')}
                 </label>
-                <div className="relative group">
-                    <select
-                        value={params.author || ''}
-                        onChange={handleAuthorChange}
-                        aria-label="Sélectionner un auteur"
-                        className="w-full px-6 py-4 bg-[#F8F9FA] border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-bold text-sm text-gray-800 appearance-none"
-                    >
-                        <option value="">{t('AllAuthors') || 'Tous les auteurs'}</option>
-                        {authors.map((author) => (
-                            <option key={author} value={author}>{author}</option>
-                        ))}
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                        <ChevronDown className="w-4 h-4" />
-                    </div>
-                </div>
+                <AuthorCombobox 
+                    authors={authors}
+                    currentAuthor={params.author || ''}
+                    onChange={handleAuthorChange}
+                    allAuthorsText={t('AllAuthors') || 'Tous les auteurs'}
+                />
             </div>
 
             {/* Disponibilité */}
@@ -276,21 +369,13 @@ export default function BooksFilters({ params, categories, authors, languages, t
                 <div className="bg-white border-b border-gray-100 shadow-sm px-4 py-3">
                     <div className="max-w-7xl mx-auto flex items-center gap-2">
                         {/* Search Author Select (Condensed) */}
-                        <div className="flex-1 relative">
-                            <select
-                                value={params.author || ''}
-                                onChange={handleAuthorChange}
-                                aria-label="Sélectionner un auteur"
-                                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-none rounded-xl text-xs font-bold text-gray-900 focus:ring-0 appearance-none"
-                            >
-                                <option value="">{t('AllAuthors') || 'Tous les auteurs'}</option>
-                                {authors.map((author) => (
-                                    <option key={author} value={author}>{author}</option>
-                                ))}
-                            </select>
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" />
-                        </div>
+                        <AuthorCombobox 
+                            authors={authors}
+                            currentAuthor={params.author || ''}
+                            onChange={handleAuthorChange}
+                            allAuthorsText={t('AllAuthors') || 'Tous les auteurs'}
+                            isCondensed={true}
+                        />
 
                         {/* Filter Button */}
                         <button

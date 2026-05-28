@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save } from 'lucide-react'
@@ -15,8 +15,9 @@ export default function BookForm() {
     const [lots, setLots] = useState<any[]>([])
     const [selectedCost, setSelectedCost] = useState<string>('0')
     const [authors, setAuthors] = useState<string[]>([])
-    const [isNewAuthor, setIsNewAuthor] = useState(false)
     const [selectedAuthor, setSelectedAuthor] = useState<string>('')
+    const [isAuthorDropdownOpen, setIsAuthorDropdownOpen] = useState(false)
+    const authorInputRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         getPurchaseLots().then(data => {
@@ -26,6 +27,18 @@ export default function BookForm() {
             if (res.success && res.data) setAuthors(res.data)
         })
     }, [])
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (authorInputRef.current && !authorInputRef.current.contains(event.target as Node)) {
+                setIsAuthorDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const filteredAuthors = authors.filter(a => a.toLowerCase().includes(selectedAuthor.toLowerCase()))
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -131,56 +144,57 @@ export default function BookForm() {
                     </div>
 
                     {/* Auteur */}
-                    <div>
-                        <div className="flex justify-between items-center mb-2">
-                            <label htmlFor="author" className="block text-sm font-medium text-gray-700">
-                                Auteur <span className="text-red-500">*</span>
-                            </label>
-                            <button
-                                type="button"
-                                onClick={() => setIsNewAuthor(!isNewAuthor)}
-                                className="text-xs text-blue-600 hover:text-blue-800 font-bold"
-                            >
-                                {isNewAuthor ? "Choisir existant" : "+ Nouvel auteur"}
-                            </button>
-                        </div>
-                        {isNewAuthor ? (
-                            <input
-                                type="text"
-                                id="author"
-                                name="author"
-                                required
-                                value={selectedAuthor}
-                                onChange={(e) => setSelectedAuthor(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="Saisir le nom du nouvel auteur"
-                            />
-                        ) : (
-                            <select
-                                id="author"
-                                name="author"
-                                required
-                                value={selectedAuthor}
-                                onChange={(e) => {
-                                    if (e.target.value === 'NEW') {
-                                        setIsNewAuthor(true);
-                                        setSelectedAuthor('');
-                                    } else {
-                                        setSelectedAuthor(e.target.value);
-                                    }
-                                }}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                                <option value="" disabled>Sélectionner un auteur</option>
-                                {authors.map(a => (
-                                    <option key={a} value={a}>{a}</option>
-                                ))}
-                                {selectedAuthor && !authors.includes(selectedAuthor) && selectedAuthor !== 'NEW' && (
-                                    <option value={selectedAuthor}>{selectedAuthor}</option>
+                    <div className="relative" ref={authorInputRef}>
+                        <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-2">
+                            Auteur <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="author"
+                            name="author"
+                            required
+                            value={selectedAuthor}
+                            onChange={(e) => {
+                                setSelectedAuthor(e.target.value);
+                                setIsAuthorDropdownOpen(true);
+                            }}
+                            onFocus={() => setIsAuthorDropdownOpen(true)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Sélectionner ou saisir un auteur..."
+                            autoComplete="off"
+                        />
+                        
+                        {isAuthorDropdownOpen && (
+                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                                {filteredAuthors.length > 0 ? (
+                                    <ul className="py-1">
+                                        {filteredAuthors.map((author) => (
+                                            <li
+                                                key={author}
+                                                className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm text-gray-700"
+                                                onClick={() => {
+                                                    setSelectedAuthor(author);
+                                                    setIsAuthorDropdownOpen(false);
+                                                }}
+                                            >
+                                                {author}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <div className="px-4 py-3 text-sm text-gray-500">
+                                        {selectedAuthor ? (
+                                            <span>
+                                                Nouvel auteur: <span className="font-bold text-blue-600">{selectedAuthor}</span> sera créé
+                                            </span>
+                                        ) : (
+                                            "Aucun auteur trouvé"
+                                        )}
+                                    </div>
                                 )}
-                                <option value="NEW" className="font-bold text-blue-600">+ Ajouter un nouvel auteur...</option>
-                            </select>
+                            </div>
                         )}
+                        <p className="text-xs text-gray-500 mt-1">Saisissez pour chercher ou ajouter un nouvel auteur.</p>
                     </div>
 
                     {/* ISBN */}
@@ -290,6 +304,20 @@ export default function BookForm() {
                             <option value="Psychologie">Psychologie</option>
                             <option value="Histoire">Histoire</option>
                             <option value="Stratégie">Stratégie</option>
+                            <option value="Roman">Roman</option>
+                            <option value="Science-Fiction">Science-Fiction</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Thriller / Policier">Thriller / Policier</option>
+                            <option value="Manga">Manga</option>
+                            <option value="Bande dessinée">Bande dessinée</option>
+                            <option value="Biographie">Biographie</option>
+                            <option value="Santé & Bien-être">Santé & Bien-être</option>
+                            <option value="Cuisine">Cuisine</option>
+                            <option value="Informatique & Tech">Informatique & Tech</option>
+                            <option value="Religion & Spiritualité">Religion & Spiritualité</option>
+                            <option value="Philosophie">Philosophie</option>
+                            <option value="Art & Photographie">Art & Photographie</option>
+                            <option value="Enfants & Jeunesse">Enfants & Jeunesse</option>
                         </select>
                     </div>
 

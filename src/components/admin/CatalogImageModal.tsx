@@ -32,11 +32,14 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
         pattern: 'none',
         columns: 3,
         selectedCategory: 'all',
-        groupByLanguage: true
+        groupByLanguage: false,
+        booksPerPage: 24,
+        format: 'catalog',
+        contentScale: 1.0
     })
-    const captureRef = useRef<HTMLDivElement>(null)
+    const captureRefs = useRef<(HTMLDivElement | null)[]>([])
 
-    const BOOKS_PER_PAGE = 24
+    const BOOKS_PER_PAGE = config.booksPerPage
 
     useEffect(() => {
         if (isOpen) {
@@ -50,9 +53,10 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
 
     if (!isOpen) return null
 
+    const availableBooks = allBooks.filter(b => b.stock > 0)
     const filteredBooks = config.selectedCategory === 'all' 
-        ? allBooks 
-        : allBooks.filter(b => b.category === config.selectedCategory)
+        ? availableBooks 
+        : availableBooks.filter(b => b.category === config.selectedCategory)
 
     const languageNames: { [key: string]: string } = {
         fr: 'Langue : Français',
@@ -102,7 +106,7 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
     const categories = Array.from(new Set(allBooks.map(b => b.category).filter(Boolean))).sort()
 
     const handleExportAll = async () => {
-        if (!captureRef.current || chunkedBooks.length === 0) return
+        if (chunkedBooks.length === 0) return
         setIsGenerating(true)
         
         let successCount = 0
@@ -111,13 +115,19 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
             for (let i = 0; i < chunkedBooks.length; i++) {
                 setCurrentChunkIdx(i)
                 setStatusText(`Exportation image ${i + 1}/${chunkedBooks.length}...`)
-                await new Promise(resolve => setTimeout(resolve, 500))
+                await new Promise(resolve => setTimeout(resolve, 800)) // Wait for images if any
 
-                const dataUrl = await htmlToImage.toPng(captureRef.current, {
+                const element = captureRefs.current[i]
+                if (!element) continue
+
+                const dynamicPixelRatio = config.booksPerPage > 24 ? 1 : 2;
+
+                const dataUrl = await htmlToImage.toPng(element, {
                     quality: 1,
-                    pixelRatio: 2,
+                    pixelRatio: dynamicPixelRatio,
                     backgroundColor: config.backgroundColor,
-                    style: { fontFamily: "'Cairo', sans-serif" }
+                    style: { fontFamily: "'Cairo', sans-serif" },
+                    imagePlaceholder: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
                 })
                 
                 const link = document.createElement('a')
@@ -135,7 +145,7 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
             }
         } catch (error) {
             console.error(error)
-            alert('Erreur lors de la capture.')
+            alert('Erreur lors de la capture. Essayez un autre navigateur.')
         } finally {
             setIsGenerating(false)
             setCurrentChunkIdx(0)
@@ -226,6 +236,60 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                             </div>
 
                             <div>
+                                <label className="text-[10px] uppercase text-gray-400 font-black tracking-widest block mb-3">Titre de l'image</label>
+                                <div className="relative">
+                                    <Type className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <input 
+                                        type="text" 
+                                        value={config.title}
+                                        onChange={(e) => setConfig({...config, title: e.target.value})}
+                                        className="w-full bg-white border border-gray-200 rounded-2xl py-3 pl-11 pr-4 text-sm font-bold text-gray-900 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all outline-none"
+                                        placeholder="Ex: Nouveautés"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] uppercase text-gray-400 font-black tracking-widest block mb-3">Format d'export</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {[
+                                        { id: 'catalog', label: 'Catalogue (Vertical)' },
+                                        { id: 'post', label: 'Post (Facebook/Insta)' },
+                                    ].map(f => (
+                                        <button 
+                                            key={f.id}
+                                            onClick={() => {
+                                                const newBooks = f.id === 'post' ? 6 : 24;
+                                                const newCols = f.id === 'post' ? 3 : 3;
+                                                setConfig({...config, format: f.id, booksPerPage: newBooks, columns: newCols}); 
+                                                setCurrentChunkIdx(0); 
+                                            }}
+                                            className={`py-3 rounded-2xl text-[9px] font-black border-2 transition-all uppercase ${config.format === f.id ? 'bg-purple-600 text-white border-purple-600 shadow-md' : 'bg-white text-gray-400 border-gray-100'}`}
+                                        >
+                                            {f.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] uppercase text-gray-400 font-black tracking-widest block mb-3">Catégorie</label>
+                                <select 
+                                    value={config.selectedCategory}
+                                    onChange={(e) => {
+                                        setConfig({...config, selectedCategory: e.target.value});
+                                        setCurrentChunkIdx(0);
+                                    }}
+                                    className="w-full bg-white border border-gray-200 rounded-2xl py-3 px-4 text-sm font-bold text-gray-900 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all outline-none"
+                                >
+                                    <option value="all">Toutes les catégories</option>
+                                    {categories.map((c: any) => (
+                                        <option key={c} value={c}>{c}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
                                 <label className="text-[10px] uppercase text-gray-400 font-black tracking-widest block mb-3">Langue</label>
                                 <label className="flex items-center gap-2 cursor-pointer py-1">
                                     <input 
@@ -236,6 +300,21 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                                     />
                                     <span className="text-sm font-semibold text-gray-700">Regrouper par langue</span>
                                 </label>
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] uppercase text-gray-400 font-black tracking-widest block mb-3">Livres par image</label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {(config.format === 'post' ? [2, 4, 6, 9] : [12, 24, 48, 96]).map(num => (
+                                        <button 
+                                            key={num}
+                                            onClick={() => { setConfig({...config, booksPerPage: num}); setCurrentChunkIdx(0); }}
+                                            className={`py-2 rounded-xl text-[10px] font-black border-2 transition-all ${config.booksPerPage === num ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-400 border-gray-100'}`}
+                                        >
+                                            {num}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
@@ -256,143 +335,197 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                         </div>
                     </div>
 
-                    <div className="flex-1 bg-gray-200 p-8 overflow-auto flex justify-center items-start">
-                        <div className="scale-[0.22] origin-top shadow-3xl overflow-hidden bg-white" style={{ backgroundColor: config.backgroundColor }}>
-                             <div className="w-[1200px] p-24 flex flex-col items-center relative min-h-[1400px]">
+                    <div className="flex-1 bg-gray-200 flex flex-col relative overflow-hidden">
+                        {/* Content Scale Control */}
+                        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-xl flex items-center gap-4">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Taille du contenu</span>
+                            <input 
+                                type="range" 
+                                min="0.5" 
+                                max="1.5" 
+                                step="0.05" 
+                                value={config.contentScale} 
+                                onChange={(e) => setConfig({...config, contentScale: parseFloat(e.target.value)})}
+                                className="w-32 accent-purple-600"
+                            />
+                            <span className="text-[10px] font-black text-gray-600 w-8">{Math.round(config.contentScale * 100)}%</span>
+                        </div>
+
+                        <div className="flex-1 p-8 pt-24 overflow-auto flex justify-center items-start custom-scrollbar">
+                            <div className="origin-top shadow-3xl overflow-hidden bg-white" style={{ transform: `scale(0.22)`, backgroundColor: config.backgroundColor, borderRadius: config.format === 'post' ? '60px' : '0' }}>
+                             <div className="flex flex-col items-center relative" style={config.format === 'post' ? { width: '1080px', height: '1350px', padding: '60px 40px' } : { width: '1200px', minHeight: '1400px', padding: '96px' }}>
                                 <div style={{ position: 'absolute', inset: 0, zIndex: 0, opacity: 0.1, ...getPatternStyle(config.pattern, config.backgroundColor) }}></div>
-                                <div className="relative z-10 w-full flex flex-col items-center">
-                                    <h1 dir="auto" className="text-[140px] font-black uppercase text-center mb-6" style={{ color: config.primaryColor }}>{config.title}</h1>
+                                <div style={{ transform: `scale(${config.contentScale})`, transformOrigin: 'top center', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'transform 0.2s' }}>
+                                    <div className="relative z-10 w-full flex flex-col items-center">
+                                    <h1 dir="auto" className="font-black uppercase text-center mb-6" style={{ color: config.primaryColor, fontSize: config.format === 'post' ? '100px' : '140px', lineHeight: 1.1 }}>{config.title}</h1>
                                     {config.groupByLanguage && chunkedBooks[currentChunkIdx]?.language !== 'all' && (
-                                        <p className="text-4xl font-black mb-10 uppercase tracking-wider text-center" style={{ color: config.primaryColor }}>
+                                        <p className="font-black mb-10 uppercase tracking-wider text-center" style={{ color: config.primaryColor, fontSize: config.format === 'post' ? '28px' : '36px' }}>
                                             {languageNames[chunkedBooks[currentChunkIdx]?.language]}
                                         </p>
                                     )}
-                                    <div className="w-full grid gap-12" style={{ gridTemplateColumns: `repeat(${config.columns}, minmax(0, 1fr))` }}>
+                                    <div className="w-full grid" style={{ gridTemplateColumns: `repeat(${config.format === 'post' && config.booksPerPage <= 4 ? 2 : config.columns}, minmax(0, 1fr))`, gap: config.format === 'post' ? '30px' : '48px', alignItems: 'start' }}>
                                         {(chunkedBooks[currentChunkIdx]?.books || []).map((book: any, idx: number) => (
                                             <div key={idx} className="flex flex-col items-center">
-                                                <div className="w-full aspect-[2/3] bg-white rounded-[60px] mb-8 overflow-hidden border-8 border-white shadow-2xl">
+                                                <div className="w-full aspect-[2/3] bg-white overflow-hidden border-white shadow-2xl flex items-center justify-center" style={{ borderRadius: config.format === 'post' ? '40px' : '60px', marginBottom: config.format === 'post' ? '20px' : '32px', borderWidth: config.format === 'post' ? '12px' : '18px' }}>
                                                     {book.image ? <img src={normalizeImage(book.image)} className="w-full h-full object-cover" /> : <BookIcon className="w-20 h-20 text-gray-200" />}
                                                 </div>
-                                                <p dir="auto" className="font-black text-3xl text-center mb-4" style={{ color: config.textColor }}>{book.title}</p>
-                                                <div className="px-10 py-3 rounded-full font-black text-2xl text-white" style={{ backgroundColor: config.primaryColor }}>{book.price} MAD</div>
+                                                <p dir="auto" className="font-black text-center mb-4 leading-tight" style={{ color: config.textColor, fontSize: config.format === 'post' ? '24px' : '30px' }}>{book.title}</p>
+                                                <div className="px-8 py-2 rounded-full font-black text-white" style={{ backgroundColor: config.primaryColor, fontSize: config.format === 'post' ? '20px' : '24px' }}>{book.price} MAD</div>
                                             </div>
                                         ))}
+                                    </div>
+                                    {config.format === 'post' && (
+                                        <div style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', width: '100%' }}>
+                                             <p style={{ fontSize: '40px', fontWeight: '950', color: config.textColor, opacity: 0.15, letterSpacing: '10px', textTransform: 'uppercase', margin: 0 }}>RIWAYA.COM</p>
+                                        </div>
+                                    )}
                                     </div>
                                 </div>
                              </div>
                         </div>
                     </div>
+                    {chunkedBooks.length > 1 && (
+                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-2xl z-50">
+                            {chunkedBooks.map((_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setCurrentChunkIdx(i)}
+                                    className={`w-3 h-3 rounded-full transition-all ${currentChunkIdx === i ? 'bg-purple-600 scale-125' : 'bg-gray-300 hover:bg-gray-400'}`}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
 
             {/* REAL CAPTURE AREA */}
-            <div 
-                ref={captureRef}
-                style={{ 
-                    position: 'absolute', 
-                    top: '-40000px', 
-                    left: '-40000px', 
-                    width: '1200px', 
-                    backgroundColor: config.backgroundColor,
-                    padding: '120px 80px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    minHeight: '1200px',
-                    overflow: 'hidden'
-                }}
-            >
-                {/* Pattern Layer - Using simpler logic for html2canvas */}
-                <div style={{ position: 'absolute', inset: 0, zIndex: 0, ...getPatternStyle(config.pattern, config.backgroundColor) }}></div>
-
-                {/* Content Layer */}
-                <div style={{ position: 'relative', zIndex: 10, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ position: 'absolute', top: '-40000px', left: '-40000px', opacity: 0, pointerEvents: 'none' }}>
+                {chunkedBooks.map((chunk, chunkIdx) => {
+                    const isPost = config.format === 'post';
+                    const cols = isPost && config.booksPerPage <= 4 ? 2 : config.columns;
+                    const innerWidth = isPost ? 1000 : 1040;
+                    const gapX = isPost ? 40 : 60;
                     
-                    {/* Header */}
-                    <div style={{ width: '100%', textAlign: 'center', marginBottom: '140px' }}>
-                        {chunkedBooks.length > 1 && (
-                            <div style={{ marginBottom: '60px' }}>
-                                <span style={{ fontSize: '36px', fontWeight: '950', color: config.textColor, opacity: 0.3, letterSpacing: '12px', textTransform: 'uppercase' }}>
-                                    PARTIE {currentChunkIdx + 1} / {chunkedBooks.length}
-                                </span>
-                            </div>
-                        )}
-                        <h1 dir="auto" style={{ fontSize: '180px', fontWeight: '950', color: config.primaryColor, textTransform: 'uppercase', letterSpacing: '-6px', margin: '0 0 30px 0', lineHeight: '0.9', textAlign: 'center' }}>
-                            {config.title}
-                        </h1>
-                        {config.groupByLanguage && chunkedBooks[currentChunkIdx]?.language !== 'all' && (
-                            <div style={{ marginBottom: '50px' }}>
-                                <span style={{ fontSize: '48px', fontWeight: '950', color: config.textColor, letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.8 }}>
-                                    {languageNames[chunkedBooks[currentChunkIdx]?.language]}
-                                </span>
-                            </div>
-                        )}
-                        <div style={{ height: '30px', width: '400px', backgroundColor: config.primaryColor, margin: '0 auto', borderRadius: '15px' }}></div>
-                    </div>
+                    return (
+                    <div 
+                        key={chunkIdx}
+                        ref={(el) => { captureRefs.current[chunkIdx] = el }}
+                        style={{ 
+                            width: isPost ? '1080px' : '1200px', 
+                            height: isPost ? '1350px' : 'auto',
+                            minHeight: isPost ? '1350px' : '1200px',
+                            backgroundColor: config.backgroundColor,
+                            padding: isPost ? '80px 40px' : '120px 80px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            overflow: 'hidden',
+                            position: 'relative',
+                            boxSizing: 'border-box'
+                        }}
+                    >
+                        {/* Pattern Layer */}
+                        <div style={{ position: 'absolute', inset: 0, zIndex: 0, ...getPatternStyle(config.pattern, config.backgroundColor) }}></div>
 
-                    {/* Grid */}
-                    <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: '140px 60px', justifyContent: 'center' }}>
-                        {(chunkedBooks[currentChunkIdx]?.books || []).map((book: any, idx: number) => {
-                            const cellWidth = Math.floor((1040 - (config.columns - 1) * 60) / config.columns)
-                            return (
-                                <div key={idx} style={{ width: `${cellWidth}px`, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                    <div style={{ 
-                                        width: '100%', 
-                                        height: `${Math.floor(cellWidth * 1.5)}px`, 
-                                        backgroundColor: '#ffffff', 
-                                        borderRadius: '55px', 
-                                        overflow: 'hidden', 
-                                        border: '18px solid #ffffff', 
-                                        boxShadow: config.backgroundColor === '#0f172a' ? '0 0 80px rgba(255,255,255,0.1)' : '0 45px 90px rgba(0,0,0,0.18)',
-                                        marginBottom: '45px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}>
-                                        {book.image ? (
-                                            <img src={normalizeImage(book.image)} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '40px' }} crossOrigin="anonymous" />
-                                        ) : (
-                                            <BookIcon style={{ width: '140px', height: '140px', color: '#f3f4f6' }} />
-                                        )}
+                        {/* Content Layer */}
+                        <div style={{ transform: `scale(${config.contentScale})`, transformOrigin: 'top center', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <div style={{ position: 'relative', zIndex: 10, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                
+                                {/* Header */}
+                                <div style={{ width: '100%', textAlign: 'center', marginBottom: isPost ? '60px' : '140px', flexShrink: 0 }}>
+                                {chunkedBooks.length > 1 && !isPost && (
+                                    <div style={{ marginBottom: '60px' }}>
+                                        <span style={{ fontSize: '36px', fontWeight: '950', color: config.textColor, opacity: 0.3, letterSpacing: '12px', textTransform: 'uppercase' }}>
+                                            PARTIE {chunkIdx + 1} / {chunkedBooks.length}
+                                        </span>
                                     </div>
-                                    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '220px' }}>
-                                        <h3 dir="auto" style={{ 
-                                            fontSize: '48px', 
-                                            fontWeight: '850', 
-                                            color: config.textColor, 
-                                            margin: '0', 
-                                            textAlign: 'center',
-                                            width: '100%',
-                                            lineHeight: '1.3',
-                                            direction: 'rtl',
-                                            paddingBottom: '30px'
-                                        }}>
-                                            {book.title}
-                                        </h3>
-                                        <div style={{ 
-                                            backgroundColor: config.primaryColor, 
-                                            color: '#ffffff', 
-                                            padding: '22px 65px', 
-                                            borderRadius: '100px', 
-                                            fontSize: '42px', 
-                                            fontWeight: '950', 
-                                            marginTop: 'auto',
-                                            boxShadow: '0 25px 50px rgba(0,0,0,0.2)' 
-                                        }}>
-                                            {book.price} MAD
+                                )}
+                                <h1 dir="auto" style={{ fontSize: isPost ? '110px' : '180px', fontWeight: '950', color: config.primaryColor, textTransform: 'uppercase', letterSpacing: '-4px', margin: '0 0 20px 0', lineHeight: '1', textAlign: 'center' }}>
+                                    {config.title}
+                                </h1>
+                                {config.groupByLanguage && chunk.language !== 'all' && (
+                                    <div style={{ marginBottom: isPost ? '30px' : '50px' }}>
+                                        <span style={{ fontSize: isPost ? '32px' : '48px', fontWeight: '950', color: config.textColor, letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.8 }}>
+                                            {languageNames[chunk.language]}
+                                        </span>
+                                    </div>
+                                )}
+                                <div style={{ height: isPost ? '20px' : '30px', width: isPost ? '250px' : '400px', backgroundColor: config.primaryColor, margin: '0 auto', borderRadius: '15px' }}></div>
+                            </div>
+
+                            {/* Grid */}
+                            <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: isPost ? '40px' : '140px 60px', justifyContent: 'center' }}>
+                                {(chunk.books || []).map((book: any, idx: number) => {
+                                    const cellWidth = Math.floor((innerWidth - (cols - 1) * gapX) / cols)
+                                    return (
+                                        <div key={idx} style={{ width: `${cellWidth}px`, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <div style={{ 
+                                                width: '100%', 
+                                                height: `${Math.floor(cellWidth * 1.5)}px`, 
+                                                backgroundColor: '#ffffff', 
+                                                borderRadius: isPost ? '35px' : '55px', 
+                                                overflow: 'hidden', 
+                                                border: isPost ? '12px solid #ffffff' : '18px solid #ffffff', 
+                                                boxShadow: config.backgroundColor === '#0f172a' ? '0 0 80px rgba(255,255,255,0.1)' : '0 45px 90px rgba(0,0,0,0.18)',
+                                                marginBottom: isPost ? '25px' : '45px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                {book.image ? (
+                                                    <img src={normalizeImage(book.image)} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: isPost ? '25px' : '40px' }} />
+                                                ) : (
+                                                    <BookIcon style={{ width: isPost ? '80px' : '140px', height: isPost ? '80px' : '140px', color: '#f3f4f6' }} />
+                                                )}
+                                            </div>
+                                            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: isPost ? '120px' : '220px' }}>
+                                                <h3 dir="auto" style={{ 
+                                                    fontSize: isPost ? '30px' : '48px', 
+                                                    fontWeight: '850', 
+                                                    color: config.textColor, 
+                                                    margin: '0', 
+                                                    textAlign: 'center',
+                                                    width: '100%',
+                                                    lineHeight: '1.2',
+                                                    direction: 'rtl',
+                                                    paddingBottom: isPost ? '20px' : '30px',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    display: '-webkit-box',
+                                                    WebkitLineClamp: 2,
+                                                    WebkitBoxOrient: 'vertical'
+                                                }}>
+                                                    {book.title}
+                                                </h3>
+                                                <div style={{ 
+                                                    backgroundColor: config.primaryColor, 
+                                                    color: '#ffffff', 
+                                                    padding: isPost ? '14px 40px' : '22px 65px', 
+                                                    borderRadius: '100px', 
+                                                    fontSize: isPost ? '26px' : '42px', 
+                                                    fontWeight: '950', 
+                                                    marginTop: 'auto',
+                                                    boxShadow: '0 25px 50px rgba(0,0,0,0.2)',
+                                                    whiteSpace: 'nowrap'
+                                                }}>
+                                                    {book.price} MAD
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            )
-                        })}
-                    </div>
+                                    )
+                                })}
+                            </div>
 
-                    {/* Footer */}
-                    <div style={{ width: '100%', marginTop: '200px', paddingTop: '100px', borderTop: `10px solid ${config.textColor}1a`, textAlign: 'center' }}>
-                        <p style={{ fontSize: '110px', fontWeight: '950', color: config.textColor, opacity: 0.1, letterSpacing: '25px', textTransform: 'uppercase', margin: 0 }}>RIWAYA.COM</p>
+                            {/* Footer */}
+                            <div style={{ width: '100%', marginTop: 'auto', paddingTop: isPost ? '40px' : '100px', borderTop: isPost ? 'none' : `10px solid ${config.textColor}1a`, textAlign: 'center', flexShrink: 0 }}>
+                                <p style={{ fontSize: isPost ? '60px' : '110px', fontWeight: '950', color: config.textColor, opacity: 0.1, letterSpacing: isPost ? '15px' : '25px', textTransform: 'uppercase', margin: 0 }}>RIWAYA.COM</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                )})}
             </div>
+        </div>
         </div>
     )
 }

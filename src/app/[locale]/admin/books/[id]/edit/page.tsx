@@ -411,6 +411,20 @@ export default function EditBookPage({ params, searchParams }: { params: Promise
                             <option value="Psychologie">Psychologie</option>
                             <option value="Histoire">Histoire</option>
                             <option value="Stratégie">Stratégie</option>
+                            <option value="Roman">Roman</option>
+                            <option value="Science-Fiction">Science-Fiction</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Thriller / Policier">Thriller / Policier</option>
+                            <option value="Manga">Manga</option>
+                            <option value="Bande dessinée">Bande dessinée</option>
+                            <option value="Biographie">Biographie</option>
+                            <option value="Santé & Bien-être">Santé & Bien-être</option>
+                            <option value="Cuisine">Cuisine</option>
+                            <option value="Informatique & Tech">Informatique & Tech</option>
+                            <option value="Religion & Spiritualité">Religion & Spiritualité</option>
+                            <option value="Philosophie">Philosophie</option>
+                            <option value="Art & Photographie">Art & Photographie</option>
+                            <option value="Enfants & Jeunesse">Enfants & Jeunesse</option>
                         </select>
                     </div>
 

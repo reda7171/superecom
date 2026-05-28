@@ -1,14 +1,15 @@
 'use client';
 
-import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { useTransition, useState, useRef, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import { Globe, ChevronDown } from 'lucide-react';
 
 import { updateUserLocale } from '@/lib/actions/locale';
 
 export default function LanguageSwitcher({ upward = false }: { upward?: boolean } = {}) {
-    const locale = useLocale();
+    const params = useParams();
+    const locale = (params?.locale as string) || 'fr';
     const router = useRouter();
     const pathname = usePathname();
     const [isPending, startTransition] = useTransition();
