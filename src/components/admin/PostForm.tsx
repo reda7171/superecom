@@ -10,72 +10,7 @@ import Link from 'next/link'
 import { Book as BookIcon, Search, X } from 'lucide-react'
 import { fetchBooks } from '@/lib/actions/books'
 import { useEffect } from 'react'
-
-const BOOK_TEMPLATE = `# [Titre du Livre]
-
-## 1. Introduction
-[Présentation rapide du livre et pourquoi il mérite l'attention]
-
-## 2. Informations générales
-- **Titre :** 
-- **Auteur :** 
-- **Genre :** 
-- **Date de publication :** 
-- **Nombre de pages :** 
-- **Éditeur :** 
-- **Série / tome :** 
-- **Langue originale :** 
-
-## 3. Résumé du livre
-[Résumé court sans spoiler]
-
-## 4. Les personnages
-- **Personnage principal :** 
-- **Personnages secondaires :** 
-
-## 5. Les thèmes abordés
-- [Thème 1]
-- [Thème 2]
-
-## 6. Style d'écriture
-[Fluidité, narration, dialogues, etc.]
-
-## 7. Les points forts
-- 
-
-## 8. Les points faibles
-- 
-
-## 9. Citation(s) marquante(s)
-> " "
-
-## 10. Analyse / interprétation
-[Symbolisme, message caché, etc.]
-
-## 11. Comparaison
-[Si vous avez aimé X, vous aimerez Y]
-
-## 12. Adaptation
-[Film, Série, Anime...]
-
-## 13. Pour quel type de lecteur ?
-[Débutants, fans de fantasy, etc.]
-
-## 14. Note finale / avis personnel
-- **Histoire :** /5
-- **Personnages :** /5
-- **Style :** /5
-- **Immersion :** /5
-- **Fin :** /5
-
-**Note globale : ⭐ /5**
-
----
-### FAQ
-- **Le livre vaut-il le coup ?** 
-- **Y a-t-il des spoilers ?** 
-- **À partir de quel âge ?** 
-`
+import PostSectionEditor from './post-form/PostSectionEditor'
 
 interface PostFormProps {
     post?: any
@@ -114,8 +49,8 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
         loadBooks()
     }, [])
 
-    const handleFieldGenerate = async (lang: 'fr' | 'ar', type: 'TITLE' | 'EXCERPT' | 'CONTENT' | 'SLUG') => {
-        const input = type === 'TITLE' ? title : title
+    const handleFieldGenerate = async (lang: 'fr' | 'ar', type: 'TITLE' | 'EXCERPT' | 'SLUG') => {
+        const input = title
         
         if (!input && type !== 'TITLE') {
             alert('Veuillez d\'abord saisir un titre ou des mots-clés.')
@@ -136,11 +71,6 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                     setSlug(result.content.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''))
                 } else if (type === 'EXCERPT') {
                     setExcerpt(result.content)
-                } else {
-                    setContent(result.content)
-                    if (!excerpt) {
-                        setExcerpt(result.content.replace(/[#*`]/g, '').slice(0, 160) + '...')
-                    }
                 }
             } else {
                 setError(result.error || 'Erreur lors de la génération')
@@ -224,13 +154,9 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
         }
     }
 
-    const handleApplyTemplate = () => {
-        if (content && !confirm('Cela remplacera le contenu actuel. Continuer ?')) return
-        setContent(BOOK_TEMPLATE)
-    }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto">
+        <form onSubmit={handleSubmit} className="space-y-8 w-full">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Link
@@ -270,16 +196,16 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
             </div>
 
             {error && (
-                <div className="bg-red-50 text-red-600 p-4 rounded-lg text-sm font-medium">
+                <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium border border-red-100">
                     {error}
                 </div>
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white p-8 md:p-10 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-black/[0.03] space-y-8">
+                    <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 space-y-8">
                         <div>
-                            <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center justify-between mb-2">
                                 <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest">Titre de l'article</label>
                                 <div className="flex gap-2">
                                     <button
@@ -306,14 +232,14 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                                 type="text"
                                 value={title}
                                 onChange={handleTitleChange}
-                                className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-black text-2xl md:text-3xl text-gray-900 placeholder:text-gray-300"
+                                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all font-bold text-2xl md:text-3xl text-gray-900 placeholder:text-gray-300"
                                 placeholder="Titre captivant de l'article..."
                                 required
                             />
                         </div>
 
                         <div>
-                            <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center justify-between mb-2">
                                 <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest">URL Slug</label>
                                 <button
                                     type="button"
@@ -329,39 +255,39 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                                 type="text"
                                 value={slug}
                                 onChange={(e) => setSlug(e.target.value)}
-                                className="w-full px-6 py-3 bg-gray-50 border-2 border-transparent rounded-xl focus:bg-white focus:border-black outline-none transition-all font-mono text-sm text-gray-500 placeholder:text-gray-300"
+                                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all font-mono text-sm text-gray-500 placeholder:text-gray-300"
                                 placeholder="titre-de-l-article"
                                 required
                             />
                         </div>
 
-                        <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm space-y-6">
+                        <div className="bg-[#faf9f8] rounded-2xl p-6 border border-gray-100 space-y-6">
                             <div>
-                                <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4">Catégorie</label>
+                                <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Catégorie</label>
                                 <input
                                     type="text"
                                     value={category}
                                     onChange={(e) => setCategory(e.target.value)}
                                     placeholder="Ex: Développement Personnel"
-                                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-black/5 outline-none transition-all font-bold"
+                                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all font-medium"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4">Mots-clés (tags)</label>
+                                <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Mots-clés (tags)</label>
                                 <input
                                     type="text"
                                     value={tags}
                                     onChange={(e) => setTags(e.target.value)}
                                     placeholder="Ex: productivité, lecture, maroc"
-                                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-black/5 outline-none transition-all font-bold"
+                                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all font-medium"
                                 />
                                 <p className="mt-2 text-[10px] text-gray-400 italic">Séparez les mots-clés par des virgules.</p>
                             </div>
                         </div>
 
                         <div>
-                            <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center justify-between mb-2">
                                 <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest">Extrait / Résumé court</label>
                                 <div className="flex gap-2">
                                     <button
@@ -388,63 +314,23 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                                 value={excerpt}
                                 onChange={(e) => setExcerpt(e.target.value)}
                                 rows={3}
-                                className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-black outline-none transition-all font-medium text-lg text-gray-600 placeholder:text-gray-300 resize-none leading-relaxed"
+                                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all font-medium text-base text-gray-700 placeholder:text-gray-400 resize-none leading-relaxed"
                                 placeholder="Bref résumé accrocheur de l'article..."
                             />
                         </div>
 
-                        <div className="flex items-center justify-between mb-4">
-                            <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest">Contenu complet (Markdown)</label>
-                            <div className="flex flex-wrap gap-2">
-                                <button
-                                    type="button"
-                                    onClick={handleApplyTemplate}
-                                    className="px-3 py-1 bg-gray-50 text-gray-700 rounded-lg text-[11px] font-black uppercase tracking-wider hover:bg-gray-100 transition-colors border border-gray-200 flex items-center gap-2"
-                                >
-                                    <BookIcon className="w-3 h-3" />
-                                    Template Livre
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleFieldGenerate('ar', 'CONTENT')}
-                                    disabled={isGenerating}
-                                    className="px-3 py-1 bg-green-50 text-green-700 rounded-lg text-[11px] font-black uppercase tracking-wider hover:bg-green-100 transition-colors disabled:opacity-50 border border-green-200 flex items-center gap-2"
-                                >
-                                    {isGenerating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                    Gemini AR
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleFieldGenerate('fr', 'CONTENT')}
-                                    disabled={isGenerating}
-                                    className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-[11px] font-black uppercase tracking-wider hover:bg-blue-100 transition-colors disabled:opacity-50 border border-blue-200 flex items-center gap-2"
-                                >
-                                    {isGenerating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                    Gemini FR
-                                </button>
-                            </div>
-                        </div>
-                        <div>
-                            <div className="relative">
-                                <textarea
-                                    value={content}
-                                    onChange={(e) => setContent(e.target.value)}
-                                    rows={25}
-                                    className="w-full px-8 py-8 bg-gray-50 border-2 border-transparent rounded-[2rem] focus:bg-white focus:border-black outline-none transition-all font-sans text-[17px] md:text-[19px] text-gray-800 placeholder:text-gray-300 resize-y leading-[2] tracking-wide"
-                                    placeholder="# Rédigez votre chef-d'œuvre ici... (Markdown supporté)"
-                                    required
-                                    style={{ fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}
-                                />
-                                <div className="absolute bottom-2 right-2 text-xs text-gray-400 pointer-events-none">
-                                    Markdown supporté
-                                </div>
-                            </div>
-                        </div>
                     </div>
+                    
+                    <PostSectionEditor
+                        initialContent={post?.content || ''}
+                        onChange={setContent}
+                        lang={lang as 'fr' | 'ar' | 'en'}
+                        postTitle={title}
+                    />
                 </div>
 
                 <div className="space-y-6">
-                    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl shadow-black/[0.03] space-y-6">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 space-y-6">
                         <h3 className="font-bold text-gray-900">Publication</h3>
 
                         <div className="flex items-center gap-2">
@@ -474,7 +360,7 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                         </div>
                     </div>
 
-                    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl shadow-black/[0.03] space-y-6">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 space-y-6">
                         <h3 className="font-bold text-gray-900">Image de couverture</h3>
 
                         {coverImage ? (
@@ -514,7 +400,7 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                         </p>
                     </div>
 
-                    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl shadow-black/[0.03] space-y-6">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 space-y-6">
                         <h3 className="font-bold text-gray-900">Livres liés</h3>
                         <p className="text-[10px] text-gray-500 font-medium">L'article sera affiché sur la page de ces produits.</p>
 

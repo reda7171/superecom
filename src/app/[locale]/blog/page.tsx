@@ -3,11 +3,36 @@ import { Link } from '@/i18n/routing'
 import Image from 'next/image'
 import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/FooterWithFeatures'
-import { ArrowRight, Calendar, User, Quote, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowRight, Calendar, User, Quote, Sparkles, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react'
 import AdUnit from '@/components/AdUnit'
 import { getSetting } from '@/lib/actions/site-settings'
 import { getTranslations } from 'next-intl/server'
+import type { Metadata } from 'next'
 
+export const revalidate = 3600 // Cache d'une heure (ISR)
+
+export async function generateMetadata({ 
+    params 
+}: { 
+    params: Promise<{ locale: string }> 
+}): Promise<Metadata> {
+    const { locale } = await params
+    const t = await getTranslations({ locale, namespace: 'Blog' })
+    
+    return {
+        title: `${t('Title')} | Riwaya`,
+        description: t('Subtitle'),
+        openGraph: {
+            title: `${t('Title')} | Riwaya`,
+            description: t('Subtitle'),
+            type: 'website',
+            url: `https://riwaya.com/${locale}/blog`,
+        },
+        alternates: {
+            canonical: `https://riwaya.com/${locale}/blog`
+        }
+    }
+}
 export default async function BlogPage({ 
     params,
     searchParams 
@@ -30,20 +55,32 @@ export default async function BlogPage({
 
     return (
         <div className="min-h-screen bg-pixio-cream font-sans">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "Blog",
+                        "name": `${t('Title')} | Riwaya`,
+                        "description": t('Subtitle'),
+                        "url": `https://riwaya.com/${locale}/blog`
+                    })
+                }}
+            />
             <Header />
 
             {/* Hero Section */}
             <div className="bg-pixio-beige pt-20 pb-20 relative overflow-hidden">
                 <Quote className="absolute -top-10 -right-10 w-64 h-64 text-pixio-cream opacity-50 -rotate-12" />
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-black text-[10px] font-black uppercase tracking-[0.2em] shadow-sm mb-6">
-                        <Sparkles className="w-4 h-4 text-pixio-yellow" />
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-md rounded-full text-black text-[10px] font-black uppercase tracking-[0.2em] shadow-sm mb-6 hover:scale-105 transition-transform duration-300">
+                        <Sparkles className="w-4 h-4 text-yellow-500 animate-pulse" />
                         <span>{t('Badge')}</span>
                     </div>
-                    <h1 className="text-6xl md:text-8xl font-black text-black mb-6 tracking-tighter">
+                    <h1 className="text-6xl md:text-8xl font-black text-black mb-6 tracking-tighter hover:scale-[1.02] transition-transform duration-500">
                         {t('Title')}
                     </h1>
-                    <p className="text-lg text-gray-500 uppercase font-bold tracking-widest max-w-2xl mx-auto">
+                    <p className="text-lg text-gray-600 uppercase font-bold tracking-widest max-w-2xl mx-auto leading-relaxed">
                         {t('Subtitle')}
                     </p>
                 </div>
@@ -53,7 +90,7 @@ export default async function BlogPage({
                     <div className="flex flex-wrap justify-center gap-3">
                         <Link
                             href="/blog"
-                            className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${!category ? 'bg-black text-white shadow-xl shadow-black/20' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
+                            className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-300 hover:-translate-y-1 ${!category ? 'bg-black text-white shadow-xl shadow-black/20' : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-black shadow-sm border border-gray-100'}`}
                         >
                             Tous
                         </Link>
@@ -61,7 +98,7 @@ export default async function BlogPage({
                             <Link
                                 key={cat}
                                 href={`/blog?category=${cat}`}
-                                className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${category === cat ? 'bg-black text-white shadow-xl shadow-black/20' : 'bg-white text-gray-500 hover:bg-gray-100'}`}
+                                className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-300 hover:-translate-y-1 ${category === cat ? 'bg-black text-white shadow-xl shadow-black/20' : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-black shadow-sm border border-gray-100'}`}
                             >
                                 {cat}
                             </Link>
@@ -79,11 +116,14 @@ export default async function BlogPage({
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 {posts.length === 0 ? (
-                    <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200">
-                        <p className="text-gray-400 font-bold uppercase tracking-widest text-sm">
+                    <div className="text-center py-32 bg-white/50 backdrop-blur-sm rounded-[3rem] border border-gray-100 shadow-sm flex flex-col items-center justify-center">
+                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                            <BookOpen className="w-10 h-10 text-gray-300" />
+                        </div>
+                        <p className="text-gray-900 font-black uppercase tracking-widest text-lg">
                             {t('NoPosts')}
                         </p>
-                        <p className="text-xs text-gray-300 mt-2 font-medium">
+                        <p className="text-sm text-gray-500 mt-2 font-medium max-w-sm mx-auto">
                             {t('ComingSoon')}
                         </p>
                     </div>
@@ -102,7 +142,8 @@ export default async function BlogPage({
                                             src={post.coverImage}
                                             alt={post.title}
                                             fill
-                                            className="object-contain group-hover:scale-105 transition-transform duration-700 p-2 bg-slate-50"
+                                            className="object-cover group-hover:scale-105 transition-transform duration-700 bg-gray-50"
+                                            priority={idx === 0}
                                             unoptimized
                                         />
                                     ) : (
@@ -172,7 +213,8 @@ export default async function BlogPage({
                         {page > 1 ? (
                             <Link
                                 href={`/blog?page=${page - 1}${category ? `&category=${category}` : ''}`}
-                                className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl md:rounded-2xl bg-white border border-gray-100 text-black hover:bg-black hover:text-white transition-all shadow-sm"
+                                aria-label="Page précédente"
+                                className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl md:rounded-2xl bg-white border border-gray-100 text-black hover:bg-black hover:text-white transition-all shadow-sm hover:scale-105 duration-300"
                             >
                                 <ChevronLeft className="w-5 h-5" />
                             </Link>
@@ -191,7 +233,9 @@ export default async function BlogPage({
                                     <Link
                                         key={i}
                                         href={`/blog?page=${pageNum}${category ? `&category=${category}` : ''}`}
-                                        className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg md:rounded-xl text-xs font-black transition-all ${isCurrent
+                                        aria-label={`Aller à la page ${pageNum}`}
+                                        aria-current={isCurrent ? "page" : undefined}
+                                        className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg md:rounded-xl text-xs font-black transition-all duration-300 hover:scale-110 ${isCurrent
                                             ? 'bg-black text-white'
                                             : 'text-gray-400 hover:text-black hover:bg-gray-50'
                                             }`}
@@ -206,7 +250,8 @@ export default async function BlogPage({
                         {page < pagination.totalPages ? (
                             <Link
                                 href={`/blog?page=${page + 1}${category ? `&category=${category}` : ''}`}
-                                className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl md:rounded-2xl bg-white border border-gray-100 text-black hover:bg-black hover:text-white transition-all shadow-sm"
+                                aria-label="Page suivante"
+                                className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl md:rounded-2xl bg-white border border-gray-100 text-black hover:bg-black hover:text-white transition-all shadow-sm hover:scale-105 duration-300"
                             >
                                 <ChevronRight className="w-5 h-5" />
                             </Link>

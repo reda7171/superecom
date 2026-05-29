@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/FooterWithFeatures'
-import { Calendar, User, Eye, Tag, MessageSquare, Clock, Pencil, ArrowRight, BookOpen } from 'lucide-react'
+import { Calendar, User, Eye, Tag, MessageSquare, Clock, Pencil, ArrowRight, BookOpen, Quote, Lightbulb, Target, Bookmark } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
@@ -329,6 +329,90 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                             </div>
                         )}
 
+                        {/* === Livres Mentionnés (Mobile/Desktop bas d'article) === */}
+                        {post.books && post.books.length > 0 && (
+                            <div className="mt-12 p-8 bg-indigo-50/50 border border-indigo-100 rounded-3xl">
+                                <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+                                    <BookOpen className="w-5 h-5 text-indigo-600" />
+                                    Livres mentionnés dans cet article
+                                </h3>
+                                <div className="grid grid-cols-1 gap-4">
+                                    {post.books.map(book => (
+                                        <Link href={`/books/${book.id}`} key={book.id} className="group flex flex-col sm:flex-row gap-6 p-6 bg-white rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-lg transition-all">
+                                            <div className="relative w-24 h-36 sm:w-32 sm:h-48 bg-slate-50 rounded-lg shadow-sm overflow-hidden flex-shrink-0 mx-auto sm:mx-0">
+                                                {book.image && <Image src={book.image} alt={book.title} fill className="object-cover group-hover:scale-105 transition-transform" unoptimized />}
+                                            </div>
+                                            <div className="flex flex-col flex-1 min-w-0">
+                                                <h4 className="text-lg font-black text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight">{book.title}</h4>
+                                                <p className="text-sm font-bold text-slate-500 mt-1 uppercase tracking-widest">{book.author}</p>
+                                                
+                                                {book.description && (
+                                                    <p className="text-sm text-slate-600 mt-3 line-clamp-3 leading-relaxed">
+                                                        {book.description}
+                                                    </p>
+                                                )}
+                                                
+                                                {(book.bestQuote || book.bestLessons || book.bestFor || book.bestChapters) && (
+                                                    <div className="mt-4 space-y-3 bg-slate-50/80 p-4 rounded-xl border border-slate-100">
+                                                        {book.bestQuote && (
+                                                            <div className="flex gap-3">
+                                                                <Quote className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
+                                                                <div>
+                                                                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-0.5">Meilleure citation</p>
+                                                                    <p className="text-xs text-slate-700 italic font-medium leading-relaxed">"{book.bestQuote}"</p>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        {book.bestLessons && (
+                                                            <div className="flex gap-3">
+                                                                <Lightbulb className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                                                                <div>
+                                                                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-0.5">Leçons clés</p>
+                                                                    <p className="text-xs text-slate-700 leading-relaxed">{book.bestLessons}</p>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        {book.bestFor && (
+                                                            <div className="flex gap-3">
+                                                                <Target className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                                                                <div>
+                                                                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-0.5">Pour qui ?</p>
+                                                                    <p className="text-xs text-slate-700 leading-relaxed">{book.bestFor}</p>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        {book.bestChapters && (
+                                                            <div className="flex gap-3">
+                                                                <Bookmark className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
+                                                                <div>
+                                                                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-0.5">Chapitres clés</p>
+                                                                    <p className="text-xs text-slate-700 leading-relaxed">{book.bestChapters}</p>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                <div className="mt-auto pt-4 flex items-center justify-between">
+                                                    <div>
+                                                        <p className="text-lg font-black text-indigo-600">{book.price} MAD</p>
+                                                        {book.stock > 0 ? (
+                                                            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">En stock</span>
+                                                        ) : (
+                                                            <span className="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Rupture de stock</span>
+                                                        )}
+                                                    </div>
+                                                    <div className="px-4 py-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full group-hover:bg-indigo-600 transition-colors">
+                                                        Découvrir
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* === Commentaires === */}
                         <CommentsSection
                             postId={post.id}
@@ -408,6 +492,30 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                                 className="px-3 py-1.5 bg-white border border-gray-200 text-gray-500 text-[10px] font-bold uppercase tracking-wider rounded-full hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all"
                                             >
                                                 {tag}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Livres Mentionnés (Sidebar) */}
+                            {post.books && post.books.length > 0 && (
+                                <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-5 flex items-center gap-2">
+                                        <BookOpen className="w-3.5 h-3.5" />
+                                        Dans cet article
+                                    </p>
+                                    <div className="space-y-4">
+                                        {post.books.map(book => (
+                                            <Link href={`/books/${book.id}`} key={book.id} className="group flex gap-4 items-start">
+                                                <div className="relative w-12 h-16 bg-slate-100 rounded shadow-sm overflow-hidden flex-shrink-0">
+                                                    {book.image && <Image src={book.image} alt={book.title} fill className="object-cover group-hover:scale-105 transition-transform" unoptimized />}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-xs font-bold text-slate-900 line-clamp-2 group-hover:text-indigo-600 transition-colors leading-tight">{book.title}</h4>
+                                                    <p className="text-[10px] text-slate-500 truncate mt-1">{book.author}</p>
+                                                    <p className="text-xs font-black text-indigo-600 mt-1">{book.price} MAD</p>
+                                                </div>
                                             </Link>
                                         ))}
                                     </div>

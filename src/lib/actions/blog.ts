@@ -88,6 +88,21 @@ export async function getPostBySlug(slug: string) {
             },
             _count: {
                 select: { comments: { where: { isApproved: true } } }
+            },
+            books: {
+                select: {
+                    id: true,
+                    title: true,
+                    author: true,
+                    description: true,
+                    bestQuote: true,
+                    bestLessons: true,
+                    bestFor: true,
+                    bestChapters: true,
+                    price: true,
+                    image: true,
+                    stock: true
+                }
             }
         }
     })

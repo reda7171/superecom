@@ -120,6 +120,10 @@ model Book {
   author          String        @db.VarChar(255)
   description     String        @db.Text
   longDescription String?       @db.LongText
+  bestQuote       String?       @db.Text
+  bestLessons     String?       @db.Text
+  bestFor         String?       @db.Text
+  bestChapters    String?       @db.Text
   isbn            String?       @unique @db.VarChar(20)
   price           Float
   originalPrice   Float?
