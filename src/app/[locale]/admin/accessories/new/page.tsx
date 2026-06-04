@@ -211,6 +211,7 @@ export default function NewAccessoryPage({ params }: { params: Promise<{ locale:
                                 <option value="LIBRARY">Bibliothèque</option>
                                 <option value="USB">Clé USB</option>
                                 <option value="FURNITURE">Fourniture bureau</option>
+                                <option value="KIDS">Produit enfant</option>
                                 <option value="ACCESSORY">Autre accessoire</option>
                             </select>
                         </div>

@@ -3,11 +3,13 @@ import { getPopularPacks } from '@/lib/db/packs'
 import { getCategoryConfigByName } from '@/lib/actions/categories'
 import { getSetting } from '@/lib/actions/site-settings'
 import { parsePriceFilter } from '@/lib/utils/search'
+import { prisma } from '@/lib/prisma'
 import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import BookCard from '@/components/BookCard'
 import InfiniteBookList from '@/components/InfiniteBookList'
 import BooksFilters from '@/components/BooksFilters'
+import KidsProductsClient from '../mon-enfant/KidsProductsClient'
 import { Filter, SlidersHorizontal, Quote, Banknote, Globe, User } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 import { getTranslations } from 'next-intl/server'
@@ -115,6 +117,15 @@ export default async function BooksPage({
         getPopularPacks(5)
     ])
 
+    const isEnfants = params.category?.toLowerCase() === 'enfants'
+    let kidsProducts: any[] = []
+    if (isEnfants) {
+        kidsProducts = await prisma.extraProduct.findMany({
+            where: { category: 'KIDS', active: true },
+            orderBy: { createdAt: 'desc' }
+        })
+    }
+
     const languages = [
         { code: 'fr', label: 'Français' },
         { code: 'en', label: 'English' },
@@ -139,6 +150,15 @@ export default async function BooksPage({
 
                     {/* Books Grid */}
                     <div className="flex-1">
+                        {isEnfants && kidsProducts.length > 0 && (
+                            <div className="mb-10 bg-pink-50/50 p-6 rounded-3xl border border-pink-100/50">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <h2 className="text-xl font-black text-gray-900">Accessoires & Goodies</h2>
+                                </div>
+                                <KidsProductsClient products={JSON.parse(JSON.stringify(kidsProducts))} />
+                            </div>
+                        )}
+
                         {books.length === 0 ? (
                             <div className="bg-white rounded-[2.5rem] p-20 text-center border border-gray-100">
                                 <div className="w-24 h-24 bg-pixio-cream rounded-full flex items-center justify-center mx-auto mb-10">

@@ -364,15 +364,23 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                                         </p>
                                     )}
                                     <div className="w-full grid" style={{ gridTemplateColumns: `repeat(${config.format === 'post' && config.booksPerPage <= 4 ? 2 : config.columns}, minmax(0, 1fr))`, gap: config.format === 'post' ? '30px' : '48px', alignItems: 'start' }}>
-                                        {(chunkedBooks[currentChunkIdx]?.books || []).map((book: any, idx: number) => (
-                                            <div key={idx} className="flex flex-col items-center">
-                                                <div className="w-full aspect-[2/3] bg-white overflow-hidden border-white shadow-2xl flex items-center justify-center" style={{ borderRadius: config.format === 'post' ? '40px' : '60px', marginBottom: config.format === 'post' ? '20px' : '32px', borderWidth: config.format === 'post' ? '12px' : '18px' }}>
-                                                    {book.image ? <img src={normalizeImage(book.image)} className="w-full h-full object-cover" /> : <BookIcon className="w-20 h-20 text-gray-200" />}
-                                                </div>
+                                        {(chunkedBooks[currentChunkIdx]?.books || []).map((book: any, idx: number) => {
+                                            const previewCols = config.format === 'post' && config.booksPerPage <= 4 ? 2 : config.columns
+                                            const previewWidth = Math.floor(((config.format === 'post' ? 1080 : 1200) - (previewCols - 1) * (config.format === 'post' ? 30 : 48)) / previewCols)
+                                            const previewHeight = Math.floor(previewWidth * 1.5)
+                                            return (
+                                            <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                {book.image ? (
+                                                    <img src={normalizeImage(book.image)} onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }} style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, objectFit: 'cover', borderRadius: config.format === 'post' ? '40px' : '60px', marginBottom: config.format === 'post' ? '20px' : '32px', border: `${config.format === 'post' ? '12px' : '18px'} solid white`, boxShadow: '0 25px 50px rgba(0,0,0,0.25)' }} />
+                                                ) : (
+                                                    <div style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', borderRadius: config.format === 'post' ? '40px' : '60px', marginBottom: config.format === 'post' ? '20px' : '32px', border: `${config.format === 'post' ? '12px' : '18px'} solid white` }}>
+                                                        <BookIcon style={{ width: '80px', height: '80px', color: '#9ca3af' }} />
+                                                    </div>
+                                                )}
                                                 <p dir="auto" className="font-black text-center mb-4 leading-tight" style={{ color: config.textColor, fontSize: config.format === 'post' ? '24px' : '30px' }}>{book.title}</p>
                                                 <div className="px-8 py-2 rounded-full font-black text-white" style={{ backgroundColor: config.primaryColor, fontSize: config.format === 'post' ? '20px' : '24px' }}>{book.price} MAD</div>
                                             </div>
-                                        ))}
+                                        )})}
                                     </div>
                                     {config.format === 'post' && (
                                         <div style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', width: '100%' }}>
@@ -459,25 +467,13 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                                     const cellWidth = Math.floor((innerWidth - (cols - 1) * gapX) / cols)
                                     return (
                                         <div key={idx} style={{ width: `${cellWidth}px`, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <div style={{ 
-                                                width: '100%', 
-                                                height: `${Math.floor(cellWidth * 1.5)}px`, 
-                                                backgroundColor: '#ffffff', 
-                                                borderRadius: isPost ? '35px' : '55px', 
-                                                overflow: 'hidden', 
-                                                border: isPost ? '12px solid #ffffff' : '18px solid #ffffff', 
-                                                boxShadow: config.backgroundColor === '#0f172a' ? '0 0 80px rgba(255,255,255,0.1)' : '0 45px 90px rgba(0,0,0,0.18)',
-                                                marginBottom: isPost ? '25px' : '45px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
-                                            }}>
-                                                {book.image ? (
-                                                    <img src={normalizeImage(book.image)} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: isPost ? '25px' : '40px' }} />
-                                                ) : (
-                                                    <BookIcon style={{ width: isPost ? '80px' : '140px', height: isPost ? '80px' : '140px', color: '#f3f4f6' }} />
-                                                )}
-                                            </div>
+                                            {book.image ? (
+                                                <img src={normalizeImage(book.image)} onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }} style={{ width: '100%', height: `${Math.floor(cellWidth * 1.5)}px`, objectFit: 'cover', borderRadius: isPost ? '25px' : '40px', backgroundColor: '#fff', border: `${isPost ? '8px' : '12px'} solid white`, boxShadow: '0 20px 40px rgba(0,0,0,0.2)', marginBottom: isPost ? '12px' : '20px' }} />
+                                            ) : (
+                                                <div style={{ width: '100%', height: `${Math.floor(cellWidth * 1.5)}px`, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', borderRadius: isPost ? '25px' : '40px', border: `${isPost ? '8px' : '12px'} solid white`, boxShadow: '0 20px 40px rgba(0,0,0,0.2)', marginBottom: isPost ? '12px' : '20px' }}>
+                                                    <BookIcon style={{ width: isPost ? '80px' : '140px', height: isPost ? '80px' : '140px', color: '#9ca3af' }} />
+                                                </div>
+                                            )}
                                             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: isPost ? '120px' : '220px' }}>
                                                 <h3 dir="auto" style={{ 
                                                     fontSize: isPost ? '30px' : '48px', 

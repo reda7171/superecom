@@ -39,10 +39,10 @@ export default function EditBookPage({ params, searchParams }: { params: Promise
     const [selectedAuthor, setSelectedAuthor] = useState<string>('')
 
     useEffect(() => {
-        getPurchaseLots().then(data => setLots(data))
+        getPurchaseLots().then(data => setLots(data)).catch(console.error)
         fetchAllAuthors().then(res => {
             if (res.success && res.data) setAuthors(res.data)
-        })
+        }).catch(console.error)
     }, [])
 
     useEffect(() => {
@@ -53,16 +53,21 @@ export default function EditBookPage({ params, searchParams }: { params: Promise
 
     async function loadBook(bookId: string) {
         setLoadingData(true)
-        const result = await getBookById(bookId)
+        try {
+            const result = await getBookById(bookId)
 
-        if (result.success && result.data) {
-            setBook(result.data)
-            setSelectedCost((result.data as any).costPrice?.toString() || '0')
+            if (result.success && result.data) {
+                setBook(result.data)
+                setSelectedCost((result.data as any).costPrice?.toString() || '0')
             setDescription(result.data.description || '')
             setLongDescription(result.data.longDescription || '')
             setSelectedAuthor(result.data.author || '')
         } else {
             setError(result.error || 'Livre introuvable')
+        }
+        } catch (err: any) {
+            console.error(err)
+            setError(err.message || 'Livre introuvable')
         }
         setLoadingData(false)
     }
@@ -424,6 +429,7 @@ export default function EditBookPage({ params, searchParams }: { params: Promise
                             <option value="Religion & Spiritualité">Religion & Spiritualité</option>
                             <option value="Philosophie">Philosophie</option>
                             <option value="Art & Photographie">Art & Photographie</option>
+                            <option value="Enfant">Enfant</option>
                             <option value="Enfants & Jeunesse">Enfants & Jeunesse</option>
                         </select>
                     </div>

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter, useParams } from 'next/navigation'
 import { useState, useEffect, useMemo } from 'react'
-import { logout } from '@/lib/actions/auth'
+import { logout, isAuthenticated } from '@/lib/actions/auth'
 import { getSettingsByCategory } from '@/lib/actions/site-settings'
 import {
     LayoutDashboard,
@@ -66,7 +66,9 @@ export default function AdminLayout({
     })
 
     useEffect(() => {
-        getSettingsByCategory('features').then(setFeatureSettings)
+        getSettingsByCategory('features')
+            .then(setFeatureSettings)
+            .catch(console.error)
     }, [])
 
     const toggleMenu = (name: string) => {
@@ -117,6 +119,7 @@ export default function AdminLayout({
                 { name: 'Marque-pages', href: `/${lang}/admin/accessories/bookmarks`, icon: Bookmark },
                 { name: 'Bibliothèques', href: `/${lang}/admin/accessories/library`, icon: Library },
                 { name: 'Clés USB', href: `/${lang}/admin/accessories/usb`, icon: Usb },
+                { name: 'Produits enfants', href: `/${lang}/admin/accessories/kids`, icon: Sparkles },
             ]
         },
         { name: 'Menus', href: `/${lang}/admin/menus`, icon: GripVertical },
@@ -172,7 +175,15 @@ export default function AdminLayout({
 
     useEffect(() => {
         setSidebarOpen(false)
-    }, [pathname])
+
+        if (!pathname?.endsWith('/admin/login')) {
+            isAuthenticated().then(isAuth => {
+                if (!isAuth) {
+                    router.push(`/${lang}/admin/login`)
+                }
+            }).catch(console.error)
+        }
+    }, [pathname, lang, router])
 
     async function handleLogout() {
         await logout()

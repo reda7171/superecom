@@ -52,7 +52,7 @@ export default function GiftPopup() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:bg-gradient-to-r" />
                         
-                        <div className="absolute bottom-4 left-4 md:bottom-auto md:top-8 md:right-[-20px] md:rotate-12 bg-[#10b981] text-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-xl">
+                        <div className="absolute bottom-4 left-4 md:bottom-auto md:top-8 md:right-[-20px] -rotate-12 md:rotate-12 bg-[#10b981] text-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-xl">
                             {t('Offered')}
                         </div>
                     </div>

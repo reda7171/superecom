@@ -22,6 +22,7 @@ export default async function AccessoriesPage({
         ? category.toUpperCase() === 'BOOKMARK' ? 'Marque-pages' 
         : category.toUpperCase() === 'LIBRARY' ? 'Bibliothèques'
         : category.toUpperCase() === 'USB' ? 'Clés USB'
+        : category.toUpperCase() === 'KIDS' ? 'Produits enfants'
         : 'Accessoires'
         : 'Tous les Accessoires'
 

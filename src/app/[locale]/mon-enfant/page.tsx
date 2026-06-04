@@ -6,6 +6,8 @@ import HeaderWithUser from '@/components/HeaderWithUser'
 import Footer from '@/components/FooterWithFeatures'
 import { isFeatureEnabled } from '@/lib/actions/site-settings'
 import { notFound } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
+import KidsProductsClient from './KidsProductsClient'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
@@ -23,6 +25,11 @@ export default async function KidsPage({ params }: { params: Promise<{ locale: s
     if (!enabled) notFound()
 
     const t = await getTranslations('KidsPage');
+
+    const kidsProducts = await prisma.extraProduct.findMany({
+        where: { category: 'KIDS', active: true },
+        orderBy: { createdAt: 'desc' }
+    })
 
     const customStyles = `
         @keyframes float {
@@ -84,6 +91,26 @@ export default async function KidsPage({ params }: { params: Promise<{ locale: s
                     </div>
                 </div>
             </section>
+
+            {/* --- Produits Enfants --- */}
+            {kidsProducts.length > 0 && (
+                <section className="py-24 bg-[#FDFBF7] relative z-10">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <div className="text-center mb-16">
+                            <div className="inline-block px-4 py-1.5 rounded-full bg-pink-100 text-pink-700 font-bold mb-4 text-sm tracking-wide uppercase">
+                                Accessoires & Goodies
+                            </div>
+                            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
+                                Le coin des <span className="text-pink-500">petits lecteurs</span>
+                            </h2>
+                            <p className="text-lg text-gray-500 font-medium max-w-2xl mx-auto">
+                                Découvrez notre sélection d'accessoires conçus spécialement pour accompagner vos enfants dans leurs aventures de lecture.
+                            </p>
+                        </div>
+                        <KidsProductsClient products={JSON.parse(JSON.stringify(kidsProducts))} />
+                    </div>
+                </section>
+            )}
 
             {/* --- Features Grid --- */}
             <section className="py-20 bg-white relative z-10 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-gray-100">

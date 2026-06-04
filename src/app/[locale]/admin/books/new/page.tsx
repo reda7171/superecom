@@ -22,10 +22,10 @@ export default function BookForm() {
     useEffect(() => {
         getPurchaseLots().then(data => {
             setLots(data)
-        })
+        }).catch(console.error)
         fetchAllAuthors().then(res => {
             if (res.success && res.data) setAuthors(res.data)
-        })
+        }).catch(console.error)
     }, [])
 
     useEffect(() => {
@@ -317,6 +317,7 @@ export default function BookForm() {
                             <option value="Religion & Spiritualité">Religion & Spiritualité</option>
                             <option value="Philosophie">Philosophie</option>
                             <option value="Art & Photographie">Art & Photographie</option>
+                            <option value="Enfant">Enfant</option>
                             <option value="Enfants & Jeunesse">Enfants & Jeunesse</option>
                         </select>
                     </div>
