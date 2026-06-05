@@ -54,6 +54,7 @@ async function getTelegramChatId(): Promise<string> {
 export async function sendOrderNotification(order: {
     id: string
     fullName: string
+    email?: string | null
     phone: string
     city: string
     total: number
@@ -75,8 +76,14 @@ export async function sendOrderNotification(order: {
         ?.map(i => `  • ${i.book?.title || i.pack?.name || 'Article'} x${i.quantity}`)
         .join('\n') || ''
 
+    let isConnectedUser = false
+    if (order.email) {
+        const user = await prisma.user.findUnique({ where: { email: order.email } })
+        if (user) isConnectedUser = true
+    }
+
     const text = `🛒 <b>Nouvelle Commande #${shortId}</b>\n\n` +
-        `👤 <b>Client:</b> ${order.fullName}\n` +
+        `👤 <b>Client:</b> ${order.fullName} ${isConnectedUser ? '(✅ Connecté)' : '(👤 Invité)'}\n` +
         `📞 <b>Téléphone:</b> ${order.phone}\n` +
         `📍 <b>Ville (Saisie):</b> ${order.city}\n` +
         `🌍 <b>Pays/Ville (IP):</b> ${location}\n` +

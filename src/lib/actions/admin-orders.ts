@@ -33,8 +33,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
 
         const prevStatus = order.status
         const isNowReturned = status === 'RETURNED' || status === 'CANCELLED'
-        // Statuts qui n'avaient pas encore décrémenté (ne pas remettre le stock)
-        const wasNeverShipped = ['PENDING', 'CANCELLED', 'RETURNED'].includes(prevStatus)
+        const alreadyRestored = ['CANCELLED', 'RETURNED'].includes(prevStatus)
 
         await prisma.$transaction(async (tx) => {
             // Mise à jour statut + historique
@@ -52,8 +51,8 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
                 }
             })
 
-            // Réintégrer le stock si retour/annulation d'une commande qui avait décrémenté le stock
-            if (isNowReturned && !wasNeverShipped) {
+            // Réintégrer le stock si retour/annulation d'une commande
+            if (isNowReturned && !alreadyRestored) {
                 for (const item of order.items) {
                     if (item.type === 'BOOK' && item.bookId) {
                         await tx.book.update({
@@ -65,16 +64,12 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
                 }
             }
 
-            // Empêcher le double remboursement si on annule depuis RETURNED
-            if (status === 'CANCELLED' && prevStatus === 'RETURNED') {
-                // Déjà remis en stock, ne rien faire
-            }
         })
 
         revalidatePath('/admin/orders')
         revalidatePath(`/admin/orders/${orderId}`)
 
-        const stockNote = isNowReturned && !wasNeverShipped
+        const stockNote = isNowReturned && !alreadyRestored
             ? ` | Stock des livres réintégré (${order.items.filter(i => i.type === 'BOOK').length} articles)`
             : ''
 
