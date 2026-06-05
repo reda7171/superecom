@@ -6,12 +6,14 @@ import { addToReadingList } from '@/lib/actions/reading-list'
 import { useUIStore } from '@/store/ui'
 import { ReadingStatus } from '@prisma/client'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 export default function AddManualBookReadingList() {
     const [isOpen, setIsOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const { showNotification } = useUIStore()
     const router = useRouter()
+    const t = useTranslations('Common')
 
     const [formData, setFormData] = useState({
         title: '',
@@ -119,7 +121,7 @@ export default function AddManualBookReadingList() {
                             className="bg-black text-white px-6 py-3.5 rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                         >
                             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
-                            Ajouter à ma liste
+                            {t('AddToList')}
                         </button>
                     </form>
                 </div>

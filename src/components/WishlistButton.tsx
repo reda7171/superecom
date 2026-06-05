@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { addToWishlist, removeFromWishlist } from '@/lib/actions/community-wishlist'
 import { useUIStore } from '@/store/ui'
 import { fbCustomEvents, fbPixelEvents } from '@/lib/facebook-pixel'
+import { useTranslations } from 'next-intl'
 
 interface WishlistButtonProps {
     item: WishlistItem
@@ -21,6 +22,7 @@ export default function WishlistButton({ item, className, showText = false, vari
     const active = useWishlistStore(state => state.items.find((i) => i.id === item.id) !== undefined)
     const { addItem, removeItem } = useWishlistStore()
     const { showNotification } = useUIStore()
+    const tCommon = useTranslations('Common')
 
     useEffect(() => {
         useWishlistStore.persist.rehydrate()
@@ -77,7 +79,7 @@ export default function WishlistButton({ item, className, showText = false, vari
                     })
                 } else {
                     if (res.error === "Non connecté") {
-                        showNotification("Veuillez vous connecter pour ajouter aux favoris", 'error')
+                        showNotification(tCommon('AddToFavorites') + " - Veuillez vous connecter", 'error')
                         // Optionnel : Rediriger vers login
                         // router.push('/community/login')
                     } else {
@@ -107,7 +109,7 @@ export default function WishlistButton({ item, className, showText = false, vari
                 )}
             >
                 {syncing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Heart className={cn("w-5 h-5", active ? "fill-red-600 text-red-600" : "text-gray-900")} />}
-                <span>{active ? "Retirer des favoris" : "Ajouter aux favoris"}</span>
+                <span>{active ? tCommon('RemoveFromFavorites') : tCommon('AddToFavorites')}</span>
             </button>
         )
     }
@@ -121,7 +123,7 @@ export default function WishlistButton({ item, className, showText = false, vari
                 active ? "bg-red-50 text-red-500" : "bg-white text-gray-400 hover:text-red-400",
                 className
             )}
-            title={active ? "Retirer des favoris" : "Ajouter aux favoris"}
+            title={active ? tCommon('RemoveFromFavorites') : tCommon('AddToFavorites')}
         >
             {syncing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Heart className={cn("w-5 h-5", active && "fill-current")} />}
         </button>

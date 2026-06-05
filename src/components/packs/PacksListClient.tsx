@@ -13,6 +13,7 @@ interface PacksListClientProps {
 
 export default function PacksListClient({ packs, availableBooks }: PacksListClientProps) {
     const t = useTranslations('PacksPage')
+    const tCommon = useTranslations('Common')
     const [filterAvailable, setFilterAvailable] = useState(false)
 
     const filteredPacks = useMemo(() => {
@@ -53,7 +54,7 @@ export default function PacksListClient({ packs, availableBooks }: PacksListClie
                     }`}
                 >
                     <div className={`w-3 h-3 rounded-full ${filterAvailable ? 'bg-green-400' : 'bg-gray-300'}`}></div>
-                    Disponible
+                    {tCommon('Available')}
                 </button>
             </div>
 

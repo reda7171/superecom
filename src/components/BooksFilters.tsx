@@ -126,6 +126,7 @@ interface BooksFiltersProps {
 export default function BooksFilters({ params, categories, authors, languages, totalCount }: BooksFiltersProps) {
     const t = useTranslations('BooksPage')
     const tCats = useTranslations('Categories')
+    const tCommon = useTranslations('Common')
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isScrolled, setIsScrolled] = useState(false)
     const [isAllCatsRevealed, setIsAllCatsRevealed] = useState(false)
@@ -184,7 +185,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                     <div>
                         <h2 className="text-sm font-black uppercase tracking-widest text-gray-900">{t('Filters')}</h2>
                         <p className="text-[10px] text-gray-400 font-bold tracking-widest uppercase mt-1">
-                            Affiner la recherche
+                            {tCommon('RefineSearch')}
                         </p>
                     </div>
                 </div>
@@ -217,7 +218,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                         <div className="w-10 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover:text-black transition-colors">
-                        Disponible
+                        {tCommon('Available')}
                     </span>
                 </label>
             </div>
@@ -331,7 +332,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                                 onClick={() => setIsAllCatsRevealed(!isAllCatsRevealed)}
                                 className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
                             >
-                                {isAllCatsRevealed ? '- Afficher moins' : '+ Afficher plus'}
+                                {isAllCatsRevealed ? tCommon('ShowLess') : tCommon('ShowMore')}
                             </button>
                         )}
                     </div>
@@ -445,7 +446,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                             )}
                             {(params.inStock === undefined || params.inStock === 'true') && (
                                 <div className="flex-shrink-0 px-3 py-1.5 bg-black text-white rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
-                                    Disponible
+                                    {tCommon('Available')}
                                     <Link 
                                         href={`/books?${new URLSearchParams({
                                             ...(params.category ? { category: params.category } : {}),
@@ -475,7 +476,7 @@ export default function BooksFilters({ params, categories, authors, languages, t
                         <div className="flex items-center justify-between p-6 border-b border-gray-100">
                             <div>
                                 <h2 className="text-lg font-black text-gray-900 tracking-tight">{t('Filters')}</h2>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">Affiner la recherche</p>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">{tCommon('RefineSearch')}</p>
                             </div>
                             <button 
                                 onClick={() => setIsMobileMenuOpen(false)}

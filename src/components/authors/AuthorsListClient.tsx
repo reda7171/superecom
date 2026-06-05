@@ -22,6 +22,7 @@ interface AuthorsListClientProps {
 
 export default function AuthorsListClient({ authors, locale }: AuthorsListClientProps) {
     const t = useTranslations('AuthorsPage')
+    const tCommon = useTranslations('Common')
     const [search, setSearch] = useState('')
     const [filterAvailable, setFilterAvailable] = useState(false)
 
@@ -81,7 +82,7 @@ export default function AuthorsListClient({ authors, locale }: AuthorsListClient
                             }`}
                         >
                             <div className={`w-3 h-3 rounded-full ${filterAvailable ? 'bg-green-400' : 'bg-gray-300'}`}></div>
-                            Disponible
+                            {tCommon('Available')}
                         </button>
                     </div>
                 </div>

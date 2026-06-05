@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { useCartStore } from '@/store/cart'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
  
 interface WhatsAppButtonProps {
     phone?: string
@@ -12,6 +12,7 @@ interface WhatsAppButtonProps {
 export default function WhatsAppButton({ phone }: WhatsAppButtonProps) {
     const pathname = usePathname()
     const locale = useLocale()
+    const tCommon = useTranslations('Common')
     const [mounted, setMounted] = useState(false)
     const { items, getTotalItems } = useCartStore()
     const totalItems = getTotalItems()
@@ -68,7 +69,7 @@ export default function WhatsAppButton({ phone }: WhatsAppButtonProps) {
             )}
  
             <span className="absolute right-full mr-4 bg-black text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-2xl">
-                {locale === 'ar' ? 'اطلب عبر واتساب' : (locale === 'en' ? 'Order via WhatsApp' : 'Commander via WhatsApp')}
+                {tCommon('OrderViaWhatsApp')}
             </span>
         </a>
     )

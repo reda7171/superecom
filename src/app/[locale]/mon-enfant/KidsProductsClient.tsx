@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { ShoppingCart, Package } from 'lucide-react'
+import { Link } from '@/i18n/routing'
 import { useCartStore } from '@/store/cart'
+import { useTranslations } from 'next-intl'
 
 type Product = {
     id: string
@@ -18,6 +20,7 @@ type Product = {
 export default function KidsProductsClient({ products }: { products: Product[] }) {
     const [added, setAdded] = useState<string | null>(null)
     const addItem = useCartStore((s: any) => s.addItem)
+    const t = useTranslations('KidsPage.ClientStrings')
 
     if (products.length === 0) return null
 
@@ -41,7 +44,7 @@ export default function KidsProductsClient({ products }: { products: Product[] }
                     key={product.id}
                     className="bg-white rounded-[2rem] border border-pink-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col group"
                 >
-                    <div className="relative h-48 bg-pink-50 w-full overflow-hidden">
+                    <Link href={`/mon-enfant/${product.id}`} className="relative h-48 bg-pink-50 w-full overflow-hidden block">
                         {product.image ? (
                             <Image
                                 src={product.image}
@@ -58,21 +61,23 @@ export default function KidsProductsClient({ products }: { products: Product[] }
                         {/* Badge stock */}
                         {product.stock <= 5 && product.stock > 0 && (
                             <div className="absolute top-3 left-3 px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-black rounded-full shadow-sm">
-                                Plus que {product.stock}
+                                {t('OnlyLeft', { stock: product.stock })}
                             </div>
                         )}
                         {product.stock === 0 && (
                             <div className="absolute inset-0 bg-white/70 flex items-center justify-center backdrop-blur-[2px]">
-                                <span className="px-4 py-1.5 bg-gray-900 text-white rounded-full text-xs font-black uppercase tracking-widest shadow-lg">Épuisé</span>
+                                <span className="px-4 py-1.5 bg-gray-900 text-white rounded-full text-xs font-black uppercase tracking-widest shadow-lg">{t('OutOfStock')}</span>
                             </div>
                         )}
-                    </div>
+                    </Link>
 
                     <div className="p-5 flex flex-col flex-grow">
-                        <h3 className="font-bold text-gray-900 text-base leading-tight mb-2 line-clamp-2">{product.name}</h3>
-                        {product.description && (
-                            <p className="text-sm text-gray-500 line-clamp-2 mb-4 font-medium">{product.description}</p>
-                        )}
+                        <Link href={`/mon-enfant/${product.id}`} className="block">
+                            <h3 className="font-bold text-gray-900 text-base leading-tight mb-2 line-clamp-2 hover:text-pink-600 transition-colors">{product.name}</h3>
+                            {product.description && (
+                                <p className="text-sm text-gray-500 line-clamp-2 mb-4 font-medium">{product.description}</p>
+                            )}
+                        </Link>
                         <div className="mt-auto pt-4 flex items-center justify-between">
                             <span className="text-xl font-black text-pink-500">{product.price.toFixed(2)} DH</span>
                             <button

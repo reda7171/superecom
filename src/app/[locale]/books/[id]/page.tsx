@@ -169,13 +169,13 @@ export default async function BookDetailPage({
                 {
                     '@type': 'ListItem',
                     position: 1,
-                    name: 'Accueil',
+                    name: tNav('Home'),
                     item: baseUrl
                 },
                 {
                     '@type': 'ListItem',
                     position: 2,
-                    name: 'Livres',
+                    name: tNav('Books'),
                     item: `${baseUrl}/books`
                 },
                 {

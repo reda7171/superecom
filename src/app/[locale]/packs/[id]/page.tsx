@@ -144,13 +144,13 @@ export default async function PackDetailPage({
                 {
                     '@type': 'ListItem',
                     position: 1,
-                    name: 'Accueil',
+                    name: tNav('Home'),
                     item: baseUrl
                 },
                 {
                     '@type': 'ListItem',
                     position: 2,
-                    name: 'Packs',
+                    name: tNav('Packs'),
                     item: `${baseUrl}/packs`
                 },
                 {

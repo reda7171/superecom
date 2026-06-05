@@ -3,6 +3,7 @@
 import React from 'react'
 import { Link } from '@/i18n/routing'
 import { ChevronRight, Home } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface BreadcrumbItem {
     label: string
@@ -14,13 +15,15 @@ interface BreadcrumbsProps {
 }
 
 export default function Breadcrumbs({ items }: BreadcrumbsProps) {
+    const t = useTranslations('Navigation')
+
     return (
         <nav className="flex mb-6 overflow-x-auto whitespace-nowrap pb-2 scrollbar-hide" aria-label="Breadcrumb">
             <ol className="flex items-center space-x-2 text-xs font-medium text-gray-500">
                 <li className="flex items-center">
                     <Link href="/" className="hover:text-black transition-colors flex items-center gap-1">
                         <Home className="w-3 h-3" />
-                        <span className="hidden sm:inline">Accueil</span>
+                        <span className="hidden sm:inline">{t('Home')}</span>
                     </Link>
                 </li>
                 
@@ -54,7 +57,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
                             {
                                 '@type': 'ListItem',
                                 'position': 1,
-                                'name': 'Accueil',
+                                'name': t('Home'),
                                 'item': process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
                             },
                             ...items.map((item, index) => ({

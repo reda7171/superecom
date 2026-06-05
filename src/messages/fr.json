@@ -1,1135 +1,1241 @@
 {
-    "KidsPage": {
-        "Title": "Mon Enfant",
-        "Description": "Découvrez notre collection magique de livres pour enfants, petites histoires et coloriages.",
-        "HeroBadge": "Le coin des petits prodiges",
-        "HeroTitle": "Des mondes <span class=\"text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500\">magiques</span> à explorer.",
-        "HeroDesc": "Éveillez leur imagination avec notre sélection d'histoires formidables, de livres éducatifs originaux et de cahiers de coloriage créatifs.",
-        "HeroBtnStory": "Lire une histoire",
-        "HeroBtnColoring": "Coloriages",
-        "SectionFeatures": {
-            "BadgeSubtitle": "Une sélection soignée pour les aider à grandir avec le sourire.",
-            "BadgeTitle": "Ce qui rend leurs lectures uniques",
-            "StoryTitle": "Histoires Inspirantes",
-            "StoryDesc": "Des récits qui stimulent la créativité et transmettent de belles valeurs.",
-            "LearnTitle": "Apprentissage Doux",
-            "LearnDesc": "Découvrir les chiffres, les lettres et le monde avec beaucoup de douceur.",
-            "ColorTitle": "Coloriages Magiques",
-            "ColorDesc": "Leurs personnages préférés prêts à prendre vie sous leurs crayons."
-        },
-        "SectionStories": {
-            "Badge": "Petites Histoires",
-            "Title": "Des récits pour rêver <br/> avant de dormir.",
-            "Desc": "Plongez dans un univers d'aventures et de contes merveilleux. Des histoires amusantes avec des animaux attachants et de courageux petits héros qui accompagneront les douces nuits de votre enfant.",
-            "Btn": "Découvrir notre collection"
-        },
-        "SectionColoring": {
-            "Badge": "Atelier Créatif",
-            "Title": "Laissez s'exprimer <br/> leur créativité.",
-            "Desc": "Nos albums de coloriage offrent des heures de divertissement et de création. Des formes simples pour les plus petits aux mandalas ludiques pour les plus grands.",
-            "Btn": "Voir les cahiers de coloriage"
-        },
-        "SectionLearning": {
-            "Badge": "Apprendre en s'amusant",
-            "Title": "Des premières lettres <br/> aux grands savoirs.",
-            "Desc": "Nous avons sélectionné des ouvrages pédagogiques qui rendent l'apprentissage passionnant. Alphabets, nombres, découverte du monde : tout est conçu pour éveiller leur curiosité naturelle."
-        },
-        "SectionWisdom": {
-            "Badge": "Découverte Magique",
-            "Title": "Une petite chouette <br/> pleine de sagesse.",
-            "Desc": "Lire dès le plus jeune âge renforce la concentration et l'empathie. Nos livres pour enfants sont pensés pour être de véritables compagnons de route dans leur développement personnel."
-        },
-        "SectionLibrary": {
-            "Badge": "La Bibliothèque Enchantée",
-            "Title": "Construisez leur <br/> propre tour de magie.",
-            "Desc": "Chaque livre ajouté à leur bibliothèque est une graine plantée dans leur esprit. Créez avec eux un espace merveilleux rempli de belles couleurs et de connaissances infinies.",
-            "Btn": "Voir nos packs enfants"
-        },
-        "CTA": {
-            "Title": "Prêts pour une nouvelle aventure ?",
-            "Desc": "Rejoignez des milliers de parents et offrez à vos enfants le cadeau d'une imagination sans limites.",
-            "Btn": "Explorer toute la boutique"
-        }
+  "KidsPage": {
+    "Title": "Mon Enfant",
+    "Description": "Découvrez notre collection magique de livres pour enfants, petites histoires et coloriages.",
+    "HeroBadge": "Le coin des petits prodiges",
+    "HeroTitle": "Des mondes <span class=\"text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500\">magiques</span> à explorer.",
+    "HeroDesc": "Éveillez leur imagination avec notre sélection d'histoires formidables, de livres éducatifs originaux et de cahiers de coloriage créatifs.",
+    "HeroBtnStory": "Lire une histoire",
+    "HeroBtnColoring": "Coloriages",
+    "SectionFeatures": {
+      "BadgeSubtitle": "Une sélection soignée pour les aider à grandir avec le sourire.",
+      "BadgeTitle": "Ce qui rend leurs lectures uniques",
+      "StoryTitle": "Histoires Inspirantes",
+      "StoryDesc": "Des récits qui stimulent la créativité et transmettent de belles valeurs.",
+      "LearnTitle": "Apprentissage Doux",
+      "LearnDesc": "Découvrir les chiffres, les lettres et le monde avec beaucoup de douceur.",
+      "ColorTitle": "Coloriages Magiques",
+      "ColorDesc": "Leurs personnages préférés prêts à prendre vie sous leurs crayons."
     },
-    "UsbPage": {
-        "Title": "Clé USB",
-        "Description": "La clé USB éducative Riwaya. Plus de 500 heures de contenu éducatif pour enfants.",
-        "HeroBadge": "NOUVEAU · {seriesCount} séries · {episodesCount}+ épisodes",
-        "HeroTitleP1": "La Clé USB ",
-        "HeroTitleP2": "Éducative",
-        "HeroDesc": "<strong>500+ heures</strong> de vidéos éducatives pour vos enfants. <span class=\"text-green-600 font-bold\">Sans internet, sans pub.</span>",
-        "BtnOrder": "Commander — 349 DH",
-        "PriceNew": "349 DH",
-        "PriceOld": "499 DH",
-        "Discount": "-30%",
-        "HeroFooterText": "Paiement à la livraison · Livraison partout au Maroc",
-        "Badge500h": "500h+",
-        "Badge3Lang": "3 Langues",
-        "PromoTitleSub": "Pour toute la famille",
-        "PromoTitle": "Apprenez ensemble, grandissez ensemble",
-        "PromoDesc": "Un seul investissement pour des années de contenu éducatif de qualité.",
-        "CatalogTitle": "Catalogue Complet — {seriesCount} Séries",
-        "CatalogDesc": "Cliquez sur une carte pour voir un aperçu gratuit",
-        "Episodes": "épisodes",
-        "CatalogFooter": "+ Des centaines d'autres épisodes et bonus exclusifs inclus dans la clé USB.",
-        "HowTitle": "Comment ça marche ?",
-        "HowSteps": {
-            "Step1Title": "Commandez",
-            "Step1Desc": "Passez votre commande. Livraison en 2-4 jours partout au Maroc.",
-            "Step2Title": "Branchez",
-            "Step2Desc": "Branchez la clé sur votre TV, PC ou tablette. Aucune installation.",
-            "Step3Title": "Apprenez",
-            "Step3Desc": "Votre enfant accède instantanément à tout le contenu, sans Wi-Fi."
-        },
-        "CtaTitle": "Offrez le meilleur à votre enfant",
-        "CtaSub": "{episodesCount}+ épisodes · {seriesCount} séries · 3 langues",
-        "CtaDesc": "Un investissement unique de <strong>349 DH</strong> pour des années d'apprentissage.",
-        "CtaBtn": "Commander ma clé USB — 349 DH",
-        "CtaFooter": "Paiement à la livraison · Satisfait ou remboursé 7 jours",
-        "Features": {
-            "F1": "Compatible TV, PC & Tablette",
-            "F2": "Sans internet requis",
-            "F3": "Zéro publicité",
-            "F4": "Arabe · Français · Anglais",
-            "F5": "64 GB de contenu HD",
-            "F6": "Pour 2 à 12 ans"
-        },
-        "StickyMenu": {
-            "Catalog": "Catalogue",
-            "Guide": "Guide"
-        }
+    "SectionStories": {
+      "Badge": "Petites Histoires",
+      "Title": "Des récits pour rêver <br/> avant de dormir.",
+      "Desc": "Plongez dans un univers d'aventures et de contes merveilleux. Des histoires amusantes avec des animaux attachants et de courageux petits héros qui accompagneront les douces nuits de votre enfant.",
+      "Btn": "Découvrir notre collection"
     },
-    "Privacy": {
-        "Title": "Politique de Confidentialité",
-        "Description": "Découvrez comment Riwaya collecte, utilise et protège vos données personnelles."
+    "SectionColoring": {
+      "Badge": "Atelier Créatif",
+      "Title": "Laissez s'exprimer <br/> leur créativité.",
+      "Desc": "Nos albums de coloriage offrent des heures de divertissement et de création. Des formes simples pour les plus petits aux mandalas ludiques pour les plus grands.",
+      "Btn": "Voir les cahiers de coloriage"
     },
-    "Terms": {
-        "Title": "Conditions Générales",
-        "Description": "Veuillez lire attentivement nos conditions d'utilisation. Elles définissent les règles d'utilisation de la plateforme Riwaya."
+    "SectionLearning": {
+      "Badge": "Apprendre en s'amusant",
+      "Title": "Des premières lettres <br/> aux grands savoirs.",
+      "Desc": "Nous avons sélectionné des ouvrages pédagogiques qui rendent l'apprentissage passionnant. Alphabets, nombres, découverte du monde : tout est conçu pour éveiller leur curiosité naturelle."
     },
-    "AboutPage": {
-        "Hero": {
-            "Title": "Notre Histoire",
-            "Subtitle": "Découvrez qui nous sommes et notre mission pour démocratiser la lecture au Maroc."
-        },
-        "Quote": {
-            "Text": "Un livre est un rêve que vous tenez entre vos mains.",
-            "Source": "Sagesse Littéraire"
-        },
-        "Mission": {
-            "Badge": "Notre Mission",
-            "Title1": "Connecter les esprits",
-            "Title2": "à travers les livres.",
-            "Desc1": "Chez Riwaya, nous croyons au pouvoir de la lecture pour transformer des vies. Notre mission est de rendre les livres accessibles, abordables et disponibles pour tous.",
-            "Desc2": "Nous construisons plus qu'une simple librairie, nous bâtissons une communauté de lecteurs passionnés."
-        },
-        "Values": {
-            "Passion": {
-                "Title": "Passion",
-                "Desc": "L'amour des livres est au cœur de tout ce que nous faisons."
-            },
-            "Quality": {
-                "Title": "Qualité",
-                "Desc": "Nous sélectionnons soigneusement chaque livre de notre catalogue."
-            },
-            "Trust": {
-                "Title": "Confiance",
-                "Desc": "Nous bâtissons des relations durables avec nos lecteurs."
-            },
-            "Proximity": {
-                "Title": "Proximité",
-                "Desc": "Toujours à votre écoute pour vous conseiller la meilleure lecture."
-            }
-        },
-        "Team": {
-            "Title": "L'équipe Riwaya",
-            "Subtitle": "Les personnes derrière la magie",
-            "Member1": {
-                "Name": "Ahmed Benali",
-                "Role": "Fondateur",
-                "Bio": "Passionné par la littérature depuis son plus jeune âge, Ahmed a fondé Riwaya pour partager cette passion."
-            },
-            "Member2": {
-                "Name": "Youssef El Idrissi",
-                "Role": "Directeur Technique",
-                "Bio": "Youssef s'assure que votre expérience sur la plateforme soit fluide et agréable."
-            },
-            "Member3": {
-                "Name": "Sara Benali",
-                "Role": "Responsable Éditoriale",
-                "Bio": "Sara sélectionne les meilleurs titres et packs pour nos lecteurs."
-            },
-            "Member4": {
-                "Name": "Fatima Zahra",
-                "Role": "Service Client",
-                "Bio": "Fatima est toujours prête à vous aider et à répondre à vos questions."
-            }
-        },
-        "WhyUs": {
-            "Title": "Pourquoi nous choisir",
-            "Subtitle": "Notre engagement envers vous",
-            "LiveStock": {
-                "Title": "Stock en temps réel",
-                "Desc": "Disponibilité garantie de nos livres."
-            },
-            "ExpertHelp": {
-                "Title": "Conseil expert",
-                "Desc": "Une équipe de passionnés pour vous guider."
-            },
-            "SafeArrival": {
-                "Title": "Livraison sécurisée",
-                "Desc": "Vos livres arrivent en parfait état."
-            }
-        },
-        "CTA": {
-            "Title": "Commencez votre voyage",
-            "Subtitle": "Explorez notre collection de livres et de packs",
-            "SelectLibrary": "Voir la Librairie",
-            "ViewBundles": "Découvrir les Packs"
-        }
+    "SectionWisdom": {
+      "Badge": "Découverte Magique",
+      "Title": "Une petite chouette <br/> pleine de sagesse.",
+      "Desc": "Lire dès le plus jeune âge renforce la concentration et l'empathie. Nos livres pour enfants sont pensés pour être de véritables compagnons de route dans leur développement personnel."
     },
-    "AuthorsPage": {
-      "Title": "Nos Auteurs | Riwaya",
-      "Heading": "Découvrez nos auteurs",
-      "Subheading": "Explorez les esprits brillants derrière vos livres préférés.",
-      "SearchPlaceholder": "Rechercher un auteur...",
-      "NoResults": "Aucun auteur trouvé pour cette recherche.",
-      "BooksCount": "{count, plural, =0 {Aucun livre} one {# livre} other {# livres}}",
-      "ViewBooks": "Voir ses livres",
-      "Featured": "Auteurs à la une",
-      "AllAuthors": "Tous nos auteurs",
-      "AuthorLabel": "Auteur"
+    "SectionLibrary": {
+      "Badge": "La Bibliothèque Enchantée",
+      "Title": "Construisez leur <br/> propre tour de magie.",
+      "Desc": "Chaque livre ajouté à leur bibliothèque est une graine plantée dans leur esprit. Créez avec eux un espace merveilleux rempli de belles couleurs et de connaissances infinies.",
+      "Btn": "Voir nos packs enfants"
     },
-    "HomePage": {
-        "hero": {
-            "Badge": "Sélections 2024",
-            "TitlePart1": "Beau",
-            "TitlePart2": "Savoir.",
-            "Description": "Découvrez une sélection premium de volumes qui transforment votre vision du monde. Le savoir, avec style.",
-            "ShopLibrary": "La Librairie",
-            "OurBundles": "Nos Packs",
-            "EditorsChoice": "Choix de l'éditeur",
-            "Select": "SÉLECTIONNER"
-        },
-        "SearchSection": {
-            "Badge": "Recherche",
-            "TitlePart1": "Trouvez votre",
-            "TitlePart2": "prochaine lecture.",
-            "Description": "Utilisez notre recherche avancée pour filtrer par titre, auteur ou budget.",
-            "Placeholder": "Rechercher un livre, un mot-clé...",
-            "MoreFilters": "Plus de filtres",
-            "HideFilters": "Masquer les filtres",
-            "Filters": {
-                "Title": "Titre",
-                "TitlePlaceholder": "Ex: Alchimiste",
-                "Author": "Auteur",
-                "AuthorPlaceholder": "Ex: Paulo Coelho",
-                "MinPrice": "Prix Min (MAD)",
-                "MaxPrice": "Prix Max (MAD)"
-            },
-            "Submit": "Lancer la recherche"
-        },
-        "seo": {
-            "Title": "Riwaya | Digital Literature Curators & Book Bundles",
-            "Description": "Riwaya est votre destination premium pour les livres de développement personnel, business et philosophie au Maroc. Livraison partout au royaume."
-        },
-        "Features": {
-            "ShippingTitle": "Livraison Express",
-            "ShippingDesc": "Couverture partout au Maroc en un temps record.",
-            "PaymentTitle": "Paiement à la livraison",
-            "PaymentDesc": "Paiement à la livraison en toute confiance.",
-            "PacksTitle": "Pack de livres à 100dhs",
-            "PacksDesc": "Des sélections soignées à des prix étudiés."
-        },
-        "Quotes": {
-            "WisdomOfTheDay": "Sagesse du jour",
-            "FeaturedIn": "Featured in"
-        },
-        "Collections": {
-            "Subtitle": "Sélections Soignées",
-            "Title": "Nos Collections"
-        },
-        "NewArrivals": {
-            "Subtitle": "Nouvelle Saison",
-            "Title": "Derniers Arrivages",
-            "ViewAll": "Tout voir"
-        },
-        "BestSellers": {
-            "Subtitle": "Les Mieux Notés",
-            "Title": "Meilleures Ventes",
-            "Description": "Découvrez les livres que nos lecteurs adorent le plus. Des favoris éprouvés qui ont transformé des milliers de vies.",
-            "ViewAll": "Tout voir",
-            "NoData": "Aucune donnée de vente pour le moment",
-            "Soon": "Bientôt disponible"
-        },
-        "BestAuthors": {
-            "Subtitle": "Auteurs Vedettes",
-            "Title": "Meilleurs Auteurs",
-            "Description": "Rencontrez les auteurs dont les œuvres ont captivé nos lecteurs. Découvrez leurs titres les plus populaires.",
-            "BooksSold": "Vendus",
-            "BookSingular": "Livre",
-            "BooksPlural": "Livres",
-            "ViewBooks": "Voir les livres",
-            "NoData": "Aucune donnée d'auteur pour le moment"
-        },
-        "ExchangeBooks": {
-            "Subtitle": "Communauté",
-            "Title": "Livres à Échanger",
-            "Description": "Découvrez les livres disponibles à l'échange dans notre communauté. Partagez, échangez et connectez avec d'autres lecteurs.",
-            "ViewAll": "Tout voir",
-            "ViewMore": "Voir Plus de Livres",
-            "NoData": "Aucun livre d'échange disponible pour le moment",
-            "JoinCommunity": "Rejoindre la Communauté"
-        },
-        "CTA": {
-            "TitlePart1": "Prêt pour votre",
-            "TitlePart2": "prochaine lecture ?",
-            "Button": "Démarrer maintenant"
-        },
-        "QuickSearches": {
-            "Title": "Recherches Rapides",
-            "Searches": [
-                "Développement personnel",
-                "Stratégie d'entreprise",
-                "Classiques philosophie",
-                "Guides productivité",
-                "Livres leadership",
-                "Best-sellers psychologie",
-                "Entrepreneuriat",
-                "Finance personnelle",
-                "Méditation pleine conscience",
-                "Histoires de succès",
-                "Communication efficace",
-                "Gestion du temps"
-            ]
-        },
-        "Trust": {
-            "Badge": "Nos Chiffres",
-            "Title": "Une Plateforme de Confiance",
-            "Description": "Rejoignez des milliers de lecteurs qui nous font confiance pour leurs découvertes littéraires au Maroc.",
-            "Items": {
-                "Books": "Volumes disponibles",
-                "Cities": "Villes couvertes",
-                "Readers": "Lecteurs satisfaits",
-                "Exchanges": "Échanges réussis"
-            }
-        },
-        "Journal": {
-            "Subtitle": "Notre Journal",
-            "TitlePart1": "Derniers Articles",
-            "TitlePart2": "à Découvrir",
-            "ViewAll": "Tout Lire",
-            "ReadMore": "Lire l'article"
-        }
+    "CTA": {
+      "Title": "Prêts pour une nouvelle aventure ?",
+      "Desc": "Rejoignez des milliers de parents et offrez à vos enfants le cadeau d'une imagination sans limites.",
+      "Btn": "Explorer toute la boutique"
     },
-    "Navigation": {
-        "Clé fameux": "Clé fameux",
-        "Fourniture bureau": "Fourniture bureau",
-        "Home": "Accueil",
+    "SectionProducts": {
+      "Badge": "Accessoires & Goodies",
+      "Title": "Le coin des <span class=\"text-pink-500\">petits lecteurs</span>",
+      "Desc": "Découvrez notre sélection d'accessoires conçus spécialement pour accompagner vos enfants dans leurs aventures de lecture."
+    },
+    "ClientStrings": {
+      "OnlyLeft": "Plus que {stock}",
+      "OutOfStock": "Épuisé"
+    }
+  },
+  "UsbPage": {
+    "Title": "Clé USB",
+    "Description": "La clé USB éducative Riwaya. Plus de 500 heures de contenu éducatif pour enfants.",
+    "HeroBadge": "NOUVEAU · {seriesCount} séries · {episodesCount}+ épisodes",
+    "HeroTitleP1": "La Clé USB ",
+    "HeroTitleP2": "Éducative",
+    "HeroDesc": "<strong>500+ heures</strong> de vidéos éducatives pour vos enfants. <span class=\"text-green-600 font-bold\">Sans internet, sans pub.</span>",
+    "BtnOrder": "Commander — 349 DH",
+    "PriceNew": "349 DH",
+    "PriceOld": "499 DH",
+    "Discount": "-30%",
+    "HeroFooterText": "Paiement à la livraison · Livraison partout au Maroc",
+    "Badge500h": "500h+",
+    "Badge3Lang": "3 Langues",
+    "PromoTitleSub": "Pour toute la famille",
+    "PromoTitle": "Apprenez ensemble, grandissez ensemble",
+    "PromoDesc": "Un seul investissement pour des années de contenu éducatif de qualité.",
+    "CatalogTitle": "Catalogue Complet — {seriesCount} Séries",
+    "CatalogDesc": "Cliquez sur une carte pour voir un aperçu gratuit",
+    "Episodes": "épisodes",
+    "CatalogFooter": "+ Des centaines d'autres épisodes et bonus exclusifs inclus dans la clé USB.",
+    "HowTitle": "Comment ça marche ?",
+    "HowSteps": {
+      "Step1Title": "Commandez",
+      "Step1Desc": "Passez votre commande. Livraison en 2-4 jours partout au Maroc.",
+      "Step2Title": "Branchez",
+      "Step2Desc": "Branchez la clé sur votre TV, PC ou tablette. Aucune installation.",
+      "Step3Title": "Apprenez",
+      "Step3Desc": "Votre enfant accède instantanément à tout le contenu, sans Wi-Fi."
+    },
+    "CtaTitle": "Offrez le meilleur à votre enfant",
+    "CtaSub": "{episodesCount}+ épisodes · {seriesCount} séries · 3 langues",
+    "CtaDesc": "Un investissement unique de <strong>349 DH</strong> pour des années d'apprentissage.",
+    "CtaBtn": "Commander ma clé USB — 349 DH",
+    "CtaFooter": "Paiement à la livraison · Satisfait ou remboursé 7 jours",
+    "Features": {
+      "F1": "Compatible TV, PC & Tablette",
+      "F2": "Sans internet requis",
+      "F3": "Zéro publicité",
+      "F4": "Arabe · Français · Anglais",
+      "F5": "64 GB de contenu HD",
+      "F6": "Pour 2 à 12 ans"
+    },
+    "StickyMenu": {
+      "Catalog": "Catalogue",
+      "Guide": "Guide"
+    }
+  },
+  "Privacy": {
+    "Title": "Politique de Confidentialité",
+    "Description": "Découvrez comment Riwaya collecte, utilise et protège vos données personnelles."
+  },
+  "Terms": {
+    "Title": "Conditions Générales",
+    "Description": "Veuillez lire attentivement nos conditions d'utilisation. Elles définissent les règles d'utilisation de la plateforme Riwaya."
+  },
+  "AboutPage": {
+    "Hero": {
+      "Title": "Notre Histoire",
+      "Subtitle": "Découvrez qui nous sommes et notre mission pour démocratiser la lecture au Maroc."
+    },
+    "Quote": {
+      "Text": "Un livre est un rêve que vous tenez entre vos mains.",
+      "Source": "Sagesse Littéraire"
+    },
+    "Mission": {
+      "Badge": "Notre Mission",
+      "Title1": "Connecter les esprits",
+      "Title2": "à travers les livres.",
+      "Desc1": "Chez Riwaya, nous croyons au pouvoir de la lecture pour transformer des vies. Notre mission est de rendre les livres accessibles, abordables et disponibles pour tous.",
+      "Desc2": "Nous construisons plus qu'une simple librairie, nous bâtissons une communauté de lecteurs passionnés."
+    },
+    "Values": {
+      "Passion": {
+        "Title": "Passion",
+        "Desc": "L'amour des livres est au cœur de tout ce que nous faisons."
+      },
+      "Quality": {
+        "Title": "Qualité",
+        "Desc": "Nous sélectionnons soigneusement chaque livre de notre catalogue."
+      },
+      "Trust": {
+        "Title": "Confiance",
+        "Desc": "Nous bâtissons des relations durables avec nos lecteurs."
+      },
+      "Proximity": {
+        "Title": "Proximité",
+        "Desc": "Toujours à votre écoute pour vous conseiller la meilleure lecture."
+      }
+    },
+    "Team": {
+      "Title": "L'équipe Riwaya",
+      "Subtitle": "Les personnes derrière la magie",
+      "Member1": {
+        "Name": "Ahmed Benali",
+        "Role": "Fondateur",
+        "Bio": "Passionné par la littérature depuis son plus jeune âge, Ahmed a fondé Riwaya pour partager cette passion."
+      },
+      "Member2": {
+        "Name": "Youssef El Idrissi",
+        "Role": "Directeur Technique",
+        "Bio": "Youssef s'assure que votre expérience sur la plateforme soit fluide et agréable."
+      },
+      "Member3": {
+        "Name": "Sara Benali",
+        "Role": "Responsable Éditoriale",
+        "Bio": "Sara sélectionne les meilleurs titres et packs pour nos lecteurs."
+      },
+      "Member4": {
+        "Name": "Fatima Zahra",
+        "Role": "Service Client",
+        "Bio": "Fatima est toujours prête à vous aider et à répondre à vos questions."
+      }
+    },
+    "WhyUs": {
+      "Title": "Pourquoi nous choisir",
+      "Subtitle": "Notre engagement envers vous",
+      "LiveStock": {
+        "Title": "Stock en temps réel",
+        "Desc": "Disponibilité garantie de nos livres."
+      },
+      "ExpertHelp": {
+        "Title": "Conseil expert",
+        "Desc": "Une équipe de passionnés pour vous guider."
+      },
+      "SafeArrival": {
+        "Title": "Livraison sécurisée",
+        "Desc": "Vos livres arrivent en parfait état."
+      }
+    },
+    "CTA": {
+      "Title": "Commencez votre voyage",
+      "Subtitle": "Explorez notre collection de livres et de packs",
+      "SelectLibrary": "Voir la Librairie",
+      "ViewBundles": "Découvrir les Packs"
+    }
+  },
+  "AuthorsPage": {
+    "Title": "Nos Auteurs | Riwaya",
+    "Heading": "Découvrez nos auteurs",
+    "Subheading": "Explorez les esprits brillants derrière vos livres préférés.",
+    "SearchPlaceholder": "Rechercher un auteur...",
+    "NoResults": "Aucun auteur trouvé pour cette recherche.",
+    "BooksCount": "{count, plural, =0 {Aucun livre} one {# livre} other {# livres}}",
+    "ViewBooks": "Voir ses livres",
+    "Featured": "Auteurs à la une",
+    "AllAuthors": "Tous nos auteurs",
+    "AuthorLabel": "Auteur"
+  },
+  "HomePage": {
+    "hero": {
+      "Badge": "Sélections 2024",
+      "TitlePart1": "Beau",
+      "TitlePart2": "Savoir.",
+      "Description": "Découvrez une sélection premium de volumes qui transforment votre vision du monde. Le savoir, avec style.",
+      "ShopLibrary": "La Librairie",
+      "OurBundles": "Nos Packs",
+      "EditorsChoice": "Choix de l'éditeur",
+      "Select": "SÉLECTIONNER"
+    },
+    "SearchSection": {
+      "Badge": "Recherche",
+      "TitlePart1": "Trouvez votre",
+      "TitlePart2": "prochaine lecture.",
+      "Description": "Utilisez notre recherche avancée pour filtrer par titre, auteur ou budget.",
+      "Placeholder": "Rechercher un livre, un mot-clé...",
+      "MoreFilters": "Plus de filtres",
+      "HideFilters": "Masquer les filtres",
+      "Filters": {
+        "Title": "Titre",
+        "TitlePlaceholder": "Ex: Alchimiste",
+        "Author": "Auteur",
+        "AuthorPlaceholder": "Ex: Paulo Coelho",
+        "MinPrice": "Prix Min (MAD)",
+        "MaxPrice": "Prix Max (MAD)"
+      },
+      "Submit": "Lancer la recherche"
+    },
+    "seo": {
+      "Title": "Riwaya | Digital Literature Curators & Book Bundles",
+      "Description": "Riwaya est votre destination premium pour les livres de développement personnel, business et philosophie au Maroc. Livraison partout au royaume."
+    },
+    "Features": {
+      "ShippingTitle": "Livraison Express",
+      "ShippingDesc": "Couverture partout au Maroc en un temps record.",
+      "PaymentTitle": "Paiement à la livraison",
+      "PaymentDesc": "Paiement à la livraison en toute confiance.",
+      "PacksTitle": "Pack de livres à 100dhs",
+      "PacksDesc": "Des sélections soignées à des prix étudiés."
+    },
+    "Quotes": {
+      "WisdomOfTheDay": "Sagesse du jour",
+      "FeaturedIn": "Featured in"
+    },
+    "Collections": {
+      "Subtitle": "Sélections Soignées",
+      "Title": "Nos Collections"
+    },
+    "NewArrivals": {
+      "Subtitle": "Nouvelle Saison",
+      "Title": "Derniers Arrivages",
+      "ViewAll": "Tout voir"
+    },
+    "BestSellers": {
+      "Subtitle": "Les Mieux Notés",
+      "Title": "Meilleures Ventes",
+      "Description": "Découvrez les livres que nos lecteurs adorent le plus. Des favoris éprouvés qui ont transformé des milliers de vies.",
+      "ViewAll": "Tout voir",
+      "NoData": "Aucune donnée de vente pour le moment",
+      "Soon": "Bientôt disponible"
+    },
+    "BestAuthors": {
+      "Subtitle": "Auteurs Vedettes",
+      "Title": "Meilleurs Auteurs",
+      "Description": "Rencontrez les auteurs dont les œuvres ont captivé nos lecteurs. Découvrez leurs titres les plus populaires.",
+      "BooksSold": "Vendus",
+      "BookSingular": "Livre",
+      "BooksPlural": "Livres",
+      "ViewBooks": "Voir les livres",
+      "NoData": "Aucune donnée d'auteur pour le moment"
+    },
+    "ExchangeBooks": {
+      "Subtitle": "Communauté",
+      "Title": "Livres à Échanger",
+      "Description": "Découvrez les livres disponibles à l'échange dans notre communauté. Partagez, échangez et connectez avec d'autres lecteurs.",
+      "ViewAll": "Tout voir",
+      "ViewMore": "Voir Plus de Livres",
+      "NoData": "Aucun livre d'échange disponible pour le moment",
+      "JoinCommunity": "Rejoindre la Communauté"
+    },
+    "CTA": {
+      "TitlePart1": "Prêt pour votre",
+      "TitlePart2": "prochaine lecture ?",
+      "Button": "Démarrer maintenant"
+    },
+    "QuickSearches": {
+      "Title": "Recherches Rapides",
+      "Searches": [
+        "Développement personnel",
+        "Stratégie d'entreprise",
+        "Classiques philosophie",
+        "Guides productivité",
+        "Livres leadership",
+        "Best-sellers psychologie",
+        "Entrepreneuriat",
+        "Finance personnelle",
+        "Méditation pleine conscience",
+        "Histoires de succès",
+        "Communication efficace",
+        "Gestion du temps"
+      ]
+    },
+    "Trust": {
+      "Badge": "Nos Chiffres",
+      "Title": "Une Plateforme de Confiance",
+      "Description": "Rejoignez des milliers de lecteurs qui nous font confiance pour leurs découvertes littéraires au Maroc.",
+      "Items": {
+        "Books": "Volumes disponibles",
+        "Cities": "Villes couvertes",
+        "Readers": "Lecteurs satisfaits",
+        "Exchanges": "Échanges réussis"
+      }
+    },
+    "Journal": {
+      "Subtitle": "Notre Journal",
+      "TitlePart1": "Derniers Articles",
+      "TitlePart2": "à Découvrir",
+      "ViewAll": "Tout Lire",
+      "ReadMore": "Lire l'article"
+    }
+  },
+  "Navigation": {
+    "Clé fameux": "Clé fameux",
+    "Fourniture bureau": "Fourniture bureau",
+    "Home": "Accueil",
+    "Authors": "Auteurs",
+    "Books": "Livres",
+    "Packs": "Packs",
+    "Kids": "Mon enfant",
+    "UsbKey": "Clé USB",
+    "Digital": "Livres PDF",
+    "Community": "Echanges",
+    "Cart": "Panier",
+    "Login": "Connexion",
+    "Admin": "Admin",
+    "Search": "Rechercher des livres...",
+    "Journal": "Journal",
+    "UserMenu": {
+      "Profile": "Mon Profil",
+      "ReadingList": "Mes Lectures",
+      "ReadingProgress": "{completed} / {total} livres",
+      "Orders": "Mes Commandes",
+      "Settings": "Paramètres",
+      "Logout": "Déconnexion",
+      "LogoutLoading": "Déconnexion...",
+      "LogoutSuccess": "Déconnexion réussie",
+      "DefaultUser": "Utilisateur"
+    }
+  },
+  "Footer": {
+    "About": "À propos",
+    "Contact": "Contact",
+    "Terms": "Conditions",
+    "Privacy": "Confidentialité",
+    "Slogan": "Des connaissances soigneusement sélectionnées pour l'esprit moderne. Livraison partout au Maroc.",
+    "Navigation": "Navigation",
+    "Support": "Support",
+    "Shipping": "Livraison",
+    "Returns": "Retours",
+    "Journal": "Journal",
+    "NewsletterText": "Rejoignez notre newsletter pour des sélections exclusives.",
+    "Join": "Rejoindre",
+    "Rights": "Tous droits réservés.",
+    "BackToTop": "Revenir en haut",
+    "DevelopedBy": "Développé par <name>Reda</name>"
+  },
+  "Common": {
+    "AddedToCartSuccess": "Article ajouté au panier avec succès !",
+    "AddedToReadingList": "Ajouté à mes lectures !",
+    "RemovedFromReadingList": "Retiré de mes lectures !",
+    "AddedToCartError": "Erreur lors de l'ajout au panier. Veuillez réessayer.",
+    "BuyNow": "Acheter maintenant",
+    "Price": "Prix",
+    "AddToCart": "Ajouter au panier",
+    "OutOfStock": "Rupture de stock",
+    "Remaining": "restants",
+    "BestSeller": "Best-seller",
+    "BookCount": "{count, plural, =0 {0 livre} one {1 livre} other {{count} livres}}",
+    "NoResultsDesc": "Aucun livre trouvé pour cet auteur.",
+    "By": "Par",
+    "Errors": {
+      "UnexpectedError": "Une erreur inattendue est survenue",
+      "ImageUploadError": "Erreur lors de l'envoi de l'image"
+    },
+    "ImageUpload": {
+      "Label": "Photo du livre",
+      "Placeholder": "Cliquez ou glissez une image",
+      "Instructions": "JPG, PNG ou WebP (max 5MB)",
+      "Button": "Choisir une image",
+      "Alt": "Aperçu",
+      "FormatError": "Format non supporté. Utilisez JPG, PNG ou WebP",
+      "SizeError": "Image trop volumineuse. Maximum 5MB"
+    },
+    "Available": "Disponible",
+    "AddToFavorites": "Ajouter aux favoris",
+    "RemoveFromFavorites": "Retirer des favoris",
+    "AddToReadingListTitle": "Ajouter à ma liste de lecture",
+    "AddToList": "Ajouter à ma liste",
+    "RefineSearch": "Affiner la recherche",
+    "ShowMore": "+ Afficher plus",
+    "ShowLess": "- Afficher moins",
+    "CustomPackCTA": {
+      "Tag": "Personnalisé",
+      "Title": "Composez votre propre Pack",
+      "Description": "Sélectionnez les livres de votre choix et profitez de réductions exclusives sur votre pack personnalisé.",
+      "Button": "Créer mon pack"
+    },
+    "DiscoverPack": "Découvrir le pack",
+    "SpecialOffer": "Offre Spéciale",
+    "OrderViaWhatsApp": "Commander via WhatsApp",
+    "Currency": "MAD"
+  },
+  "Packs": {
+    "Save": "Économisez",
+    "Exclusive": "Pack Exclusif",
+    "Includes": "Titres inclus",
+    "RegularPrice": "Prix Normal",
+    "PackPrice": "Prix Pack",
+    "AddSelection": "Ajouter la sélection",
+    "CustomPack": {
+      "BannerTitle": "Créez votre propre Pack",
+      "BannerDesc": "Sélectionnez vos livres préférés et bénéficiez d'une réduction exclusive. À partir de 3 livres !",
+      "BannerBtn": "Composer mon pack",
+      "ModalTitle": "Composez votre Pack Sur Mesure",
+      "SelectBooks": "Sélectionnez vos livres",
+      "Selected": "Sélectionnés",
+      "Discount10": "10% de réduction appliqués (3+ livres)",
+      "Discount15": "15% de réduction appliqués (5+ livres)",
+      "AddMoreFor10": "Ajoutez {count} livre(s) de plus pour -10%",
+      "AddMoreFor15": "Ajoutez {count} livre(s) de plus pour -15%",
+      "AddToCart": "Ajouter le pack au panier ({price} MAD)",
+      "SearchPlaceholder": "Rechercher un livre...",
+      "NoBooksFound": "Aucun livre trouvé.",
+      "CartPrefix": "[Pack Sur Mesure]"
+    }
+  },
+  "FAQ": {
+    "Title": "Questions Fréquentes",
+    "Subtitle": "Centre d'aide",
+    "Questions": {
+      "Shipping": {
+        "Question": "Quels sont les délais de livraison ?",
+        "Answer": "Nous livrons en 24-48h pour les grandes villes (Casablanca, Rabat, Marrakech, Tanger) et 48-72h pour les autres régions."
+      },
+      "Payment": {
+        "Question": "Quels moyens de paiement acceptez-vous ?",
+        "Answer": "Nous acceptons uniquement le paiement à la livraison (Cash on Delivery) pour garantir votre satisfaction à la réception."
+      },
+      "Returns": {
+        "Question": "Puis-je retourner un livre ?",
+        "Answer": "Oui, vous disposez de 3 jours après la livraison pour signaler un problème si le livre est endommagé ou ne correspond pas à votre commande."
+      },
+      "DeliveryCost": {
+        "Question": "Combien coûte la livraison ?",
+        "Answer": "La livraison est gratuite pour toute commande supérieure à 400 MAD. En dessous, un tarif fixe de 35 MAD s'applique."
+      }
+    }
+  },
+  "Returns": {
+    "Title": "Politique de Retour",
+    "Subtitle": "Tranquillité d'esprit",
+    "Intro": "Nous voulons que vous aimiez votre lecture. Voici comment nous traitons les retours.",
+    "Policy": {
+      "Point1": "Vous avez 3 jours calendaires pour signaler un problème.",
+      "Point2": "L'article doit être inutilisé et dans le même état que vous l'avez reçu.",
+      "Point3": "Veuillez nous contacter via le formulaire ou WhatsApp pour initier un retour.",
+      "Point4": "Les remboursements sont traités après inspection de l'article retourné."
+    }
+  },
+  "Contact": {
+    "Title": "Contactez-nous",
+    "Subtitle": "Restons en contact",
+    "GetInTouch": "Contactez-nous",
+    "LoveToHear": "Nous serions ravis de vous entendre.",
+    "Form": {
+      "Name": "Nom complet",
+      "Email": "Adresse Email",
+      "Message": "Votre Message",
+      "Submit": "Envoyer le message",
+      "Sending": "Envoi en cours..."
+    },
+    "Info": {
+      "Email": "Email",
+      "Phone": "Téléphone",
+      "Address": "Adresse",
+      "Location": "Casablanca, Maroc",
+      "Hours": "Heures d'ouverture",
+      "HoursValue": "Lun - Ven: 9:00 - 18:00"
+    }
+  },
+  "BookDetail": {
+    "BackToSelection": "Retour à la sélection",
+    "OnlyLeft": "Plus que {stock} exemplaires",
+    "FastMove": "Envoi Rapide",
+    "Secured": "Sécurisé",
+    "Original": "Original",
+    "ReaderReviews": "{count} Avis lecteurs",
+    "BeFirstToReview": "Soyez le premier à donner votre avis",
+    "TaxesIncluded": "Taxes incluses · Paiement à la livraison",
+    "ReadyForCollection": "Prêt à l'expédition",
+    "OutOfStock": "Rupture de stock",
+    "Abstract": "Résumé",
+    "Technical": "Fiche Technique",
+    "Reference": "Référence",
+    "Volume": "Volume",
+    "Pages": "Pages",
+    "RiwayaSelect": "Sélection Riwaya",
+    "OriginalMasterpiece": "Chef-d'œuvre original",
+    "PremiumPaperQual": "Papier Premium",
+    "GlobalStandard": "Standard international",
+    "CulturalSelect": "Sélection Culturelle",
+    "Voices": "Voix",
+    "SharePerspective": "Partagez votre perspective avec notre communauté intellectuelle.",
+    "Reflections": "{count} Réflexions",
+    "RecommendedReads": "Lectures Recommandées",
+    "ExploreAll": "Tout explorer",
+    "FrequentlyBoughtTogether": "Achetez-le avec"
+  },
+  "Cart": {
+    "Title": "Votre Panier",
+    "SelectedItems": "{count} Articles sélectionnés",
+    "EmptyTitle": "Votre panier est vide.",
+    "EmptyDesc": "Il semble que vous n'ayez pas encore découvert <br /> nos trésors.",
+    "DiscoverBooks": "Découvrir les livres",
+    "Set": "PACK",
+    "Titles": "Titres",
+    "ClearSelection": "Vider la sélection",
+    "Subtotal": "Sous-total",
+    "Delivery": "Livraison",
+    "Complimentary": "Offerte",
+    "FreeShippingAd": "Ajoutez {amount} MAD pour la livraison gratuite.",
+    "OrderTotal": "Total Commande",
+    "ProceedToCheckout": "Passer la commande",
+    "KeepExploring": "Continuer vos achats"
+  },
+  "Checkout": {
+    "BackToSelection": "Retour à la sélection",
+    "YourDetails": "Vos Coordonnées",
+    "ShippingInfo": "Informations de livraison",
+    "FirstName": "Prénom",
+    "LastName": "Nom",
+    "Email": "Email",
+    "MobileNumber": "Numéro de téléphone mobile",
+    "City": "Ville",
+    "ChooseCity": "Choisir votre ville",
+    "FullAddress": "Adresse complète",
+    "NoteOptional": "Note (Optionnel)",
+    "PaymentMethod": "Moyen de paiement",
+    "CashOnDelivery": "Paiement à la livraison",
+    "PayWhenReceive": "Payez à la réception de votre commande.",
+    "SelectionSummary": "Résumé de la sélection",
+    "PromotionalCode": "Code Promo",
+    "CodeApplied": "Code Appliqué",
+    "DeliveryFee": "Frais de livraison",
+    "Free": "Gratuit",
+    "TotalAmount": "Montant Total",
+    "CompletePurchase": "Confirmer la commande",
+    "Processing": "Traitement...",
+    "FastDelivery": "Livraison rapide <br /> sous 24-48h.",
+    "OrderSuccess": "Commande réussie !",
+    "Errors": {
+      "FirstNameRequired": "Le prénom est requis",
+      "LastNameRequired": "Le nom est requis",
+      "PhoneRequired": "Le téléphone est requis",
+      "PhoneInvalid": "Numéro invalide (ex: 0612345678)",
+      "EmailRequired": "L'email est requis",
+      "EmailInvalid": "Format d'email invalide",
+      "CityRequired": "La ville est requise",
+      "AddressRequired": "L'adresse est requise",
+      "UnexpectedError": "Une erreur inattendue est survenue"
+    },
+    "Success": {
+      "OrderConfirmed": "Commande Confirmée",
+      "ThankYou": "Merci {name}, votre sélection est en cours de préparation.",
+      "OrderReference": "Référence Commande",
+      "OrderDate": "Date de Commande",
+      "TotalPaid": "Total à Payer (COD)",
+      "NextSteps": "Prochaines Étapes",
+      "AgentContact": "Un agent vous contactera sous 24h pour confirmation.",
+      "PrepareAmount": "Préparez le montant exact pour la livraison.",
+      "BackHome": "Retour à l'accueil"
+    }
+  },
+  "Review": {
+    "SuccessTitle": "Merci pour votre avis !",
+    "SuccessDesc": "Votre témoignage aide les autres lecteurs à faire le bon choix.",
+    "SuccessNotification": "Avis envoyé avec succès !",
+    "ErrorNotification": "Une erreur est survenue lors de l'envoi de l'avis.",
+    "Title": "Laissez votre avis",
+    "GlobalRating": "Note globale",
+    "FullName": "Nom complet",
+    "YourComment": "Votre commentaire",
+    "PlaceholderName": "Ex: Ahmed Benali",
+    "PlaceholderComment": "Qu'avez-vous pensé de ce livre ?",
+    "Submit": "Envoyer l'avis"
+  },
+  "ReviewList": {
+    "NoReviews": "Soyez le premier à donner votre avis sur ce livre ! ✨"
+  },
+  "PredictiveSearch": {
+    "Placeholder": "Rechercher un livre, un auteur...",
+    "RecentSearches": "Recherches récentes",
+    "Clear": "Effacer",
+    "PopularThemes": "Thèmes populaires",
+    "PopularSearches": "Recherches Populaires",
+    "BookCount": "{count, plural, =0 {Aucun livre} one {1 livre} other {{count} livres}}",
+    "Remaining": "restants",
+    "From": "Dès {price} MAD",
+    "Suggestions": "Suggestions",
+    "By": "Par {author}",
+    "NoResultsTitle": "Oups !",
+    "NoResultsDesc": "Aucun livre ne correspond à votre recherche.",
+    "ViewAll": "Voir tous les résultats",
+    "EndsIn": "Finit dans {time}",
+    "Terminated": "Terminé",
+    "Badges": {
+      "PROMO": "Promo",
+      "NEW": "Nouveau",
+      "HOT": "Brûlant",
+      "TRENDING": "Tendance",
+      "LIVRAISON": "Livraison Offerte"
+    }
+  },
+  "Categories": {
+    "Développement Personnel": "Développement Personnel",
+    "Business & Finance": "Business & Finance",
+    "Psychologie": "Psychologie",
+    "Romans & Fiction": "Romans & Fiction",
+    "Roman & Fiction": "Roman & Fiction",
+    "Religion": "Religion",
+    "Organisation": "Organisation",
+    "Philosophie": "Philosophie",
+    "Productivité": "Productivité",
+    "Enfant": "Enfant",
+    "Enfants": "Enfants",
+    "Coloriage": "Coloriage",
+    "Autre": "Autre",
+    "Histoire & Politique": "Histoire & Politique",
+    "Psychologie & Sociologie": "Psychologie & Sociologie",
+    "Religion & Spiritualité": "Religion & Spiritualité",
+    "All": "Toutes les catégories"
+  },
+  "BooksPage": {
+    "Title": "Bibliothèque",
+    "ItemsAvailable": "{count} articles disponibles",
+    "In": "dans",
+    "Filters": "Filtres",
+    "SearchItems": "Rechercher",
+    "SearchPlaceholder": "Titre, auteur...",
+    "Apply": "Appliquer",
+    "Languages": "Langues",
+    "AllLanguages": "Toutes les langues",
+    "Categories": "Catégories",
+    "Active": "Actifs",
+    "Reset": "Réinitialiser",
+    "NoVolumes": "Aucun volume trouvé",
+    "EmptyCollection": "Notre collection est vide pour ces filtres.",
+    "EmptyFilters": "Effacer les filtres",
+    "Results": "Résultats",
+    "AllAuthors": "Tous les auteurs"
+  },
+  "ReviewsSection": {
+    "Title": "Avis Clients",
+    "NoReviews": "Aucun avis pour le moment",
+    "BeFirst": "Soyez le premier à partager votre avis !",
+    "AverageRating": "Note moyenne",
+    "BasedOn": "Basé sur {count} avis",
+    "WriteReview": "Écrire un avis",
+    "YourOpinion": "Partagez votre avis",
+    "HelpOthers": "Aidez les autres lecteurs à faire leur choix",
+    "Submitted": "Merci !",
+    "SubmittedDesc": "Votre avis a été soumis et est en attente de modération."
+  },
+  "Wishlist": {
+    "Title": "Mes Favoris",
+    "Subtitle": "{count} élément(s) sauvegardé(s)",
+    "EmptyTitle": "Votre liste est vide",
+    "EmptyDesc": "Vous n'avez pas encore ajouté de livres à vos favoris.",
+    "ContinueShopping": "Continuer mes achats",
+    "AddToCart": "Ajouter au panier",
+    "AddAllToCart": "Tout ajouter au panier",
+    "seo": {
+      "Title": "Mes Favoris | Riwaya - Curateurs de Littérature",
+      "Description": "Retrouvez votre sélection personnelle de livres et packs premium. Organisez vos prochaines lectures sur Riwaya."
+    },
+    "By": "Par {author}",
+    "Quote": "Le livre que l'on attend est celui qui nous change.",
+    "QuoteSubtitle": "Sélection Riwaya · Curateurs de Littérature"
+  },
+  "Tracking": {
+    "Title": "Suivi de Commande",
+    "Subtitle": "Entrez votre numéro de commande pour voir son statut",
+    "OrderId": "Numéro de commande",
+    "Contact": "Email ou Téléphone",
+    "TrackButton": "Suivre ma commande",
+    "Status": "Statut actuel",
+    "OrderDate": "Date de commande",
+    "Total": "Total",
+    "Items": "Articles",
+    "Back": "Retour à l'accueil",
+    "Steps": {
+      "PENDING": "En attente de confirmation",
+      "CONFIRMED": "Confirmée",
+      "SHIPPED": "En cours de livraison",
+      "DELIVERED": "Livrée",
+      "CANCELLED": "Annulée",
+      "RETURNED": "Retournée"
+    }
+  },
+  "Community": {
+    "RegisterTitle": "Rejoindre la Communauté Riwaya",
+    "RegisterSubtitle": "Echangez vos livres préférés avec des lecteurs passionnés",
+    "LoginTitle": "Connexion Membre",
+    "LoginSubtitle": "Accédez à votre espace d'échange",
+    "FullName": "Nom & Prénom",
+    "Email": "Email",
+    "Password": "Mot de passe",
+    "Phone": "Numéro de téléphone",
+    "City": "Ville",
+    "CityPlaceholder": "Casablanca, Rabat...",
+    "ChooseCity": "Sélectionnez une ville",
+    "RegisterButton": "S'inscrire",
+    "LoginButton": "Se connecter",
+    "NoAccount": "Pas encore de compte ?",
+    "AlreadyAccount": "Déjà inscrit ?",
+    "MyBooks": "Mes Livres",
+    "AddBook": "Proposer un livre",
+    "Credits": "Crédits",
+    "ExchangesLabel": "Échanges",
+    "TopReaders": "Top Lecteurs",
+    "TopReadersTitle": "Les Plus Grands Lecteurs",
+    "TopReadersSubtitle": "Membres ayant lu le plus de livres cette semaine",
+    "Dashboard": {
+      "RestrictedAccess": "Accès restreint aux échanges",
+      "EligibilityDesc": "Vous devez avoir effectué au moins une commande sur notre boutique pour pouvoir ajouter des livres ou faire des demandes d'échange dans la communauté.",
+      "BrowseShop": "Parcourir la boutique",
+      "EditProfile": "Modifier le profil",
+      "Logout": "Déconnexion",
+      "ExploreMarketTitle": "Explorer le Marketplace",
+      "ExploreMarketDesc": "Découvrez les livres disponibles",
+      "ExploreMarketLong": "Parcourez la bibliothèque commune et trouvez votre prochain livre à échanger.",
+      "ManageExchangesTitle": "Mes Échanges",
+      "ManageExchangesDesc": "Gérez vos demandes",
+      "ManageExchangesLong": "Consultez et répondez aux demandes d'échange en attente.",
+      "ManageBook": "Gérer",
+      "EmptyLibraryTitle": "Votre bibliothèque est vide",
+      "EmptyLibraryDesc": "Ajoutez les livres que vous souhaitez échanger pour gagner des crédits ou recevoir d'autres livres.",
+      "StartAdding": "Commencer"
+    },
+    "BookForm": {
+      "FormTitle": "Ajouter un livre",
+      "EditFormTitle": "Modifier le livre",
+      "Title": "Titre du livre",
+      "Author": "Auteur",
+      "Condition": "État",
+      "Description": "Description (optionnel)",
+      "Isbn": "ISBN (optionnel)",
+      "Submit": "Ajouter à ma bibliothèque",
+      "SaveChanges": "Enregistrer les modifications",
+      "Delete": "Supprimer le livre",
+      "ConfirmDelete": "Êtes-vous sûr de vouloir supprimer ce livre de votre bibliothèque ?",
+      "EligibilityError": "Vous devez avoir effectué au moins une commande sur Riwaya pour ajouter un livre au système d'échange.",
+      "Conditions": {
+        "NEW": "Neuf",
+        "GOOD": "Bon état",
+        "USED": "Usé / Acceptable"
+      },
+      "Status": {
+        "Label": "Statut de visibilité",
+        "AVAILABLE": "Disponible",
+        "EXCHANGED": "Déjà échangé",
+        "PRIVATE": "Privé",
+        "HIDDEN": "Masqué (Brouillon)"
+      }
+    },
+    "Market": {
+      "Title": "Marché aux Livres",
+      "Subtitle": "Trouvez des perles rares près de chez vous",
+      "SearchPlaceholder": "Rechercher par titre, auteur...",
+      "CityFilter": "Filtrer par ville",
+      "ConditionFilter": "Filtrer par état",
+      "ExchangeButton": "Proposer un échange",
+      "NoResults": "Aucun livre trouvé",
+      "PostedBy": "Proposé par",
+      "In": "à",
+      "Owner": "Propriétaire",
+      "Request": "Demander l'échange",
+      "AllCities": "Toutes les villes",
+      "Filter": "Filtrer",
+      "MatchesForYou": "Matches pour vous",
+      "BasedOnWishlist": "Basé sur votre wishlist",
+      "AllBooks": "Tous les livres",
+      "TryFilters": "Essayez de modifier vos filtres. La communauté ajoute des livres chaque jour !",
+      "Mutual": "Match Mutuel",
+      "DescriptionTitle": "Résumé de l'ouvrage",
+      "MemberSince": "Membre depuis",
+      "Credits": "Crédits",
+      "SecurityNotice": "Échange sécurisé garanti par Riwaya. Aucune commission."
+    },
+    "Exchange": {
+      "Title": "Proposer un échange",
+      "Subtitle": "Envoyez une demande à",
+      "YourOffer": "Votre offre",
+      "SelectBook": "Choisissez un de vos livres",
+      "OrCredits": "Ou utilisez vos crédits",
+      "CreditsAvailable": "Crédits disponibles",
+      "Message": "Message (optionnel)",
+      "Submit": "Envoyer la demande",
+      "Success": "Demande envoyée avec succès !",
+      "BackToMarket": "Retour au marché",
+      "NewExchange": "Nouvel Échange",
+      "BookToBook": "Livre contre Livre",
+      "BookToBookDesc": "Échangez ce livre contre l'un des vôtres.",
+      "CreditsDesc": "Utilisez vos points pour obtenir ce livre.",
+      "Balance": "Solde : {count} crédits",
+      "NoBooksAvailable": "Vous n'avez aucun livre disponible.",
+      "AddOneFirst": "Ajoutez-en un d'abord.",
+      "TotalCost": "Coût : 1 crédit Riwaya",
+      "InsufficientBalance": "Solde insuffisant",
+      "DeliveryMethods": "Modalités de remise",
+      "Meetup": "Main à main",
+      "Shipping": "Livraison",
+      "Relay": "Point Relais",
+      "SuggestedMeetingPoint": "Lieu suggéré",
+      "MeetingPointPlaceholder": "ex: Gare de Casa Voyageurs",
+      "SuggestedMeetingTime": "Heure souhaitée",
+      "MessagePlaceholder": "Dites quelques mots sur l'échange...",
+      "EligibilityNote": "* Éligibilité requise : Au moins une commande passée sur Riwaya.",
+      "SelectPlaceholder": "Choisir un livre..."
+    },
+    "Exchanges": {
+      "Title": "Mes Échanges",
+      "Subtitle": "Gérez vos demandes d'échange reçues et suivez l'état de vos propositions.",
+      "Received": "Reçues",
+      "Sent": "Envoyées",
+      "Requests": "{count} demande{count, plural, =0 {} one {} other {s}}",
+      "EmptyReceived": "Aucune demande reçue pour le moment.",
+      "EmptySent": "Vous n'avez envoyé aucune demande.",
+      "ExploreMarket": "Explorer le marché",
+      "Requested": "Demandé",
+      "Offered": "Offert",
+      "Credits": "Crédits",
+      "RateExchange": "Évaluer l'échange",
+      "Status": {
+        "PENDING": "En attente",
+        "ACCEPTED": "Accepté",
+        "REJECTED": "Refusé",
+        "COMPLETED": "Terminé",
+        "CANCELLED": "Annulé"
+      },
+      "Actions": {
+        "Accept": "Accepter",
+        "Reject": "Refuser",
+        "Contact": "Contacter"
+      },
+      "ChatButton": "Discuter",
+      "FinishButton": "Terminer",
+      "HistoryChat": "Historique Chat",
+      "MeetingDetails": "Détails de rencontre"
+    },
+    "Notifications": {
+      "Title": "Notifications",
+      "MarkAllRead": "Tout marquer comme lu",
+      "Empty": "Aucune notification",
+      "All": "Voir toutes les notifications",
+      "Loading": "Chargement des notifications...",
+      "Delete": "Supprimer",
+      "NewMessage": "Nouveau message",
+      "NewMessageDesc": "{user} vous a envoyé un message"
+    },
+    "ReadingList": {
+      "Title": "Ma Liste de Lecture",
+      "Subtitle": "Suivez vos lectures et votre progression, même pour vos livres personnels.",
+      "AddBook": "Ajouter un livre",
+      "Empty": "Votre liste de lecture est vide.",
+      "Status": {
+        "TO_READ": "À lire",
+        "READING": "En cours",
+        "COMPLETED": "Terminé",
+        "DROPPED": "Abandonné",
+        "ON_HOLD": "En pause"
+      },
+      "Stats": {
+        "Library": "Bibliothèque",
+        "Completed": "{count} terminés",
         "Authors": "Auteurs",
+        "Explored": "Explorés",
+        "TotalVolume": "Volume Total",
+        "PagesAccumulated": "Pages cumulées",
+        "Progress": "Progression",
+        "PagesRead": "{count} pages lues"
+      },
+      "Board": {
+        "Empty": "Vide",
+        "CurrentPage": "Page actuelle :",
+        "Read": "Lire",
+        "MarkFinished": "Marquer comme terminé",
+        "Delete": "Supprimer",
+        "ConfirmDelete": "Êtes-vous sûr ?"
+      }
+    },
+    "Chat": {
+      "Title": "Discussion",
+      "Placeholder": "Écrivez votre message...",
+      "Send": "Envoyer",
+      "Read": "Lu",
+      "SystemMessage": "Début de la conversation concernant",
+      "Empty": "Aucun message",
+      "StartConversation": "Envoyez un message pour démarrer la discussion.",
+      "Instructions": "Appuyez sur Entrée pour envoyer votre message."
+    },
+    "Profile": {
+      "Title": "Mon Profil",
+      "EditTitle": "Modifier le Profil",
+      "Save": "Sauvegarder les modifications",
+      "Updating": "Mise à jour...",
+      "Success": "Profil mis à jour avec succès",
+      "Photo": "Photo de profil",
+      "BioLabel": "Biographie",
+      "BioPlaceholder": "Parlez-nous de vous...",
+      "CustomUrl": "URL personnalisée...",
+      "Apply": "Appliquer",
+      "Socials": "Réseaux Sociaux",
+      "Stats": {
         "Books": "Livres",
-        "Packs": "Packs",
-        "Kids": "Mon enfant",
-        "UsbKey": "Clé USB",
-        "Digital": "Livres PDF",
-        "Community": "Echanges",
-        "Cart": "Panier",
-        "Login": "Connexion",
-        "Admin": "Admin",
-        "Search": "Rechercher des livres...",
-        "Journal": "Journal",
-        "UserMenu": {
-            "Profile": "Mon Profil",
-            "ReadingList": "Mes Lectures",
-            "ReadingProgress": "{completed} / {total} livres",
-            "Orders": "Mes Commandes",
-            "Settings": "Paramètres",
-            "Logout": "Déconnexion",
-            "LogoutLoading": "Déconnexion...",
-            "LogoutSuccess": "Déconnexion réussie",
-            "DefaultUser": "Utilisateur"
-        }
+        "Exchanges": "Échanges",
+        "Credits": "Crédits"
+      },
+      "AddressLabel": "Adresse de rencontre / Point de repère",
+      "AddressPlaceholder": "Ex: Café Venise, Bd Zerktouni...",
+      "NeighborhoodLabel": "Quartier",
+      "NeighborhoodPlaceholder": "Ex: Maârif, Racine...",
+      "NewPasswordLabel": "Nouveau mot de passe",
+      "NewPasswordPlaceholder": "Laisser vide pour ne pas changer",
+      "ConfirmPasswordLabel": "Confirmer le mot de passe",
+      "ConfirmPasswordPlaceholder": "Répéter le mot de passe"
     },
-    "Footer": {
-        "About": "À propos",
-        "Contact": "Contact",
-        "Terms": "Conditions d'utilisation",
-        "Privacy": "Politique de confidentialité",
-        "Slogan": "Des connaissances soigneusement sélectionnées pour l'esprit moderne. Livraison partout au Maroc.",
-        "Navigation": "Navigation",
-        "Support": "Support",
-        "Shipping": "Livraison",
-        "Returns": "Retours",
-        "Journal": "Journal",
-        "NewsletterText": "Rejoignez notre newsletter pour des sélections exclusives.",
-        "Join": "Rejoindre",
-        "Rights": "Tous droits réservés.",
-        "BackToTop": "Revenir en haut",
-        "DevelopedBy": "Développé par <name>Reda</name>",
-        "Privacy": "Confidentialité",
-        "Terms": "Conditions"
+    "Ratings": {
+      "Title": "Évaluer l'échange",
+      "Subtitle": "Comment s'est passée votre expérience ?",
+      "Label": "Votre note",
+      "CommentLabel": "Commentaire (optionnel)",
+      "Placeholder": "Donnez plus de détails sur l'échange...",
+      "Submit": "Envoyer l'évaluation",
+      "Success": "Merci pour votre retour !",
+      "Button": "Évaluer"
     },
-    "Common": {
-        "AddedToCartSuccess": "Article ajouté au panier avec succès !",
-        "AddedToReadingList": "Ajouté à mes lectures !",
-        "RemovedFromReadingList": "Retiré de mes lectures !",
-        "AddedToCartError": "Erreur lors de l'ajout au panier. Veuillez réessayer.",
-        "BuyNow": "Acheter maintenant",
-        "Price": "Prix",
-        "AddToCart": "Ajouter au panier",
-        "OutOfStock": "Rupture de stock",
-        "Remaining": "restants",
-        "BestSeller": "Best-seller",
-        "BookCount": "{count, plural, =0 {0 livre} one {1 livre} other {{count} livres}}",
-        "NoResultsDesc": "Aucun livre trouvé pour cet auteur.",
-        "By": "Par",
-        "Errors": {
-            "UnexpectedError": "Une erreur inattendue est survenue",
-            "ImageUploadError": "Erreur lors de l'envoi de l'image"
-        },
-        "ImageUpload": {
-            "Label": "Photo du livre",
-            "Placeholder": "Cliquez ou glissez une image",
-            "Instructions": "JPG, PNG ou WebP (max 5MB)",
-            "Button": "Choisir une image",
-            "Alt": "Aperçu",
-            "FormatError": "Format non supporté. Utilisez JPG, PNG ou WebP",
-            "SizeError": "Image trop volumineuse. Maximum 5MB"
-        }
-    },
-    "Packs": {
-        "Save": "Économisez",
-        "Exclusive": "Pack Exclusif",
-        "Includes": "Titres inclus",
-        "RegularPrice": "Prix Normal",
-        "PackPrice": "Prix Pack",
-        "AddSelection": "Ajouter la sélection",
-        "CustomPack": {
-            "BannerTitle": "Créez votre propre Pack",
-            "BannerDesc": "Sélectionnez vos livres préférés et bénéficiez d'une réduction exclusive. À partir de 3 livres !",
-            "BannerBtn": "Composer mon pack",
-            "ModalTitle": "Composez votre Pack Sur Mesure",
-            "SelectBooks": "Sélectionnez vos livres",
-            "Selected": "Sélectionnés",
-            "Discount10": "10% de réduction appliqués (3+ livres)",
-            "Discount15": "15% de réduction appliqués (5+ livres)",
-            "AddMoreFor10": "Ajoutez {count} livre(s) de plus pour -10%",
-            "AddMoreFor15": "Ajoutez {count} livre(s) de plus pour -15%",
-            "AddToCart": "Ajouter le pack au panier ({price} MAD)",
-            "SearchPlaceholder": "Rechercher un livre...",
-            "NoBooksFound": "Aucun livre trouvé.",
-            "CartPrefix": "[Pack Sur Mesure]"
-        }
-    },
-    "FAQ": {
-        "Title": "Questions Fréquentes",
-        "Subtitle": "Centre d'aide",
-        "Questions": {
-            "Shipping": {
-                "Question": "Quels sont les délais de livraison ?",
-                "Answer": "Nous livrons en 24-48h pour les grandes villes (Casablanca, Rabat, Marrakech, Tanger) et 48-72h pour les autres régions."
-            },
-            "Payment": {
-                "Question": "Quels moyens de paiement acceptez-vous ?",
-                "Answer": "Nous acceptons uniquement le paiement à la livraison (Cash on Delivery) pour garantir votre satisfaction à la réception."
-            },
-            "Returns": {
-                "Question": "Puis-je retourner un livre ?",
-                "Answer": "Oui, vous disposez de 3 jours après la livraison pour signaler un problème si le livre est endommagé ou ne correspond pas à votre commande."
-            },
-            "DeliveryCost": {
-                "Question": "Combien coûte la livraison ?",
-                "Answer": "La livraison est gratuite pour toute commande supérieure à 400 MAD. En dessous, un tarif fixe de 35 MAD s'applique."
-            }
-        }
-    },
-    "Returns": {
-        "Title": "Politique de Retour",
-        "Subtitle": "Tranquillité d'esprit",
-        "Intro": "Nous voulons que vous aimiez votre lecture. Voici comment nous traitons les retours.",
-        "Policy": {
-            "Point1": "Vous avez 3 jours calendaires pour signaler un problème.",
-            "Point2": "L'article doit être inutilisé et dans le même état que vous l'avez reçu.",
-            "Point3": "Veuillez nous contacter via le formulaire ou WhatsApp pour initier un retour.",
-            "Point4": "Les remboursements sont traités après inspection de l'article retourné."
-        }
-    },
-    "Contact": {
-        "Title": "Contactez-nous",
-        "Subtitle": "Restons en contact",
-        "GetInTouch": "Contactez-nous",
-        "LoveToHear": "Nous serions ravis de vous entendre.",
-        "Form": {
-            "Name": "Nom complet",
-            "Email": "Adresse Email",
-            "Message": "Votre Message",
-            "Submit": "Envoyer le message",
-            "Sending": "Envoi en cours..."
-        },
-        "Info": {
-            "Email": "Email",
-            "Phone": "Téléphone",
-            "Address": "Adresse",
-            "Location": "Casablanca, Maroc",
-            "Hours": "Heures d'ouverture",
-            "HoursValue": "Lun - Ven: 9:00 - 18:00"
-        }
-    },
-    "BookDetail": {
-        "BackToSelection": "Retour à la sélection",
-        "OnlyLeft": "Plus que {stock} exemplaires",
-        "FastMove": "Envoi Rapide",
-        "Secured": "Sécurisé",
-        "Original": "Original",
-        "ReaderReviews": "{count} Avis lecteurs",
-        "BeFirstToReview": "Soyez le premier à donner votre avis",
-        "TaxesIncluded": "Taxes incluses · Paiement à la livraison",
-        "ReadyForCollection": "Prêt à l'expédition",
-        "OutOfStock": "Rupture de stock",
-        "Abstract": "Résumé",
-        "Technical": "Fiche Technique",
-        "Reference": "Référence",
-        "Volume": "Volume",
-        "Pages": "Pages",
-        "RiwayaSelect": "Sélection Riwaya",
-        "OriginalMasterpiece": "Chef-d'œuvre original",
-        "PremiumPaperQual": "Papier Premium",
-        "GlobalStandard": "Standard international",
-        "CulturalSelect": "Sélection Culturelle",
-        "Voices": "Voix",
-        "SharePerspective": "Partagez votre perspective avec notre communauté intellectuelle.",
-        "Reflections": "{count} Réflexions",
-        "RecommendedReads": "Lectures Recommandées",
-        "ExploreAll": "Tout explorer",
-        "FrequentlyBoughtTogether": "Achetez-le avec"
-    },
-    "Cart": {
-        "Title": "Votre Panier",
-        "SelectedItems": "{count} Articles sélectionnés",
-        "EmptyTitle": "Votre panier est vide.",
-        "EmptyDesc": "Il semble que vous n'ayez pas encore découvert <br /> nos trésors.",
-        "DiscoverBooks": "Découvrir les livres",
-        "Set": "PACK",
-        "Titles": "Titres",
-        "ClearSelection": "Vider la sélection",
-        "Subtotal": "Sous-total",
-        "Delivery": "Livraison",
-        "Complimentary": "Offerte",
-        "FreeShippingAd": "Ajoutez {amount} MAD pour la livraison gratuite.",
-        "OrderTotal": "Total Commande",
-        "ProceedToCheckout": "Passer la commande",
-        "KeepExploring": "Continuer vos achats"
-    },
-    "Checkout": {
-        "BackToSelection": "Retour à la sélection",
-        "YourDetails": "Vos Coordonnées",
-        "ShippingInfo": "Informations de livraison",
-        "FirstName": "Prénom",
-        "LastName": "Nom",
-        "Email": "Email",
-        "MobileNumber": "Numéro de téléphone mobile",
-        "City": "Ville",
-        "ChooseCity": "Choisir votre ville",
-        "FullAddress": "Adresse complète",
-        "NoteOptional": "Note (Optionnel)",
-        "PaymentMethod": "Moyen de paiement",
-        "CashOnDelivery": "Paiement à la livraison",
-        "PayWhenReceive": "Payez à la réception de votre commande.",
-        "SelectionSummary": "Résumé de la sélection",
-        "PromotionalCode": "Code Promo",
-        "CodeApplied": "Code Appliqué",
-        "DeliveryFee": "Frais de livraison",
-        "Free": "Gratuit",
-        "TotalAmount": "Montant Total",
-        "CompletePurchase": "Confirmer la commande",
-        "Processing": "Traitement...",
-        "FastDelivery": "Livraison rapide <br /> sous 24-48h.",
-        "OrderSuccess": "Commande réussie !",
-        "Errors": {
-            "FirstNameRequired": "Le prénom est requis",
-            "LastNameRequired": "Le nom est requis",
-            "PhoneRequired": "Le téléphone est requis",
-            "PhoneInvalid": "Numéro invalide (ex: 0612345678)",
-            "EmailRequired": "L'email est requis",
-            "EmailInvalid": "Format d'email invalide",
-            "CityRequired": "La ville est requise",
-            "AddressRequired": "L'adresse est requise",
-            "UnexpectedError": "Une erreur inattendue est survenue"
-        },
-        "Success": {
-            "OrderConfirmed": "Commande Confirmée",
-            "ThankYou": "Merci {name}, votre sélection est en cours de préparation.",
-            "OrderReference": "Référence Commande",
-            "OrderDate": "Date de Commande",
-            "TotalPaid": "Total à Payer (COD)",
-            "NextSteps": "Prochaines Étapes",
-            "AgentContact": "Un agent vous contactera sous 24h pour confirmation.",
-            "PrepareAmount": "Préparez le montant exact pour la livraison.",
-            "BackHome": "Retour à l'accueil"
-        }
-    },
-    "Review": {
-        "SuccessTitle": "Merci pour votre avis !",
-        "SuccessDesc": "Votre témoignage aide les autres lecteurs à faire le bon choix.",
-        "SuccessNotification": "Avis envoyé avec succès !",
-        "ErrorNotification": "Une erreur est survenue lors de l'envoi de l'avis.",
-        "Title": "Laissez votre avis",
-        "GlobalRating": "Note globale",
-        "FullName": "Nom complet",
-        "YourComment": "Votre commentaire",
-        "PlaceholderName": "Ex: Ahmed Benali",
-        "PlaceholderComment": "Qu'avez-vous pensé de ce livre ?",
-        "Submit": "Envoyer l'avis"
-    },
-    "ReviewList": {
-        "NoReviews": "Soyez le premier à donner votre avis sur ce livre ! ✨"
-    },
-    "PredictiveSearch": {
-        "Placeholder": "Rechercher un livre, un auteur...",
-        "RecentSearches": "Recherches récentes",
-        "Clear": "Effacer",
-        "PopularThemes": "Thèmes populaires",
-        "PopularSearches": "Recherches Populaires",
-        "BookCount": "{count, plural, =0 {Aucun livre} one {1 livre} other {{count} livres}}",
-        "Remaining": "restants",
-        "From": "Dès {price} MAD",
-        "Suggestions": "Suggestions",
-        "By": "Par {author}",
-        "NoResultsTitle": "Oups !",
-        "NoResultsDesc": "Aucun livre ne correspond à votre recherche.",
-        "ViewAll": "Voir tous les résultats",
-        "EndsIn": "Finit dans {time}",
-        "Terminated": "Terminé",
-        "Badges": {
-            "PROMO": "Promo",
-            "NEW": "Nouveau",
-            "HOT": "Brûlant",
-            "TRENDING": "Tendance",
-            "LIVRAISON": "Livraison Offerte"
-        }
-    },
-    "Categories": {
-        "Développement Personnel": "Développement Personnel",
-        "Business & Finance": "Business & Finance",
-        "Psychologie": "Psychologie",
-        "Romans & Fiction": "Romans & Fiction",
-        "Roman & Fiction": "Roman & Fiction",
-        "Religion": "Religion",
-        "Organisation": "Organisation",
-        "Philosophie": "Philosophie",
-        "Productivité": "Productivité",
-        "Enfant": "Enfant",
-        "Enfants": "Enfants",
-        "Coloriage": "Coloriage",
-        "Autre": "Autre",
-        "Histoire & Politique": "Histoire & Politique",
-        "Psychologie & Sociologie": "Psychologie & Sociologie",
-        "Religion & Spiritualité": "Religion & Spiritualité",
-        "All": "Toutes les catégories"
-    },
-    "BooksPage": {
-        "Title": "Bibliothèque",
-        "ItemsAvailable": "{count} articles disponibles",
-        "In": "dans",
-        "Filters": "Filtres",
-        "SearchItems": "Rechercher",
-        "SearchPlaceholder": "Titre, auteur...",
-        "Apply": "Appliquer",
-        "Languages": "Langues",
-        "AllLanguages": "Toutes les langues",
-        "Categories": "Catégories",
-        "Active": "Actifs",
-        "Reset": "Réinitialiser",
-        "NoVolumes": "Aucun volume trouvé",
-        "EmptyCollection": "Notre collection est vide pour ces filtres.",
-        "EmptyFilters": "Effacer les filtres",
-        "Results": "Résultats",
-        "AllAuthors": "Tous les auteurs"
-    },
-    "ReviewsSection": {
-        "Title": "Avis Clients",
-        "NoReviews": "Aucun avis pour le moment",
-        "BeFirst": "Soyez le premier à partager votre avis !",
-        "AverageRating": "Note moyenne",
-        "BasedOn": "Basé sur {count} avis",
-        "WriteReview": "Écrire un avis",
-        "YourOpinion": "Partagez votre avis",
-        "HelpOthers": "Aidez les autres lecteurs à faire leur choix",
-        "Submitted": "Merci !",
-        "SubmittedDesc": "Votre avis a été soumis et est en attente de modération."
+    "Report": {
+      "ButtonLabel": "Signaler ce contenu",
+      "Title": "Signaler",
+      "Subtitle": "Aidez-nous à garder la communauté sûre.",
+      "ReasonLabel": "Raison",
+      "DetailsLabel": "Détails (optionnel)",
+      "PlaceholderReason": "Choisir une raison...",
+      "PlaceholderDetails": "Dites-nous en plus...",
+      "Submit": "Envoyer le signalement",
+      "Success": "Signalement envoyé",
+      "Reasons": {
+        "SPAM": "Spam / Publicité",
+        "INAPPROPRIATE": "Contenu inapproprié",
+        "FRAUD": "Fraude / Arnaque",
+        "OTHER": "Autre"
+      }
     },
     "Wishlist": {
-        "Title": "Mes Favoris",
-        "Subtitle": "{count} élément(s) sauvegardé(s)",
-        "EmptyTitle": "Votre liste est vide",
-        "EmptyDesc": "Vous n'avez pas encore ajouté de livres à vos favoris.",
-        "ContinueShopping": "Continuer mes achats",
-        "AddToCart": "Ajouter au panier",
-        "AddAllToCart": "Tout ajouter au panier",
-        "seo": {
-            "Title": "Mes Favoris | Riwaya - Curateurs de Littérature",
-            "Description": "Retrouvez votre sélection personnelle de livres et packs premium. Organisez vos prochaines lectures sur Riwaya."
-        },
-        "By": "Par {author}",
-        "Quote": "Le livre que l'on attend est celui qui nous change.",
-        "QuoteSubtitle": "Sélection Riwaya · Curateurs de Littérature"
-    },
-    "Tracking": {
-        "Title": "Suivi de Commande",
-        "Subtitle": "Entrez votre numéro de commande pour voir son statut",
-        "OrderId": "Numéro de commande",
-        "Contact": "Email ou Téléphone",
-        "TrackButton": "Suivre ma commande",
-        "Status": "Statut actuel",
-        "OrderDate": "Date de commande",
-        "Total": "Total",
-        "Items": "Articles",
-        "Back": "Retour à l'accueil",
-        "Steps": {
-            "PENDING": "En attente de confirmation",
-            "CONFIRMED": "Confirmée",
-            "SHIPPED": "En cours de livraison",
-            "DELIVERED": "Livrée",
-            "CANCELLED": "Annulée",
-            "RETURNED": "Retournée"
-        }
-    },
-    "Community": {
-        "RegisterTitle": "Rejoindre la Communauté Riwaya",
-        "RegisterSubtitle": "Echangez vos livres préférés avec des lecteurs passionnés",
-        "LoginTitle": "Connexion Membre",
-        "LoginSubtitle": "Accédez à votre espace d'échange",
-        "FullName": "Nom & Prénom",
-        "Email": "Email",
-        "Password": "Mot de passe",
-        "Phone": "Numéro de téléphone",
-        "City": "Ville",
-        "CityPlaceholder": "Casablanca, Rabat...",
-        "ChooseCity": "Sélectionnez une ville",
-        "RegisterButton": "S'inscrire",
-        "LoginButton": "Se connecter",
-        "NoAccount": "Pas encore de compte ?",
-        "AlreadyAccount": "Déjà inscrit ?",
-        "MyBooks": "Mes Livres",
-        "AddBook": "Proposer un livre",
-        "Credits": "Crédits",
-        "ExchangesLabel": "Échanges",
-        "TopReaders": "Top Lecteurs",
-        "TopReadersTitle": "Les Plus Grands Lecteurs",
-        "TopReadersSubtitle": "Membres ayant lu le plus de livres cette semaine",
-        "Dashboard": {
-            "RestrictedAccess": "Accès restreint aux échanges",
-            "EligibilityDesc": "Vous devez avoir effectué au moins une commande sur notre boutique pour pouvoir ajouter des livres ou faire des demandes d'échange dans la communauté.",
-            "BrowseShop": "Parcourir la boutique",
-            "EditProfile": "Modifier le profil",
-            "Logout": "Déconnexion",
-            "ExploreMarketTitle": "Explorer le Marketplace",
-            "ExploreMarketDesc": "Découvrez les livres disponibles",
-            "ExploreMarketLong": "Parcourez la bibliothèque commune et trouvez votre prochain livre à échanger.",
-            "ManageExchangesTitle": "Mes Échanges",
-            "ManageExchangesDesc": "Gérez vos demandes",
-            "ManageExchangesLong": "Consultez et répondez aux demandes d'échange en attente.",
-            "ManageBook": "Gérer",
-            "EmptyLibraryTitle": "Votre bibliothèque est vide",
-            "EmptyLibraryDesc": "Ajoutez les livres que vous souhaitez échanger pour gagner des crédits ou recevoir d'autres livres.",
-            "StartAdding": "Commencer"
-        },
-        "BookForm": {
-            "FormTitle": "Ajouter un livre",
-            "EditFormTitle": "Modifier le livre",
-            "Title": "Titre du livre",
-            "Author": "Auteur",
-            "Condition": "État",
-            "Description": "Description (optionnel)",
-            "Isbn": "ISBN (optionnel)",
-            "Submit": "Ajouter à ma bibliothèque",
-            "SaveChanges": "Enregistrer les modifications",
-            "Delete": "Supprimer le livre",
-            "ConfirmDelete": "Êtes-vous sûr de vouloir supprimer ce livre de votre bibliothèque ?",
-            "EligibilityError": "Vous devez avoir effectué au moins une commande sur Riwaya pour ajouter un livre au système d'échange.",
-            "Conditions": {
-                "NEW": "Neuf",
-                "GOOD": "Bon état",
-                "USED": "Usé / Acceptable"
-            },
-            "Status": {
-                "Label": "Statut de visibilité",
-                "AVAILABLE": "Disponible",
-                "EXCHANGED": "Déjà échangé",
-                "PRIVATE": "Privé",
-                "HIDDEN": "Masqué (Brouillon)"
-            }
-        },
-        "Market": {
-            "Title": "Marché aux Livres",
-            "Subtitle": "Trouvez des perles rares près de chez vous",
-            "SearchPlaceholder": "Rechercher par titre, auteur...",
-            "CityFilter": "Filtrer par ville",
-            "ConditionFilter": "Filtrer par état",
-            "ExchangeButton": "Proposer un échange",
-            "NoResults": "Aucun livre trouvé",
-            "PostedBy": "Proposé par",
-            "In": "à",
-            "Owner": "Propriétaire",
-            "Request": "Demander l'échange",
-            "AllCities": "Toutes les villes",
-            "Filter": "Filtrer",
-            "MatchesForYou": "Matches pour vous",
-            "BasedOnWishlist": "Basé sur votre wishlist",
-            "AllBooks": "Tous les livres",
-            "TryFilters": "Essayez de modifier vos filtres. La communauté ajoute des livres chaque jour !",
-            "Mutual": "Match Mutuel",
-            "DescriptionTitle": "Résumé de l'ouvrage",
-            "MemberSince": "Membre depuis",
-            "Credits": "Crédits",
-            "SecurityNotice": "Échange sécurisé garanti par Riwaya. Aucune commission."
-        },
-        "Exchange": {
-            "Title": "Proposer un échange",
-            "Subtitle": "Envoyez une demande à",
-            "YourOffer": "Votre offre",
-            "SelectBook": "Choisissez un de vos livres",
-            "OrCredits": "Ou utilisez vos crédits",
-            "CreditsAvailable": "Crédits disponibles",
-            "Message": "Message (optionnel)",
-            "Submit": "Envoyer la demande",
-            "Success": "Demande envoyée avec succès !",
-            "BackToMarket": "Retour au marché",
-            "NewExchange": "Nouvel Échange",
-            "BookToBook": "Livre contre Livre",
-            "BookToBookDesc": "Échangez ce livre contre l'un des vôtres.",
-            "CreditsDesc": "Utilisez vos points pour obtenir ce livre.",
-            "Balance": "Solde : {count} crédits",
-            "NoBooksAvailable": "Vous n'avez aucun livre disponible.",
-            "AddOneFirst": "Ajoutez-en un d'abord.",
-            "TotalCost": "Coût : 1 crédit Riwaya",
-            "InsufficientBalance": "Solde insuffisant",
-            "DeliveryMethods": "Modalités de remise",
-            "Meetup": "Main à main",
-            "Shipping": "Livraison",
-            "Relay": "Point Relais",
-            "SuggestedMeetingPoint": "Lieu suggéré",
-            "MeetingPointPlaceholder": "ex: Gare de Casa Voyageurs",
-            "SuggestedMeetingTime": "Heure souhaitée",
-            "MessagePlaceholder": "Dites quelques mots sur l'échange...",
-            "EligibilityNote": "* Éligibilité requise : Au moins une commande passée sur Riwaya.",
-            "SelectPlaceholder": "Choisir un livre..."
-        },
-        "Exchanges": {
-            "Title": "Mes Échanges",
-            "Subtitle": "Gérez vos demandes d'échange reçues et suivez l'état de vos propositions.",
-            "Received": "Reçues",
-            "Sent": "Envoyées",
-            "Requests": "{count} demande{count, plural, =0 {} one {} other {s}}",
-            "EmptyReceived": "Aucune demande reçue pour le moment.",
-            "EmptySent": "Vous n'avez envoyé aucune demande.",
-            "ExploreMarket": "Explorer le marché",
-            "Requested": "Demandé",
-            "Offered": "Offert",
-            "Credits": "Crédits",
-            "RateExchange": "Évaluer l'échange",
-            "Status": {
-                "PENDING": "En attente",
-                "ACCEPTED": "Accepté",
-                "REJECTED": "Refusé",
-                "COMPLETED": "Terminé",
-                "CANCELLED": "Annulé"
-            },
-            "Actions": {
-                "Accept": "Accepter",
-                "Reject": "Refuser",
-                "Contact": "Contacter"
-            },
-            "ChatButton": "Discuter",
-            "FinishButton": "Terminer",
-            "HistoryChat": "Historique Chat",
-            "MeetingDetails": "Détails de rencontre"
-        },
-        "Notifications": {
-            "Title": "Notifications",
-            "MarkAllRead": "Tout marquer comme lu",
-            "Empty": "Aucune notification",
-            "All": "Voir toutes les notifications",
-            "Loading": "Chargement des notifications...",
-            "Delete": "Supprimer",
-            "NewMessage": "Nouveau message",
-            "NewMessageDesc": "{user} vous a envoyé un message"
-        },
-        "ReadingList": {
-            "Title": "Ma Liste de Lecture",
-            "Subtitle": "Suivez vos lectures et votre progression, même pour vos livres personnels.",
-            "AddBook": "Ajouter un livre",
-            "Empty": "Votre liste de lecture est vide.",
-            "Status": {
-                "TO_READ": "À lire",
-                "READING": "En cours",
-                "COMPLETED": "Terminé",
-                "DROPPED": "Abandonné",
-                "ON_HOLD": "En pause"
-            },
-            "Stats": {
-                "Library": "Bibliothèque",
-                "Completed": "{count} terminés",
-                "Authors": "Auteurs",
-                "Explored": "Explorés",
-                "TotalVolume": "Volume Total",
-                "PagesAccumulated": "Pages cumulées",
-                "Progress": "Progression",
-                "PagesRead": "{count} pages lues"
-            },
-            "Board": {
-                "Empty": "Vide",
-                "CurrentPage": "Page actuelle :",
-                "Read": "Lire",
-                "MarkFinished": "Marquer comme terminé",
-                "Delete": "Supprimer",
-                "ConfirmDelete": "Êtes-vous sûr ?"
-            }
-        },
-        "Chat": {
-            "Title": "Discussion",
-            "Placeholder": "Écrivez votre message...",
-            "Send": "Envoyer",
-            "Read": "Lu",
-            "SystemMessage": "Début de la conversation concernant",
-            "Empty": "Aucun message",
-            "StartConversation": "Envoyez un message pour démarrer la discussion.",
-            "Instructions": "Appuyez sur Entrée pour envoyer votre message."
-        },
-        "Profile": {
-            "Title": "Mon Profil",
-            "EditTitle": "Modifier le Profil",
-            "Save": "Sauvegarder les modifications",
-            "Updating": "Mise à jour...",
-            "Success": "Profil mis à jour avec succès",
-            "Photo": "Photo de profil",
-            "BioLabel": "Biographie",
-            "BioPlaceholder": "Parlez-nous de vous...",
-            "CustomUrl": "URL personnalisée...",
-            "Apply": "Appliquer",
-            "Socials": "Réseaux Sociaux",
-            "Stats": {
-                "Books": "Livres",
-                "Exchanges": "Échanges",
-                "Credits": "Crédits"
-            },
-            "AddressLabel": "Adresse de rencontre / Point de repère",
-            "AddressPlaceholder": "Ex: Café Venise, Bd Zerktouni...",
-            "NeighborhoodLabel": "Quartier",
-            "NeighborhoodPlaceholder": "Ex: Maârif, Racine...",
-            "NewPasswordLabel": "Nouveau mot de passe",
-            "NewPasswordPlaceholder": "Laisser vide pour ne pas changer",
-            "ConfirmPasswordLabel": "Confirmer le mot de passe",
-            "ConfirmPasswordPlaceholder": "Répéter le mot de passe"
-        },
-        "Ratings": {
-            "Title": "Évaluer l'échange",
-            "Subtitle": "Comment s'est passée votre expérience ?",
-            "Label": "Votre note",
-            "CommentLabel": "Commentaire (optionnel)",
-            "Placeholder": "Donnez plus de détails sur l'échange...",
-            "Submit": "Envoyer l'évaluation",
-            "Success": "Merci pour votre retour !",
-            "Button": "Évaluer"
-        },
-        "Report": {
-            "ButtonLabel": "Signaler ce contenu",
-            "Title": "Signaler",
-            "Subtitle": "Aidez-nous à garder la communauté sûre.",
-            "ReasonLabel": "Raison",
-            "DetailsLabel": "Détails (optionnel)",
-            "PlaceholderReason": "Choisir une raison...",
-            "PlaceholderDetails": "Dites-nous en plus...",
-            "Submit": "Envoyer le signalement",
-            "Success": "Signalement envoyé",
-            "Reasons": {
-                "SPAM": "Spam / Publicité",
-                "INAPPROPRIATE": "Contenu inapproprié",
-                "FRAUD": "Fraude / Arnaque",
-                "OTHER": "Autre"
-            }
-        },
-        "Wishlist": {
-            "Title": "Ma Wishlist",
-            "Subtitle": "Livres que je recherche",
-            "Empty": "Votre wishlist est vide.",
-            "MatchingNote": "Ajoutez des livres pour activer le matching",
-            "AddBook": "Ajouter à ma wishlist",
-            "BookTitle": "Titre du livre",
-            "Author": "Auteur (optionnel)",
-            "Success": "Livre ajouté à votre wishlist"
-        }
-    },
-    "PacksPage": {
-        "Title": "Packs Promotionnels",
-        "Subtitle": "Économisez jusqu'à 30% en choisissant nos collections de livres soignées. Une littérature sélectionnée pour les esprits universels.",
-        "NoCollections": "Aucune collection trouvée",
-        "Curating": "De nouveaux arrivages sont en cours de préparation.",
-        "Benefits": {
-            "HighSavings": {
-                "Title": "Grandes Économies",
-                "Desc": "Jusqu'à 30% de réduction sur le prix unitaire"
-            },
-            "CuratedMix": {
-                "Title": "Sélection Soignée",
-                "Desc": "Choisie par des experts locaux"
-            },
-            "ExpressPack": {
-                "Title": "Pack Express",
-                "Desc": "Tous les volumes en une seule livraison"
-            }
-        }
-    },
-    "PackDetail": {
-        "BackToBundles": "Retour aux packs",
-        "VolumeSelection": "Sélection de {count} Volumes",
-        "SavingsOff": "-{amount} MAD DE RÉDUCTION",
-        "BundleContent": "Contenu du Pack",
-        "GlobalShip": "Envoi partout au Maroc",
-        "SecureCOD": "Paiement à la livraison",
-        "VolumesInCollection": "Volumes dans cette Collection"
-    },
-    "CartPage": {
-        "Title": "Votre Panier",
-        "CollectionCount": "{count} Articles",
-        "EmptyTitle": "Votre panier est vide",
-        "EmptyDesc": "Il semble que vous n'ayez pas encore sélectionné de volumes. Explorez notre librairie.",
-        "BrowseLibrary": "Parcourir la Librairie",
-        "ViewBundles": "Voir les Packs",
-        "BundleBadge": "PACK",
-        "ItemUnit": "article",
-        "VolumesIncluded": "{count} volumes inclus",
-        "DeleteItem": "Supprimer l'article",
-        "ClearSelection": "Vider le panier",
-        "SummaryTitle": "Résumé de la commande",
-        "Items": "Articles",
-        "Shipping": "Livraison",
-        "FreeShip": "Livraison Gratuite",
-        "FreeShippingAd": "Plus que <span class=\"text-black\">{amount} MAD</span> pour la <span class=\"text-black\">LIVRAISON GRATUITE PARTOUT</span>.",
-        "TotalValue": "Total",
-        "TaxesNote": "Taxes incluses (s'il y a lieu)",
-        "BeginCheckout": "Passer à la commande",
-        "ContinueShopping": "Continuer les achats",
-        "Secure": "Sécurisé",
-        "FastShip": "Envoi Rapide",
-        "MinOrderWarning": "Le montant minimum de commande est de {min} MAD. Veuillez ajouter plus d'articles pour continuer.",
-        "RecommendedForYou": "Recommandé pour vous",
-        "CompleteYourCollection": "Complétez votre collection"
-    },
-    "Blog": {
-        "Badge": "Journal",
-        "Title": "Riwaya.store",
-        "Subtitle": "Inspiration, Culture & Idées pour l'esprit moderne",
-        "NoPosts": "Aucun article publié pour le moment.",
-        "ComingSoon": "Revenez bientôt pour découvrir nos prochaines publications.",
-        "ReadArticle": "Lire l'article"
-    },
-    "Orders": {
-        "Title": "Mes Commandes",
-        "Subtitle": "Historique de vos achats",
-        "EmptyTitle": "Aucune commande",
-        "EmptyDesc": "Vous n'avez pas encore passé de commande",
-        "OrderNumber": "Commande #",
-        "Quantity": "Quantité:",
-        "DeliveryAddress": "Adresse de livraison",
-        "Contact": "Contact",
-        "TrackingTitle": "Suivi de livraison",
-        "TrackButton": "Suivi de Commande",
-        "Status": {
-            "CONFIRMED": "Confirmée",
-            "CANCELLED": "Annulée",
-            "PENDING": "En attente",
-            "SHIPPED": "En cours de livraison",
-            "DELIVERED": "Livrée",
-            "RETURNED": "Retournée"
-        }
-    },
-    "Promotion": {
-        "SpecialPromotion": "Promotion Spéciale",
-        "GiftWaiting": "Un cadeau vous attend",
-        "GiftDescription": "Nous célébrons nos nouveaux lecteurs ! Recevez un marque-page exclusif ou un livre surprise avec votre prochaine commande.",
-        "BookmarksTitle": "Marque-pages Premium",
-        "BookmarksDesc": "Des designs uniques pour chaque type de lecteur.",
-        "RandomBookTitle": "Livre Aléatoire Offert",
-        "RandomBookDesc": "Parfois, la chance sourit : recevez un livre gratuit.",
-        "ExploreBtn": "Explorer la Collection",
-        "Offered": "Offert",
-        "ValidToday": "* Valable pour toute commande aujourd'hui"
-    },
-    "DigitalBooks": {
-        "seo": {
-            "Title": "Livres Numériques PDF",
-            "Description": "Téléchargez instantanément vos livres PDF. Accès immédiat, lecture sur tous vos appareils."
-        },
-        "hero": {
-            "Badge": "NOUVEAU · Livres numériques",
-            "TitlePart1": "Lire",
-            "TitlePart2": "Instantanément.",
-            "Description": "Téléchargez vos livres PDF en quelques secondes. Lisez sur mobile, tablette ou ordinateur, n'importe où, n'importe quand.",
-            "BrowseCatalog": "Voir le catalogue",
-            "LearnMore": "En savoir plus",
-            "InstantDownload": "Téléchargement instant",
-            "AllFormats": "Tous supports",
-            "stats": {
-                "Books": "Titres disponibles",
-                "Digital": "Format numérique",
-                "Access": "Accès immédiat"
-            }
-        },
-        "Features": {
-            "DownloadTitle": "Téléchargement Instant",
-            "DownloadDesc": "Recevez votre lien PDF par email dès confirmation de votre paiement.",
-            "SecureTitle": "Paiement Sécurisé",
-            "SecureDesc": "COD ou virement bancaire. Lien envoyé après confirmation.",
-            "AccessTitle": "Accès Multi-Appareils",
-            "AccessDesc": "Lisez sur votre mobile, tablette, ou ordinateur sans restriction."
-        },
-        "Catalog": {
-            "Subtitle": "Notre bibliothèque digitale",
-            "Title": "Catalogue PDF",
-            "Description": "{count} livres numériques disponibles en téléchargement immédiat.",
-            "Empty": "Catalogue bientôt disponible",
-            "EmptyDesc": "Notre équipe prépare une sélection premium de livres numériques."
-        },
-        "HowItWorks": {
-            "Subtitle": "Processus simple",
-            "Title": "Comment ça marche",
-            "Step1Title": "Choisissez votre livre",
-            "Step1Desc": "Parcourez notre catalogue et sélectionnez les titres qui vous intéressent.",
-            "Step2Title": "Confirmez la commande",
-            "Step2Desc": "Remplissez le formulaire. Paiement par virement ou à la livraison selon disponibilité.",
-            "Step3Title": "Téléchargez instamment",
-            "Step3Desc": "Recevez le lien PDF par email dès validation. Accès immédiat à vie."
-        },
-        "CTA": {
-            "Title": "Votre prochaine lecture, maintenant.",
-            "Description": "Plus de 50 titres disponibles en format numérique. Téléchargez et lisez immédiatement.",
-            "Button": "Découvrir le catalogue"
-        },
-        "HomeSection": {
-            "Badge": "Nouveauté",
-            "Title": "Livres Numériques",
-            "Description": "Téléchargez vos livres PDF instantanément. Lisez sur tous vos appareils, sans délai de livraison.",
-            "Feature1": "Accès immédiat",
-            "Feature2": "Format PDF",
-            "Feature3": "Prix réduits",
-            "CTA": "Voir les livres PDF"
-        },
-        "Reader": {
-            "Title": "Lecteur Immersif",
-            "Next": "Suivant",
-            "Prev": "Précédent",
-            "Page": "Page",
-            "Loading": "Chargement du livre...",
-            "Fullscreen": "Plein écran",
-            "Exit": "Quitter",
-            "Close": "Fermer le lecteur"
-        }
-    },
-    "CookieConsent": {
-        "Title": "Cookies & Vie Privée",
-        "Description": "Nous utilisons des cookies pour améliorer votre expérience et diffuser des annonces adaptées via Google AdSense. En continuant, vous acceptez notre <link>politique de confidentialité</link>.",
-        "Accept": "Accepter tout",
-        "LearnMore": "En savoir plus"
+      "Title": "Ma Wishlist",
+      "Subtitle": "Livres que je recherche",
+      "Empty": "Votre wishlist est vide.",
+      "MatchingNote": "Ajoutez des livres pour activer le matching",
+      "AddBook": "Ajouter à ma wishlist",
+      "BookTitle": "Titre du livre",
+      "Author": "Auteur (optionnel)",
+      "Success": "Livre ajouté à votre wishlist"
     }
+  },
+  "PacksPage": {
+    "Title": "Packs Promotionnels",
+    "Subtitle": "Économisez jusqu'à 30% en choisissant nos collections de livres soignées. Une littérature sélectionnée pour les esprits universels.",
+    "NoCollections": "Aucune collection trouvée",
+    "Curating": "De nouveaux arrivages sont en cours de préparation.",
+    "Benefits": {
+      "HighSavings": {
+        "Title": "Grandes Économies",
+        "Desc": "Jusqu'à 30% de réduction sur le prix unitaire"
+      },
+      "CuratedMix": {
+        "Title": "Sélection Soignée",
+        "Desc": "Choisie par des experts locaux"
+      },
+      "ExpressPack": {
+        "Title": "Pack Express",
+        "Desc": "Tous les volumes en une seule livraison"
+      }
+    }
+  },
+  "PackDetail": {
+    "BackToBundles": "Retour aux packs",
+    "VolumeSelection": "Sélection de {count} Volumes",
+    "SavingsOff": "-{amount} MAD DE RÉDUCTION",
+    "BundleContent": "Contenu du Pack",
+    "GlobalShip": "Envoi partout au Maroc",
+    "SecureCOD": "Paiement à la livraison",
+    "VolumesInCollection": "Volumes dans cette Collection"
+  },
+  "CartPage": {
+    "Title": "Votre Panier",
+    "CollectionCount": "{count} Articles",
+    "EmptyTitle": "Votre panier est vide",
+    "EmptyDesc": "Il semble que vous n'ayez pas encore sélectionné de volumes. Explorez notre librairie.",
+    "BrowseLibrary": "Parcourir la Librairie",
+    "ViewBundles": "Voir les Packs",
+    "BundleBadge": "PACK",
+    "ItemUnit": "article",
+    "VolumesIncluded": "{count} volumes inclus",
+    "DeleteItem": "Supprimer l'article",
+    "ClearSelection": "Vider le panier",
+    "SummaryTitle": "Résumé de la commande",
+    "Items": "Articles",
+    "Shipping": "Livraison",
+    "FreeShip": "Livraison Gratuite",
+    "FreeShippingAd": "Plus que <span class=\"text-black\">{amount} MAD</span> pour la <span class=\"text-black\">LIVRAISON GRATUITE PARTOUT</span>.",
+    "TotalValue": "Total",
+    "TaxesNote": "Taxes incluses (s'il y a lieu)",
+    "BeginCheckout": "Passer à la commande",
+    "ContinueShopping": "Continuer les achats",
+    "Secure": "Sécurisé",
+    "FastShip": "Envoi Rapide",
+    "MinOrderWarning": "Le montant minimum de commande est de {min} MAD. Veuillez ajouter plus d'articles pour continuer.",
+    "RecommendedForYou": "Recommandé pour vous",
+    "CompleteYourCollection": "Complétez votre collection"
+  },
+  "Blog": {
+    "Badge": "Journal",
+    "Title": "Riwaya.store",
+    "Subtitle": "Inspiration, Culture & Idées pour l'esprit moderne",
+    "NoPosts": "Aucun article publié pour le moment.",
+    "ComingSoon": "Revenez bientôt pour découvrir nos prochaines publications.",
+    "ReadArticle": "Lire l'article"
+  },
+  "Orders": {
+    "Title": "Mes Commandes",
+    "Subtitle": "Historique de vos achats",
+    "EmptyTitle": "Aucune commande",
+    "EmptyDesc": "Vous n'avez pas encore passé de commande",
+    "OrderNumber": "Commande #",
+    "Quantity": "Quantité:",
+    "DeliveryAddress": "Adresse de livraison",
+    "Contact": "Contact",
+    "TrackingTitle": "Suivi de livraison",
+    "TrackButton": "Suivi de Commande",
+    "Status": {
+      "CONFIRMED": "Confirmée",
+      "CANCELLED": "Annulée",
+      "PENDING": "En attente",
+      "SHIPPED": "En cours de livraison",
+      "DELIVERED": "Livrée",
+      "RETURNED": "Retournée"
+    }
+  },
+  "Promotion": {
+    "SpecialPromotion": "Promotion Spéciale",
+    "GiftWaiting": "Un cadeau vous attend",
+    "GiftDescription": "Nous célébrons nos nouveaux lecteurs ! Recevez un marque-page exclusif ou un livre surprise avec votre prochaine commande.",
+    "BookmarksTitle": "Marque-pages Premium",
+    "BookmarksDesc": "Des designs uniques pour chaque type de lecteur.",
+    "RandomBookTitle": "Livre Aléatoire Offert",
+    "RandomBookDesc": "Parfois, la chance sourit : recevez un livre gratuit.",
+    "ExploreBtn": "Explorer la Collection",
+    "Offered": "Offert",
+    "ValidToday": "* Valable pour toute commande aujourd'hui"
+  },
+  "DigitalBooks": {
+    "seo": {
+      "Title": "Livres Numériques PDF",
+      "Description": "Téléchargez instantanément vos livres PDF. Accès immédiat, lecture sur tous vos appareils."
+    },
+    "hero": {
+      "Badge": "NOUVEAU · Livres numériques",
+      "TitlePart1": "Lire",
+      "TitlePart2": "Instantanément.",
+      "Description": "Téléchargez vos livres PDF en quelques secondes. Lisez sur mobile, tablette ou ordinateur, n'importe où, n'importe quand.",
+      "BrowseCatalog": "Voir le catalogue",
+      "LearnMore": "En savoir plus",
+      "InstantDownload": "Téléchargement instant",
+      "AllFormats": "Tous supports",
+      "stats": {
+        "Books": "Titres disponibles",
+        "Digital": "Format numérique",
+        "Access": "Accès immédiat"
+      }
+    },
+    "Features": {
+      "DownloadTitle": "Téléchargement Instant",
+      "DownloadDesc": "Recevez votre lien PDF par email dès confirmation de votre paiement.",
+      "SecureTitle": "Paiement Sécurisé",
+      "SecureDesc": "COD ou virement bancaire. Lien envoyé après confirmation.",
+      "AccessTitle": "Accès Multi-Appareils",
+      "AccessDesc": "Lisez sur votre mobile, tablette, ou ordinateur sans restriction."
+    },
+    "Catalog": {
+      "Subtitle": "Notre bibliothèque digitale",
+      "Title": "Catalogue PDF",
+      "Description": "{count} livres numériques disponibles en téléchargement immédiat.",
+      "Empty": "Catalogue bientôt disponible",
+      "EmptyDesc": "Notre équipe prépare une sélection premium de livres numériques."
+    },
+    "HowItWorks": {
+      "Subtitle": "Processus simple",
+      "Title": "Comment ça marche",
+      "Step1Title": "Choisissez votre livre",
+      "Step1Desc": "Parcourez notre catalogue et sélectionnez les titres qui vous intéressent.",
+      "Step2Title": "Confirmez la commande",
+      "Step2Desc": "Remplissez le formulaire. Paiement par virement ou à la livraison selon disponibilité.",
+      "Step3Title": "Téléchargez instamment",
+      "Step3Desc": "Recevez le lien PDF par email dès validation. Accès immédiat à vie."
+    },
+    "CTA": {
+      "Title": "Votre prochaine lecture, maintenant.",
+      "Description": "Plus de 50 titres disponibles en format numérique. Téléchargez et lisez immédiatement.",
+      "Button": "Découvrir le catalogue"
+    },
+    "HomeSection": {
+      "Badge": "Nouveauté",
+      "Title": "Livres Numériques",
+      "Description": "Téléchargez vos livres PDF instantanément. Lisez sur tous vos appareils, sans délai de livraison.",
+      "Feature1": "Accès immédiat",
+      "Feature2": "Format PDF",
+      "Feature3": "Prix réduits",
+      "CTA": "Voir les livres PDF"
+    },
+    "Reader": {
+      "Title": "Lecteur Immersif",
+      "Next": "Suivant",
+      "Prev": "Précédent",
+      "Page": "Page",
+      "Loading": "Chargement du livre...",
+      "Fullscreen": "Plein écran",
+      "Exit": "Quitter",
+      "Close": "Fermer le lecteur"
+    }
+  },
+  "CookieConsent": {
+    "Title": "Cookies & Vie Privée",
+    "Description": "Nous utilisons des cookies pour améliorer votre expérience et diffuser des annonces adaptées via Google AdSense. En continuant, vous acceptez notre <link>politique de confidentialité</link>.",
+    "Accept": "Accepter tout",
+    "LearnMore": "En savoir plus"
+  },
+  "KidsProductDetail": {
+    "NotFoundTitle": "Produit introuvable | Riwaya",
+    "MetaDesc": "Découvrez {name} sur Riwaya. Livraison rapide au Maroc.",
+    "BackToKids": "Retour à l'espace enfant",
+    "StockLeft": "Reste {stock}",
+    "OutOfStock": "Rupture de stock",
+    "DeliverySpeed": "Livraison 24/48h",
+    "PaymentCOD": "Paiement COD",
+    "QualityGuarantee": "Garantie Qualité",
+    "ExcellentRating": "(Excellente appréciation)",
+    "ProductPresentation": "Présentation du produit",
+    "TechSpecs": "Fiche technique & Dimensions",
+    "Material": "Matériau / Matière",
+    "Dimensions": "Dimensions",
+    "WeightCapacity": "Poids / Capacité",
+    "Warranty": "Garantie",
+    "Availability": "Disponibilité",
+    "InStock": "En stock (Prêt à l'envoi)",
+    "OnOrder": "Sur commande",
+    "DeliveryGuarantee": "Livraison & Garantie Maroc",
+    "DeliveryGuaranteeDesc1": "Paiement à la Livraison (COD) : Commandez en toute sécurité. Vous inspectez votre produit à l'arrivée et réglez le montant exact en espèces auprès de notre livreur partenaire.",
+    "DeliveryGuaranteeDesc2": "Délais rapides : Nous expédions dans toutes les grandes villes du Maroc (Casablanca, Rabat, Marrakech, Tanger...) en 24h à 48h. Pour les autres régions, comptez 72h maximum.",
+    "DeliveryGuaranteeDesc3": "Garantie Satisfait ou Échangé : En cas de défaut de fabrication ou de non-conformité, vous disposez de 3 jours calendaires pour demander un échange gratuit.",
+    "YouMightAlsoLike": "Vous aimerez aussi...",
+    "SeeAll": "Tout voir",
+    "Categories": {
+      "FURNITURE": "Fournitures de bureau",
+      "BOOKMARK": "Marque-pages",
+      "LIBRARY": "Bibliothèques",
+      "USB": "Clés USB",
+      "ACCESSORY": "Accessoires",
+      "KIDS": "Accessoires & Goodies"
+    }
+  },
+  "BlogArticle": {
+    "ShareArticle": "Partager l'article",
+    "ArticleInfo": "Infos article",
+    "Reading": "Lecture",
+    "Minutes": "minutes",
+    "MinRead": "min de lecture",
+    "Views": "Vues",
+    "Comments": "Commentaires",
+    "PublishedOn": "Publié le",
+    "Tags": "Tags",
+    "InThisArticle": "Dans cet article",
+    "BestQuote": "Meilleure citation",
+    "KeyLessons": "Leçons clés",
+    "BestFor": "Pour qui ?",
+    "KeyChapters": "Chapitres clés",
+    "InStock": "En stock",
+    "OutOfStock": "Rupture de stock",
+    "Discover": "Découvrir",
+    "Explore": "Explorer",
+    "AllArticles": "Tous les articles",
+    "SimilarArticles": "Articles similaires",
+    "SeeAll": "Voir tout",
+    "ReadArticle": "Lire l'article",
+    "Edit": "Modifier",
+    "AboutAuthor": "À propos de l'auteur",
+    "ShareTitle": "Partager :",
+    "Copied": "Copié !",
+    "Share": {
+      "Facebook": "Facebook",
+      "Twitter": "X / Twitter",
+      "LinkedIn": "LinkedIn",
+      "WhatsApp": "WhatsApp",
+      "CopyLink": "Copier le lien",
+      "LinkCopied": "Lien copié !"
+    }
+  },
+  "BlogComments": {
+    "CommentsTitle": "Commentaires",
+    "LeaveComment": "Laisser un commentaire",
+    "YourName": "Votre nom (optionnel)",
+    "YourMessage": "Votre message...",
+    "SubmitComment": "Envoyer le commentaire",
+    "NoComments": "Aucun commentaire pour le moment.",
+    "CommentSent": "Commentaire envoyé !",
+    "ErrorOccurred": "Une erreur est survenue.",
+    "Anonymous": "Anonyme"
+  }
 }

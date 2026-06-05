@@ -9,6 +9,7 @@ import { Book } from '@prisma/client'
 import { Link } from '@/i18n/routing'
 import { Package, ArrowRight, Sparkles } from 'lucide-react'
 import ImageWithFallback from '@/components/ImageWithFallback'
+import { useTranslations } from 'next-intl'
 
 interface InfiniteBookListProps {
     initialBooks: Book[]
@@ -26,6 +27,7 @@ export default function InfiniteBookList({ initialBooks, initialFilters, adsense
     const [page, setPage] = useState(2)
     const [hasMore, setHasMore] = useState(true)
     const [loading, setLoading] = useState(false)
+    const tCommon = useTranslations('Common')
     const observerTarget = useRef<HTMLDivElement>(null)
 
     // Pack aléatoire sélectionné uniquement côté client pour éviter l'hydratation mismatch
@@ -111,17 +113,17 @@ export default function InfiniteBookList({ initialBooks, initialFilters, adsense
                                     <div className="flex-1 relative z-10 text-center md:text-left">
                                         <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-md mb-4 border border-white/10">
                                             <Sparkles className="w-4 h-4 text-purple-300" />
-                                            <span className="text-xs font-bold uppercase tracking-widest text-purple-100">Offre Spéciale</span>
+                                            <span className="text-xs font-bold uppercase tracking-widest text-purple-100">{tCommon('SpecialOffer')}</span>
                                         </div>
                                         <h3 className="text-2xl md:text-4xl font-black mb-3">{pack.name}</h3>
                                         <div className="flex items-center justify-center md:justify-start gap-3 mb-6">
-                                            <span className="text-3xl md:text-4xl font-black text-purple-300">{pack.price} MAD</span>
+                                            <span className="text-3xl md:text-4xl font-black text-purple-300">{pack.price} {tCommon('Currency')}</span>
                                         </div>
                                         <Link 
                                             href={`/packs/${pack.id}`} 
                                             className="inline-flex items-center gap-2 bg-white text-purple-900 px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 shadow-xl"
                                         >
-                                            Découvrir le pack
+                                            {tCommon('DiscoverPack')}
                                             <ArrowRight className="w-4 h-4" />
                                         </Link>
                                     </div>
@@ -145,17 +147,17 @@ export default function InfiniteBookList({ initialBooks, initialFilters, adsense
                                     <div className="flex-1 text-center md:text-left">
                                         <div className="inline-flex items-center gap-2 bg-black/5 px-4 py-2 rounded-full mb-4">
                                             <Package className="w-4 h-4 text-black" />
-                                            <span className="text-xs font-bold uppercase tracking-widest text-black">Personnalisé</span>
+                                            <span className="text-xs font-bold uppercase tracking-widest text-black">{tCommon('CustomPackCTA.Tag')}</span>
                                         </div>
-                                        <h3 className="text-2xl md:text-3xl font-black mb-3 text-black">Composez votre propre Pack</h3>
+                                        <h3 className="text-2xl md:text-3xl font-black mb-3 text-black">{tCommon('CustomPackCTA.Title')}</h3>
                                         <p className="text-gray-600 text-sm font-medium mb-6 max-w-md">
-                                            Sélectionnez les livres de votre choix et profitez de réductions exclusives sur votre pack personnalisé.
+                                            {tCommon('CustomPackCTA.Description')}
                                         </p>
                                         <Link 
                                             href="/packs?custom=true" 
                                             className="inline-flex items-center gap-2 bg-black text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-gray-900 transition-all shadow-xl"
                                         >
-                                            Créer mon pack
+                                            {tCommon('CustomPackCTA.Button')}
                                             <ArrowRight className="w-4 h-4" />
                                         </Link>
                                     </div>

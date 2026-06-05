@@ -98,13 +98,14 @@ export default async function KidsPage({ params }: { params: Promise<{ locale: s
                     <div className="max-w-7xl mx-auto px-4">
                         <div className="text-center mb-16">
                             <div className="inline-block px-4 py-1.5 rounded-full bg-pink-100 text-pink-700 font-bold mb-4 text-sm tracking-wide uppercase">
-                                Accessoires & Goodies
+                                {t('SectionProducts.Badge')}
                             </div>
-                            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
-                                Le coin des <span className="text-pink-500">petits lecteurs</span>
-                            </h2>
+                            <h2 
+                                className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight"
+                                dangerouslySetInnerHTML={{ __html: t.raw('SectionProducts.Title') }}
+                            />
                             <p className="text-lg text-gray-500 font-medium max-w-2xl mx-auto">
-                                Découvrez notre sélection d'accessoires conçus spécialement pour accompagner vos enfants dans leurs aventures de lecture.
+                                {t('SectionProducts.Desc')}
                             </p>
                         </div>
                         <KidsProductsClient products={JSON.parse(JSON.stringify(kidsProducts))} />

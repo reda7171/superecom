@@ -123,7 +123,7 @@ export default function AddToReadingListButton({ bookId, title, author, cover, t
             onClick={handleAdd}
             disabled={loading}
             className={cn("p-2 text-gray-400 hover:text-emerald-500 hover:bg-emerald-50 bg-white shadow-sm rounded-full transition-all active:scale-95", className)}
-            title="Ajouter à ma liste de lecture"
+            title={t('Common.AddToReadingListTitle')}
         >
             <BookOpen className={cn("w-5 h-5", loading && "animate-pulse")} />
         </button>
