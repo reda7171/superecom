@@ -186,7 +186,7 @@ export default async function PackDetailPage({
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-32">
                     {/* Breadcrumb */}
-                    <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 mb-12">
+                    <div className="flex items-center gap-4 text-[10px] rtl:text-sm font-black uppercase tracking-[0.2em] rtl:tracking-normal text-gray-300 mb-12">
                         <Link href="/" className="hover:text-black transition-colors">{tNav('Home')}</Link>
                         <span className="text-gray-200">/</span>
                         <Link href="/packs" className="hover:text-black transition-colors">{tNav('Packs')}</Link>
@@ -196,9 +196,9 @@ export default async function PackDetailPage({
 
                     <Link
                         href="/packs"
-                        className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black mb-12 group transition-colors"
+                        className="inline-flex items-center gap-4 text-[10px] rtl:text-sm font-black uppercase tracking-widest rtl:tracking-normal text-gray-400 hover:text-black mb-12 group transition-colors"
                     >
-                        <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
+                        <ArrowLeft className="w-3 h-3 rtl:rotate-180 group-hover:-translate-x-1 rtl:group-hover:translate-x-1 transition-transform" />
                         <span>{t('BackToBundles')}</span>
                     </Link>
 
@@ -239,7 +239,7 @@ export default async function PackDetailPage({
 
                             {/* Content Section */}
                             <div className="p-12 lg:p-20 flex flex-col justify-center">
-                                <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 w-fit">
+                                <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-black text-white rounded-full text-[10px] rtl:text-xs font-black uppercase tracking-[0.2em] rtl:tracking-normal mb-10 w-fit">
                                     <Package className="w-4 h-4" />
                                     {t('VolumeSelection', { count: pack.books.length })}
                                 </div>
@@ -254,7 +254,7 @@ export default async function PackDetailPage({
                                         <span className="text-gray-300 text-xl line-through font-black tracking-tighter">
                                             {totalOriginalPrice} MAD
                                         </span>
-                                        <span className="text-black font-black bg-pixio-yellow px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest">
+                                        <span className="text-black font-black bg-pixio-yellow px-4 py-2 rounded-xl text-[10px] rtl:text-xs uppercase tracking-widest rtl:tracking-normal">
                                             {t('SavingsOff', { amount: savings })}
                                         </span>
                                     </div>
@@ -265,7 +265,7 @@ export default async function PackDetailPage({
                                 </div>
 
                                 <div className="mb-12">
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-black mb-8 flex items-center gap-4">
+                                    <h3 className="text-[10px] rtl:text-sm font-black uppercase tracking-[0.3em] rtl:tracking-normal text-black mb-8 flex items-center gap-4">
                                         <Sparkles className="w-4 h-4 text-black" />
                                         {t('BundleContent')}
                                     </h3>
@@ -275,7 +275,7 @@ export default async function PackDetailPage({
                                                 <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center shrink-0 mt-0.5">
                                                     <Check className="w-3.5 h-3.5 text-white" />
                                                 </div>
-                                                <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors">{pb.book.title}</span>
+                                                <span className="text-xs rtl:text-sm font-black uppercase tracking-widest rtl:tracking-normal text-gray-400 group-hover:text-black transition-colors">{pb.book.title}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -297,16 +297,16 @@ export default async function PackDetailPage({
                                             type: 'PACK',
                                             shippingFees: pack.shippingFees
                                         }}
-                                        className="!py-8 text-xs font-black uppercase tracking-[0.3em] !rounded-full shadow-2xl hover:shadow-black/20"
+                                        className="!py-8 text-xs rtl:text-sm font-black uppercase tracking-[0.3em] rtl:tracking-normal !rounded-full shadow-2xl hover:shadow-black/20"
                                     />
                                 </div>
 
                                 <div className="flex items-center justify-center gap-10 mt-10">
-                                    <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-gray-300">
+                                    <div className="flex items-center gap-3 text-[9px] rtl:text-xs font-black uppercase tracking-widest rtl:tracking-normal text-gray-300">
                                         <Truck className="w-4 h-4" />
                                         {t('GlobalShip')}
                                     </div>
-                                    <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-gray-300">
+                                    <div className="flex items-center gap-3 text-[9px] rtl:text-xs font-black uppercase tracking-widest rtl:tracking-normal text-gray-300">
                                         <Shield className="w-4 h-4" />
                                         {t('SecureCOD')}
                                     </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { Truck } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface AnnouncementBarProps {
     message: string
@@ -15,7 +16,15 @@ export default function AnnouncementBar({
     bgColor = "#000000", 
     textColor = "#FFFFFF" 
 }: AnnouncementBarProps) {
+    const t = useTranslations('Common');
+
     if (!isEnabled || !message) return null
+
+    const isDefaultMsg = message.trim() === "Livraison Gratuite partout au Maroc dès 300 MAD d'achat !" ||
+                         message.trim() === "توصيل مجاني في جميع أنحاء المغرب ابتداءً من 300 درهم!" ||
+                         message.trim() === "Free delivery everywhere in Morocco for orders over 300 MAD!";
+
+    const displayMessage = isDefaultMsg ? t('FreeShippingPromo') : message;
 
     return (
         <div 
@@ -27,8 +36,8 @@ export default function AnnouncementBar({
                 {Array.from({ length: 10 }).map((_, i) => (
                     <div key={i} className="flex items-center gap-8 px-10">
                         <Truck className="w-4 h-4" style={{ color: bgColor === '#000000' ? '#FFD700' : textColor }} />
-                        <span className="text-[11px] font-black uppercase tracking-[0.3em] italic">
-                            {message}
+                        <span className="text-[11px] rtl:text-sm font-black uppercase tracking-[0.3em] rtl:tracking-normal italic rtl:not-italic">
+                            {displayMessage}
                         </span>
                         <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: bgColor === '#000000' ? '#FFD700' : textColor, opacity: 0.5 }} />
                     </div>

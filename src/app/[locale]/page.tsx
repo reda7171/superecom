@@ -307,7 +307,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col lg:flex-row items-center gap-8">
                 <div className="flex-1">
-                  <ScrollReveal animation="animate-reveal-up" delay={200} className="space-y-8 text-center lg:text-left">
+                  <ScrollReveal animation="animate-reveal-up" delay={200} className="space-y-8 text-center lg:text-start">
                     <div className="inline-flex items-center gap-2 px-6 py-2 bg-white rounded-full text-black text-xs font-black uppercase tracking-widest shadow-sm border border-gray-100 pulse-yellow-glow mx-auto lg:mx-0">
                       <Sparkles className="w-4 h-4 text-yellow-500" />
                       <span>{t('hero.Badge')}</span>
@@ -322,7 +322,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                     <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                       <Link href="/books" className="group inline-flex items-center justify-center gap-3 px-10 py-5 bg-black text-white font-black text-xs uppercase tracking-widest rounded-full hover:bg-gray-800 transition-all shadow-xl hover:shadow-black/40 hover:-translate-y-1">
                         <span>{t('hero.ShopLibrary')}</span>
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform rtl:rotate-180" />
                       </Link>
                       <Link href="/packs" className="group inline-flex items-center justify-center gap-3 px-10 py-5 bg-white text-black font-black text-xs uppercase tracking-widest rounded-full border-2 border-gray-100 hover:border-black transition-all hover:-translate-y-1">
                         <span>{t('hero.OurBundles')}</span>

@@ -65,7 +65,7 @@ export default function BookCard({
                     {/* Stock Badge - Déplacé en bas à droite */}
                     {stock <= 5 && stock > 0 && (
                         <div className="absolute bottom-4 right-4">
-                            <span className="px-4 py-1.5 bg-white text-orange-600 text-[9px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg border border-orange-200">
+                            <span className="px-4 py-1.5 bg-white text-orange-600 text-[9px] rtl:text-xs font-black uppercase tracking-[0.15em] rtl:tracking-normal rounded-full shadow-lg border border-orange-200">
                                 {stock} {t('Remaining')}
                             </span>
                         </div>
@@ -73,7 +73,7 @@ export default function BookCard({
                     {/* Category Label */}
                     {category && !isCompact && (
                         <div className="absolute bottom-4 left-4">
-                            <span className="px-4 py-1.5 bg-white/95 backdrop-blur-sm text-black text-[9px] font-black uppercase tracking-[0.15em] rounded-full shadow-lg border border-gray-100 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <span className="px-4 py-1.5 bg-white/95 backdrop-blur-sm text-black text-[9px] rtl:text-xs font-black uppercase tracking-[0.15em] rtl:tracking-normal rounded-full shadow-lg border border-gray-100 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                 {category}
                             </span>
                         </div>
@@ -88,7 +88,7 @@ export default function BookCard({
                         }`}>
                         {title}
                     </h3>
-                    <p className={`text-gray-500 font-bold ${isCompact ? 'text-[10px]' : 'text-xs'}`}>
+                    <p className={`text-gray-500 font-bold ${isCompact ? 'text-[10px] rtl:text-xs' : 'text-xs rtl:text-sm'}`}>
                         {t('By')} {author}
                     </p>
                 </Link>
@@ -96,12 +96,12 @@ export default function BookCard({
                 {/* Price & Action */}
                 <div className="mt-auto flex flex-col items-center gap-4 w-full pt-4">
                     <p className={`font-black text-gray-900 leading-none ${isCompact ? 'text-base' : isFeatured ? 'text-2xl' : 'text-xl'}`}>
-                        {price} <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">MAD</span>
+                        {price} <span className="text-[10px] rtl:text-xs font-black text-gray-500 uppercase tracking-widest rtl:tracking-normal">MAD</span>
                     </p>
 
                     {stock > 0 && (
                         <button
-                            className={`w-full flex items-center justify-center gap-2 bg-gray-900 text-white font-black text-[11px] uppercase tracking-widest rounded-2xl hover:bg-black transition-all shadow-lg hover:shadow-black/20 hover:-translate-y-0.5 group/btn ${isCompact
+                            className={`w-full flex items-center justify-center gap-2 bg-gray-900 text-white font-black text-[11px] rtl:text-sm uppercase tracking-widest rtl:tracking-normal rounded-2xl hover:bg-black transition-all shadow-lg hover:shadow-black/20 hover:-translate-y-0.5 group/btn ${isCompact
                                 ? 'py-3'
                                 : isFeatured
                                     ? 'py-4'
@@ -126,7 +126,7 @@ export default function BookCard({
                             }}
                         >
                             <span>{t('AddToCart')}</span>
-                            <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                            <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1 rtl:group-hover/btn:-translate-x-1 rtl:rotate-180" />
                         </button>
                     )}
                 </div>
@@ -135,7 +135,7 @@ export default function BookCard({
             {/* Featured Badge */}
             {isFeatured && (
                 <div className="absolute top-6 left-6">
-                    <div className="bg-pixio-yellow text-black px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-yellow-300 shadow-xl">
+                    <div className="bg-pixio-yellow text-black px-5 py-2 rounded-full text-[9px] rtl:text-xs font-black uppercase tracking-[0.2em] rtl:tracking-normal border border-yellow-300 shadow-xl">
                         ✨ {t('BestSeller')}
                     </div>
                 </div>
@@ -144,7 +144,7 @@ export default function BookCard({
             {/* Out of Stock Ribbon - Top Most Layer */}
             {stock === 0 && (
                 <div className="absolute top-0 left-0 w-36 h-36 overflow-hidden z-30 pointer-events-none">
-                    <div className="absolute top-8 -left-11 w-48 py-2.5 bg-gradient-to-r from-red-800 via-red-600 to-red-800 text-white text-[10px] font-black uppercase tracking-[0.25em] text-center -rotate-45 shadow-[0_10px_20px_rgba(0,0,0,0.5)] border-y border-white/10 backdrop-blur-md ring-1 ring-black/20">
+                    <div className="absolute top-8 -left-11 w-48 py-2.5 bg-gradient-to-r from-red-800 via-red-600 to-red-800 text-white text-[10px] rtl:text-xs font-black uppercase tracking-[0.25em] rtl:tracking-normal text-center -rotate-45 shadow-[0_10px_20px_rgba(0,0,0,0.5)] border-y border-white/10 backdrop-blur-md ring-1 ring-black/20">
                         {t('OutOfStock')}
                     </div>
                 </div>

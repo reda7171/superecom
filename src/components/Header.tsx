@@ -167,11 +167,11 @@ export default function Header({ user, notificationDropdown, navigation, feature
         : navItems
 
     return (
-        <header className="sticky top-0 z-50 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-50 bg-white shadow-sm">
+            <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12">
                 <div className="flex items-center justify-between h-20">
                     {/* Logo - Dynamique ou Style Pixio */}
-                    <Link href="/" className="flex items-center gap-2 group shrink-0 ltr:mr-12 rtl:ml-12" dir="ltr">
+                    <Link href="/" className="flex items-center gap-2 group shrink-0 ltr:mr-32 rtl:ml-32 xl:ltr:mr-48 xl:rtl:ml-48" dir="ltr">
                         {siteLogo ? (
                             <img 
                                 src={siteLogo} 
@@ -213,7 +213,7 @@ export default function Header({ user, notificationDropdown, navigation, feature
                                     <Link
                                         key={item.href}
                                         href={item.href}
-                                        className={`font-black text-[11px] uppercase tracking-widest whitespace-nowrap shrink-0 transition-all px-5 py-2.5 rounded-[2rem] border-2 flex items-center gap-2 ${
+                                        className={`font-black text-[11px] rtl:text-sm uppercase tracking-widest rtl:tracking-normal whitespace-nowrap shrink-0 transition-all px-5 py-2.5 rounded-[2rem] border-2 flex items-center gap-2 ${
                                             isActive 
                                             ? `${isJournal ? 'bg-black text-white' : `${vibrantBg} text-black`} border-transparent shadow-[0_10px_20px_rgba(0,0,0,0.15)]` 
                                             : `${isJournal ? 'bg-[#FDFBF7] text-black border-gray-100 hover:border-black' : `bg-white ${vibrantText} ${vibrantBorder} hover:${vibrantBg} hover:text-black`} shadow-sm`
@@ -234,7 +234,7 @@ export default function Header({ user, notificationDropdown, navigation, feature
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`font-black text-[13px] uppercase tracking-widest transition-colors relative group ${isActive ? 'text-black border-b-2 border-black pb-1' : 'text-gray-900 hover:text-black'}`}
+                                    className={`font-black text-[13px] rtl:text-[15px] uppercase tracking-widest rtl:tracking-normal transition-colors relative group ${isActive ? 'text-black border-b-2 border-black pb-1' : 'text-gray-900 hover:text-black'}`}
                                 >
                                     {item.label}
                                     {!isActive && (
@@ -292,7 +292,7 @@ export default function Header({ user, notificationDropdown, navigation, feature
               !pathname.includes('/cart') && 
               !pathname.includes('/checkout')) && (
                 <div className="hidden md:block py-3 bg-[#FDFBF7]" suppressHydrationWarning>
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12">
                         <div className="max-w-3xl mx-auto">
                             <PredictiveSearch />
                         </div>
@@ -300,7 +300,7 @@ export default function Header({ user, notificationDropdown, navigation, feature
                 </div>
             )}
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12">
                 {/* Mobile Menu */}
                 {mobileMenuOpen && (
                     <div className="md:hidden py-4 border-t border-gray-200 bg-white" suppressHydrationWarning>
@@ -317,7 +317,7 @@ export default function Header({ user, notificationDropdown, navigation, feature
                                                 </span>
                                             )}
                                         </div>
-                                        <span className="text-[10px] font-bold text-gray-600">{t('Cart')}</span>
+                                        <span className="text-[10px] rtl:text-xs font-bold text-gray-600">{t('Cart')}</span>
                                     </button>
                                     {notificationDropdown && (
                                         <div className="flex flex-col items-center gap-1">
@@ -360,7 +360,7 @@ export default function Header({ user, notificationDropdown, navigation, feature
                                         onClick={() => setMobileMenuOpen(false)}
                                     >
                                         <div className="flex justify-between items-center">
-                                            <span className={`${isSpecial ? 'uppercase tracking-widest text-[11px] font-black' : ''}`}>
+                                            <span className={`${isSpecial ? 'uppercase tracking-widest rtl:tracking-normal text-[11px] rtl:text-sm font-black' : ''}`}>
                                                 {item.label}
                                                 {isJournal && <span className="ml-2 inline-flex h-2 w-2 rounded-full bg-red-500 animate-pulse" />}
                                             </span>

@@ -38,7 +38,7 @@ export default function FooterClient({ features = {}, siteLogo = null, socials =
             <div className="bg-black border-b border-white/5 h-16 w-full flex items-center ltr:justify-end rtl:justify-start px-4 sm:px-6 lg:px-8">
                 <button
                     onClick={scrollToTop}
-                    className="group bg-white text-black px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-3 shadow-xl hover:-translate-y-1 transition-all active:scale-95"
+                    className="group bg-white text-black px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest rtl:tracking-normal flex items-center gap-3 shadow-xl hover:-translate-y-1 transition-all active:scale-95"
                 >
                     <ArrowUp className="w-4 h-4 text-black" />
                     {t('BackToTop')}
@@ -83,7 +83,7 @@ export default function FooterClient({ features = {}, siteLogo = null, socials =
                         </p>
                     </div>
                     <div>
-                        <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white/50 mb-8">{t('Navigation')}</h3>
+                        <h3 className="text-[11px] rtl:text-sm font-black uppercase tracking-[0.3em] rtl:tracking-normal text-white/50 mb-8">{t('Navigation')}</h3>
                         <ul className="space-y-4" suppressHydrationWarning>
                             <li suppressHydrationWarning>
                                 <Link href="/books" className="text-gray-300 hover:text-white transition-colors text-sm font-bold tracking-tight" suppressHydrationWarning>{tNav('Books')}</Link>
@@ -110,7 +110,7 @@ export default function FooterClient({ features = {}, siteLogo = null, socials =
                         </ul>
                     </div>
                     <div>
-                        <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white/50 mb-8">{t('Support')}</h3>
+                        <h3 className="text-[11px] rtl:text-sm font-black uppercase tracking-[0.3em] rtl:tracking-normal text-white/50 mb-8">{t('Support')}</h3>
                         <ul className="space-y-4">
                             <li><Link href="/shipping-policy" className="text-gray-300 hover:text-white transition-colors text-sm font-bold tracking-tight">{t('Shipping')}</Link></li>
                             <li><Link href="/return-policy" className="text-gray-300 hover:text-white transition-colors text-sm font-bold tracking-tight">{t('Returns')}</Link></li>
@@ -120,14 +120,14 @@ export default function FooterClient({ features = {}, siteLogo = null, socials =
                         </ul>
                     </div>
                     <div>
-                        <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white/50 mb-8">{t('Journal')}</h3>
+                        <h3 className="text-[11px] rtl:text-sm font-black uppercase tracking-[0.3em] rtl:tracking-normal text-white/50 mb-8">{t('Journal')}</h3>
                         <ul className="space-y-4 mb-8">
                             <li><Link href="/blog" className="text-gray-300 hover:text-white transition-colors text-sm font-bold tracking-tight">{tNav('Journal')}</Link></li>
                         </ul>
                         <p className="text-gray-300 text-sm font-medium mb-4">{t('NewsletterText')}</p>
                         <div className="flex gap-2">
                             <input type="email" placeholder="Email" className="bg-gray-900 border-none rounded-2xl px-4 py-3 text-xs focus:ring-1 focus:ring-white outline-none w-full font-bold text-white placeholder-gray-600" />
-                            <button className="bg-white text-black px-6 py-3 rounded-2xl text-[10px] font-black uppercase shadow-lg hover:bg-gray-200 transition-all active:scale-95">{t('Join')}</button>
+                            <button className="bg-white text-black px-6 py-3 rounded-2xl text-[10px] rtl:text-xs font-black uppercase shadow-lg hover:bg-gray-200 transition-all active:scale-95">{t('Join')}</button>
                         </div>
                     </div>
                 </div>
@@ -142,7 +142,7 @@ export default function FooterClient({ features = {}, siteLogo = null, socials =
                     {socials.threads && <a href={socials.threads} target="_blank" rel="noopener noreferrer" aria-label="Riwaya sur Threads" className="text-gray-400 hover:text-white transition-colors"><AtSign className="w-5 h-5" /></a>}
                 </div>
 
-                <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-black uppercase tracking-widest text-gray-300 relative">
+                <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] rtl:text-xs font-black uppercase tracking-widest rtl:tracking-normal text-gray-300 relative">
                     <p>© 2026 riwaya world. {t('Rights')}</p>
 
                     <div className="md:absolute md:left-1/2 md:-translate-x-1/2 text-center">
