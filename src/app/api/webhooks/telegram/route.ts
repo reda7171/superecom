@@ -446,7 +446,119 @@ export async function POST(req: Request) {
                     await sendTelegramMessage(text, message?.chat?.id.toString(), token)
                 }
             }
+
+            // Format: stats:recent_orders
+            else if (data === 'stats:recent_orders') {
+                const orders = await prisma.order.findMany({
+                    take: 5,
+                    orderBy: { createdAt: 'desc' },
+                    select: { id: true, fullName: true, city: true, total: true, status: true, createdAt: true }
+                })
+
+                const statusIcons: Record<string, string> = {
+                    PENDING: '⏳', CONFIRMED: '✅', SHIPPED: '🚚',
+                    DELIVERED: '📬', CANCELLED: '❌', RETURNED: '🔄'
+                }
+
+                const list = orders.map(o => {
+                    const icon = statusIcons[o.status] || '📦'
+                    const shortId = o.id.slice(0, 6).toUpperCase()
+                    const date = new Date(o.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
+                    return `${icon} <b>#${shortId}</b> — ${escapeHtml(o.fullName)} — <b>${o.total.toFixed(0)} MAD</b> — ${date}`
+                }).join('\n')
+
+                const text = `🛒 <b>5 DERNIÈRES COMMANDES</b>\n\n${list}`
+                await answerCallbackQuery(callbackId, '🛒 Dernières commandes', token)
+                await sendTelegramMessage(text, message?.chat?.id.toString(), token)
+            }
+
+            // Format: stats:compare_months
+            else if (data === 'stats:compare_months') {
+                const now = new Date()
+                // Mois actuel
+                const startCurrent = new Date(now.getFullYear(), now.getMonth(), 1)
+                const endCurrent = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
+                // Mois précédent
+                const startPrev = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+                const endPrev = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
+
+                const [current, prev] = await Promise.all([
+                    prisma.order.aggregate({
+                        where: { createdAt: { gte: startCurrent, lte: endCurrent }, status: { not: 'CANCELLED' } },
+                        _sum: { total: true },
+                        _count: true
+                    }),
+                    prisma.order.aggregate({
+                        where: { createdAt: { gte: startPrev, lte: endPrev }, status: { not: 'CANCELLED' } },
+                        _sum: { total: true },
+                        _count: true
+                    })
+                ])
+
+                const caMois = current._sum.total || 0
+                const caPrev = prev._sum.total || 0
+                const diff = caMois - caPrev
+                const pct = caPrev > 0 ? ((diff / caPrev) * 100).toFixed(1) : 'N/A'
+                const trend = diff >= 0 ? `📈 +${pct}%` : `📉 ${pct}%`
+
+                const moisActuel = startCurrent.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+                const moisPrec = startPrev.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+
+                const text = `📊 <b>CA MENSUEL COMPARÉ</b>\n\n` +
+                    `📅 <b>${moisActuel} :</b>\n` +
+                    `   💰 CA : <b>${caMois.toFixed(2)} MAD</b>\n` +
+                    `   📦 Commandes : <b>${current._count}</b>\n\n` +
+                    `📅 <b>${moisPrec} :</b>\n` +
+                    `   💰 CA : <b>${caPrev.toFixed(2)} MAD</b>\n` +
+                    `   📦 Commandes : <b>${prev._count}</b>\n\n` +
+                    `${trend} vs mois précédent`
+
+                await answerCallbackQuery(callbackId, '📊 Comparaison mensuelle', token)
+                await sendTelegramMessage(text, message?.chat?.id.toString(), token)
+            }
             
+            // Format: stats:all_time
+            else if (data === 'stats:all_time') {
+                const [total, revenue, firstOrder, byStatus] = await Promise.all([
+                    prisma.order.count(),
+                    prisma.order.aggregate({
+                        where: { status: { not: 'CANCELLED' } },
+                        _sum: { total: true }
+                    }),
+                    prisma.order.findFirst({
+                        orderBy: { createdAt: 'asc' },
+                        select: { createdAt: true }
+                    }),
+                    prisma.order.groupBy({
+                        by: ['status'],
+                        _count: { status: true }
+                    })
+                ])
+
+                const statusIcons: Record<string, string> = {
+                    PENDING: '⏳', CONFIRMED: '✅', SHIPPED: '🚚',
+                    DELIVERED: '📬', CANCELLED: '❌', RETURNED: '🔄'
+                }
+
+                const statusLines = byStatus
+                    .sort((a, b) => b._count.status - a._count.status)
+                    .map(s => `${statusIcons[s.status] || '📦'} ${STATUS_LABELS[s.status] || s.status} : <b>${s._count.status}</b>`)
+                    .join('\n')
+
+                const since = firstOrder?.createdAt
+                    ? new Date(firstOrder.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
+                    : 'Inconnue'
+
+                const text = `🗂️ <b>STATISTIQUES GLOBALES</b>\n\n` +
+                    `📅 <b>Depuis :</b> ${since}\n` +
+                    `📦 <b>Total commandes :</b> ${total}\n` +
+                    `💰 <b>CA total :</b> <b>${(revenue._sum.total || 0).toFixed(2)} MAD</b>\n\n` +
+                    `📊 <b>Par statut :</b>\n${statusLines}`
+
+                await answerCallbackQuery(callbackId, '🗂️ Stats globales chargées', token)
+                await sendTelegramMessage(text, message?.chat?.id.toString(), token)
+            }
+
             // Sécurité : toujours répondre pour arrêter le chargement du bouton
             else {
                 await answerCallbackQuery(callbackId, 'Action reçue', token)
@@ -469,10 +581,15 @@ export async function POST(req: Request) {
                             { text: '🗓️ Hier', callback_data: 'stats:yesterday' }
                         ],
                         [
-                            { text: '📅 Ce Mois', callback_data: 'stats:month' }
+                            { text: '📅 Ce Mois', callback_data: 'stats:month' },
+                            { text: '🏆 Top 5 Livres', callback_data: 'stats:top5' }
                         ],
                         [
-                            { text: '🏆 Top 5 Livres', callback_data: 'stats:top5' }
+                            { text: '🛒 Dernières Commandes', callback_data: 'stats:recent_orders' },
+                            { text: '📊 CA Mensuel Comparé', callback_data: 'stats:compare_months' }
+                        ],
+                        [
+                            { text: '🗂️ Depuis le Début', callback_data: 'stats:all_time' }
                         ]
                     ]
                 }
