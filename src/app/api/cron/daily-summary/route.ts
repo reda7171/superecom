@@ -131,10 +131,12 @@ export async function GET(req: NextRequest) {
             }
         }
 
+        const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
         const topCategories = Object.entries(categoryStats)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 3)
-            .map(([cat, qty]) => `${cat}: ${qty}`)
+            .map(([cat, qty]) => `${escapeHtml(cat)}: ${qty}`)
             .join(' | ') || 'Aucune'
 
         const bestSeller = Object.values(bookStats).sort((a, b) => b.qty - a.qty)[0]
@@ -162,7 +164,7 @@ export async function GET(req: NextRequest) {
             `📝 Articles Publiés : <b>${publishedPosts}</b>\n\n` +
             `⚠️ <b>ALERTES</b>\n` +
             `📉 Livres en stock faible (<5) : <b>${lowStockCount}</b>\n\n` +
-            (bestSeller ? `🔥 <b>Top Vente:</b> ${bestSeller.title} (${bestSeller.qty} expl.)\n` : '') +
+            (bestSeller ? `🔥 <b>Top Vente:</b> ${escapeHtml(bestSeller.title)} (${bestSeller.qty} expl.)\n` : '') +
             `🚀 <i>Continuez comme ça !</i>`
 
         await sendTelegramMessage(text)

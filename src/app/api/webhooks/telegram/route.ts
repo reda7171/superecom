@@ -460,7 +460,7 @@ export async function POST(req: Request) {
                     const topCategories = Object.entries(categoryStats)
                         .sort((a, b) => b[1] - a[1])
                         .slice(0, 3)
-                        .map(([cat, qty]) => `${cat}: ${qty}`)
+                        .map(([cat, qty]) => `${escapeHtml(cat)}: ${qty}`)
                         .join(' | ') || 'Aucune'
 
                     let totalOrdersAll = 0
