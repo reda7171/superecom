@@ -16,7 +16,7 @@ export default async function AdminPostsPage({
     const page = typeof searchParamsValues.page === 'string' ? parseInt(searchParamsValues.page) : 1
     const search = typeof searchParamsValues.search === 'string' ? searchParamsValues.search : undefined
 
-    const { posts, pagination } = await getAllPosts(page, 20, search)
+    const { posts, pagination } = await getAllPosts(page, 20, search, locale)
 
     return (
         <div className="space-y-12">

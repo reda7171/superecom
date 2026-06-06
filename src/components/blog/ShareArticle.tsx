@@ -89,7 +89,7 @@ export default function ShareArticle({ title, vertical = false }: Props) {
     // Mode horizontal (défaut)
     return (
         <div className="flex items-center gap-3">
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mr-1">{t('ShareTitle')}</span>
+            <span className="text-[10px] rtl:text-xs font-black uppercase tracking-widest rtl:tracking-normal text-gray-400 mr-1">{t('ShareTitle')}</span>
             {platforms.map((p) => (
                 <a
                     key={p.label}

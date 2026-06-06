@@ -19,7 +19,7 @@ import AdBanner from '@/components/AdBanner'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: string }> }): Promise<Metadata> {
     const { slug, locale } = await params
-    const post = await getPostBySlug(slug)
+    const post = await getPostBySlug(slug, locale)
 
     if (!post) return {}
 
@@ -56,7 +56,7 @@ function estimateReadingTime(content: string): number {
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
     const { slug, locale } = await params
-    const post = await getPostBySlug(slug)
+    const post = await getPostBySlug(slug, locale)
     const t = await getTranslations('BlogArticle')
 
     if (!post) notFound()
@@ -135,7 +135,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24">
                     {/* Fil d'Ariane + btn admin */}
                     <div className="flex items-center justify-between mb-10">
-                        <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                        <nav className="flex items-center gap-2 text-[10px] rtl:text-xs font-bold uppercase tracking-[0.2em] rtl:tracking-normal text-slate-400">
                             <Link href="/blog" className="hover:text-slate-900 transition-colors">Blog</Link>
                             <span>/</span>
                             {post.category && (
@@ -150,7 +150,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                         {isAdmin && (
                             <Link
                                 href={`/admin/posts/${post.id}`}
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-slate-50 transition-all shadow-sm"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-900 text-[10px] rtl:text-xs font-black uppercase tracking-[0.2em] rtl:tracking-normal rounded-full hover:bg-slate-50 transition-all shadow-sm"
                             >
                                 <Pencil className="w-3 h-3 text-indigo-600" />
                                 {t('Edit')}
@@ -163,7 +163,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                         <div className="mb-6">
                             <Link
                                 href={`/blog?category=${post.category}`}
-                                className="inline-block px-4 py-1.5 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-indigo-100 transition-colors"
+                                className="inline-block px-4 py-1.5 bg-indigo-50 text-indigo-600 text-[10px] rtl:text-xs font-black uppercase tracking-[0.3em] rtl:tracking-normal rounded-full hover:bg-indigo-100 transition-colors"
                             >
                                 {post.category}
                             </Link>
@@ -183,7 +183,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                     )}
 
                     {/* Méta */}
-                    <div className="flex flex-wrap items-center gap-6 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 border-t border-slate-200 pt-8">
+                    <div className="flex flex-wrap items-center gap-6 text-[11px] rtl:text-[13px] font-bold uppercase tracking-[0.15em] rtl:tracking-normal text-slate-400 border-t border-slate-200 pt-8">
                         {post.author?.fullName && (
                             <span className="flex items-center gap-2 text-slate-700">
                                 {post.author.image ? (
@@ -230,16 +230,39 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
             {/* === IMAGE COVER grande === */}
             {post.coverImage && (
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 mb-8">
-                    <div className="relative aspect-[21/9] w-full overflow-hidden rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] ring-1 ring-gray-900/5 bg-slate-50">
-                        <Image
-                            src={post.coverImage}
-                            alt={post.title}
-                            fill
-                            className="object-contain"
-                            priority
-                            unoptimized
-                        />
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 mb-20">
+                    <div className="relative group">
+                        {/* Decorative background blocks for editorial look */}
+                        <div className="absolute inset-0 bg-black rounded-[3rem] rotate-1 group-hover:rotate-2 transition-transform duration-700 opacity-5 shadow-2xl" />
+                        <div className="absolute inset-0 bg-gray-200 rounded-[3rem] -rotate-1 group-hover:-rotate-2 transition-transform duration-700 opacity-20" />
+                        
+                        {/* Main Container */}
+                        <div className="relative aspect-[4/3] md:aspect-[21/9] w-full overflow-hidden rounded-[3rem] border-[8px] border-white bg-slate-50 shadow-2xl shadow-black/10 group-hover:-translate-y-2 transition-transform duration-700">
+                            {/* Blurred Ambient Background */}
+                            <div className="absolute inset-0 z-0">
+                                <Image
+                                    src={post.coverImage}
+                                    alt=""
+                                    fill
+                                    className="object-cover opacity-30 blur-[40px] scale-125 saturate-150"
+                                    unoptimized
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-100/50 to-transparent" />
+                            </div>
+                            
+                            {/* Foreground Image */}
+                            <Image
+                                src={post.coverImage}
+                                alt={post.title}
+                                fill
+                                className="object-contain z-10 drop-shadow-2xl group-hover:scale-105 transition-transform duration-700"
+                                priority
+                                unoptimized
+                            />
+                            
+                            {/* Inner highlight */}
+                            <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[2.5rem] pointer-events-none z-20" />
+                        </div>
                     </div>
                 </div>
             )}
@@ -258,11 +281,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                         {/* Corps de l'article */}
                         <article
                             id="article-content"
-                            className="prose prose-lg max-w-none
+                            className="prose prose-lg max-w-none rtl:text-[22px] rtl:font-bold rtl:leading-[2.5]
                                 prose-headings:font-black prose-headings:tracking-tight prose-headings:text-slate-900
-                                prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:pb-4 prose-h2:border-b prose-h2:border-gray-100
-                                prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4
-                                prose-p:text-slate-800 prose-p:leading-[1.9] prose-p:text-[17px] prose-p:font-semibold
+                                prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:pb-4 prose-h2:border-b prose-h2:border-gray-100 rtl:prose-h2:text-[34px]
+                                prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4 rtl:prose-h3:text-[30px]
+                                prose-p:text-slate-800 prose-p:leading-[1.9] prose-p:text-[17px] rtl:prose-p:text-[22px] rtl:prose-p:leading-[2.5] rtl:prose-p:font-bold prose-p:font-semibold
                                 prose-a:text-indigo-600 prose-a:font-semibold prose-a:no-underline prose-a:border-b-2 prose-a:border-indigo-600 hover:prose-a:bg-indigo-50 prose-a:transition-colors
                                 prose-blockquote:border-l-4 prose-blockquote:border-indigo-500 prose-blockquote:bg-indigo-50 prose-blockquote:rounded-r-2xl prose-blockquote:py-4 prose-blockquote:not-italic
                                 prose-blockquote:text-slate-800 prose-blockquote:font-bold
@@ -271,7 +294,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                 prose-pre:bg-slate-900 prose-pre:rounded-2xl prose-pre:shadow-xl
                                 prose-img:rounded-2xl prose-img:shadow-lg prose-img:mx-auto
                                 prose-ul:space-y-2 prose-ol:space-y-2
-                                prose-li:text-slate-800 prose-li:leading-relaxed prose-li:font-semibold
+                                prose-li:text-slate-800 prose-li:leading-relaxed prose-li:font-semibold rtl:prose-li:text-[21px] rtl:prose-li:leading-[2.5] rtl:prose-li:font-bold
                                 rtl:prose-p:text-justify"
                         >
                             <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
@@ -306,7 +329,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                         {/* === Bio Auteur === */}
                         {post.author && (
                             <div className="mt-16 p-8 bg-slate-50 border border-slate-100 rounded-3xl text-slate-900">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6">{t('AboutAuthor')}</p>
+                                <p className="text-[10px] rtl:text-xs font-black uppercase tracking-[0.3em] rtl:tracking-normal text-slate-400 mb-6">{t('AboutAuthor')}</p>
                                 <div className="flex items-start gap-6">
                                     <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
                                         {post.author.image ? (
@@ -347,13 +370,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                             <div className="flex flex-col flex-1 min-w-0">
                                                 <h4 className="text-lg font-black text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight">{book.title}</h4>
                                                 <p className="text-sm font-bold text-slate-500 mt-1 uppercase tracking-widest">{book.author}</p>
-                                                
+
                                                 {book.description && (
                                                     <p className="text-sm text-slate-600 mt-3 line-clamp-3 leading-relaxed">
                                                         {book.description}
                                                     </p>
                                                 )}
-                                                
+
                                                 {(book.bestQuote || book.bestLessons || book.bestFor || book.bestChapters) && (
                                                     <div className="mt-4 space-y-3 bg-slate-50/80 p-4 rounded-xl border border-slate-100">
                                                         {book.bestQuote && (
@@ -429,7 +452,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
                             {/* Partage */}
                             <div className="bg-gray-50 rounded-3xl p-6">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-4">{t('ShareArticle')}</p>
+                                <p className="text-[10px] rtl:text-xs font-black uppercase tracking-[0.3em] rtl:tracking-normal text-gray-400 mb-4">{t('ShareArticle')}</p>
                                 <div className="flex flex-col gap-3">
                                     <ShareArticle title={post.title} vertical />
                                 </div>
@@ -437,14 +460,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
                             {/* Méta article */}
                             <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 text-slate-900">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-5">{t('ArticleInfo')}</p>
+                                <p className="text-[10px] rtl:text-xs font-black uppercase tracking-[0.3em] rtl:tracking-normal text-slate-400 mb-5">{t('ArticleInfo')}</p>
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-3 text-sm">
                                         <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
                                             <Clock className="w-3.5 h-3.5 text-indigo-500" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('Reading')}</p>
+                                            <p className="text-[10px] rtl:text-xs text-slate-400 font-bold uppercase tracking-wider rtl:tracking-normal">{t('Reading')}</p>
                                             <p className="font-bold">{readingTime} {t('Minutes')}</p>
                                         </div>
                                     </div>
@@ -453,7 +476,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                             <Eye className="w-3.5 h-3.5 text-indigo-500" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('Views')}</p>
+                                            <p className="text-[10px] rtl:text-xs text-slate-400 font-bold uppercase tracking-wider rtl:tracking-normal">{t('Views')}</p>
                                             <p className="font-bold">{post.viewCount.toLocaleString()}</p>
                                         </div>
                                     </div>
@@ -463,7 +486,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                                 <MessageSquare className="w-3.5 h-3.5 text-indigo-500" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('Comments')}</p>
+                                                <p className="text-[10px] rtl:text-xs text-slate-400 font-bold uppercase tracking-wider rtl:tracking-normal">{t('Comments')}</p>
                                                 <p className="font-bold">{post._count.comments}</p>
                                             </div>
                                         </div>
@@ -474,7 +497,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                                 <Calendar className="w-3.5 h-3.5 text-indigo-500" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('PublishedOn')}</p>
+                                                <p className="text-[10px] rtl:text-xs text-slate-400 font-bold uppercase tracking-wider rtl:tracking-normal">{t('PublishedOn')}</p>
                                                 <p className="font-bold">{new Date(post.publishedAt).toLocaleDateString(locale === 'ar' ? 'ar-MA' : locale === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                                             </div>
                                         </div>
@@ -485,13 +508,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                             {/* Tags sidebar */}
                             {tags.length > 0 && (
                                 <div className="bg-gray-50 rounded-3xl p-6">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-4">{t('Tags')}</p>
+                                    <p className="text-[10px] rtl:text-xs font-black uppercase tracking-[0.3em] rtl:tracking-normal text-gray-400 mb-4">{t('Tags')}</p>
                                     <div className="flex flex-wrap gap-2">
                                         {tags.map(tag => (
                                             <Link
                                                 key={tag}
                                                 href={`/blog?search=${encodeURIComponent(tag)}`}
-                                                className="px-3 py-1.5 bg-white border border-gray-200 text-gray-500 text-[10px] font-bold uppercase tracking-wider rounded-full hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all"
+                                                className="px-3 py-1.5 bg-white border border-gray-200 text-gray-500 text-[10px] rtl:text-xs font-bold uppercase tracking-wider rtl:tracking-normal rounded-full hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all"
                                             >
                                                 {tag}
                                             </Link>
@@ -503,7 +526,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                             {/* Livres Mentionnés (Sidebar) */}
                             {post.books && post.books.length > 0 && (
                                 <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-5 flex items-center gap-2">
+                                    <p className="text-[10px] rtl:text-xs font-black uppercase tracking-[0.3em] rtl:tracking-normal text-slate-400 mb-5 flex items-center gap-2">
                                         <BookOpen className="w-3.5 h-3.5" />
                                         {t('InThisArticle')}
                                     </p>
@@ -530,7 +553,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                 className="group flex items-center justify-between p-5 bg-indigo-50 border border-indigo-100 rounded-3xl hover:bg-indigo-100 transition-colors"
                             >
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-1">{t('Explore')}</p>
+                                    <p className="text-[10px] rtl:text-xs font-black uppercase tracking-[0.2em] rtl:tracking-normal text-indigo-400 mb-1">{t('Explore')}</p>
                                     <p className="font-black text-indigo-900 text-sm">{t('AllArticles')}</p>
                                 </div>
                                 <div className="w-9 h-9 bg-indigo-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">

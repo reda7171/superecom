@@ -66,9 +66,14 @@ export async function getPostCategories(language: string = 'fr') {
 /**
  * Récupère un article par son slug
  */
-export async function getPostBySlug(slug: string) {
-    return prisma.post.findUnique({
-        where: { slug, published: true },
+export async function getPostBySlug(slug: string, language?: string) {
+    const where: any = { slug, published: true }
+    if (language) {
+        where.language = language
+    }
+    
+    return prisma.post.findFirst({
+        where,
         include: {
             author: {
                 select: {
@@ -138,12 +143,16 @@ export async function getRecentPosts(limit = 3, language: string = 'fr') {
 // ADMIN ACTIONS
 // ============================================
 
-export async function getAllPosts(page = 1, limit = 20, search?: string) {
+export async function getAllPosts(page = 1, limit = 20, search?: string, language?: string) {
     const skip = (page - 1) * limit
     const where: any = {}
 
     if (search) {
         where.title = { contains: search }
+    }
+
+    if (language) {
+        where.language = language
     }
 
     const [posts, total] = await prisma.$transaction([

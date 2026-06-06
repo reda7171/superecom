@@ -4,13 +4,54 @@ import ExcelJS from 'exceljs'
 import { verifyAdmin } from '@/lib/actions/auth'
 
 // GET /api/admin/books/export-excel — export tous les livres au format Excel
-export async function GET() {
+export async function GET(request: Request) {
     try {
         await verifyAdmin()
 
+        const { searchParams } = new URL(request.url)
+        const searchQuery = searchParams.get('search') || ''
+        const filterParam = searchParams.get('filter') || ''
+
+        const where: any = {
+            ...(searchQuery && {
+                OR: [
+                    { title: { contains: searchQuery } },
+                    { author: { contains: searchQuery } },
+                    { category: { contains: searchQuery } }
+                ]
+            }),
+            ...(filterParam === 'no-image' && {
+                image: { in: ['', '/book-placeholder.png'] }
+            }),
+            ...(filterParam === 'out-of-stock' && {
+                stock: { equals: 0 }
+            }),
+            ...(filterParam === 'in-stock' && {
+                stock: { gt: 0 }
+            }),
+            ...(filterParam === 'active' && {
+                active: true
+            }),
+            ...(filterParam === 'inactive' && {
+                active: false
+            }),
+            ...(filterParam.startsWith('lang:') && {
+                language: filterParam.split(':')[1]
+            })
+        }
+
+        let orderBy: any = [{ displayOrder: 'asc' }, { createdAt: 'desc' }]
+        if (filterParam === 'price-asc') orderBy = [{ price: 'asc' }]
+        else if (filterParam === 'price-desc') orderBy = [{ price: 'desc' }]
+        else if (filterParam === 'stock-asc') orderBy = [{ stock: 'asc' }]
+        else if (filterParam === 'stock-desc') orderBy = [{ stock: 'desc' }]
+        else if (filterParam === 'title-asc') orderBy = [{ title: 'asc' }]
+        else if (filterParam === 'title-desc') orderBy = [{ title: 'desc' }]
+
         // Récupérer tous les livres
         const books = await prisma.book.findMany({
-            orderBy: { createdAt: 'desc' },
+            where,
+            orderBy,
         })
 
         const workbook = new ExcelJS.Workbook()

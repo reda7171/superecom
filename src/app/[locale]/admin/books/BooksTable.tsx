@@ -181,7 +181,11 @@ export default function BooksTable({ books, pageNumber, totalProviderPages, init
     // Export Excel de tous les livres
     const handleExportExcel = async () => {
         try {
-            const res = await fetch('/api/admin/books/export-excel')
+            const params = new URLSearchParams()
+            if (initialSearch) params.set('search', initialSearch)
+            if (initialFilter) params.set('filter', initialFilter)
+
+            const res = await fetch(`/api/admin/books/export-excel?${params.toString()}`)
             if (!res.ok) throw new Error('Export échoué')
             const blob = await res.blob()
             const url = URL.createObjectURL(blob)
