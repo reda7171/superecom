@@ -66,44 +66,18 @@ export async function POST(req: Request) {
                 }
 
                 try {
-                    const orderToUpdate = await prisma.order.findUnique({
+                    const order = await prisma.order.update({
                         where: { id: orderId },
-                        include: { items: true }
-                    })
-                    
-                    if (!orderToUpdate) throw new Error('Commande introuvable')
-
-                    const prevStatus = orderToUpdate.status
-                    const isNowReturned = newStatus === 'RETURNED' || newStatus === 'CANCELLED'
-                    const alreadyRestored = ['CANCELLED', 'RETURNED'].includes(prevStatus)
-
-                    const order = await prisma.$transaction(async (tx) => {
-                        const updated = await tx.order.update({
-                            where: { id: orderId },
-                            data: {
-                                status: newStatus as OrderStatus,
-                                statusHistory: {
-                                    create: {
-                                        status: newStatus as OrderStatus,
-                                        comment: 'Statut mis à jour via Telegram Bot',
-                                        createdBy: 'TELEGRAM'
-                                    }
-                                }
-                            }
-                        })
-                        
-                        if (isNowReturned && !alreadyRestored) {
-                            for (const item of orderToUpdate.items) {
-                                if (item.type === 'BOOK' && item.bookId) {
-                                    await tx.book.update({
-                                        where: { id: item.bookId },
-                                        data: { stock: { increment: item.quantity } }
-                                    })
+                        data: {
+                            status: newStatus as OrderStatus,
+                            statusHistory: {
+                                create: {
+                                    status: newStatus as OrderStatus,
+                                    comment: 'Statut mis à jour via Telegram Bot',
+                                    createdBy: 'TELEGRAM'
                                 }
                             }
                         }
-                        
-                        return updated
                     })
 
                     console.log(`[TELEGRAM] Order ${orderId} successfully updated to ${newStatus}`)
@@ -348,12 +322,9 @@ export async function POST(req: Request) {
                 }
             }
             
-            // Format: stats:{period}:{dateParam}
+            // Format: stats:{period}
             else if (data && data.startsWith('stats:')) {
-                const parts = data.split(':')
-                const period = parts[1]
-                const dateParam = parts[2]
-                
+                const [, period] = data.split(':')
                 const now = new Date()
                 let start = new Date(now.setHours(0, 0, 0, 0))
                 let end = new Date(now.setHours(23, 59, 59, 999))
@@ -368,12 +339,6 @@ export async function POST(req: Request) {
                 } else if (period === 'month') {
                     start = new Date(now.getFullYear(), now.getMonth(), 1)
                     label = "Ce Mois"
-                } else if (period === 'date' && dateParam) {
-                    start = new Date(dateParam)
-                    start.setHours(0,0,0,0)
-                    end = new Date(dateParam)
-                    end.setHours(23,59,59,999)
-                    label = start.toLocaleDateString('fr-FR')
                 }
 
                 if (period === 'top5') {
@@ -399,11 +364,11 @@ export async function POST(req: Request) {
                     const showRegistrations = (await prisma.siteSettings.findUnique({ where: { key: 'telegram_stats_registrations' } }))?.value === 'true'
                     const showViews = (await prisma.siteSettings.findUnique({ where: { key: 'telegram_stats_top_views' } }))?.value === 'true'
 
-                    const [count, revenue, visitors, registrations, expenses, statusCounts, abandoned, soldItems, lowStockCount, blogViews, pendingComments, publishedPosts] = await Promise.all([
+                    const [count, revenue, visitors, registrations] = await Promise.all([
                         prisma.order.count({ where: { createdAt: { gte: start, lte: end }, status: { not: 'CANCELLED' } } }),
                         prisma.order.aggregate({
                             where: { createdAt: { gte: start, lte: end }, status: { not: 'CANCELLED' } },
-                            _sum: { total: true, discount: true }
+                            _sum: { total: true }
                         }),
                         showVisitors ? prisma.pageView.groupBy({
                             by: ['sessionId'],
@@ -411,78 +376,8 @@ export async function POST(req: Request) {
                         }).then(res => res.length) : Promise.resolve(0),
                         showRegistrations ? prisma.user.count({
                             where: { createdAt: { gte: start, lte: end }, role: 'USER' }
-                        }) : Promise.resolve(0),
-                        prisma.expense.aggregate({
-                            where: { date: { gte: start, lte: end } },
-                            _sum: { amount: true }
-                        }),
-                        prisma.order.groupBy({
-                            by: ['status'],
-                            where: { createdAt: { gte: start, lte: end } },
-                            _count: { status: true }
-                        }),
-                        prisma.abandonedCart.aggregate({
-                            where: { createdAt: { gte: start, lte: end }, status: 'PENDING' },
-                            _count: { id: true },
-                            _sum: { total: true }
-                        }),
-                        prisma.orderItem.findMany({
-                            where: { order: { createdAt: { gte: start, lte: end }, status: { not: 'CANCELLED' } } },
-                            select: { quantity: true, costPrice: true, book: { select: { category: true } } }
-                        }),
-                        prisma.book.count({
-                            where: { active: true, stock: { lt: 5 } }
-                        }),
-                        prisma.pageView.count({
-                            where: { createdAt: { gte: start, lte: end }, url: { contains: '/blog/' } }
-                        }),
-                        prisma.comment.count({
-                            where: { isApproved: false }
-                        }),
-                        prisma.post.count({
-                            where: { published: true }
-                        })
+                        }) : Promise.resolve(0)
                     ])
-
-                    let totalQuantity = 0
-                    let totalCogs = 0
-                    const categoryStats: Record<string, number> = {}
-
-                    soldItems.forEach(item => {
-                        totalQuantity += item.quantity
-                        totalCogs += item.quantity * (item.costPrice || 0)
-                        if (item.book?.category) {
-                            const cat = item.book.category
-                            categoryStats[cat] = (categoryStats[cat] || 0) + item.quantity
-                        }
-                    })
-
-                    const topCategories = Object.entries(categoryStats)
-                        .sort((a, b) => b[1] - a[1])
-                        .slice(0, 3)
-                        .map(([cat, qty]) => `${escapeHtml(cat)}: ${qty}`)
-                        .join(' | ') || 'Aucune'
-
-                    let totalOrdersAll = 0
-                    let pendingCount = 0
-                    let deliveredCount = 0
-                    let cancelledCount = 0
-                    let returnedCount = 0
-
-                    statusCounts.forEach(s => {
-                        totalOrdersAll += s._count.status
-                        if (s.status === 'PENDING') pendingCount = s._count.status
-                        if (s.status === 'DELIVERED') deliveredCount = s._count.status
-                        if (s.status === 'CANCELLED') cancelledCount = s._count.status
-                        if (s.status === 'RETURNED') returnedCount = s._count.status
-                    })
-
-                    const deliveryResolved = deliveredCount + returnedCount
-                    const deliverySuccessRate = deliveryResolved > 0 ? ((deliveredCount / deliveryResolved) * 100).toFixed(1) : '0.0'
-
-                    const abandonedCount = abandoned._count.id || 0
-                    const abandonedValue = abandoned._sum.total || 0
-                    const totalDiscounts = revenue._sum.discount || 0
 
                     let jumiaCount = 0
                     let jumiaRevenue = 0
@@ -511,46 +406,16 @@ export async function POST(req: Request) {
                         console.error('Erreur stats Jumia:', e)
                     }
 
-                    const caSite = revenue._sum.total || 0
-                    const aov = count > 0 ? (caSite / count).toFixed(2) : '0.00'
-                    const totalExpenses = expenses._sum.amount || 0
-                    const margin = caSite - totalCogs - totalExpenses
-                    const conversionRate = (showVisitors && visitors > 0) ? ((count / visitors) * 100).toFixed(2) : '0.00'
-
                     let text = `📊 <b>RAPPORT : ${label.toUpperCase()}</b>\n\n` +
-                               `📦 Commandes : <b>${count}</b>\n` +
-                               `🛒 Articles : <b>${totalQuantity}</b>\n` +
-                               `💰 CA Site : <b>${caSite.toFixed(2)} MAD</b>\n` +
-                               `📈 Panier Moyen : <b>${aov} MAD</b>\n` +
-                               `💸 Dépenses : <b>${totalExpenses.toFixed(2)} MAD</b>\n` +
-                               `💎 Bénéfice Est. : <b>${margin.toFixed(2)} MAD</b>\n` +
-                               `🎁 Remises Accordées : <b>${totalDiscounts.toFixed(2)} MAD</b>\n` +
-                               `🛒 Paniers Abandonnés : <b>${abandonedCount} (${abandonedValue.toFixed(2)} MAD)</b>\n\n` +
-                               `📚 <b>Top Catégories :</b> ${topCategories}`
+                               `📦 Commandes Site : <b>${count}</b>\n` +
+                               `💰 CA Site : <b>${(revenue._sum.total || 0).toFixed(2)} MAD</b>`
                     
-                    if (totalOrdersAll > 0) {
-                        text += `\n\n📉 <b>STATUTS & LIVRAISONS</b>\n` +
-                                `⏳ En Attente (PENDING) : <b>${pendingCount}</b>\n` +
-                                `✅ Livrées : <b>${deliveredCount}</b>\n` +
-                                `🔄 Retournées : <b>${returnedCount}</b>\n` +
-                                `❌ Annulées : <b>${cancelledCount}</b>\n` +
-                                `🎯 Taux Succès Livraison : <b>${deliverySuccessRate}%</b>`
-                    }
-
-                    text += `\n\n🟠 <b>JUMIA</b>\n` +
+                    text += `\n\n🟠 <b>JUMIA :</b>\n` +
                             `📦 Commandes : <b>${jumiaCount}</b>\n` +
                             `💰 CA Jumia : <b>${jumiaRevenue.toFixed(2)} MAD</b>`
                     
-                    text += `\n\n⚠️ <b>ALERTES</b>\n` +
-                            `📉 Livres en stock faible (<5) : <b>${lowStockCount}</b>`
-
-                    if (showVisitors) text += `\n\n👥 Visiteurs Uniques : <b>${visitors}</b>\n⚡ Taux de conversion : <b>${conversionRate}%</b>`
-                    if (showRegistrations) text += `\n👤 Nouvelles Inscriptions : <b>${registrations}</b>`
-
-                    text += `\n\n📝 <b>BLOG</b>\n` +
-                            `📖 Vues d'Articles : <b>${blogViews}</b>\n` +
-                            `💬 Commentaires en attente : <b>${pendingComments}</b>\n` +
-                            `📝 Articles Publiés : <b>${publishedPosts}</b>`
+                    if (showVisitors) text += `\n👥 Visiteurs Uniques : <b>${visitors}</b>`
+                    if (showRegistrations) text += `\n👤 Inscriptions : <b>${registrations}</b>`
 
                     if (showViews) {
                         const topViews = await prisma.pageView.groupBy({
@@ -596,33 +461,6 @@ export async function POST(req: Request) {
             console.log(`[TELEGRAM MESSAGE] Received from ${chatId}: ${text}`)
 
             if (text.startsWith('/BILAN') || text === 'BILAN' || text.startsWith('/STATS')) {
-                const parts = rawText.split(' ')
-                const query = parts.length > 1 ? parts[1] : null
-
-                if (query) {
-                    const dateMatch = query.match(/^(\d{2})[-/](\d{2})[-/](\d{4})$/) || query.match(/^(\d{4})[-/](\d{2})[-/](\d{2})$/)
-                    if (dateMatch) {
-                        let y, m, d
-                        if (query.match(/^(\d{4})/)) {
-                            y = dateMatch[1]; m = dateMatch[2]; d = dateMatch[3]
-                        } else {
-                            d = dateMatch[1]; m = dateMatch[2]; y = dateMatch[3]
-                        }
-                        const dateStr = `${y}-${m}-${d}`
-                        
-                        const replyMarkup = {
-                            inline_keyboard: [[
-                                { text: `📅 Bilan du ${d}/${m}/${y}`, callback_data: `stats:date:${dateStr}` }
-                            ]]
-                        }
-                        await sendTelegramMessage(`📊 Cliquez ci-dessous pour générer le bilan du ${d}/${m}/${y}`, chatId.toString(), token, replyMarkup)
-                        return NextResponse.json({ ok: true })
-                    } else {
-                        await sendTelegramMessage(`❌ Format de date invalide. Utilisez JJ/MM/AAAA ou JJ-MM-AAAA.`, chatId.toString(), token)
-                        return NextResponse.json({ ok: true })
-                    }
-                }
-
                 const replyText = `📊 <b>Centre de Rapports Riwaya</b>\n\nQue souhaitez-vous consulter ?`
                 const replyMarkup = {
                     inline_keyboard: [
