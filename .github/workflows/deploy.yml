@@ -71,4 +71,5 @@ jobs:
             # Rebuild et Restart UNIQUEMENT le service 'app'
             echo "🚀 Rechargement du service application..."
             # On utilise 'docker compose' (v2) si possible, et --no-deps pour ne pas toucher aux autres conteneurs
-            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker compose up -d --build --no-deps app || echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker-compose up -d --build --no-deps app
+            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker compose rm -fs app || echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker-compose rm -fs app || true
+            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker compose up -d --build --force-recreate app || echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker-compose up -d --build --force-recreate app
