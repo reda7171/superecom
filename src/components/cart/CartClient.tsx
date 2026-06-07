@@ -52,7 +52,7 @@ export default function CartClient({ minOrderAmount = 0, recommendedBooks = [] }
                         <ShoppingCart className="w-12 h-12 text-gray-300" />
                     </div>
                     <h2 className="text-3xl font-black mb-6 tracking-tighter">{t('EmptyTitle')}<span className="text-gray-200">.</span></h2>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-16 max-w-sm mx-auto leading-loose">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 mb-16 max-w-sm mx-auto leading-loose">
                         {t('EmptyDesc')}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center">

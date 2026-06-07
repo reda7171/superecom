@@ -65,7 +65,7 @@ export default function BookCard({
                     {/* Stock Badge - Déplacé en bas à droite */}
                     {stock <= 5 && stock > 0 && (
                         <div className="absolute bottom-4 right-4">
-                            <span className="px-4 py-1.5 bg-white text-orange-600 text-[9px] rtl:text-xs font-black uppercase tracking-[0.15em] rtl:tracking-normal rounded-full shadow-lg border border-orange-200">
+                            <span className="px-4 py-1.5 bg-white text-orange-700 text-[9px] rtl:text-xs font-black uppercase tracking-[0.15em] rtl:tracking-normal rounded-full shadow-lg border border-orange-200">
                                 {stock} {t('Remaining')}
                             </span>
                         </div>

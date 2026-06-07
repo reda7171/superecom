@@ -270,6 +270,7 @@ export default function Header({ user, notificationDropdown, navigation, feature
                         {/* Mobile Menu Button */}
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            aria-label="Menu principal"
                             className="md:hidden w-10 h-10 flex items-center justify-center hover:bg-gray-50 rounded-full transition-colors"
                             aria-label="Menu principal"
                         >

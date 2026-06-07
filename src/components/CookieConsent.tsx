@@ -37,14 +37,16 @@ export default function CookieConsent() {
     if (!isVisible) return null
 
     return (
-        <div className="fixed bottom-6 left-6 right-6 md:left-auto md:right-8 md:max-w-md z-[9999] animate-in fade-in slide-in-from-bottom-10 duration-1000 ease-out">
-            <div className="relative overflow-hidden bg-white/80 backdrop-blur-2xl border border-white/20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] rounded-[2.5rem] p-1">
+        <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 sm:p-6 flex justify-center pointer-events-none">
+            <div className="w-full max-w-4xl pointer-events-auto">
+                <div className="relative overflow-hidden bg-white/95 backdrop-blur-2xl border border-white/40 shadow-[0_20px_80px_-20px_rgba(0,0,0,0.1)] rounded-[3rem] p-2">
                 {/* Subtle Gradient Glow */}
                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-black/5 rounded-full blur-3xl"></div>
                 
-                <div className="relative bg-white/50 rounded-[2.2rem] p-8">
+                <div className="relative bg-white/90 rounded-[2.2rem] p-8">
                     <button 
                         onClick={() => setIsVisible(false)}
+                        aria-label="Fermer le bandeau des cookies"
                         className="absolute top-6 right-6 text-gray-300 hover:text-black transition-all hover:rotate-90 duration-300"
                     >
                         <X className="w-5 h-5" />
@@ -61,7 +63,7 @@ export default function CookieConsent() {
                                 </h3>
                                 <div className="flex items-center gap-2 mt-1">
                                     <ShieldCheck className="w-3 h-3 text-gray-400" />
-                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Privacy Secured</span>
+                                    <span className="text-[9px] font-bold text-gray-600 uppercase tracking-widest">Privacy Secured</span>
                                 </div>
                             </div>
                         </div>
@@ -102,6 +104,7 @@ export default function CookieConsent() {
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     )
 }

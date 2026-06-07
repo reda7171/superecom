@@ -66,6 +66,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         </div>
                         <button
                             onClick={onClose}
+                            aria-label="Fermer le panier"
                             className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 rounded-full transition-colors"
                         >
                             <X className="w-6 h-6 text-black" />

@@ -208,7 +208,7 @@ async function createSession(userId: string) {
     })
 
     if (user?.locale) {
-        cookieStore.set('NEXT_LOCALE', , { path: '/', secure: process.env.NODE_ENV === 'production' })
+        cookieStore.set('NEXT_LOCALE', user.locale, { path: '/', secure: process.env.NODE_ENV === 'production' })
     }
 }
 
