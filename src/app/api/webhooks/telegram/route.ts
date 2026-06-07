@@ -321,6 +321,44 @@ export async function POST(req: Request) {
                     await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
                 }
             }
+
+            // Format: auth_approve:{requestId}
+            else if (data && data.startsWith('auth_approve:')) {
+                const [, requestId] = data.split(':')
+                const request = await prisma.adminAuthRequest.update({
+                    where: { id: requestId },
+                    data: { status: 'APPROVED' }
+                })
+                
+                await answerCallbackQuery(callbackId, '✅ Connexion approuvée !', token)
+                const updatedText = `✅ <b>Demande d'accès Approuvée</b>\n\n` +
+                    `👤 <b>Utilisateur:</b> ${escapeHtml(request.email)}\n` +
+                    `🌐 <b>IP:</b> ${request.ip}\n` +
+                    `🕒 <b>Heure:</b> ${new Date().toLocaleString('fr-FR')}`
+
+                if (message?.chat?.id && message?.message_id) {
+                    await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
+                }
+            }
+
+            // Format: auth_reject:{requestId}
+            else if (data && data.startsWith('auth_reject:')) {
+                const [, requestId] = data.split(':')
+                const request = await prisma.adminAuthRequest.update({
+                    where: { id: requestId },
+                    data: { status: 'REJECTED' }
+                })
+                
+                await answerCallbackQuery(callbackId, '❌ Connexion refusée !', token)
+                const updatedText = `❌ <b>Demande d'accès Refusée</b>\n\n` +
+                    `👤 <b>Utilisateur:</b> ${escapeHtml(request.email)}\n` +
+                    `🌐 <b>IP:</b> ${request.ip}\n` +
+                    `🕒 <b>Heure:</b> ${new Date().toLocaleString('fr-FR')}`
+
+                if (message?.chat?.id && message?.message_id) {
+                    await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
+                }
+            }
             
             // Format: stats:{period}
             else if (data && data.startsWith('stats:')) {

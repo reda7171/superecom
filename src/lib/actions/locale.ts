@@ -10,7 +10,7 @@ export async function updateUserLocale(locale: string) {
         const cookieStore = await cookies()
 
         // 1. Update NEXT_LOCALE cookie first (essential for everyone)
-        cookieStore.set('NEXT_LOCALE', locale, { path: '/' })
+        cookieStore.set('NEXT_LOCALE', , { path: '/', secure: process.env.NODE_ENV === 'production' })
 
         // 2. Try to update logged-in user preference
         const communityUser = await getCommunityUser()

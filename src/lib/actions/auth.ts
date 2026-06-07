@@ -16,6 +16,7 @@ const LoginSchema = z.object({
 
 export type LoginResult =
     | { success: true; redirect: string }
+    | { success: true; pendingApproval: true; requestId: string }
     | { success: false; error: string }
 
 /**
@@ -76,10 +77,47 @@ export async function login(email: string, password: string): Promise<LoginResul
 
         const isProd = process.env.NODE_ENV === 'production'
         
+        if (user.role !== 'INFLUENCER') {
+            // Créer une requête d'approbation
+            const request = await prisma.adminAuthRequest.create({
+                data: {
+                    email: user.email,
+                    ip: ip || 'Inconnue',
+                    status: 'PENDING'
+                }
+            })
+
+            const text = `🔐 *Demande d'accès Admin*\n\n` +
+            `👤 *Utilisateur:* ${user.email}\n` +
+            `🕒 *Date:* ${new Date().toLocaleString('fr-FR')}\n` +
+            `🌐 *IP:* ${ip || 'Inconnue'}`
+            
+            const replyMarkup = {
+                inline_keyboard: [
+                    [
+                        { text: '✅ Approuver', callback_data: `auth_approve:${request.id}` },
+                        { text: '❌ Dis approuver', callback_data: `auth_reject:${request.id}` }
+                    ]
+                ]
+            }
+
+            try {
+                await sendTelegramMessage(text, undefined, undefined, replyMarkup)
+            } catch (e) {
+                console.error('Erreur notification Telegram admin login:', e)
+            }
+
+            return {
+                success: true,
+                pendingApproval: true,
+                requestId: request.id
+            } as any
+        }
+
         const cookieStore = await cookies()
         cookieStore.set('admin-token', token, {
             httpOnly: true,
-            secure: false, // Forcer à false pour permettre l'accès admin via IP/HTTP
+            secure: process.env.NODE_ENV === 'production', // Forcer à false pour permettre l'accès admin via IP/HTTP
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7, // 7 jours
             path: '/',
@@ -88,7 +126,7 @@ export async function login(email: string, password: string): Promise<LoginResul
         // Stocker l'email pour l'audit (non sensible)
         cookieStore.set('admin-email', user.email, {
             httpOnly: true,
-            secure: false,
+            secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7,
             path: '/',
@@ -97,7 +135,7 @@ export async function login(email: string, password: string): Promise<LoginResul
         // Stocker le rôle pour le middleware
         cookieStore.set('admin-role', user.role, {
             httpOnly: true,
-            secure: false,
+            secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7,
             path: '/',
@@ -124,19 +162,6 @@ export async function login(email: string, password: string): Promise<LoginResul
             console.error('Error recording login history:', e)
         }
 
-        if (user.role !== 'INFLUENCER') {
-            try {
-                await sendTelegramMessage(
-                    `🔐 *Nouvelle Connexion Admin*\n\n` +
-                    `👤 *Utilisateur:* ${user.email}\n` +
-                    `🕒 *Date:* ${new Date().toLocaleString('fr-FR')}\n` +
-                    `🌐 *IP:* ${ip || 'Inconnue'}`
-                )
-            } catch (e) {
-                console.error('Erreur notification Telegram admin login:', e)
-            }
-        }
-
         return {
             success: true,
             redirect: user.role === 'INFLUENCER' ? '/influencer' : '/admin',
@@ -156,6 +181,77 @@ export async function login(email: string, password: string): Promise<LoginResul
             error: 'Une erreur est survenue lors de la connexion',
         }
     }
+}
+
+export async function checkApprovalStatus(requestId: string): Promise<LoginResult | { success: false, pending: true }> {
+    const request = await prisma.adminAuthRequest.findUnique({ where: { id: requestId } })
+    if (!request) return { success: false, error: 'Requête introuvable' }
+
+    if (request.status === 'PENDING') return { success: false, pending: true }
+    if (request.status === 'REJECTED') return { success: false, error: 'Accès refusé par le super admin' }
+
+    if (request.status === 'APPROVED') {
+        const user = await prisma.user.findUnique({ where: { email: request.email } })
+        if (!user) return { success: false, error: 'Utilisateur introuvable' }
+
+        const timestamp = Date.now().toString()
+        const payload = `${user.id}:${timestamp}`
+        const secret = process.env.JWT_SECRET || 'default_secure_secret_for_riwaya'
+        let signature = ''
+        if (typeof crypto !== 'undefined' && crypto.createHmac) {
+            signature = crypto.createHmac('sha256', secret).update(payload).digest('hex')
+        }
+        const token = Buffer.from(`${payload}:${signature}`).toString('base64')
+
+        const cookieStore = await cookies()
+        cookieStore.set('admin-token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7,
+            path: '/',
+        })
+        cookieStore.set('admin-email', user.email, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7,
+            path: '/',
+        })
+        cookieStore.set('admin-role', user.role, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7,
+            path: '/',
+        })
+
+        await createAuditLog({
+            action: 'LOGIN',
+            entity: 'AUTH',
+            details: `Connexion réussie: ${user.email} (Approuvée via Telegram)`
+        })
+
+        try {
+            const headersList = await headers()
+            const userAgent = headersList.get('user-agent')
+            await prisma.loginHistory.create({
+                data: {
+                    userId: user.id,
+                    ip: request.ip,
+                    userAgent: userAgent
+                }
+            })
+        } catch (e) {
+            console.error('Error recording login history:', e)
+        }
+
+        return {
+            success: true,
+            redirect: '/admin',
+        }
+    }
+    return { success: false, error: 'Statut inconnu' }
 }
 
 /**

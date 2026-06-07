@@ -63,30 +63,36 @@ export default function middleware(request: NextRequest) {
         return NextResponse.redirect(newUrl)
     }
 
+    // 2. Ajouter les headers de sécurité (OWASP)
+    // CSP - Générer un nonce pour script-src afin d'éviter 'unsafe-inline'
+    const isDev = process.env.NODE_ENV === 'development'
+    const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
+    
+    const cspHeader = [
+        "default-src 'self'",
+        `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://pagead2.googlesyndication.com`,
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "img-src 'self' data: https: blob:",
+        "font-src 'self' data: https://fonts.gstatic.com",
+        "media-src 'self' https://assets.mixkit.co",
+        "connect-src 'self' https:",
+        "frame-src 'self' https://www.google.com https://maps.googleapis.com https://maps.google.com https://pagead2.googlesyndication.com",
+        "worker-src 'none'",
+        "object-src 'none'",
+        "frame-ancestors 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+    ].join('; ')
+
+    // Passer le nonce et le CSP à Next.js via la requête
+    request.headers.set('x-nonce', nonce)
+    request.headers.set('x-middleware-request-content-security-policy', cspHeader)
+
     // 1. D'abord exécuter le middleware next-intl pour gérer la locale
     const response = intlMiddleware(request)
 
-    // 2. Ajouter les headers de sécurité (OWASP)
-    // CSP - unsafe-eval autorisé en dev pour React/Turbopack, bloqué en production
-    const isDev = process.env.NODE_ENV === 'development'
-    response.headers.set(
-        'Content-Security-Policy',
-        [
-            "default-src 'self'",
-            `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://pagead2.googlesyndication.com`,
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "img-src 'self' data: https: blob:",
-            "font-src 'self' data: https://fonts.gstatic.com",
-            "media-src 'self' https://assets.mixkit.co",
-            "connect-src 'self' https:",
-            "frame-src 'self' https://www.google.com https://maps.googleapis.com https://maps.google.com https://pagead2.googlesyndication.com",
-            "worker-src 'none'",
-            "object-src 'none'",
-            "frame-ancestors 'none'",
-            "base-uri 'self'",
-            "form-action 'self'",
-        ].join('; ')
-    )
+    // Appliquer le CSP à la réponse
+    response.headers.set('Content-Security-Policy', cspHeader)
 
     // X-Frame-Options (Clickjacking protection)
     response.headers.set('X-Frame-Options', 'DENY')
@@ -107,12 +113,11 @@ export default function middleware(request: NextRequest) {
     response.headers.set('X-XSS-Protection', '1; mode=block')
 
     // Strict-Transport-Security (HSTS)
-    if (request.nextUrl.protocol === 'https:') {
-        response.headers.set(
-            'Strict-Transport-Security',
-            'max-age=31536000; includeSubDomains; preload'
-        )
-    }
+    // Toujours appliquer le header, le navigateur l'ignorera sur HTTP de toute façon
+    response.headers.set(
+        'Strict-Transport-Security',
+        'max-age=31536000; includeSubDomains; preload'
+    )
 
     // Remove X-Powered-By header
     response.headers.delete('X-Powered-By')

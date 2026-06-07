@@ -283,20 +283,24 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                             id="article-content"
                             className="prose prose-lg max-w-none rtl:text-[22px] rtl:font-bold rtl:leading-[2.5]
                                 prose-headings:font-black prose-headings:tracking-tight prose-headings:text-slate-900
-                                prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:pb-4 prose-h2:border-b prose-h2:border-gray-100 rtl:prose-h2:text-[34px]
-                                prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4 rtl:prose-h3:text-[30px]
-                                prose-p:text-slate-800 prose-p:leading-[1.9] prose-p:text-[17px] rtl:prose-p:text-[22px] rtl:prose-p:leading-[2.5] rtl:prose-p:font-bold prose-p:font-semibold
+                                prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:pb-4 prose-h2:border-b prose-h2:border-gray-100 rtl:prose-h2:text-[34px]
+                                prose-h3:text-2xl rtl:prose-h3:text-[30px]
+                                prose-p:text-slate-800 prose-p:leading-[2] prose-p:text-[18px] rtl:prose-p:text-[22px] rtl:prose-p:leading-[2.5] rtl:prose-p:font-bold prose-p:font-medium
                                 prose-a:text-indigo-600 prose-a:font-semibold prose-a:no-underline prose-a:border-b-2 prose-a:border-indigo-600 hover:prose-a:bg-indigo-50 prose-a:transition-colors
                                 prose-blockquote:border-l-4 prose-blockquote:border-indigo-500 prose-blockquote:bg-indigo-50 prose-blockquote:rounded-r-2xl prose-blockquote:py-4 prose-blockquote:not-italic
-                                prose-blockquote:text-slate-800 prose-blockquote:font-bold
+                                prose-blockquote:text-slate-800 prose-blockquote:font-bold prose-blockquote:my-8
                                 prose-strong:text-slate-900 prose-strong:font-black
                                 prose-code:bg-gray-100 prose-code:px-2 prose-code:py-0.5 prose-code:rounded-md prose-code:text-sm prose-code:text-rose-600
-                                prose-pre:bg-slate-900 prose-pre:rounded-2xl prose-pre:shadow-xl
-                                prose-img:rounded-2xl prose-img:shadow-lg prose-img:mx-auto
-                                prose-ul:space-y-2 prose-ol:space-y-2
-                                prose-li:text-slate-800 prose-li:leading-relaxed prose-li:font-semibold rtl:prose-li:text-[21px] rtl:prose-li:leading-[2.5] rtl:prose-li:font-bold
-                                rtl:prose-p:text-justify"
+                                prose-pre:bg-slate-900 prose-pre:rounded-2xl prose-pre:shadow-xl prose-pre:my-8
+                                prose-img:rounded-2xl prose-img:shadow-lg prose-img:mx-auto prose-img:my-10
+                                prose-ul:space-y-2 prose-ol:space-y-2 prose-ul:mb-8 prose-ol:mb-8
+                                prose-li:text-slate-800 prose-li:leading-relaxed prose-li:font-semibold rtl:prose-li:text-[21px] rtl:prose-li:leading-[2.5] rtl:prose-li:font-bold"
                         >
+                            <style>{`
+                                #article-content p { margin-bottom: 2rem !important; margin-top: 1rem !important; }
+                                #article-content h2 { margin-top: 4rem !important; margin-bottom: 1.5rem !important; }
+                                #article-content h3 { margin-top: 3rem !important; margin-bottom: 1rem !important; }
+                            `}</style>
                             <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
                         </article>
 

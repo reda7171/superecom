@@ -932,3 +932,16 @@ model MarketingAsset {
 
   @@map("marketing_assets")
 }
+
+model AdminAuthRequest {
+  id        String   @id @default(uuid())
+  email     String
+  ip        String?
+  status    String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("admin_auth_requests")
+}
