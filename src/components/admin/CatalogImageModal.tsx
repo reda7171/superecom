@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { X, Download, ImageIcon, Loader2, Type, Palette, LayoutGrid, Book as BookIcon, CheckCircle2, Globe } from 'lucide-react'
-import { getAllBooksForCatalog } from '@/lib/actions/books'
+import { X, Download, ImageIcon, Loader2, Type, Palette, LayoutGrid, Package as BookIcon, CheckCircle2, Globe } from 'lucide-react'
+import { getAllBooksForCatalog } from '@/lib/actions/products'
 import { normalizeImage } from '@/lib/utils'
 import * as htmlToImage from 'html-to-image'
 
@@ -25,7 +25,7 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
     const [currentChunkIdx, setCurrentChunkIdx] = useState(0)
     const [statusText, setStatusText] = useState('')
     const [config, setConfig] = useState({
-        title: 'Collection Riwaya',
+        title: 'Collection SuperEcom',
         primaryColor: '#8b5cf6',
         backgroundColor: '#ffffff',
         textColor: '#111827',
@@ -72,20 +72,20 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
         if (!config.groupByLanguage) {
             return chunkedBooksBase.map(chunk => ({
                 language: 'all',
-                books: chunk
+                products: chunk
             }))
         }
 
         const booksByLanguage: { [key: string]: any[] } = {}
-        filteredBooks.forEach(book => {
-            const lang = book.language || 'fr'
+        filteredBooks.forEach(product => {
+            const lang = product.language || 'fr'
             if (!booksByLanguage[lang]) {
                 booksByLanguage[lang] = []
             }
-            booksByLanguage[lang].push(book)
+            booksByLanguage[lang].push(product)
         })
 
-        const chunks: { language: string; books: any[] }[] = []
+        const chunks: { language: string; products: any[] }[] = []
         const sortedLanguages = Object.keys(booksByLanguage).sort()
         sortedLanguages.forEach(lang => {
             const list = booksByLanguage[lang]
@@ -93,7 +93,7 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
             for (let i = 0; i < count; i++) {
                 chunks.push({
                     language: lang,
-                    books: list.slice(i * BOOKS_PER_PAGE, i * BOOKS_PER_PAGE + BOOKS_PER_PAGE)
+                    products: list.slice(i * BOOKS_PER_PAGE, i * BOOKS_PER_PAGE + BOOKS_PER_PAGE)
                 })
             }
         })
@@ -132,7 +132,7 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                 
                 const link = document.createElement('a')
                 link.href = dataUrl
-                link.download = `riwaya-catalog-p${i + 1}.png`
+                link.download = `superEcom-catalog-p${i + 1}.png`
                 link.click()
                 successCount++
                 
@@ -364,27 +364,27 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                                         </p>
                                     )}
                                     <div className="w-full grid" style={{ gridTemplateColumns: `repeat(${config.format === 'post' && config.booksPerPage <= 4 ? 2 : config.columns}, minmax(0, 1fr))`, gap: config.format === 'post' ? '30px' : '48px', alignItems: 'start' }}>
-                                        {(chunkedBooks[currentChunkIdx]?.books || []).map((book: any, idx: number) => {
+                                        {(chunkedBooks[currentChunkIdx]?.products || []).map((product: any, idx: number) => {
                                             const previewCols = config.format === 'post' && config.booksPerPage <= 4 ? 2 : config.columns
                                             const previewWidth = Math.floor(((config.format === 'post' ? 1080 : 1200) - (previewCols - 1) * (config.format === 'post' ? 30 : 48)) / previewCols)
                                             const previewHeight = Math.floor(previewWidth * 1.5)
                                             return (
                                             <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                                {book.image ? (
-                                                    <img src={normalizeImage(book.image)} onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }} style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, objectFit: 'cover', borderRadius: config.format === 'post' ? '40px' : '60px', marginBottom: config.format === 'post' ? '20px' : '32px', border: `${config.format === 'post' ? '12px' : '18px'} solid white`, boxShadow: '0 25px 50px rgba(0,0,0,0.25)' }} />
+                                                {product.image ? (
+                                                    <img src={normalizeImage(product.image)} onError={(e) => { (e.target as HTMLImageElement).src = '/product-placeholder.png' }} style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, objectFit: 'cover', borderRadius: config.format === 'post' ? '40px' : '60px', marginBottom: config.format === 'post' ? '20px' : '32px', border: `${config.format === 'post' ? '12px' : '18px'} solid white`, boxShadow: '0 25px 50px rgba(0,0,0,0.25)' }} />
                                                 ) : (
                                                     <div style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', borderRadius: config.format === 'post' ? '40px' : '60px', marginBottom: config.format === 'post' ? '20px' : '32px', border: `${config.format === 'post' ? '12px' : '18px'} solid white` }}>
                                                         <BookIcon style={{ width: '80px', height: '80px', color: '#9ca3af' }} />
                                                     </div>
                                                 )}
-                                                <p dir="auto" className="font-black text-center mb-4 leading-tight" style={{ color: config.textColor, fontSize: config.format === 'post' ? '24px' : '30px' }}>{book.title}</p>
-                                                <div className="px-8 py-2 rounded-full font-black text-white" style={{ backgroundColor: config.primaryColor, fontSize: config.format === 'post' ? '20px' : '24px' }}>{book.price} MAD</div>
+                                                <p dir="auto" className="font-black text-center mb-4 leading-tight" style={{ color: config.textColor, fontSize: config.format === 'post' ? '24px' : '30px' }}>{product.title}</p>
+                                                <div className="px-8 py-2 rounded-full font-black text-white" style={{ backgroundColor: config.primaryColor, fontSize: config.format === 'post' ? '20px' : '24px' }}>{product.price} MAD</div>
                                             </div>
                                         )})}
                                     </div>
                                     {config.format === 'post' && (
                                         <div style={{ marginTop: 'auto', paddingTop: '40px', textAlign: 'center', width: '100%' }}>
-                                             <p style={{ fontSize: '40px', fontWeight: '950', color: config.textColor, opacity: 0.15, letterSpacing: '10px', textTransform: 'uppercase', margin: 0 }}>RIWAYA.COM</p>
+                                             <p style={{ fontSize: '40px', fontWeight: '950', color: config.textColor, opacity: 0.15, letterSpacing: '10px', textTransform: 'uppercase', margin: 0 }}>SUPERECOM.COM</p>
                                         </div>
                                     )}
                                     </div>
@@ -463,12 +463,12 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
 
                             {/* Grid */}
                             <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: isPost ? '40px' : '140px 60px', justifyContent: 'center' }}>
-                                {(chunk.books || []).map((book: any, idx: number) => {
+                                {(chunk.products || []).map((product: any, idx: number) => {
                                     const cellWidth = Math.floor((innerWidth - (cols - 1) * gapX) / cols)
                                     return (
                                         <div key={idx} style={{ width: `${cellWidth}px`, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            {book.image ? (
-                                                <img src={normalizeImage(book.image)} onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }} style={{ width: '100%', height: `${Math.floor(cellWidth * 1.5)}px`, objectFit: 'cover', borderRadius: isPost ? '25px' : '40px', backgroundColor: '#fff', border: `${isPost ? '8px' : '12px'} solid white`, boxShadow: '0 20px 40px rgba(0,0,0,0.2)', marginBottom: isPost ? '12px' : '20px' }} />
+                                            {product.image ? (
+                                                <img src={normalizeImage(product.image)} onError={(e) => { (e.target as HTMLImageElement).src = '/product-placeholder.png' }} style={{ width: '100%', height: `${Math.floor(cellWidth * 1.5)}px`, objectFit: 'cover', borderRadius: isPost ? '25px' : '40px', backgroundColor: '#fff', border: `${isPost ? '8px' : '12px'} solid white`, boxShadow: '0 20px 40px rgba(0,0,0,0.2)', marginBottom: isPost ? '12px' : '20px' }} />
                                             ) : (
                                                 <div style={{ width: '100%', height: `${Math.floor(cellWidth * 1.5)}px`, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', borderRadius: isPost ? '25px' : '40px', border: `${isPost ? '8px' : '12px'} solid white`, boxShadow: '0 20px 40px rgba(0,0,0,0.2)', marginBottom: isPost ? '12px' : '20px' }}>
                                                     <BookIcon style={{ width: isPost ? '80px' : '140px', height: isPost ? '80px' : '140px', color: '#9ca3af' }} />
@@ -491,7 +491,7 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                                                     WebkitLineClamp: 2,
                                                     WebkitBoxOrient: 'vertical'
                                                 }}>
-                                                    {book.title}
+                                                    {product.title}
                                                 </h3>
                                                 <div style={{ 
                                                     backgroundColor: config.primaryColor, 
@@ -504,7 +504,7 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
                                                     boxShadow: '0 25px 50px rgba(0,0,0,0.2)',
                                                     whiteSpace: 'nowrap'
                                                 }}>
-                                                    {book.price} MAD
+                                                    {product.price} MAD
                                                 </div>
                                             </div>
                                         </div>
@@ -514,7 +514,7 @@ export default function CatalogImageModal({ isOpen, onClose }: CatalogImageModal
 
                             {/* Footer */}
                             <div style={{ width: '100%', marginTop: 'auto', paddingTop: isPost ? '40px' : '100px', borderTop: isPost ? 'none' : `10px solid ${config.textColor}1a`, textAlign: 'center', flexShrink: 0 }}>
-                                <p style={{ fontSize: isPost ? '60px' : '110px', fontWeight: '950', color: config.textColor, opacity: 0.1, letterSpacing: isPost ? '15px' : '25px', textTransform: 'uppercase', margin: 0 }}>RIWAYA.COM</p>
+                                <p style={{ fontSize: isPost ? '60px' : '110px', fontWeight: '950', color: config.textColor, opacity: 0.1, letterSpacing: isPost ? '15px' : '25px', textTransform: 'uppercase', margin: 0 }}>SUPERECOM.COM</p>
                             </div>
                         </div>
                     </div>

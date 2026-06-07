@@ -14,8 +14,8 @@ interface Pack {
     image: string | null
     description?: string | null
     active: boolean
-    books: Array<{
-        book: {
+    products: Array<{
+        product: {
             id: string
             title: string
             author: string
@@ -140,24 +140,24 @@ export default function PacksTable({ packs }: { packs: Pack[] }) {
                                     )}
                                     <div>
                                         <div className="text-sm font-bold text-gray-900">{pack.name}</div>
-                                        <div className="text-sm text-gray-500">{pack.books.length} livre{pack.books.length > 1 ? 's' : ''}</div>
+                                        <div className="text-sm text-gray-500">{pack.products.length} livre{pack.products.length > 1 ? 's' : ''}</div>
                                     </div>
                                 </div>
                             </td>
                             <td className="px-6 py-4">
                                 <div className="flex flex-wrap gap-2">
-                                    {pack.books.slice(0, 3).map((pb) => (
+                                    {pack.products.slice(0, 3).map((pb) => (
                                         <Link
-                                            key={pb.book.id}
-                                            href={`/admin/books/${pb.book.id}/edit`}
+                                            key={pb.product.id}
+                                            href={`/admin/products/${pb.product.id}/edit`}
                                             className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-[10px] font-bold text-gray-600 uppercase tracking-tighter hover:bg-blue-100 hover:text-blue-700 transition-colors cursor-pointer"
                                         >
-                                            {pb.book.title}
+                                            {pb.product.title}
                                         </Link>
                                     ))}
-                                    {pack.books.length > 3 && (
+                                    {pack.products.length > 3 && (
                                         <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-200 text-[10px] font-bold text-gray-700">
-                                            +{pack.books.length - 3}
+                                            +{pack.products.length - 3}
                                         </span>
                                     )}
                                 </div>
@@ -191,7 +191,7 @@ export default function PacksTable({ packs }: { packs: Pack[] }) {
                                 <div className="flex items-center justify-end gap-2">
                                     {/* Boutons n8n */}
                                     <button
-                                        onClick={() => { setN8nFormat('post'); setN8nPack({ ...pack, title: pack.name, description: pack.description || `Pack de ${pack.books.length} livres` }); }}
+                                        onClick={() => { setN8nFormat('post'); setN8nPack({ ...pack, title: pack.name, description: pack.description || `Pack de ${pack.products.length} livres` }); }}
                                         className="text-green-600 hover:text-green-900 p-2 hover:bg-green-50 rounded-xl transition-all"
                                         title="Publier / Programmer via n8n (FB/Insta)"
                                     >
@@ -234,7 +234,7 @@ export default function PacksTable({ packs }: { packs: Pack[] }) {
             <N8nPublishModal
                 isOpen={!!n8nPack}
                 onClose={() => setN8nPack(null)}
-                book={n8nPack}
+                product={n8nPack}
                 format={n8nFormat}
             />
         </div>

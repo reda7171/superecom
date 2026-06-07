@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { X, Play, Pause, CheckCircle, XCircle, Clock, Send, Loader2 } from 'lucide-react'
 
-interface Book {
+interface Product {
     id: string
     title: string
     author: string
@@ -13,7 +13,7 @@ interface Book {
 }
 
 interface BulkPublishModalProps {
-    books: Book[]
+    products: Product[]
     isOpen: boolean
     onClose: () => void
 }
@@ -21,12 +21,12 @@ interface BulkPublishModalProps {
 type PublishStatus = 'pending' | 'running' | 'success' | 'error'
 
 interface BookStatus {
-    bookId: string
+    productId: string
     status: PublishStatus
     message?: string
 }
 
-export default function BulkPublishModal({ books, isOpen, onClose }: BulkPublishModalProps) {
+export default function BulkPublishModal({ products, isOpen, onClose }: BulkPublishModalProps) {
     const [platform, setPlatform] = useState<'facebook' | 'instagram' | 'both'>('both')
     const [delaySeconds, setDelaySeconds] = useState(5)
     const [isRunning, setIsRunning] = useState(false)
@@ -47,13 +47,13 @@ export default function BulkPublishModal({ books, isOpen, onClose }: BulkPublish
         stopRef.current = false
     }
 
-    const updateStatus = (bookId: string, status: PublishStatus, message?: string) => {
+    const updateStatus = (productId: string, status: PublishStatus, message?: string) => {
         setStatuses(prev => {
-            const exists = prev.find(s => s.bookId === bookId)
+            const exists = prev.find(s => s.productId === productId)
             if (exists) {
-                return prev.map(s => s.bookId === bookId ? { ...s, status, message } : s)
+                return prev.map(s => s.productId === productId ? { ...s, status, message } : s)
             }
-            return [...prev, { bookId, status, message }]
+            return [...prev, { productId, status, message }]
         })
     }
 
@@ -65,7 +65,7 @@ export default function BulkPublishModal({ books, isOpen, onClose }: BulkPublish
         stopRef.current = false
         pauseRef.current = false
 
-        for (let i = 0; i < books.length; i++) {
+        for (let i = 0; i < products.length; i++) {
             if (stopRef.current) break
 
             // Pause : attendre la reprise
@@ -73,16 +73,16 @@ export default function BulkPublishModal({ books, isOpen, onClose }: BulkPublish
                 await sleep(500)
             }
 
-            const book = books[i]
+            const product = products[i]
             setCurrentIndex(i)
-            updateStatus(book.id, 'running')
+            updateStatus(product.id, 'running')
 
             try {
                 const res = await fetch('/api/n8n/publish', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        bookId: book.id,
+                        productId: product.id,
                         format: 'post',
                         platform,
                         useDescription: 'short',
@@ -91,16 +91,16 @@ export default function BulkPublishModal({ books, isOpen, onClose }: BulkPublish
                 })
                 const data = await res.json()
                 if (data.success) {
-                    updateStatus(book.id, 'success', 'Publié avec succès')
+                    updateStatus(product.id, 'success', 'Publié avec succès')
                 } else {
-                    updateStatus(book.id, 'error', data.error || 'Erreur n8n')
+                    updateStatus(product.id, 'error', data.error || 'Erreur n8n')
                 }
             } catch (err: any) {
-                updateStatus(book.id, 'error', 'Erreur réseau')
+                updateStatus(product.id, 'error', 'Erreur réseau')
             }
 
             // Délai entre chaque publication (sauf dernier)
-            if (i < books.length - 1 && !stopRef.current) {
+            if (i < products.length - 1 && !stopRef.current) {
                 await sleep(delaySeconds * 1000)
             }
         }
@@ -134,7 +134,7 @@ export default function BulkPublishModal({ books, isOpen, onClose }: BulkPublish
                 <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100">
                     <div>
                         <h2 className="text-xl font-black text-gray-900">Publication en boucle</h2>
-                        <p className="text-sm text-gray-500 mt-0.5">{books.length} livre(s) sélectionnés</p>
+                        <p className="text-sm text-gray-500 mt-0.5">{products.length} livre(s) sélectionnés</p>
                     </div>
                     <button
                         onClick={() => { handleStop(); onClose() }}
@@ -185,12 +185,12 @@ export default function BulkPublishModal({ books, isOpen, onClose }: BulkPublish
                     <div className="px-8 py-4 border-b border-gray-100">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Progression</span>
-                            <span className="text-xs font-black text-gray-900">{statuses.length}/{books.length}</span>
+                            <span className="text-xs font-black text-gray-900">{statuses.length}/{products.length}</span>
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-2">
                             <div
                                 className="bg-black h-2 rounded-full transition-all duration-500"
-                                style={{ width: `${(statuses.length / books.length) * 100}%` }}
+                                style={{ width: `${(statuses.length / products.length) * 100}%` }}
                             />
                         </div>
                         {isDone && (
@@ -204,26 +204,26 @@ export default function BulkPublishModal({ books, isOpen, onClose }: BulkPublish
 
                 {/* Liste des livres */}
                 <div className="flex-1 overflow-y-auto px-8 py-4 space-y-2">
-                    {books.map((book, idx) => {
-                        const status = statuses.find(s => s.bookId === book.id)
+                    {products.map((product, idx) => {
+                        const status = statuses.find(s => s.productId === product.id)
                         const isCurrent = currentIndex === idx
 
                         return (
                             <div
-                                key={book.id}
+                                key={product.id}
                                 className={`flex items-center gap-4 p-3 rounded-2xl transition-all ${isCurrent ? 'bg-black/5 ring-2 ring-black/10' : 'bg-gray-50'}`}
                             >
                                 {/* Image */}
                                 <img
-                                    src={book.image || '/book-placeholder.png'}
-                                    alt={book.title}
+                                    src={product.image || '/product-placeholder.png'}
+                                    alt={product.title}
                                     className="w-9 h-12 object-cover rounded-lg flex-shrink-0"
-                                    onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
+                                    onError={(e) => { (e.target as HTMLImageElement).src = '/product-placeholder.png' }}
                                 />
                                 {/* Info */}
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-bold text-gray-900 truncate">{book.title}</p>
-                                    <p className="text-xs text-gray-500 truncate">{book.author}</p>
+                                    <p className="text-sm font-bold text-gray-900 truncate">{product.title}</p>
+                                    <p className="text-xs text-gray-500 truncate">{product.author}</p>
                                 </div>
                                 {/* Statut */}
                                 <div className="flex-shrink-0">

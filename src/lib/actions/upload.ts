@@ -90,7 +90,7 @@ export async function uploadBookImage(formData: FormData) {
     try {
         await verifyAdmin()
         const file = formData.get('image') as File
-        const imageUrl = await handleSecureUpload(file, 'books', 'book')
+        const imageUrl = await handleSecureUpload(file, 'products', 'product')
         return { success: true, imageUrl }
     } catch (error: any) {
         console.error('[UPLOAD ERROR]', error.message)

@@ -29,7 +29,7 @@ export default function DigitalProductCard({ product }: DigitalProductCardProps)
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : null
 
-  const imgSrc = imageError ? '/book-placeholder.png' : normalizeImage(product.image)
+  const imgSrc = imageError ? '/product-placeholder.png' : normalizeImage(product.image)
 
   return (
     <Link

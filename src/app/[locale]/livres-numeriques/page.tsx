@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params
   const t = await getTranslations('DigitalBooks')
   return {
-    title: `${t('seo.Title')} | Riwaya`,
+    title: `${t('seo.Title')} | SuperEcom`,
     description: t('seo.Description'),
     alternates: {
       canonical: `/${locale}/livres-numeriques`,
@@ -107,7 +107,7 @@ export default async function DigitalBooksPage({ params }: { params: Promise<{ l
                 <ScrollReveal animation="animate-reveal-up" delay={500}>
                   <div className="flex flex-wrap gap-8 justify-center lg:justify-start pt-4">
                     {[
-                      { value: `${totalProducts}+`, label: t('hero.stats.Books') },
+                      { value: `${totalProducts}+`, label: t('hero.stats.Products') },
                       { value: '100%', label: t('hero.stats.Digital') },
                       { value: '< 1 min', label: t('hero.stats.Access') },
                     ].map((stat) => (

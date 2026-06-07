@@ -1,11 +1,11 @@
-import { getPopularBooks, getBestSellerBooks, getBestAuthors } from '@/lib/db/books'
+import { getPopularBooks, getBestSellerBooks, getBestAuthors } from '@/lib/db/products'
 import { getPopularPacks } from '@/lib/db/packs'
 import { isFeatureEnabled } from '@/lib/actions/site-settings'
 import { getAllCategoryQuotes } from '@/lib/actions/categories'
 import { getRecentExchangeBooks } from '@/lib/actions/community-market'
 import { getRecentPosts } from '@/lib/actions/blog'
 import HeaderWithUser from '@/components/HeaderWithUser'
-import BookCard from '@/components/BookCard'
+import ProductCard from '@/components/ProductCard'
 import PackCard from '@/components/PackCard'
 import TrustSection from '@/components/TrustSection'
 import ScrollReveal from '@/components/ScrollReveal'
@@ -19,7 +19,7 @@ import { prisma } from '@/lib/prisma'
 import GiftPopup from '@/components/GiftPopup'
 import ImageWithFallback from '@/components/ImageWithFallback'
 import AuthorsCarousel from '@/components/AuthorsCarousel'
-import CosmosBooks from '@/components/CosmosBooks'
+import CosmosProducts from '@/components/CosmosProducts'
 import CatalogDownload from '@/components/home/CatalogDownload'
 import CatalogPublicWrapper from '@/components/home/CatalogPublicWrapper'
 
@@ -46,11 +46,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       description: description,
       type: 'website',
       locale: locale === 'ar' ? 'ar_MA' : locale === 'en' ? 'en_MA' : 'fr_MA',
-      url: `https://riwaya.store/${locale}`,
-      siteName: 'Riwaya',
+      url: `https://superEcom.store/${locale}`,
+      siteName: 'SuperEcom',
       images: [
         {
-          url: 'https://riwaya.store/og-image.jpg',
+          url: 'https://superEcom.store/og-image.jpg',
           width: 1200,
           height: 630,
           alt: title,
@@ -87,7 +87,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     getRecentExchangeBooks(6),
     getAllCategoryQuotes(),
     prisma.$transaction([
-      prisma.book.count({ where: { active: true } }),
+      prisma.product.count({ where: { active: true } }),
       prisma.user.count({ where: { role: 'USER' } }),
       prisma.exchange.count({ where: { status: 'COMPLETED' } }),
     ]),
@@ -137,18 +137,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     '@graph': [
       {
         '@type': 'Organization',
-        '@id': 'https://riwaya.store/#organization',
-        name: 'Riwaya',
-        url: 'https://riwaya.store',
+        '@id': 'https://superEcom.store/#organization',
+        name: 'SuperEcom',
+        url: 'https://superEcom.store',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://riwaya.store/logo.png',
+          url: 'https://superEcom.store/logo.png',
           width: 512,
           height: 512,
         },
         sameAs: [
           'https://instagram.com/itsmereda1',
-          'https://facebook.com/riwaya',
+          'https://facebook.com/superEcom',
           'https://twitter.com/riwaya_ma',
         ],
         contactPoint: {
@@ -161,10 +161,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       },
       {
         '@type': 'LocalBusiness',
-        '@id': 'https://riwaya.store/#localbusiness',
-        name: 'Riwaya',
-        image: 'https://riwaya.store/og-image.jpg',
-        url: 'https://riwaya.store',
+        '@id': 'https://superEcom.store/#localbusiness',
+        name: 'SuperEcom',
+        image: 'https://superEcom.store/og-image.jpg',
+        url: 'https://superEcom.store',
         telephone: '+212-XXX-XXXXXX',
         priceRange: '50 MAD - 500 MAD',
         address: {
@@ -191,18 +191,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       },
       {
         '@type': 'WebSite',
-        '@id': 'https://riwaya.store/#website',
-        url: 'https://riwaya.store',
-        name: 'Riwaya',
+        '@id': 'https://superEcom.store/#website',
+        url: 'https://superEcom.store',
+        name: 'SuperEcom',
         description: 'Librairie en ligne au Maroc - Achetez et échangez des livres',
         publisher: {
-          '@id': 'https://riwaya.store/#organization',
+          '@id': 'https://superEcom.store/#organization',
         },
         potentialAction: {
           '@type': 'SearchAction',
           target: {
             '@type': 'EntryPoint',
-            urlTemplate: 'https://riwaya.store/books?search={search_term_string}',
+            urlTemplate: 'https://superEcom.store/products?search={search_term_string}',
           },
           'query-input': 'required name=search_term_string',
         },
@@ -210,28 +210,28 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       },
       {
         '@type': 'ItemList',
-        '@id': 'https://riwaya.store/#products',
+        '@id': 'https://superEcom.store/#products',
         name: 'Livres disponibles',
         numberOfItems: totalBooks,
-        itemListElement: popularBooks.slice(0, 5).map((book, index) => ({
+        itemListElement: popularBooks.slice(0, 5).map((product, index) => ({
           '@type': 'ListItem',
           position: index + 1,
           item: {
-            '@type': 'Book',
-            '@id': `https://riwaya.store/books/${book.id}`,
-            name: book.title,
+            '@type': 'Product',
+            '@id': `https://superEcom.store/products/${product.id}`,
+            name: product.title,
             author: {
               '@type': 'Person',
-              name: book.author,
+              name: product.author,
             },
-            image: book.image,
+            image: product.image,
             offers: {
               '@type': 'Offer',
-              price: book.price,
+              price: product.price,
               priceCurrency: 'MAD',
-              availability: book.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+              availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
               seller: {
-                '@id': 'https://riwaya.store/#organization',
+                '@id': 'https://superEcom.store/#organization',
               },
             },
           },
@@ -320,7 +320,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                       {t('hero.Description')}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                      <Link href="/books" className="group inline-flex items-center justify-center gap-3 px-10 py-5 bg-black text-white font-black text-xs uppercase tracking-widest rounded-full hover:bg-gray-800 transition-all shadow-xl hover:shadow-black/40 hover:-translate-y-1">
+                      <Link href="/products" className="group inline-flex items-center justify-center gap-3 px-10 py-5 bg-black text-white font-black text-xs uppercase tracking-widest rounded-full hover:bg-gray-800 transition-all shadow-xl hover:shadow-black/40 hover:-translate-y-1">
                         <span>{t('hero.ShopLibrary')}</span>
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform rtl:rotate-180" />
                       </Link>
@@ -332,17 +332,17 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 </div>
                 <div className="flex-1 relative w-full lg:w-auto flex items-center justify-center overflow-hidden">
                   {(() => {
-                    const cosmosValidBooks = popularBooks.filter(book => {
-                      const img = book.image ? book.image.trim() : '';
-                      if (!img || img.includes('book-placeholder.png') || img === '/book-placeholder.png') return false;
+                    const cosmosValidBooks = popularBooks.filter(product => {
+                      const img = product.image ? product.image.trim() : '';
+                      if (!img || img.includes('product-placeholder.png') || img === '/product-placeholder.png') return false;
                       const normalized = img.startsWith('http') || img.startsWith('data:') || img.startsWith('/') ? img : `data:image/jpeg;base64,${img}`;
-                      return normalized && !normalized.includes('book-placeholder.png');
+                      return normalized && !normalized.includes('product-placeholder.png');
                     });
                     if (cosmosValidBooks.length === 0) return null;
                     return (
-                      <CosmosBooks
+                      <CosmosProducts
                         centerBook={cosmosValidBooks[0]}
-                        books={cosmosValidBooks}
+                        products={cosmosValidBooks}
                         locale={locale}
                         autoRotateCenter={true}
                         autoRotateInterval={7000}
@@ -407,7 +407,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                     {t('BestSellers.Description')}
                   </p>
                 </div>
-                <Link href="/books" className="group flex items-center gap-4 bg-pixio-cream px-8 py-3 rounded-full border border-gray-100 hover:border-black transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-xl">
+                <Link href="/products" className="group flex items-center gap-4 bg-pixio-cream px-8 py-3 rounded-full border border-gray-100 hover:border-black transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-xl">
                   <span className="text-xs font-black uppercase tracking-widest text-black">{t('BestSellers.ViewAll')}</span>
                   <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white group-hover:translate-x-1 transition-transform">
                     <ArrowRight className="w-4 h-4" />
@@ -421,9 +421,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 </ScrollReveal>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                  {bestSellerBooks.map((book: any, idx: number) => (
-                    <ScrollReveal key={book.id} delay={idx * 100} animation="animate-reveal-up">
-                      <BookCard {...book} />
+                  {bestSellerBooks.map((product: any, idx: number) => (
+                    <ScrollReveal key={product.id} delay={idx * 100} animation="animate-reveal-up">
+                      <ProductCard {...product} />
                     </ScrollReveal>
                   ))}
                 </div>
@@ -498,7 +498,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   <p className="text-xl text-gray-400 font-medium tracking-tight">{t('BestAuthors.Description')}</p>
                 </ScrollReveal>
                 <ScrollReveal animation="animate-reveal-right" delay={300}>
-                  <Link href="/books" className="group flex items-center gap-4 bg-pixio-cream px-8 py-4 rounded-full border border-gray-100 hover:border-black transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-xl">
+                  <Link href="/products" className="group flex items-center gap-4 bg-pixio-cream px-8 py-4 rounded-full border border-gray-100 hover:border-black transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-xl">
                     <span className="text-xs font-black uppercase tracking-widest text-black">{t('BestAuthors.BooksPlural')}</span>
                     <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white group-hover:translate-x-1 transition-transform">
                       <ArrowRight className="w-4 h-4" />
@@ -524,7 +524,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             key={key}
             {...getSectionProps('home_section_trust', 'bg-white')}
             stats={{
-              books: totalBooks + 500,
+              products: totalBooks + 500,
               readers: totalUsers + 1000,
               exchanges: totalExchanges + 200
             }}
@@ -540,7 +540,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   <span className="text-[11px] font-black uppercase text-gray-400 tracking-[0.3em]">{t('NewArrivals.Subtitle')}</span>
                   <h2 className="text-4xl md:text-6xl font-black text-black tracking-tight">{t('NewArrivals.Title')}</h2>
                 </div>
-                <Link href="/books" className="group flex items-center gap-4 bg-pixio-cream px-6 py-3 rounded-full border border-gray-100 hover:border-black transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-xl">
+                <Link href="/products" className="group flex items-center gap-4 bg-pixio-cream px-6 py-3 rounded-full border border-gray-100 hover:border-black transition-all duration-300 hover:-translate-y-1 shadow-sm hover:shadow-xl">
                   <span className="text-xs font-black uppercase tracking-widest text-black">{t('NewArrivals.ViewAll')}</span>
                   <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white group-hover:translate-x-1 transition-transform">
                     <ArrowRight className="w-4 h-4" />
@@ -548,9 +548,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 </Link>
               </ScrollReveal>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-16">
-                {newBooks.map((book: any, idx: number) => (
-                  <ScrollReveal key={book.id} delay={idx * 100} animation="animate-reveal-up">
-                    <BookCard {...book} variant={idx === 0 ? 'featured' : 'default'} />
+                {newBooks.map((product: any, idx: number) => (
+                  <ScrollReveal key={product.id} delay={idx * 100} animation="animate-reveal-up">
+                    <ProductCard {...product} variant={idx === 0 ? 'featured' : 'default'} />
                   </ScrollReveal>
                 ))}
               </div>
@@ -593,27 +593,27 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               ) : (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {exchangeBooks.map((book: any, idx: number) => (
-                      <ScrollReveal key={book.id} delay={idx * 150} animation="animate-reveal-up">
-                        <Link href={`/community/market/${book.id}`} className="group h-full relative bg-white rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 border-2 border-green-100 hover:border-green-500 flex flex-col">
+                    {exchangeBooks.map((product: any, idx: number) => (
+                      <ScrollReveal key={product.id} delay={idx * 150} animation="animate-reveal-up">
+                        <Link href={`/community/market/${product.id}`} className="group h-full relative bg-white rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 border-2 border-green-100 hover:border-green-500 flex flex-col">
                           <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden">
-                            {book.image ? <ImageWithFallback src={book.image} alt={book.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" /> : <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-teal-100"><BookOpen className="w-20 h-20 text-green-300" /></div>}
-                            <div className="absolute top-4 right-4 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-[9px] font-black uppercase tracking-wider text-green-600 border border-green-200">{book.condition}</div>
+                            {product.image ? <ImageWithFallback src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" /> : <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-teal-100"><BookOpen className="w-20 h-20 text-green-300" /></div>}
+                            <div className="absolute top-4 right-4 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full text-[9px] font-black uppercase tracking-wider text-green-600 border border-green-200">{product.condition}</div>
                           </div>
                           <div className="p-6 flex-grow flex flex-col">
-                            <h3 className="text-lg font-black text-black mb-1 line-clamp-2 group-hover:text-green-600 transition-colors">{book.title}</h3>
-                            <p className="text-sm text-gray-400 font-bold italic mb-4">{book.author}</p>
+                            <h3 className="text-lg font-black text-black mb-1 line-clamp-2 group-hover:text-green-600 transition-colors">{product.title}</h3>
+                            <p className="text-sm text-gray-400 font-bold italic mb-4">{product.author}</p>
                             <div className="mt-auto flex items-center gap-3 pt-4 border-t border-gray-100">
                               <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center overflow-hidden">
-                                {book.owner?.image ? <ImageWithFallback src={book.owner.image} alt={book.owner.fullName} className="w-full h-full object-cover" /> : <span className="text-green-600 font-black text-xs">{book.owner?.fullName?.[0]}</span>}
+                                {product.owner?.image ? <ImageWithFallback src={product.owner.image} alt={product.owner.fullName} className="w-full h-full object-cover" /> : <span className="text-green-600 font-black text-xs">{product.owner?.fullName?.[0]}</span>}
                               </div>
                               <div className="flex-grow">
-                                <p className="text-xs font-bold text-gray-600 truncate">{book.owner?.fullName}</p>
-                                <p className="text-[10px] text-gray-400 font-bold">{book.owner?.city}</p>
+                                <p className="text-xs font-bold text-gray-600 truncate">{product.owner?.fullName}</p>
+                                <p className="text-[10px] text-gray-400 font-bold">{product.owner?.city}</p>
                               </div>
-                              {book.owner?.rating > 0 && <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full"><Sparkles className="w-3 h-3 text-yellow-600 fill-yellow-600" /><span className="text-xs font-black text-yellow-600">{book.owner.rating.toFixed(1)}</span></div>}
+                              {product.owner?.rating > 0 && <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full"><Sparkles className="w-3 h-3 text-yellow-600 fill-yellow-600" /><span className="text-xs font-black text-yellow-600">{product.owner.rating.toFixed(1)}</span></div>}
                             </div>
-                            <div className="mt-4 flex items-center gap-2"><RefreshCw className="w-4 h-4 text-green-600" /><span className="text-xs font-black text-green-600 uppercase tracking-wider">{book.exchangeType}</span></div>
+                            <div className="mt-4 flex items-center gap-2"><RefreshCw className="w-4 h-4 text-green-600" /><span className="text-xs font-black text-green-600 uppercase tracking-wider">{product.exchangeType}</span></div>
                           </div>
                         </Link>
                       </ScrollReveal>
@@ -677,7 +677,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         if (!recentPosts || recentPosts.length === 0) return null
         return (
           <section key={key} {...getSectionProps('home_section_blog', 'bg-white')} className={`py-32 relative overflow-hidden ${getSectionProps('home_section_blog', 'bg-white').className || ''}`}>
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 text-[20vw] font-black text-gray-50 opacity-[0.03] select-none pointer-events-none whitespace-nowrap">JOURNAL RIWAYA</div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 text-[20vw] font-black text-gray-50 opacity-[0.03] select-none pointer-events-none whitespace-nowrap">JOURNAL SUPERECOM</div>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
               <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-8">
                 <ScrollReveal className="space-y-4 max-w-xl">
@@ -747,7 +747,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               <span className="text-gray-400 italic">{t('CTA.TitlePart2')}</span>
             </h2>
             <Link
-              href="/books"
+              href="/products"
               className="group inline-flex items-center gap-4 px-12 py-6 bg-white text-black font-black text-xs uppercase tracking-widest rounded-full hover:bg-pixio-cream transition-all shadow-2xl hover:scale-105 hover:-translate-y-1 pulse-yellow-glow"
             >
               <span>{t('CTA.Button')}</span>

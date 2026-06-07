@@ -13,7 +13,7 @@ export default async function AdminCommunityDashboard() {
 
     const statCards = [
         { label: 'Utilisateurs', value: stats.totalUsers, icon: Users, color: 'bg-blue-500', link: '/admin/community/users' },
-        { label: 'Livres', value: stats.totalBooks, icon: BookOpen, color: 'bg-green-500', link: '/admin/community/books' },
+        { label: 'Livres', value: stats.totalBooks, icon: BookOpen, color: 'bg-green-500', link: '/admin/community/products' },
         { label: 'Échanges', value: stats.totalExchanges, icon: Repeat, color: 'bg-purple-500', link: '/admin/exchanges' },
         { label: 'Évaluations', value: stats.totalRatings, icon: Star, color: 'bg-yellow-500', link: '#' },
         { label: 'Messages', value: stats.totalMessages, icon: MessageSquare, color: 'bg-pink-500', link: '#' },
@@ -103,7 +103,7 @@ export default async function AdminCommunityDashboard() {
                                         {exchange.requester.image ? <img src={exchange.requester.image} alt="" className="w-full h-full object-cover" /> : <Users className="w-5 h-5 text-gray-400" />}
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="font-bold text-sm text-black mb-0.5 truncate">{exchange.bookRequested.title}</p>
+                                        <p className="font-bold text-sm text-black mb-0.5 truncate">{exchange.productRequested.title}</p>
                                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider truncate">
                                             {exchange.requester.fullName} → {exchange.responder.fullName}
                                         </p>
@@ -150,26 +150,26 @@ export default async function AdminCommunityDashboard() {
                     </div>
                 </div>
 
-                {/* Recent Books */}
+                {/* Recent Products */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 lg:col-span-2">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-black text-black">Livres récents</h2>
-                        <Link href="/admin/community/books" className="text-sm font-bold text-blue-600 hover:text-blue-700">
+                        <Link href="/admin/community/products" className="text-sm font-bold text-blue-600 hover:text-blue-700">
                             Voir tout →
                         </Link>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {stats.recentBooks.map((book: any) => (
-                            <div key={book.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                                {book.image && (
+                        {stats.recentBooks.map((product: any) => (
+                            <div key={product.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                                {product.image && (
                                     <div className="w-12 h-16 bg-gray-200 rounded-lg overflow-hidden shrink-0">
-                                        <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+                                        <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
                                     </div>
                                 )}
                                 <div className="flex-grow min-w-0">
-                                    <p className="font-bold text-sm text-black truncate">{book.title}</p>
-                                    <p className="text-xs text-gray-500 truncate">{book.author}</p>
-                                    <p className="text-[10px] text-gray-400 mt-1 font-bold uppercase">Par {book.owner.fullName}</p>
+                                    <p className="font-bold text-sm text-black truncate">{product.title}</p>
+                                    <p className="text-xs text-gray-500 truncate">{product.author}</p>
+                                    <p className="text-[10px] text-gray-400 mt-1 font-bold uppercase">Par {product.owner.fullName}</p>
                                 </div>
                             </div>
                         ))}

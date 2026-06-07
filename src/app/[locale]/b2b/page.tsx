@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 import { Mail, Phone, MapPin, Send } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Partenariats B2B | Riwaya',
-    description: 'Collaborez avec Riwaya pour promouvoir vos produits et services auprès de milliers de lecteurs au Maroc.',
+    title: 'Partenariats B2B | SuperEcom',
+    description: 'Collaborez avec SuperEcom pour promouvoir vos produits et services auprès de milliers de lecteurs au Maroc.',
     keywords: ['partenariat', 'b2b', 'publicité', 'collaboration', 'marketing', 'livres', 'maroc'],
 }
 
@@ -18,7 +18,7 @@ export default function B2BPage() {
                             Partenariats<span className="text-pixio-yellow">.</span>
                         </h1>
                         <p className="text-2xl text-gray-300 leading-relaxed">
-                            Collaborez avec Riwaya et touchez des milliers de lecteurs passionnés au Maroc
+                            Collaborez avec SuperEcom et touchez des milliers de lecteurs passionnés au Maroc
                         </p>
                     </div>
                 </div>
@@ -134,7 +134,7 @@ export default function B2BPage() {
                             </div>
                             <h3 className="text-2xl font-black text-black mb-4">Programme d'affiliation</h3>
                             <p className="text-gray-600 leading-relaxed mb-6">
-                                Recommandez Riwaya à votre audience et gagnez des commissions sur chaque vente.
+                                Recommandez SuperEcom à votre audience et gagnez des commissions sur chaque vente.
                             </p>
                             <ul className="space-y-3 text-gray-600">
                                 <li className="flex items-start gap-2">
@@ -250,8 +250,8 @@ export default function B2BPage() {
                             <div>
                                 <Mail className="w-8 h-8 mx-auto mb-3 text-pixio-yellow" />
                                 <div className="font-bold">Email</div>
-                                <a href="mailto:b2b@riwaya.com" className="text-gray-300 hover:text-pixio-yellow transition-colors">
-                                    b2b@riwaya.com
+                                <a href="mailto:b2b@superEcom.com" className="text-gray-300 hover:text-pixio-yellow transition-colors">
+                                    b2b@superEcom.com
                                 </a>
                             </div>
                             <div>

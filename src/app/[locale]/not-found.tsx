@@ -35,7 +35,7 @@ export default function NotFound() {
               <span>Retour à l'accueil</span>
             </Link>
             <Link 
-              href="/books" 
+              href="/products" 
               className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 bg-white border-2 border-gray-200 text-black font-black text-sm uppercase tracking-widest rounded-full hover:border-black transition-all shadow-sm hover:-translate-y-1"
             >
               <BookOpen className="w-5 h-5" />

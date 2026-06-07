@@ -21,7 +21,7 @@ export async function searchBooksPredictive(query: string) {
             if (priceFilter.maxPrice !== undefined) where.price.lte = priceFilter.maxPrice;
         }
 
-        const filteredBooks = await prisma.book.findMany({
+        const filteredBooks = await prisma.product.findMany({
             where,
             select: {
                 id: true,

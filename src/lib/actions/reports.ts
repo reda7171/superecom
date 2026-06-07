@@ -8,14 +8,14 @@ import { verifyAdmin } from './auth'
 // Créer un signalement
 export async function createReport(data: {
     targetUserId?: string
-    targetBookId?: string
+    targetProductId?: string
     reason: string
     details?: string
 }) {
     const user = await getCommunityUser()
     if (!user) return { success: false, error: "Vous devez être connecté pour signaler." }
 
-    if (!data.targetUserId && !data.targetBookId) {
+    if (!data.targetUserId && !data.targetProductId) {
         return { success: false, error: "Cible du signalement manquante" }
     }
 
@@ -24,7 +24,7 @@ export async function createReport(data: {
             data: {
                 reporterId: user.id,
                 targetUserId: data.targetUserId,
-                targetBookId: data.targetBookId,
+                targetProductId: data.targetProductId,
                 reason: data.reason,
                 details: data.details
             }
@@ -59,7 +59,7 @@ export async function getReports(status = 'PENDING') {
                 targetUser: {
                     select: { id: true, fullName: true, email: true, image: true }
                 },
-                targetBook: {
+                targetProduct: {
                     select: { id: true, title: true, image: true, ownerId: true }
                 }
             },

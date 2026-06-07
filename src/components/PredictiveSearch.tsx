@@ -118,7 +118,7 @@ export default function PredictiveSearch() {
         if (query.trim()) {
             saveToHistory(query)
             fbPixelEvents.search(query.trim())
-            router.push(`/books?search=${encodeURIComponent(query.trim())}`)
+            router.push(`/products?search=${encodeURIComponent(query.trim())}`)
             setIsOpen(false)
         }
     }
@@ -126,7 +126,7 @@ export default function PredictiveSearch() {
     const handleHistoryClick = (searchTerm: string) => {
         setQuery(searchTerm)
         saveToHistory(searchTerm)
-        router.push(`/books?search=${encodeURIComponent(searchTerm)}`)
+        router.push(`/products?search=${encodeURIComponent(searchTerm)}`)
         setIsOpen(false)
     }
 
@@ -134,7 +134,7 @@ export default function PredictiveSearch() {
         if (badge) {
             trackBadgeClick(badge, category)
         }
-        router.push(`/books?category=${encodeURIComponent(category)}`)
+        router.push(`/products?category=${encodeURIComponent(category)}`)
         setIsOpen(false)
     }
 
@@ -230,10 +230,10 @@ export default function PredictiveSearch() {
                             <div className="max-h-[480px] overflow-y-auto custom-scrollbar">
                                 {results.length > 0 ? (
                                     <div className="p-4 space-y-3">
-                                        {results.map((book) => (
+                                        {results.map((product) => (
                                             <Link
-                                                key={book.id}
-                                                href={`/books/${book.id}`}
+                                                key={product.id}
+                                                href={`/products/${product.id}`}
                                                 onClick={() => {
                                                     saveToHistory(query)
                                                     setIsOpen(false)
@@ -242,19 +242,19 @@ export default function PredictiveSearch() {
                                             >
                                                 <div className="relative w-14 h-20 rounded-xl overflow-hidden bg-gray-50 shrink-0 border border-gray-50 shadow-sm transition-all group-hover/item:scale-105">
                                                     <Image
-                                                        src={normalizeImage(book.image)}
-                                                        alt={book.title}
+                                                        src={normalizeImage(product.image)}
+                                                        alt={product.title}
                                                         fill
                                                         className="object-cover"
                                                         unoptimized
                                                     />
                                                 </div>
                                                 <div className="flex-1 min-w-0 space-y-1">
-                                                    <p className="text-[10px] font-black uppercase text-gray-400 tracking-tighter">{book.category || 'Collection'}</p>
-                                                    <h4 className="font-black text-gray-900 text-sm truncate group-hover/item:text-black transition-colors leading-none">{book.title}</h4>
-                                                    <p className="text-[10px] font-bold text-gray-500 italic">{t('By', { author: book.author })}</p>
+                                                    <p className="text-[10px] font-black uppercase text-gray-400 tracking-tighter">{product.category || 'Collection'}</p>
+                                                    <h4 className="font-black text-gray-900 text-sm truncate group-hover/item:text-black transition-colors leading-none">{product.title}</h4>
+                                                    <p className="text-[10px] font-bold text-gray-500 italic">{t('By', { author: product.author })}</p>
                                                     <div className="flex items-center justify-between mt-2">
-                                                        <span className="text-sm font-black text-gray-900">{book.price} MAD</span>
+                                                        <span className="text-sm font-black text-gray-900">{product.price} MAD</span>
                                                         <div className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center opacity-0 group-hover/item:opacity-100 transition-all -translate-x-2 group-hover/item:translate-x-0 rtl:translate-x-2 rtl:group-hover/item:translate-x-0">
                                                             <ArrowRight className="w-3 h-3 rtl:rotate-180" />
                                                         </div>

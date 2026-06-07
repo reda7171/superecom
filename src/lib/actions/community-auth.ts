@@ -201,14 +201,14 @@ async function createSession(userId: string) {
     const cookieStore = await cookies()
     cookieStore.set('community-token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Forcer à false pour permettre la connexion via IP/HTTP sur VPS
+        secure: true, // Forcer à false pour permettre la connexion via IP/HTTP sur VPS
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 30, // 30 jours
         path: '/',
     })
 
     if (user?.locale) {
-        cookieStore.set('NEXT_LOCALE', user.locale, { path: '/', secure: process.env.NODE_ENV === 'production' })
+        cookieStore.set('NEXT_LOCALE', user.locale, { path: '/', secure: true })
     }
 }
 

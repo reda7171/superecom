@@ -2,15 +2,15 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Riwaya - Librairie en Ligne au Maroc',
-        short_name: 'Riwaya',
+        name: 'SuperEcom - Librairie en Ligne au Maroc',
+        short_name: 'SuperEcom',
         description: 'Découvrez et achetez des livres au Maroc. Livraison rapide et paiement à la livraison.',
         start_url: '/',
         display: 'standalone',
         background_color: '#0a0a0a',
         theme_color: '#FFD700',
         orientation: 'portrait-primary',
-        categories: ['books', 'shopping', 'education'],
+        categories: ['products', 'shopping', 'education'],
         lang: 'fr-MA',
         dir: 'auto',
         icons: [

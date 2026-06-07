@@ -49,7 +49,7 @@ export async function getAdminStats() {
             include: {
                 requester: { select: { fullName: true, email: true, image: true } },
                 responder: { select: { fullName: true, email: true, image: true } },
-                bookRequested: { select: { title: true } }
+                productRequested: { select: { title: true } }
             }
         })
 
@@ -135,8 +135,8 @@ export async function getAllExchanges(filters?: {
                 include: {
                     requester: { select: { id: true, fullName: true, email: true, image: true } },
                     responder: { select: { id: true, fullName: true, email: true, image: true } },
-                    bookRequested: { select: { title: true, author: true, image: true } },
-                    bookOffered: { select: { title: true, author: true, image: true } },
+                    productRequested: { select: { title: true, author: true, image: true } },
+                    productOffered: { select: { title: true, author: true, image: true } },
                     rating: true
                 }
             }),
@@ -226,7 +226,7 @@ export async function getAllBooks(filters?: {
             ]
         }
 
-        const [books, total] = await Promise.all([
+        const [products, total] = await Promise.all([
             (prisma as any).exchangeBook.findMany({
                 where,
                 skip,
@@ -240,7 +240,7 @@ export async function getAllBooks(filters?: {
         ])
 
         return {
-            books,
+            products,
             total,
             pages: Math.ceil(total / perPage),
             currentPage: page
@@ -267,15 +267,15 @@ export async function deleteExchange(exchangeId: string) {
 }
 
 // Supprimer un livre
-export async function deleteBook(bookId: string) {
+export async function deleteBook(productId: string) {
     try {
         await verifyAdmin()
 
         await (prisma as any).exchangeBook.delete({
-            where: { id: bookId }
+            where: { id: productId }
         })
 
-        revalidatePath('/admin/books')
+        revalidatePath('/admin/products')
         return { success: true }
     } catch (error: any) {
         return { success: false, error: error.message || "Erreur lors de la suppression" }

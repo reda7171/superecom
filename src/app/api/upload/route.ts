@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Créer le répertoire s'il n'existe pas
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'books')
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'products')
         await mkdir(uploadDir, { recursive: true })
 
         // Vérifier que le chemin final est bien dans le répertoire autorisé (anti path traversal)
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
         await writeFile(normalizedPath, processedBuffer)
 
         // Retourner l'URL publique
-        const url = `/uploads/books/${fileName}`
+        const url = `/uploads/products/${fileName}`
 
         // Si c'est du marketing, on enregistre en base
         if (isMarketing) {

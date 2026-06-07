@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { X, Gift, Book, Sparkles, Command } from 'lucide-react'
+import { X, Gift, Package, Sparkles, Command } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 export default function GiftPopup() {
@@ -88,7 +88,7 @@ export default function GiftPopup() {
                             </div>
                             <div className="flex items-start gap-4">
                                 <div className="mt-1 w-5 h-5 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
-                                    <Book className="w-3 h-3 text-emerald-500" />
+                                    <Package className="w-3 h-3 text-emerald-500" />
                                 </div>
                                 <div>
                                     <h4 className="text-xs font-black uppercase tracking-wider text-black mb-0.5">{t('RandomBookTitle')}</h4>

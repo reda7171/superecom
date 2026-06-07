@@ -15,7 +15,7 @@ export const fbPixelEvents = {
             content_type: 'product',
             value: product.price,
             currency: 'MAD',
-            content_category: product.category || 'Books'
+            content_category: product.category || 'Products'
         })
     },
 
@@ -113,9 +113,9 @@ export const fbPixelEvents = {
 // Événements personnalisés
 export const fbCustomEvents = {
     // Échange de livre initié
-    exchangeInitiated: (bookId: string) => {
+    exchangeInitiated: (productId: string) => {
         trackCustomEvent('ExchangeInitiated', {
-            book_id: bookId
+            book_id: productId
         })
     },
 

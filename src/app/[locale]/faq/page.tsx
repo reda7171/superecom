@@ -71,7 +71,7 @@ export default async function FAQPage() {
                         Questions <span className="text-pixio-yellow italic">Fréquentes.</span>
                     </h1>
                     <p className="text-gray-500 max-w-2xl mx-auto text-lg font-medium">
-                        Tout ce que vous devez savoir pour commander en toute sérénité sur Riwaya.
+                        Tout ce que vous devez savoir pour commander en toute sérénité sur SuperEcom.
                     </p>
                 </div>
             </div>

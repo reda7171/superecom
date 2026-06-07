@@ -50,7 +50,7 @@ export default async function ReturnPolicyPage() {
                                 <PhoneCall className="w-5 h-5" /> 4. Procédure de retour
                             </h2>
                             <p className="leading-relaxed">
-                                Pour initier un retour, veuillez contacter notre service client via WhatsApp ou par email à admin@riwaya.store. Veuillez inclure votre numéro de commande et des photos si le produit est défectueux.
+                                Pour initier un retour, veuillez contacter notre service client via WhatsApp ou par email à admin@superEcom.store. Veuillez inclure votre numéro de commande et des photos si le produit est défectueux.
                             </p>
                         </section>
                     </div>

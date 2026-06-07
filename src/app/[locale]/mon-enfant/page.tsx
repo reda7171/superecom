@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     const { locale } = await params;
     const t = await getTranslations('KidsPage');
     return {
-        title: `${t('Title')} | Riwaya`,
+        title: `${t('Title')} | SuperEcom`,
         description: t('Description'),
     }
 }
@@ -177,7 +177,7 @@ export default async function KidsPage({ params }: { params: Promise<{ locale: s
                             {t('SectionStories.Desc')}
                         </p>
                         <Link 
-                            href="/books?category=Enfants"
+                            href="/products?category=Enfants"
                             className="inline-flex items-center gap-2 px-8 py-3.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-lg"
                         >
                             {t('SectionStories.Btn')}
@@ -202,7 +202,7 @@ export default async function KidsPage({ params }: { params: Promise<{ locale: s
                             {t('SectionColoring.Desc')}
                         </p>
                         <Link 
-                            href="/books?category=Coloriage"
+                            href="/products?category=Coloriage"
                             className="inline-flex items-center gap-2 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold transition-transform hover:-translate-y-1 shadow-lg shadow-emerald-200"
                         >
                             {t('SectionColoring.Btn')}
@@ -319,7 +319,7 @@ export default async function KidsPage({ params }: { params: Promise<{ locale: s
                     <h2 className="text-4xl md:text-6xl font-black text-white mb-6">{t('CTA.Title')}</h2>
                     <p className="text-xl text-white/90 font-medium mb-10 max-w-2xl mx-auto">{t('CTA.Desc')}</p>
                     <Link 
-                        href="/books" 
+                        href="/products" 
                         className="inline-flex items-center gap-2 px-10 py-5 bg-white text-gray-900 rounded-[2rem] font-bold text-xl hover:scale-105 transition-transform shadow-2xl"
                     >
                         {t('CTA.Btn')}

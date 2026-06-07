@@ -101,7 +101,7 @@ export const useCartStore = create<CartStore>()(
             },
         }),
         {
-            name: 'riwaya-cart-storage', // Nom de la clé dans localStorage
+            name: 'superEcom-cart-storage', // Nom de la clé dans localStorage
             storage: createJSONStorage(() => localStorage),
         }
     )

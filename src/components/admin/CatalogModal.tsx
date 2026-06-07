@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FileText, X, Printer, LayoutList, Type, Loader2, ImageIcon, Book as BookIcon, Filter, Palette, Grid3X3, Globe } from 'lucide-react'
-import { getAllBooksForCatalog } from '@/lib/actions/books'
+import { FileText, X, Printer, LayoutList, Type, Loader2, ImageIcon, Package as BookIcon, Filter, Palette, Grid3X3, Globe } from 'lucide-react'
+import { getAllBooksForCatalog } from '@/lib/actions/products'
 import { normalizeImage } from '@/lib/utils'
 
 interface CatalogModalProps {
@@ -19,7 +19,7 @@ export default function CatalogModal({ isOpen: initialIsOpen, onClose, triggerEv
     const [categories, setCategories] = useState<string[]>([])
     const [config, setConfig] = useState({
         booksPerPage: 12,
-        title: 'Catalogue Riwaya',
+        title: 'Catalogue SuperEcom',
         subtitle: 'Découvrez notre collection',
         primaryColor: '#2563eb',
         backgroundColor: '#ffffff',
@@ -108,25 +108,25 @@ export default function CatalogModal({ isOpen: initialIsOpen, onClose, triggerEv
         if (!config.groupByLanguage) {
             return chunkBooks(filteredBooks, config.booksPerPage).map(chunk => ({
                 language: 'all',
-                books: chunk
+                products: chunk
             }))
         }
 
         const booksByLanguage: { [key: string]: any[] } = {}
-        filteredBooks.forEach(book => {
-            const lang = book.language || 'fr'
+        filteredBooks.forEach(product => {
+            const lang = product.language || 'fr'
             if (!booksByLanguage[lang]) {
                 booksByLanguage[lang] = []
             }
-            booksByLanguage[lang].push(book)
+            booksByLanguage[lang].push(product)
         })
 
-        const pages: { language: string; books: any[] }[] = []
+        const pages: { language: string; products: any[] }[] = []
         const sortedLanguages = Object.keys(booksByLanguage).sort()
         sortedLanguages.forEach(lang => {
             const chunks = chunkBooks(booksByLanguage[lang], config.booksPerPage)
             chunks.forEach(chunk => {
-                pages.push({ language: lang, books: chunk })
+                pages.push({ language: lang, products: chunk })
             })
         })
 
@@ -158,7 +158,7 @@ export default function CatalogModal({ isOpen: initialIsOpen, onClose, triggerEv
                     <div className="bg-purple-600 p-6 flex items-center justify-between text-white border-b border-purple-700 shadow-xl">
                         <div className="flex items-center gap-3">
                             <FileText className="w-6 h-6" />
-                            <h2 className="text-xl font-black uppercase tracking-tight">Catalogue Riwaya</h2>
+                            <h2 className="text-xl font-black uppercase tracking-tight">Catalogue SuperEcom</h2>
                         </div>
                         <button onClick={handleClose} className="p-2 hover:bg-white/20 rounded-full transition-colors font-bold"><X className="w-6 h-6" /></button>
                     </div>
@@ -302,12 +302,12 @@ export default function CatalogModal({ isOpen: initialIsOpen, onClose, triggerEv
                             {config.selectedCategory !== 'all' ? `Collection : ${config.selectedCategory}` : config.subtitle}
                         </p>
                         <div className="w-20 h-1 bg-blue-600 mb-10"></div>
-                        <p className="text-sm font-bold text-gray-300 tracking-[0.5em] uppercase tracking-widest">Riwaya Catalogue</p>
+                        <p className="text-sm font-bold text-gray-300 tracking-[0.5em] uppercase tracking-widest">SuperEcom Catalogue</p>
                     </div>
                 </div>
 
-                {/* Book Pages */}
-                {bookPages.map(({ language, books }, pageIdx) => (
+                {/* Product Pages */}
+                {bookPages.map(({ language, products }, pageIdx) => (
                     <div key={pageIdx} className="w-full h-[29.7cm] p-10 page-break overflow-hidden flex flex-col pt-12" style={{ ...getPatternStyle() }}>
                         {config.groupByLanguage && language !== 'all' && (
                             <div className="flex items-center justify-between border-b pb-2 mb-4" style={{ borderColor: config.primaryColor + '33' }}>
@@ -317,28 +317,28 @@ export default function CatalogModal({ isOpen: initialIsOpen, onClose, triggerEv
                             </div>
                         )}
                         <div className="grid grid-cols-2 gap-6 flex-1">
-                            {books.map((book, idx) => (
+                            {products.map((product, idx) => (
                                 <div 
                                     key={idx} 
                                     className="flex gap-4 border border-gray-100 rounded-2xl p-4 break-inside-avoid shadow-sm"
                                     style={{ height: `${rowHeight}cm`, backgroundColor: 'white' }}
                                 >
                                     <div className="w-[35%] h-full flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center p-2">
-                                        {book.image ? (
-                                            <img src={normalizeImage(book.image)} alt={book.title} className="h-full w-full object-contain" />
+                                        {product.image ? (
+                                            <img src={normalizeImage(product.image)} alt={product.title} className="h-full w-full object-contain" />
                                         ) : (
                                             <div className="catalog-print-area"><ImageIcon className="w-8 h-8 text-gray-200 lucide" /></div>
                                         )}
                                     </div>
                                     <div className="flex-1 flex flex-col py-1 overflow-hidden h-full">
                                         <div className="flex-1 overflow-hidden">
-                                            <h3 className="text-sm font-black text-gray-900 uppercase line-clamp-2 mb-1">{book.title}</h3>
-                                            <p className="text-[10px] text-blue-600 font-bold truncate mb-2">{book.author}</p>
-                                            <p className="text-[9px] text-gray-400 line-clamp-3 leading-relaxed italic">{book.description || "Sélectionné par nos soins."}</p>
+                                            <h3 className="text-sm font-black text-gray-900 uppercase line-clamp-2 mb-1">{product.title}</h3>
+                                            <p className="text-[10px] text-blue-600 font-bold truncate mb-2">{product.author}</p>
+                                            <p className="text-[9px] text-gray-400 line-clamp-3 leading-relaxed italic">{product.description || "Sélectionné par nos soins."}</p>
                                         </div>
                                         <div className="flex items-center justify-between pt-2 border-t border-gray-50 mt-auto">
-                                            {config.showPrice && <span className="text-base font-black text-gray-900">{book.price} MAD</span>}
-                                            {book.category && <span className="text-[8px] font-bold text-gray-400 uppercase border border-gray-200 px-2 py-0.5 rounded truncate">{book.category}</span>}
+                                            {config.showPrice && <span className="text-base font-black text-gray-900">{product.price} MAD</span>}
+                                            {product.category && <span className="text-[8px] font-bold text-gray-400 uppercase border border-gray-200 px-2 py-0.5 rounded truncate">{product.category}</span>}
                                         </div>
                                     </div>
                                 </div>

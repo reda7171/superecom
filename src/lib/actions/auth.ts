@@ -117,7 +117,7 @@ export async function login(email: string, password: string): Promise<LoginResul
         const cookieStore = await cookies()
         cookieStore.set('admin-token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Forcer à false pour permettre l'accès admin via IP/HTTP
+            secure: true, // Forcer à false pour permettre l'accès admin via IP/HTTP
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7, // 7 jours
             path: '/',
@@ -126,7 +126,7 @@ export async function login(email: string, password: string): Promise<LoginResul
         // Stocker l'email pour l'audit (non sensible)
         cookieStore.set('admin-email', user.email, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true,
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7,
             path: '/',
@@ -135,7 +135,7 @@ export async function login(email: string, password: string): Promise<LoginResul
         // Stocker le rôle pour le middleware
         cookieStore.set('admin-role', user.role, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true,
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7,
             path: '/',
@@ -206,21 +206,21 @@ export async function checkApprovalStatus(requestId: string): Promise<LoginResul
         const cookieStore = await cookies()
         cookieStore.set('admin-token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true,
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7,
             path: '/',
         })
         cookieStore.set('admin-email', user.email, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true,
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7,
             path: '/',
         })
         cookieStore.set('admin-role', user.role, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true,
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7,
             path: '/',

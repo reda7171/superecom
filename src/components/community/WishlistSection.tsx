@@ -48,14 +48,14 @@ export default function WishlistSection({ wishlist }: WishlistSectionProps) {
 
     const { removeItem } = useWishlistStore()
 
-    async function handleRemove(id: string, bookId?: string) {
+    async function handleRemove(id: string, productId?: string) {
         startTransition(async () => {
             updateOptimisticWishlist({ type: 'DELETE', id })
             // Supprimer de la DB
             await removeFromWishlist(id)
             // Supprimer du store local (Zustand) pour l'en-tête
-            if (bookId) {
-                removeItem(bookId)
+            if (productId) {
+                removeItem(productId)
             } else {
                 removeItem(id)
             }
@@ -125,7 +125,7 @@ export default function WishlistSection({ wishlist }: WishlistSectionProps) {
                                 {item.author && <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider truncate">{item.author}</p>}
                             </div>
                             <button
-                                onClick={() => handleRemove(item.id, item.bookId)}
+                                onClick={() => handleRemove(item.id, item.productId)}
                                 disabled={isPending}
                                 className="p-2 text-gray-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-50"
                             >

@@ -159,26 +159,26 @@ export default async function CommunityDashboard() {
                     <h2 className="text-2xl font-black text-black uppercase tracking-normal flex items-center gap-3">
                         <BookOpen className="w-6 h-6" /> {t('MyBooks')}
                     </h2>
-                    <Link href="/community/books/new" className="bg-black text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-gray-800 transition-all shadow-lg active:scale-95 group">
+                    <Link href="/community/products/new" className="bg-black text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-gray-800 transition-all shadow-lg active:scale-95 group">
                         <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" /> {t('AddBook')}
                     </Link>
                 </div>
 
                 {u.ownedBooks && u.ownedBooks.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {u.ownedBooks.map((book: any) => (
-                            <div key={book.id} className="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm relative group hover:shadow-xl transition-all hover:-translate-y-1">
+                        {u.ownedBooks.map((product: any) => (
+                            <div key={product.id} className="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm relative group hover:shadow-xl transition-all hover:-translate-y-1">
                                 {/* Status Badge */}
                                 <div className="absolute top-4 right-4 z-10">
-                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${book.status === 'AVAILABLE' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${product.status === 'AVAILABLE' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
                                         }`}>
-                                        {t(`BookForm.Status.${book.status}` as any)}
+                                        {t(`BookForm.Status.${product.status}` as any)}
                                     </span>
                                 </div>
 
                                 <div className="aspect-[2/3] bg-gray-50 rounded-2xl mb-4 overflow-hidden relative shadow-inner">
-                                    {book.image ? (
-                                        <img src={book.image} alt={book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    {product.image ? (
+                                        <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-300">
                                             <BookOpen className="w-8 h-8 opacity-20" />
@@ -186,11 +186,11 @@ export default async function CommunityDashboard() {
                                     )}
                                 </div>
 
-                                <h3 className="font-black text-lg text-black leading-tight mb-1 line-clamp-1 group-hover:text-amber-600 transition-colors">{book.title}</h3>
-                                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 line-clamp-1">{book.author}</p>
+                                <h3 className="font-black text-lg text-black leading-tight mb-1 line-clamp-1 group-hover:text-amber-600 transition-colors">{product.title}</h3>
+                                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 line-clamp-1">{product.author}</p>
 
                                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300">
-                                    <Link href={`/community/books/${book.id}`} className="flex-1 bg-black text-white hover:bg-gray-800 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-center transition-colors shadow-lg">
+                                    <Link href={`/community/products/${product.id}`} className="flex-1 bg-black text-white hover:bg-gray-800 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-center transition-colors shadow-lg">
                                         {t('Dashboard.ManageBook')}
                                     </Link>
                                 </div>
@@ -204,7 +204,7 @@ export default async function CommunityDashboard() {
                         </div>
                         <h3 className="text-xl font-bold text-black mb-2">{t('Dashboard.EmptyLibraryTitle')}</h3>
                         <p className="text-gray-400 mb-8 max-w-sm mx-auto">{t('Dashboard.EmptyLibraryDesc')}</p>
-                        <Link href="/community/books/new" className="inline-flex bg-black text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest items-center gap-2 hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
+                        <Link href="/community/products/new" className="inline-flex bg-black text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest items-center gap-2 hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
                             <Plus className="w-4 h-4" /> {t('Dashboard.StartAdding')}
                         </Link>
                     </div>

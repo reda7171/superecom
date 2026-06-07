@@ -1,6 +1,6 @@
 'use client'
-
 import { Link, usePathname } from '@/i18n/routing'
+import Image from 'next/image'
 import { BookOpen, ShoppingCart, Search, Menu, X, User } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import CartDrawer from './CartDrawer'
@@ -66,16 +66,16 @@ export default function Header({ user, notificationDropdown, navigation, feature
 
                     // Mapper et mettre à jour le store Wishlist
                     const mappedWishlist: any[] = wishlistData.map((w: any) => {
-                        if (w.book) {
+                        if (w.product) {
                             return {
-                                id: w.book.id,
+                                id: w.product.id,
                                 type: 'BOOK',
-                                title: w.book.title,
-                                image: w.book.image,
-                                price: w.book.price,
-                                author: w.book.author,
-                                slug: `/books/${w.book.id}`,
-                                category: w.book.category || undefined
+                                title: w.product.title,
+                                image: w.product.image,
+                                price: w.product.price,
+                                author: w.product.author,
+                                slug: `/products/${w.product.id}`,
+                                category: w.product.category || undefined
                             }
                         }
                         if (w.pack) {
@@ -105,7 +105,7 @@ export default function Header({ user, notificationDropdown, navigation, feature
 
                     // Mapper et mettre à jour le store ReadingList
                     const mappedReadingList: any[] = readingListData.map((r: any) => ({
-                        id: r.bookId || r.id, // Important: ID du livre si possible
+                        id: r.productId || r.id, // Important: ID du livre si possible
                         title: r.title,
                         author: r.author,
                         cover: r.cover || '',
@@ -131,7 +131,7 @@ export default function Header({ user, notificationDropdown, navigation, feature
 
     const displayItems = mounted ? totalItems : 0
     const defaultNavItems = [
-        { href: '/books', label: t('Books') },
+        { href: '/products', label: t('Products') },
         { href: '/authors', label: t('Authors') },
         { href: '/blog', label: t('Journal'), isJournal: true },
         ...(features.packs === true ? [{ href: '/packs', label: t('Packs') }] : []),
@@ -173,9 +173,11 @@ export default function Header({ user, notificationDropdown, navigation, feature
                     {/* Logo - Dynamique ou Style Pixio */}
                     <Link href="/" className="flex items-center gap-2 group shrink-0 ltr:mr-32 rtl:ml-32 xl:ltr:mr-48 xl:rtl:ml-48" dir="ltr">
                         {siteLogo ? (
-                            <img 
+                            <Image 
                                 src={siteLogo} 
-                                alt="Riwaya Logo" 
+                                alt="SuperEcom Logo" 
+                                width={160}
+                                height={32}
                                 className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
                             />
                         ) : (
@@ -184,7 +186,7 @@ export default function Header({ user, notificationDropdown, navigation, feature
                                     <BookOpen className="w-5 h-5 text-white" />
                                 </div>
                                 <span className="text-2xl font-black text-black tracking-tighter">
-                                    riwaya<span className="text-[#10b981]">.</span>
+                                    superEcom<span className="text-[#10b981]">.</span>
                                 </span>
                             </>
                         )}

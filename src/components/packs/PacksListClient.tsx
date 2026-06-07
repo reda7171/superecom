@@ -20,9 +20,9 @@ export default function PacksListClient({ packs, availableBooks }: PacksListClie
         if (!filterAvailable) return packs
         
         return packs.filter(pack => {
-            // A pack is considered available if it has at least one book in stock
-            // This allows partial packs to be shown if the user wants to replace missing books.
-            return pack.books.some((pb: any) => pb.book.stock > 0)
+            // A pack is considered available if it has at least one product in stock
+            // This allows partial packs to be shown if the user wants to replace missing products.
+            return pack.products.some((pb: any) => pb.product.stock > 0)
         })
     }, [packs, filterAvailable])
 
@@ -96,10 +96,10 @@ export default function PacksListClient({ packs, availableBooks }: PacksListClie
                         <PackCard
                             key={pack.id}
                             {...pack}
-                            books={pack.books.map((pb: any) => ({
-                                book: {
-                                    ...pb.book,
-                                    price: pb.book.price
+                            products={pack.products.map((pb: any) => ({
+                                product: {
+                                    ...pb.product,
+                                    price: pb.product.price
                                 }
                             }))}
                         />

@@ -46,14 +46,14 @@ export async function getDashboardAnalytics() {
                 type: 'BOOK'
             },
             include: {
-                book: {
+                product: {
                     select: { category: true }
                 }
             }
         })
 
         const revenueByCategory = orderItems.reduce((acc: any, curr) => {
-            const category = curr.book?.category || 'Non classé'
+            const category = curr.product?.category || 'Non classé'
             const revenue = curr.price * curr.quantity
             if (!acc[category]) acc[category] = 0
             acc[category] += revenue
@@ -66,7 +66,7 @@ export async function getDashboardAnalytics() {
         }))
 
         // 3. Alerte stocks faibles (< 5)
-        const lowStockBooks = await prisma.book.findMany({
+        const lowStockBooks = await prisma.product.findMany({
             where: {
                 stock: { lt: 5 },
                 active: true
@@ -82,7 +82,7 @@ export async function getDashboardAnalytics() {
 
         // 4. Produits les plus vendus
         const topSellingItems = await prisma.orderItem.groupBy({
-            by: ['type', 'bookId', 'packId'],
+            by: ['type', 'productId', 'packId'],
             where: {
                 order: { status: 'DELIVERED' }
             },
@@ -103,8 +103,8 @@ export async function getDashboardAnalytics() {
             let price = 0
             let image = ''
 
-            if (item.type === 'BOOK' && item.bookId) {
-                const b = await prisma.book.findUnique({ where: { id: item.bookId }, select: { title: true, price: true, image: true } })
+            if (item.type === 'BOOK' && item.productId) {
+                const b = await prisma.product.findUnique({ where: { id: item.productId }, select: { title: true, price: true, image: true } })
                 name = b?.title || 'Livre inconnu'
                 price = b?.price || 0
                 image = b?.image || ''
@@ -269,7 +269,7 @@ export async function getDashboardStats() {
                 _sum: { total: true }
             }),
             prisma.order.count(),
-            prisma.book.count({ where: { active: true } }),
+            prisma.product.count({ where: { active: true } }),
             prisma.pack.count({ where: { active: true } })
         ])
 
@@ -326,7 +326,7 @@ export async function getTopProducts(limit: number = 5) {
     try {
         await verifyAdmin()
         const items = await prisma.orderItem.groupBy({
-            by: ['type', 'bookId', 'packId'],
+            by: ['type', 'productId', 'packId'],
             where: { order: { status: 'DELIVERED' } },
             _sum: { quantity: true },
             orderBy: { _sum: { quantity: 'desc' } },
@@ -338,8 +338,8 @@ export async function getTopProducts(limit: number = 5) {
             let image = ''
             let unitPrice = 0
 
-            if (item.type === 'BOOK' && item.bookId) {
-                const b = await prisma.book.findUnique({ where: { id: item.bookId } })
+            if (item.type === 'BOOK' && item.productId) {
+                const b = await prisma.product.findUnique({ where: { id: item.productId } })
                 name = b?.title || 'Livre'
                 image = b?.image || ''
                 unitPrice = b?.price || 0

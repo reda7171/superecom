@@ -5,7 +5,7 @@ import POSClient from '@/components/admin/pos/POSClient';
 export default async function POSPage() {
   const t = await getTranslations('Admin');
 
-  const books = await prisma.book.findMany({
+  const products = await prisma.product.findMany({
     where: { active: true, stock: { gt: 0 } },
     select: {
       id: true,
@@ -30,7 +30,7 @@ export default async function POSPage() {
 
   return (
     <div className="h-[calc(100vh-80px)] w-full overflow-hidden">
-      <POSClient books={books} packs={packs} />
+      <POSClient products={products} packs={packs} />
     </div>
   );
 }

@@ -90,10 +90,10 @@ export default async function SellerOrdersPage() {
                                             {order.items.map((item) => (
                                                 <div key={item.id} className="bg-gray-50 rounded-2xl p-4 flex gap-4 hover:shadow-lg transition-all group/item">
                                                     <div className="w-16 h-20 rounded-xl overflow-hidden bg-white shadow-sm shrink-0">
-                                                        <img src={normalizeImage(item.book?.image || '')} alt="" className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500" />
+                                                        <img src={normalizeImage(item.product?.image || '')} alt="" className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500" />
                                                     </div>
                                                     <div className="flex flex-col justify-center min-w-0">
-                                                        <h4 className="text-xs font-black text-black truncate group-hover/item:text-amber-600 transition-colors">{item.book?.title}</h4>
+                                                        <h4 className="text-xs font-black text-black truncate group-hover/item:text-amber-600 transition-colors">{item.product?.title}</h4>
                                                         <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-tight">{item.quantity} x {item.price.toFixed(2)} MAD</p>
                                                     </div>
                                                 </div>

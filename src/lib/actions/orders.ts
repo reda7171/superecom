@@ -44,7 +44,7 @@ export async function getOrders() {
             include: {
                 items: {
                     include: {
-                        book: {
+                        product: {
                             select: {
                                 id: true,
                                 title: true,
@@ -129,11 +129,11 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
             const itemsWithCost = await Promise.all(data.items.map(async (item) => {
                 let costPrice = 0
                 if (item.type === 'BOOK') {
-                    const book = await tx.book.findUnique({
+                    const product = await tx.product.findUnique({
                         where: { id: item.productId },
                         select: { costPrice: true }
                     })
-                    costPrice = book?.costPrice || 0
+                    costPrice = product?.costPrice || 0
                 } else if (item.type === 'PACK') {
                     const pack = await tx.pack.findUnique({
                         where: { id: item.productId },
@@ -178,7 +178,7 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
                     items: {
                         create: itemsWithCost.map(item => ({
                             type: item.type,
-                            bookId: item.type === 'BOOK' ? item.productId : null,
+                            productId: item.type === 'BOOK' ? item.productId : null,
                             packId: item.type === 'PACK' ? item.productId : null,
                             giftId: item.type === 'GIFT' ? item.productId : null,
                             digitalProductId: item.type === 'DIGITAL' ? item.productId : null,
@@ -194,7 +194,7 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
             // Mettre à jour le stock des livres et accessoires
             for (const item of data.items) {
                 if (item.type === 'BOOK') {
-                    const updatedBook = await tx.book.update({
+                    const updatedBook = await tx.product.update({
                         where: { id: item.productId },
                         data: { stock: { decrement: item.quantity } }
                     })
@@ -223,7 +223,7 @@ export async function createOrder(input: z.infer<typeof OrderSchema>) {
         if (!cookieStore.get('userEmail')) {
             cookieStore.set('userEmail', data.email, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
+                secure: true,
                 sameSite: 'lax',
                 maxAge: 60 * 60 * 24 * 30 // 30 jours 
             })
@@ -262,7 +262,7 @@ export async function getOrderById(orderId: string) {
             include: {
                 items: {
                     include: {
-                        book: true,
+                        product: true,
                         pack: true
                     }
                 }

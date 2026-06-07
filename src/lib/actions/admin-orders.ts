@@ -23,7 +23,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
             include: {
                 items: {
                     include: {
-                        book: { select: { id: true, title: true } }
+                        product: { select: { id: true, title: true } }
                     }
                 }
             }
@@ -55,9 +55,9 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
             // Réintégrer le stock si retour/annulation d'une commande qui avait décrémenté le stock
             if (isNowReturned && !wasNeverShipped) {
                 for (const item of order.items) {
-                    if (item.type === 'BOOK' && item.bookId) {
-                        await tx.book.update({
-                            where: { id: item.bookId },
+                    if (item.type === 'BOOK' && item.productId) {
+                        await tx.product.update({
+                            where: { id: item.productId },
                             data: { stock: { increment: item.quantity } }
                         })
                     }
@@ -154,7 +154,7 @@ export async function getAllOrders() {
             include: {
                 items: {
                     include: {
-                        book: {
+                        product: {
                             select: {
                                 id: true,
                                 title: true,
@@ -195,7 +195,7 @@ export async function getOrderById(orderId: string) {
             include: {
                 items: {
                     include: {
-                        book: {
+                        product: {
                             select: {
                                 id: true,
                                 title: true,
@@ -249,7 +249,7 @@ export async function syncOrderToWithYou(orderId: string) {
             adressedest: order.address,
             prixcolis: order.total.toString(),
             refcolis: order.id,
-            observation: `Commande Riwaya #${order.id.slice(0, 8)}`
+            observation: `Commande SuperEcom #${order.id.slice(0, 8)}`
         }
 
         // Créer le colis sur WithYou

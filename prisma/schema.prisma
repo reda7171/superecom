@@ -71,7 +71,7 @@ model User {
   facebook          String?        @db.VarChar(100)
   twitter           String?        @db.VarChar(100)
   phone             String?        @db.VarChar(20)
-  ownedBooks        ExchangeBook[] @relation("OwnedBooks")
+  ownedBooks        ExchangeProduct[] @relation("OwnedProducts")
   sentExchanges     Exchange[]     @relation("SentExchanges")
   receivedExchanges Exchange[]     @relation("ReceivedExchanges")
   messages          Message[]
@@ -90,7 +90,7 @@ model User {
   loginHistory      LoginHistory[]
 
   // Marketplace relations
-  sellerBooks      Book[]      @relation("SellerBooks")
+  sellerBooks      Product[]      @relation("SellerProducts")
   sellerOrders     Order[]     @relation("SellerOrders")
   sellerOrderItems OrderItem[] @relation("SellerOrderItems")
 
@@ -114,7 +114,7 @@ model LoginHistory {
 }
 
 
-model Book {
+model Product {
   id              String        @id @default(uuid())
   title           String        @db.VarChar(255)
   author          String        @db.VarChar(255)
@@ -143,15 +143,15 @@ model Book {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   orderItems      OrderItem[]
-  packBooks       PackBook[]
+  packBooks       PackProduct[]
   readingLists    ReadingList[]
   reviews         Review[]
   wishlists       Wishlist[]
-  posts           Post[]        @relation("PostBooks")
+  posts           Post[]        @relation("PostProducts")
 
   // Marketplace fields
   sellerId String?
-  seller   User?   @relation("SellerBooks", fields: [sellerId], references: [id])
+  seller   User?   @relation("SellerProducts", fields: [sellerId], references: [id])
 
   @@index([category])
   @@index([active])
@@ -160,7 +160,7 @@ model Book {
   @@index([price, active])
   @@index([createdAt])
   @@index([language])
-  @@map("books")
+  @@map("products")
 }
 
 model Pack {
@@ -176,24 +176,24 @@ model Pack {
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
   orderItems     OrderItem[]
-  books          PackBook[]
+  products          PackProduct[]
   wishlists      Wishlist[]
 
   @@index([active])
   @@map("packs")
 }
 
-model PackBook {
+model PackProduct {
   id     String @id @default(uuid())
   packId String
-  bookId String
-  book   Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   pack   Pack   @relation(fields: [packId], references: [id], onDelete: Cascade)
 
-  @@unique([packId, bookId])
+  @@unique([packId, productId])
   @@index([packId])
-  @@index([bookId])
-  @@map("pack_books")
+  @@index([productId])
+  @@map("pack_products")
 }
 
 model Order {
@@ -278,11 +278,11 @@ model OrderItem {
   quantity         Int             @default(1)
   price            Float // Prix de vente au moment de la commande
   costPrice        Float           @default(0) // Prix de revient au moment de la commande
-  bookId           String?
+  productId           String?
   packId           String?
   giftId           String?
   digitalProductId String?
-  book             Book?           @relation(fields: [bookId], references: [id])
+  product             Product?           @relation(fields: [productId], references: [id])
   order            Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
   pack             Pack?           @relation(fields: [packId], references: [id])
   gift             Gift?           @relation(fields: [giftId], references: [id])
@@ -295,11 +295,11 @@ model OrderItem {
   seller   User?   @relation("SellerOrderItems", fields: [sellerId], references: [id])
 
   @@index([orderId])
-  @@index([bookId])
+  @@index([productId])
   @@index([packId])
   @@index([giftId])
   @@index([extraProductId])
-  @@index([bookId, type])
+  @@index([productId, type])
   @@index([packId, type])
   @@index([giftId, type])
   @@map("order_items")
@@ -329,7 +329,7 @@ model Coupon {
 
 model Review {
   id         String   @id @default(uuid())
-  bookId     String
+  productId     String
   fullName   String   @db.VarChar(255)
   city       String?  @db.VarChar(100)
   image      String?  @db.VarChar(500)
@@ -337,20 +337,20 @@ model Review {
   comment    String   @db.Text
   isApproved Boolean  @default(false)
   createdAt  DateTime @default(now())
-  book       Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  product       Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@index([bookId])
+  @@index([productId])
   @@index([isApproved])
   @@map("reviews")
 }
 
-model ExchangeBook {
+model ExchangeProduct {
   id           String        @id @default(uuid())
   ownerId      String
   title        String
   author       String
   isbn         String?
-  condition    BookCondition @default(GOOD)
+  condition    ProductCondition @default(GOOD)
   description  String?       @db.Text
   image        String?       @db.LongText
   language     String        @default("fr")
@@ -358,24 +358,24 @@ model ExchangeBook {
   status       String        @default("AVAILABLE")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  owner        User          @relation("OwnedBooks", fields: [ownerId], references: [id], onDelete: Cascade)
-  offeredIn    Exchange[]    @relation("BookOffered")
-  requestedIn  Exchange[]    @relation("BookRequested")
+  owner        User          @relation("OwnedProducts", fields: [ownerId], references: [id], onDelete: Cascade)
+  offeredIn    Exchange[]    @relation("ProductOffered")
+  requestedIn  Exchange[]    @relation("ProductRequested")
   reports      Report[]
 
   @@index([ownerId])
   @@index([status])
   @@index([status, createdAt])
   @@index([exchangeType])
-  @@map("exchange_books")
+  @@map("exchange_products")
 }
 
 model Exchange {
   id              String         @id @default(uuid())
   requesterId     String
   responderId     String
-  bookOfferedId   String?
-  bookRequestedId String
+  productOfferedId   String?
+  productRequestedId String
   type            ExchangeType   @default(DIRECT)
   status          ExchangeStatus @default(PENDING)
   creditsAmount   Int?
@@ -386,8 +386,8 @@ model Exchange {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   chat            Chat?
-  bookOffered     ExchangeBook?  @relation("BookOffered", fields: [bookOfferedId], references: [id])
-  bookRequested   ExchangeBook   @relation("BookRequested", fields: [bookRequestedId], references: [id])
+  productOffered     ExchangeProduct?  @relation("ProductOffered", fields: [productOfferedId], references: [id])
+  productRequested   ExchangeProduct   @relation("ProductRequested", fields: [productRequestedId], references: [id])
   requester       User           @relation("SentExchanges", fields: [requesterId], references: [id])
   responder       User           @relation("ReceivedExchanges", fields: [responderId], references: [id])
   rating          Rating?
@@ -396,8 +396,8 @@ model Exchange {
   @@index([responderId])
   @@index([status])
   @@index([status, createdAt])
-  @@index([bookOfferedId], map: "exchanges_bookOfferedId_fkey")
-  @@index([bookRequestedId], map: "exchanges_bookRequestedId_fkey")
+  @@index([productOfferedId], map: "exchanges_bookOfferedId_fkey")
+  @@index([productRequestedId], map: "exchanges_bookRequestedId_fkey")
   @@map("exchanges")
 }
 
@@ -468,16 +468,16 @@ model Report {
   status       String        @default("PENDING")
   reporterId   String
   targetUserId String?
-  targetBookId String?
+  targetProductId String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   reporter     User          @relation("ReportsGiven", fields: [reporterId], references: [id])
-  targetBook   ExchangeBook? @relation(fields: [targetBookId], references: [id])
+  targetProduct   ExchangeProduct? @relation(fields: [targetProductId], references: [id])
   targetUser   User?         @relation("ReportsReceived", fields: [targetUserId], references: [id])
 
   @@index([reporterId])
   @@index([targetUserId])
-  @@index([targetBookId])
+  @@index([targetProductId])
   @@index([status])
   @@map("reports")
 }
@@ -485,17 +485,17 @@ model Report {
 model Wishlist {
   id        String   @id @default(uuid())
   userId    String
-  bookId    String?
+  productId    String?
   packId    String?
   title     String
   author    String?
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  book      Book?    @relation(fields: [bookId], references: [id])
+  product      Product?    @relation(fields: [productId], references: [id])
   pack      Pack?    @relation(fields: [packId], references: [id])
 
   @@index([userId])
-  @@index([bookId])
+  @@index([productId])
   @@index([packId])
   @@map("wishlists")
 }
@@ -551,7 +551,7 @@ model MenuItem {
 model ReadingList {
   id          String        @id @default(uuid())
   userId      String
-  bookId      String?
+  productId      String?
   title       String
   author      String
   cover       String?       @db.LongText
@@ -562,12 +562,12 @@ model ReadingList {
   finishedAt  DateTime?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-  book        Book?         @relation(fields: [bookId], references: [id])
+  product        Product?         @relation(fields: [productId], references: [id])
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
-  @@index([bookId], map: "reading_list_bookId_fkey")
+  @@index([productId], map: "reading_list_bookId_fkey")
   @@map("reading_list")
 }
 
@@ -589,7 +589,7 @@ model Post {
   tags        String?   @db.Text
   language    String    @default("fr") @db.VarChar(10)
   comments    Comment[]
-  books       Book[]    @relation("PostBooks")
+  products       Product[]    @relation("PostProducts")
 
   @@index([slug])
   @@index([published])
@@ -664,7 +664,7 @@ enum ExchangeStatus {
   CANCELLED
 }
 
-enum BookCondition {
+enum ProductCondition {
   NEW
   GOOD
   USED
@@ -925,7 +925,7 @@ model MarketingAsset {
   name      String   @unique
   url       String
   type      String   // CREATIVE, PACK, DESCRIPTION
-  bookId    String?
+  productId    String?
   packId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

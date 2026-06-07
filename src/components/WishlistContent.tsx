@@ -87,7 +87,7 @@ export default function WishlistContent({ isAuthenticated = false }: WishlistCon
                     </div>
 
                     <Link
-                        href="/books"
+                        href="/products"
                         className="inline-flex items-center gap-4 px-10 py-6 bg-black text-white rounded-full font-black uppercase tracking-widest hover:bg-gray-800 transition-all hover:scale-105 shadow-2xl hover:shadow-black/20 group"
                     >
                         <span>{t('ContinueShopping')}</span>

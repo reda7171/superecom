@@ -20,10 +20,10 @@ export async function GET() {
             })
 
             // Réparation automatique des IDs manquants pour les anciens assets
-            const needsRepair = assets.filter(a => !a.bookId && !a.packId)
+            const needsRepair = assets.filter(a => !a.productId && !a.packId)
             if (needsRepair.length > 0) {
                 const [allBooks, allPacks] = await Promise.all([
-                    prisma.book.findMany({ select: { id: true, title: true } }),
+                    prisma.product.findMany({ select: { id: true, title: true } }),
                     prisma.pack.findMany({ select: { id: true, name: true } })
                 ])
                 const getSlug = (text: string) => text.replace(/[^a-z0-9]/gi, '_').toLowerCase()
@@ -32,22 +32,22 @@ export async function GET() {
                     const nameParts = asset.name.split('_')
                     if (nameParts.length >= 3) {
                         const slug = nameParts.slice(1, -1).join('_')
-                        let bookId = null
+                        let productId = null
                         let packId = null
 
                         if (asset.type === 'PACK') {
                             packId = allPacks.find(p => getSlug(p.name) === slug)?.id || null
                         } else {
-                            bookId = allBooks.find(b => getSlug(b.title) === slug)?.id || null
+                            productId = allBooks.find(b => getSlug(b.title) === slug)?.id || null
                         }
 
-                        if (bookId || packId) {
+                        if (productId || packId) {
                             await prisma.marketingAsset.update({
                                 where: { id: asset.id },
-                                data: { bookId, packId }
+                                data: { productId, packId }
                             })
                             // Mettre à jour l'objet en mémoire pour le retour immédiat
-                            asset.bookId = bookId
+                            asset.productId = productId
                             asset.packId = packId
                         }
                     }
@@ -60,7 +60,7 @@ export async function GET() {
 
         // Si la table n'existe pas ou qu'elle est vide, on scanne le disque
         if (!tableExists || assets.length === 0) {
-            const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'books')
+            const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'products')
             try {
                 const files = await fs.readdir(uploadDir)
                 const marketingFiles = files.filter(file => 
@@ -74,7 +74,7 @@ export async function GET() {
                     
                     // Pré-charger les livres et packs pour le matching (plus efficace qu'une requête par fichier)
                     const [allBooks, allPacks] = await Promise.all([
-                        prisma.book.findMany({ select: { id: true, title: true } }),
+                        prisma.product.findMany({ select: { id: true, title: true } }),
                         prisma.pack.findMany({ select: { id: true, name: true } })
                     ])
 
@@ -86,7 +86,7 @@ export async function GET() {
                         if (file.startsWith('desc_')) type = 'DESCRIPTION'
 
                         // Tenter de retrouver l'ID
-                        let bookId = null
+                        let productId = null
                         let packId = null
                         const nameParts = file.split('_')
                         if (nameParts.length >= 3) {
@@ -94,7 +94,7 @@ export async function GET() {
                             if (type === 'PACK') {
                                 packId = allPacks.find(p => getSlug(p.name) === slug)?.id || null
                             } else {
-                                bookId = allBooks.find(b => getSlug(b.title) === slug)?.id || null
+                                productId = allBooks.find(b => getSlug(b.title) === slug)?.id || null
                             }
                         }
 
@@ -102,9 +102,9 @@ export async function GET() {
                         
                         const assetData = {
                             name: file,
-                            url: `/uploads/books/${file}`,
+                            url: `/uploads/products/${file}`,
                             type,
-                            bookId,
+                            productId,
                             packId,
                             createdAt: stats.mtime
                         }
@@ -118,14 +118,14 @@ export async function GET() {
                                     update: { 
                                         url: assetData.url, 
                                         type,
-                                        bookId,
+                                        productId,
                                         packId
                                     },
                                     create: { 
                                         name: file, 
                                         url: assetData.url, 
                                         type,
-                                        bookId,
+                                        productId,
                                         packId
                                     }
                                 })
@@ -154,7 +154,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     try {
         await verifyAdmin()
-        const { name, url, type, bookId, packId } = await request.json()
+        const { name, url, type, productId, packId } = await request.json()
 
         if (!name || !url) {
             return NextResponse.json({ error: 'Name and URL are required' }, { status: 400 })
@@ -165,14 +165,14 @@ export async function POST(request: NextRequest) {
             update: { 
                 url, 
                 type: type || 'CREATIVE',
-                bookId,
+                productId,
                 packId
             },
             create: { 
                 name, 
                 url, 
                 type: type || 'CREATIVE',
-                bookId,
+                productId,
                 packId
             }
         })

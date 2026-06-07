@@ -24,7 +24,7 @@ export async function getOrCreateChat(exchangeId: string) {
                         }
                     }
                 },
-                bookRequested: true
+                productRequested: true
             }
         })
 
@@ -49,7 +49,7 @@ export async function getOrCreateChat(exchangeId: string) {
             include: {
                 exchange: {
                     include: {
-                        bookRequested: true
+                        productRequested: true
                     }
                 },
                 messages: {

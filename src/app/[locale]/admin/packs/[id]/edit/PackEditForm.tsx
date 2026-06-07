@@ -8,7 +8,7 @@ import { updatePack, type PackInput } from '@/lib/actions/packs'
 import PackCreativeModal from '@/components/admin/PackCreativeModal'
 import ImageInput from '@/components/admin/ImageInput'
 
-interface Book {
+interface Product {
     id: string
     title: string
     author: string
@@ -30,11 +30,11 @@ interface PackEditFormProps {
         shippingFees: number
         selectedBookIds: string[]
     }
-    books: Book[]
+    products: Product[]
     whatsappPhone?: string
 }
 
-export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFormProps) {
+export default function PackEditForm({ pack, products, whatsappPhone }: PackEditFormProps) {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -47,23 +47,23 @@ export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFor
     const [description, setDescription] = useState(pack.description)
     const [onlyAvailable, setOnlyAvailable] = useState(true)
 
-    function toggleBook(bookId: string) {
+    function toggleBook(productId: string) {
         setSelectedBooks(prev =>
-            prev.includes(bookId)
-                ? prev.filter(id => id !== bookId)
-                : [...prev, bookId]
+            prev.includes(productId)
+                ? prev.filter(id => id !== productId)
+                : [...prev, productId]
         )
     }
 
     function toggleAll() {
-        if (selectedBooks.length === books.length) {
+        if (selectedBooks.length === products.length) {
             setSelectedBooks([])
         } else {
-            setSelectedBooks(books.map(b => b.id))
+            setSelectedBooks(products.map(b => b.id))
         }
     }
 
-    function toggleAllInCategory(categoryBooks: Book[]) {
+    function toggleAllInCategory(categoryBooks: Product[]) {
         const categoryBookIds = categoryBooks.map(b => b.id)
         const allSelected = categoryBookIds.every(id => selectedBooks.includes(id))
         
@@ -108,25 +108,25 @@ export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFor
         }
     }
 
-    const selectedBooksData = books.filter(b => selectedBooks.includes(b.id))
+    const selectedBooksData = products.filter(b => selectedBooks.includes(b.id))
     const totalOriginalPrice = selectedBooksData.reduce((sum, b) => sum + b.price, 0)
 
-    // Filter and group books
-    const filteredBooks = books.filter(book => {
-        const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                             book.author.toLowerCase().includes(searchQuery.toLowerCase())
-        const matchesAvailability = onlyAvailable ? (book.active && book.stock > 0) : true
+    // Filter and group products
+    const filteredBooks = products.filter(product => {
+        const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             product.author.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesAvailability = onlyAvailable ? (product.active && product.stock > 0) : true
         return matchesSearch && matchesAvailability
     })
 
-    const groupedBooks = filteredBooks.reduce((acc, book) => {
-        const category = book.category || 'Non catégorisé'
+    const groupedBooks = filteredBooks.reduce((acc, product) => {
+        const category = product.category || 'Non catégorisé'
         if (!acc[category]) {
             acc[category] = []
         }
-        acc[category].push(book)
+        acc[category].push(product)
         return acc
-    }, {} as Record<string, typeof books>)
+    }, {} as Record<string, typeof products>)
 
     return (
         <div>
@@ -275,7 +275,7 @@ export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFor
                         </div>
                     </div>
 
-                    {/* Book Selection */}
+                    {/* Product Selection */}
                     <div className="bg-white rounded-lg border border-gray-200 p-6">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
                             <div>
@@ -288,7 +288,7 @@ export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFor
                                         onClick={toggleAll}
                                         className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                                     >
-                                        {selectedBooks.length === books.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                                        {selectedBooks.length === products.length ? 'Tout désélectionner' : 'Tout sélectionner'}
                                     </button>
                                     <label className="flex items-center gap-2 cursor-pointer group ml-4">
                                         <div className="relative">
@@ -334,35 +334,35 @@ export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFor
                                             </button>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {categoryBooks.map((book) => (
+                                            {categoryBooks.map((product) => (
                                                 <label
-                                                    key={book.id}
-                                                    className={`flex items-center p-4 border-2 rounded-2xl cursor-pointer transition-all ${selectedBooks.includes(book.id)
+                                                    key={product.id}
+                                                    className={`flex items-center p-4 border-2 rounded-2xl cursor-pointer transition-all ${selectedBooks.includes(product.id)
                                                             ? 'border-blue-600 bg-blue-50'
                                                             : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
                                                         }`}
                                                 >
                                                     <input
                                                         type="checkbox"
-                                                        checked={selectedBooks.includes(book.id)}
-                                                        onChange={() => toggleBook(book.id)}
+                                                        checked={selectedBooks.includes(product.id)}
+                                                        onChange={() => toggleBook(product.id)}
                                                         className="w-5 h-5 text-blue-600 border-gray-300 rounded-lg focus:ring-blue-500"
                                                     />
                                                     <div className="ml-4 flex-1">
                                                         <p className="text-sm font-black text-gray-900 leading-tight">
-                                                            {book.title}
-                                                            {!book.active && (
+                                                            {product.title}
+                                                            {!product.active && (
                                                                 <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded">Inactif</span>
                                                             )}
                                                         </p>
                                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
-                                                            {book.author}
-                                                            <span className={`ml-3 ${book.stock > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                                                Stock: {book.stock}
+                                                            {product.author}
+                                                            <span className={`ml-3 ${product.stock > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                                                Stock: {product.stock}
                                                             </span>
                                                         </p>
                                                     </div>
-                                                    <span className="text-sm font-black text-black ml-2">{book.price} MAD</span>
+                                                    <span className="text-sm font-black text-black ml-2">{product.price} MAD</span>
                                                 </label>
                                             ))}
                                         </div>
@@ -393,9 +393,9 @@ export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFor
                             <div className="mb-6">
                                 <p className="text-sm font-medium text-gray-700 mb-2">Livres inclus:</p>
                                 <ul className="space-y-1">
-                                    {selectedBooksData.map((book) => (
-                                        <li key={book.id} className="text-xs text-gray-600">
-                                            • {book.title}
+                                    {selectedBooksData.map((product) => (
+                                        <li key={product.id} className="text-xs text-gray-600">
+                                            • {product.title}
                                         </li>
                                     ))}
                                 </ul>
@@ -446,7 +446,7 @@ export default function PackEditForm({ pack, books, whatsappPhone }: PackEditFor
                     description: description,
                     price: pack.price,
                     isFreeDelivery: isFreeDelivery,
-                    books: selectedBooksData,
+                    products: selectedBooksData,
                     whatsappNumber: whatsappPhone
                 }}
             />

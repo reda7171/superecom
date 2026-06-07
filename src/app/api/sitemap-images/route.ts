@@ -2,21 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // API pour générer un sitemap dynamique des images
 export async function GET(request: NextRequest) {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://superEcom.store'
 
     // Récupérer les images depuis la base de données
     const { prisma } = await import('@/lib/prisma')
 
-    const [books, packs] = await Promise.all([
-        prisma.book.findMany({
+    const [products, packs] = await Promise.all([
+        prisma.product.findMany({
             where: { active: true },
             select: { id: true, image: true, title: true, updatedAt: true },
         }),
         prisma.pack.findMany({
             include: {
-                books: {
+                products: {
                     select: {
-                        book: {
+                        product: {
                             select: { image: true }
                         }
                     }
@@ -25,18 +25,18 @@ export async function GET(request: NextRequest) {
         }),
     ])
 
-    const bookImages = books.map((book) => ({
-        loc: book.image.startsWith('http') ? book.image : `${baseUrl}${book.image}`,
-        title: book.title,
-        caption: book.title,
-        lastmod: book.updatedAt?.toISOString() || new Date().toISOString(),
+    const bookImages = products.map((product) => ({
+        loc: product.image.startsWith('http') ? product.image : `${baseUrl}${product.image}`,
+        title: product.title,
+        caption: product.title,
+        lastmod: product.updatedAt?.toISOString() || new Date().toISOString(),
     }))
 
     const packImages = packs.map((pack) => ({
         loc: pack.image?.startsWith('http')
             ? pack.image
-            : pack.books[0]?.book.image
-                ? `${baseUrl}${pack.books[0].book.image}`
+            : pack.products[0]?.product.image
+                ? `${baseUrl}${pack.products[0].product.image}`
                 : '',
         title: pack.name,
         caption: pack.name,

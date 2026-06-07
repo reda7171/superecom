@@ -18,11 +18,11 @@ export async function getTopReaders(limit: number = 10): Promise<TopReader[]> {
                 status: 'COMPLETED'
             },
             _count: {
-                bookId: true
+                productId: true
             },
             orderBy: {
                 _count: {
-                    bookId: 'desc'
+                    productId: 'desc'
                 }
             },
             take: limit
@@ -53,7 +53,7 @@ export async function getTopReaders(limit: number = 10): Promise<TopReader[]> {
                 id: reader.userId,
                 fullName: user?.fullName || 'Utilisateur inconnu',
                 image: user?.image || null,
-                readCount: reader._count.bookId,
+                readCount: reader._count.productId,
                 city: user?.city || null
             }
         }).sort((a, b) => b.readCount - a.readCount)

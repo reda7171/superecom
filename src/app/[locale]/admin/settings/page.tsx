@@ -6,7 +6,7 @@ import AdvancedSettingsForm from '@/components/admin/AdvancedSettingsForm'
 import { Settings, Zap } from 'lucide-react'
 
 export const metadata = {
-    title: 'Paramètres du Site | Admin Riwaya',
+    title: 'Paramètres du Site | Admin SuperEcom',
     description: 'Configuration des paramètres du site'
 }
 

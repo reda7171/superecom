@@ -1,12 +1,12 @@
 'use client';
 
 import { Plus, Store } from 'lucide-react';
-import { Book, Pack } from '@prisma/client';
+import { Product, Pack } from '@prisma/client';
 
 interface POSProductCardProps {
-  product: Book | Pack;
+  product: Product | Pack;
   type: 'BOOK' | 'PACK';
-  onAdd: (product: Book | Pack, type: 'BOOK' | 'PACK') => void;
+  onAdd: (product: Product | Pack, type: 'BOOK' | 'PACK') => void;
 }
 
 export default function POSProductCard({ product, type, onAdd }: POSProductCardProps) {
@@ -26,7 +26,7 @@ export default function POSProductCard({ product, type, onAdd }: POSProductCardP
             alt={name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             loading="lazy"
-            onError={(e) => { e.currentTarget.src = '/book-placeholder.png' }}
+            onError={(e) => { e.currentTarget.src = '/product-placeholder.png' }}
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center text-gray-300 gap-1 bg-gray-50">

@@ -24,7 +24,7 @@ export async function getAllAuthors() {
         await verifyAdmin()
 
         // 1. Récupérer tous les auteurs uniques des livres
-        const uniqueAuthors = await prisma.book.groupBy({
+        const uniqueAuthors = await prisma.product.groupBy({
             by: ['author'],
             _count: {
                 _all: true

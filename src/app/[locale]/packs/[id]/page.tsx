@@ -1,7 +1,7 @@
 import { getPackById } from '@/lib/db/packs'
 import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
-import BookCard from '@/components/BookCard'
+import ProductCard from '@/components/ProductCard'
 import AddToCartButton from '@/components/AddToCartButton'
 import { normalizeImage } from '@/lib/utils'
 import { Link } from '@/i18n/routing'
@@ -25,18 +25,18 @@ export async function generateMetadata({
 
     if (!pack) {
         return {
-            title: 'Pack introuvable | Riwaya',
+            title: 'Pack introuvable | SuperEcom',
         }
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
-    const imageUrl = pack.image?.startsWith('http') ? pack.image : (pack.books[0]?.book.image || '')
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://superEcom.store'
+    const imageUrl = pack.image?.startsWith('http') ? pack.image : (pack.products[0]?.product.image || '')
 
-    const totalOriginalPrice = pack.books.reduce((sum, pb) => sum + pb.book.price, 0)
+    const totalOriginalPrice = pack.products.reduce((sum, pb) => sum + pb.product.price, 0)
     const savings = totalOriginalPrice - pack.price
     const savingsPercent = Math.round((savings / totalOriginalPrice) * 100)
 
-    const bookTitles = pack.books.map(pb => pb.book.title).join(', ')
+    const bookTitles = pack.products.map(pb => pb.product.title).join(', ')
 
     const keywords = [
         pack.name,
@@ -45,18 +45,18 @@ export async function generateMetadata({
         'packs livres',
         'livres en promotion maroc',
         `économiser ${savingsPercent}%`,
-        ...pack.books.map(pb => pb.book.title),
-        ...pack.books.map(pb => pb.book.author),
+        ...pack.products.map(pb => pb.product.title),
+        ...pack.products.map(pb => pb.product.author),
         'librairie en ligne maroc',
     ]
 
     return {
-        title: `${pack.name} - Pack de ${pack.books.length} Livres | Riwaya`,
-        description: `Achetez le pack "${pack.name}" sur Riwaya. ${pack.books.length} livres sélectionnés : ${bookTitles.slice(0, 100)}... Économisez ${savingsPercent}% (${savings} MAD). Prix: ${pack.price} MAD. Livraison rapide au Maroc.`,
+        title: `${pack.name} - Pack de ${pack.products.length} Livres | SuperEcom`,
+        description: `Achetez le pack "${pack.name}" sur SuperEcom. ${pack.products.length} livres sélectionnés : ${bookTitles.slice(0, 100)}... Économisez ${savingsPercent}% (${savings} MAD). Prix: ${pack.price} MAD. Livraison rapide au Maroc.`,
         keywords,
         openGraph: {
             title: `${pack.name} - Économisez ${savingsPercent}%`,
-            description: pack.description?.slice(0, 160) || `Pack de ${pack.books.length} livres sélectionnés. ${savings} MAD d'économie.`,
+            description: pack.description?.slice(0, 160) || `Pack de ${pack.products.length} livres sélectionnés. ${savings} MAD d'économie.`,
             images: imageUrl ? [imageUrl] : [],
             type: 'website',
             locale: locale === 'ar' ? 'ar_MA' : locale === 'en' ? 'en_MA' : 'fr_MA',
@@ -65,7 +65,7 @@ export async function generateMetadata({
         twitter: {
             card: 'summary_large_image',
             title: `${pack.name} - ${savingsPercent}% de réduction`,
-            description: `Pack de ${pack.books.length} livres à ${pack.price} MAD au lieu de ${totalOriginalPrice} MAD`,
+            description: `Pack de ${pack.products.length} livres à ${pack.price} MAD au lieu de ${totalOriginalPrice} MAD`,
             images: imageUrl ? [imageUrl] : [],
         },
         alternates: {
@@ -101,21 +101,21 @@ export default async function PackDetailPage({
         notFound()
     }
 
-    const totalOriginalPrice = pack.books.reduce((sum, pb) => sum + pb.book.price, 0)
+    const totalOriginalPrice = pack.products.reduce((sum, pb) => sum + pb.product.price, 0)
     const savings = totalOriginalPrice - pack.price
     const savingsPercent = Math.round((savings / totalOriginalPrice) * 100)
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://superEcom.store'
     const jsonLd = [
         {
             '@context': 'https://schema.org',
             '@type': 'ProductGroup',
             name: pack.name,
-            description: pack.description || `Pack de ${pack.books.length} livres sélectionné par Riwaya.`,
-            image: pack.image || pack.books[0]?.book.image,
+            description: pack.description || `Pack de ${pack.products.length} livres sélectionné par SuperEcom.`,
+            image: pack.image || pack.products[0]?.product.image,
             brand: {
                 '@type': 'Organization',
-                name: 'Riwaya',
+                name: 'SuperEcom',
             },
             offers: {
                 '@type': 'AggregateOffer',
@@ -126,15 +126,15 @@ export default async function PackDetailPage({
                 availability: 'https://schema.org/InStock',
                 url: `${baseUrl}/packs/${pack.id}`,
             },
-            hasVariant: pack.books.map((pb) => ({
-                '@type': 'Book',
-                name: pb.book.title,
+            hasVariant: pack.products.map((pb) => ({
+                '@type': 'Product',
+                name: pb.product.title,
                 author: {
                     '@type': 'Person',
-                    name: pb.book.author,
+                    name: pb.product.author,
                 },
-                image: pb.book.image,
-                isbn: pb.book.isbn,
+                image: pb.product.image,
+                isbn: pb.product.isbn,
             })),
         },
         {
@@ -224,11 +224,11 @@ export default async function PackDetailPage({
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-2 gap-6 w-full max-w-md">
-                                        {pack.books.slice(0, 4).map((pb, i) => (
-                                            <div key={pb.book.id} className={`relative aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 hover:scale-105 transform ${i % 2 === 0 ? '-rotate-3 mt-6' : 'rotate-3 mb-6'}`}>
+                                        {pack.products.slice(0, 4).map((pb, i) => (
+                                            <div key={pb.product.id} className={`relative aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 hover:scale-105 transform ${i % 2 === 0 ? '-rotate-3 mt-6' : 'rotate-3 mb-6'}`}>
                                                 <ImageWithFallback
-                                                    src={pb.book.image}
-                                                    alt={pb.book.title}
+                                                    src={pb.product.image}
+                                                    alt={pb.product.title}
                                                     className="w-full h-full object-cover"
                                                 />
                                             </div>
@@ -241,7 +241,7 @@ export default async function PackDetailPage({
                             <div className="p-12 lg:p-20 flex flex-col justify-center">
                                 <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-black text-white rounded-full text-[10px] rtl:text-xs font-black uppercase tracking-[0.2em] rtl:tracking-normal mb-10 w-fit">
                                     <Package className="w-4 h-4" />
-                                    {t('VolumeSelection', { count: pack.books.length })}
+                                    {t('VolumeSelection', { count: pack.products.length })}
                                 </div>
 
                                 <h1 className="text-5xl md:text-7xl font-black text-black leading-none tracking-tighter mb-10">
@@ -270,12 +270,12 @@ export default async function PackDetailPage({
                                         {t('BundleContent')}
                                     </h3>
                                     <ul className="space-y-4">
-                                        {pack.books.map((pb) => (
-                                            <li key={pb.book.id} className="flex items-start gap-4">
+                                        {pack.products.map((pb) => (
+                                            <li key={pb.product.id} className="flex items-start gap-4">
                                                 <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center shrink-0 mt-0.5">
                                                     <Check className="w-3.5 h-3.5 text-white" />
                                                 </div>
-                                                <span className="text-xs rtl:text-sm font-black uppercase tracking-widest rtl:tracking-normal text-gray-400 group-hover:text-black transition-colors">{pb.book.title}</span>
+                                                <span className="text-xs rtl:text-sm font-black uppercase tracking-widest rtl:tracking-normal text-gray-400 group-hover:text-black transition-colors">{pb.product.title}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -293,7 +293,7 @@ export default async function PackDetailPage({
                                             id: pack.id,
                                             title: pack.name,
                                             price: pack.price,
-                                            image: pack.image || pack.books[0]?.book.image || '',
+                                            image: pack.image || pack.products[0]?.product.image || '',
                                             type: 'PACK',
                                             shippingFees: pack.shippingFees
                                         }}
@@ -315,20 +315,20 @@ export default async function PackDetailPage({
                         </div>
                     </div>
 
-                    {/* Books Details */}
+                    {/* Products Details */}
                     <section>
                         <div className="flex items-center justify-between mb-20 px-4">
                             <div className="flex items-center gap-6">
                                 <div className="w-16 h-16 bg-black text-white rounded-[1.5rem] flex items-center justify-center text-4xl font-black tracking-tighter">
-                                    {pack.books.length}
+                                    {pack.products.length}
                                 </div>
                                 <h2 className="text-4xl font-black text-black tracking-tighter leading-none">{t('VolumesInCollection')}<span className="text-gray-200">.</span></h2>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-                            {pack.books.map((pb) => (
-                                <BookCard key={pb.book.id} {...pb.book} />
+                            {pack.products.map((pb) => (
+                                <ProductCard key={pb.product.id} {...pb.product} />
                             ))}
                         </div>
                     </section>

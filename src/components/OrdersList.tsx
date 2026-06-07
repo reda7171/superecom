@@ -77,10 +77,10 @@ export default function OrderList({ orders, locale }: OrderListProps) {
                                 <div key={item.id} className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-2xl hover:bg-gray-50/50 transition-colors">
                                     <div className="flex items-center gap-4 flex-grow">
                                         <div className="w-16 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0 border border-gray-100 shadow-sm">
-                                            {(item.book?.image || item.digitalProduct?.image) && (
+                                            {(item.product?.image || item.digitalProduct?.image) && (
                                                 <img
-                                                    src={item.book?.image || item.digitalProduct?.image}
-                                                    alt={item.book?.title || item.digitalProduct?.title}
+                                                    src={item.product?.image || item.digitalProduct?.image}
+                                                    alt={item.product?.title || item.digitalProduct?.title}
                                                     className="w-full h-full object-cover"
                                                 />
                                             )}
@@ -88,7 +88,7 @@ export default function OrderList({ orders, locale }: OrderListProps) {
                                         <div className="flex-grow">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <h4 className="font-black text-sm text-black line-clamp-1">
-                                                    {item.book?.title || item.pack?.name || item.digitalProduct?.title || 'Article'}
+                                                    {item.product?.title || item.pack?.name || item.digitalProduct?.title || 'Article'}
                                                 </h4>
                                                 {item.type === 'DIGITAL' && (
                                                     <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[8px] font-black uppercase tracking-widest rounded-md shrink-0">
@@ -150,7 +150,7 @@ export default function OrderList({ orders, locale }: OrderListProps) {
                             </div>
                         </div>
 
-                        {/* Tracking Info (If physical book) */}
+                        {/* Tracking Info (If physical product) */}
                         {order.trackingID && (
                             <div className="mt-6 pt-6 border-t border-gray-100 bg-gray-50/50 p-6 rounded-3xl space-y-4">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

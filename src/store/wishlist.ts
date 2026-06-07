@@ -8,7 +8,7 @@ export interface WishlistItem {
     price: number
     image: string
     author?: string // Pour les livres
-    slug: string // /books/id ou /packs/id
+    slug: string // /products/id ou /packs/id
     category?: string // Pour filtrer si besoin
 }
 
@@ -39,7 +39,7 @@ export const useWishlistStore = create<WishlistStore>()(
             clearWishlist: () => set({ items: [] }),
         }),
         {
-            name: 'riwaya-wishlist',
+            name: 'superEcom-wishlist',
             skipHydration: true, // On gère l'hydratation manuellement dans les composants pour éviter le mismatch
         }
     )

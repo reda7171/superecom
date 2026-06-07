@@ -28,7 +28,7 @@ export async function getAffiliates() {
             orderBy: { createdAt: 'desc' }
         })
 
-        // Fetch usage stats with items to count books
+        // Fetch usage stats with items to count products
         const orders = await prisma.order.findMany({
             where: {
                 couponCode: { in: affiliates.map(a => a.code) },
@@ -178,7 +178,7 @@ export async function getInfluencerDashboardData() {
             include: { 
                 items: {
                     include: {
-                        book: { select: { title: true } },
+                        product: { select: { title: true } },
                         pack: { select: { name: true } },
                         gift: { select: { name: true } }
                     }

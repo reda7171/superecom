@@ -76,7 +76,7 @@ const FEATURES = [
     },
     {
         key: 'feature_chatbot',
-        label: 'Assistant Riwaya',
+        label: 'Assistant SuperEcom',
         description: 'Active l\'assistant virtuel (ChatBot) sur toutes les pages du site.',
         icon: Zap,
         color: 'text-indigo-600'

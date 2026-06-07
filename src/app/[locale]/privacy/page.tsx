@@ -24,7 +24,7 @@ export default async function PrivacyPage() {
                                 <Lock className="w-5 h-5" /> 1. Introduction
                             </h2>
                             <p className="leading-relaxed">
-                                Chez <strong>Riwaya</strong>, accessible via riwaya.store, l'une de nos priorités majeures est la confidentialité de nos visiteurs. Ce document contient les types d'informations collectées et enregistrées par Riwaya et comment nous les utilisons.
+                                Chez <strong>SuperEcom</strong>, accessible via superEcom.store, l'une de nos priorités majeures est la confidentialité de nos visiteurs. Ce document contient les types d'informations collectées et enregistrées par SuperEcom et comment nous les utilisons.
                             </p>
                         </section>
 
@@ -33,7 +33,7 @@ export default async function PrivacyPage() {
                                 <Eye className="w-5 h-5" /> 2. Utilisation de Google AdSense
                             </h2>
                             <p className="leading-relaxed">
-                                Google, en tant que fournisseur tiers, utilise des cookies pour diffuser des annonces sur notre site. L'utilisation du cookie DART par Google lui permet de diffuser des annonces aux visiteurs de notre site en fonction de leur visite sur riwaya.store et d'autres sites sur Internet. Les visiteurs peuvent choisir de ne pas utiliser le cookie DART en consultant la politique de confidentialité du réseau d'annonces Google et de contenu.
+                                Google, en tant que fournisseur tiers, utilise des cookies pour diffuser des annonces sur notre site. L'utilisation du cookie DART par Google lui permet de diffuser des annonces aux visiteurs de notre site en fonction de leur visite sur superEcom.store et d'autres sites sur Internet. Les visiteurs peuvent choisir de ne pas utiliser le cookie DART en consultant la politique de confidentialité du réseau d'annonces Google et de contenu.
                             </p>
                         </section>
 
@@ -42,7 +42,7 @@ export default async function PrivacyPage() {
                                 <Database className="w-5 h-5" /> 3. Fichiers Journaux (Log Files)
                             </h2>
                             <p className="leading-relaxed">
-                                Riwaya suit une procédure standard d'utilisation des fichiers journaux. Ces fichiers enregistrent les visiteurs lorsqu'ils visitent des sites Web. Les informations collectées comprennent les adresses de protocole Internet (IP), le type de navigateur, le fournisseur de services Internet (FAI), l'horodatage, les pages de référence/sortie et éventuellement le nombre de clics.
+                                SuperEcom suit une procédure standard d'utilisation des fichiers journaux. Ces fichiers enregistrent les visiteurs lorsqu'ils visitent des sites Web. Les informations collectées comprennent les adresses de protocole Internet (IP), le type de navigateur, le fournisseur de services Internet (FAI), l'horodatage, les pages de référence/sortie et éventuellement le nombre de clics.
                             </p>
                         </section>
 
@@ -51,7 +51,7 @@ export default async function PrivacyPage() {
                                 <Bell className="w-5 h-5" /> 4. Cookies et Balises Web
                             </h2>
                             <p className="leading-relaxed">
-                                Comme tout autre site Web, Riwaya utilise des 'cookies'. Ces cookies sont utilisés pour stocker des informations, notamment les préférences des visiteurs et les pages du site Web auxquelles le visiteur a accédé. Ces informations sont utilisées pour optimiser l'expérience des utilisateurs en personnalisant le contenu de nos pages Web.
+                                Comme tout autre site Web, SuperEcom utilise des 'cookies'. Ces cookies sont utilisés pour stocker des informations, notamment les préférences des visiteurs et les pages du site Web auxquelles le visiteur a accédé. Ces informations sont utilisées pour optimiser l'expérience des utilisateurs en personnalisant le contenu de nos pages Web.
                             </p>
                         </section>
 
@@ -69,7 +69,7 @@ export default async function PrivacyPage() {
                                 <FileText className="w-5 h-5" /> 6. Informations pour les enfants
                             </h2>
                             <p className="leading-relaxed">
-                                Une autre de nos priorités est la protection des enfants lors de l'utilisation d'Internet. Nous encourageons les parents et les tuteurs à observer, participer et/ou surveiller et guider leur activité en ligne. Riwaya ne collecte sciemment aucune information personnelle identifiable auprès d'enfants de moins de 13 ans.
+                                Une autre de nos priorités est la protection des enfants lors de l'utilisation d'Internet. Nous encourageons les parents et les tuteurs à observer, participer et/ou surveiller et guider leur activité en ligne. SuperEcom ne collecte sciemment aucune information personnelle identifiable auprès d'enfants de moins de 13 ans.
                             </p>
                         </section>
                     </div>

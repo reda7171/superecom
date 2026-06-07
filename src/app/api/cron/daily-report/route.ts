@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         const totalRevenue = recentOrders.reduce((sum, order) => sum + order.total, 0)
 
         // 2. Vérification des stocks (Livres <= 5)
-        const lowStockBooks = await prisma.book.count({
+        const lowStockBooks = await prisma.product.count({
             where: {
                 stock: {
                     lte: 5

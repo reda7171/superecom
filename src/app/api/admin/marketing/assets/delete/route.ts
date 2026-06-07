@@ -15,7 +15,7 @@ export async function DELETE(req: NextRequest) {
 
         // Sécurité: Empêcher le path traversal
         const safeFilename = path.basename(filename)
-        const filePath = path.join(process.cwd(), 'public', 'uploads', 'books', safeFilename)
+        const filePath = path.join(process.cwd(), 'public', 'uploads', 'products', safeFilename)
 
         try {
             // Supprimer du système de fichiers

@@ -9,7 +9,7 @@ import { rateLimit, getIpIdentifier } from '@/lib/rate-limit'
 import { sendTelegramMessage } from '@/lib/telegram'
 
 const ReviewSchema = z.object({
-    bookId: z.string().uuid(),
+    productId: z.string().uuid(),
     fullName: z.string().min(3, 'Le nom doit contenir au moins 3 caractères'),
     rating: z.number().min(1, 'La note doit être entre 1 et 5').max(5, 'La note doit être entre 1 et 5'),
     comment: z.string().min(10, 'Le commentaire doit contenir au moins 10 caractères'),
@@ -29,7 +29,7 @@ export async function createReview(data: z.infer<typeof ReviewSchema>) {
         // Vérifier doublon (même nom pour même livre)
         const existing = await prisma.review.findFirst({
             where: {
-                bookId: validated.bookId,
+                productId: validated.productId,
                 fullName: validated.fullName
             }
         })
@@ -52,7 +52,7 @@ export async function createReview(data: z.infer<typeof ReviewSchema>) {
         const { sendReviewNotification } = await import('@/lib/telegram')
         sendReviewNotification(review).catch(console.error)
 
-        revalidatePath(`/books/${validated.bookId}`)
+        revalidatePath(`/products/${validated.productId}`)
         return { success: true }
     } catch (error: any) {
         if (error instanceof z.ZodError) {
@@ -63,10 +63,10 @@ export async function createReview(data: z.infer<typeof ReviewSchema>) {
     }
 }
 
-export async function getBookReviews(bookId: string) {
+export async function getBookReviews(productId: string) {
     // Public action for product pages
     return prisma.review.findMany({
-        where: { bookId, isApproved: true },
+        where: { productId, isApproved: true },
         orderBy: { createdAt: 'desc' }
     })
 }
@@ -76,7 +76,7 @@ export async function getPendingReviews() {
         await verifyAdmin()
         return prisma.review.findMany({
             where: { isApproved: false },
-            include: { book: true },
+            include: { product: true },
             orderBy: { createdAt: 'desc' }
         })
     } catch (error) {
@@ -122,7 +122,7 @@ export async function getAllReviews(filter?: 'all' | 'approved' | 'pending') {
                     ? { isApproved: false }
                     : {},
             include: {
-                book: {
+                product: {
                     select: {
                         id: true,
                         title: true,
@@ -145,12 +145,12 @@ export async function getAllReviews(filter?: 'all' | 'approved' | 'pending') {
 /**
  * Récupérer la note moyenne d'un livre
  */
-export async function getBookAverageRating(bookId: string) {
+export async function getBookAverageRating(productId: string) {
     try {
         // Public action
         const result = await prisma.review.aggregate({
             where: {
-                bookId,
+                productId,
                 isApproved: true,
             },
             _avg: {

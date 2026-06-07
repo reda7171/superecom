@@ -3,7 +3,7 @@ import { ShoppingBag, AlertCircle, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata = {
-    title: 'Commandes Jumia | Riwaya Admin'
+    title: 'Commandes Jumia | SuperEcom Admin'
 }
 
 export default async function JumiaOrdersPage({ params }: { params: Promise<{ locale: string }> }) {

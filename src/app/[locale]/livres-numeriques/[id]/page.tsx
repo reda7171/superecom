@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!product) return { title: 'Livre non trouvé' }
 
   return {
-    title: `${product.title} | Riwaya`,
+    title: `${product.title} | SuperEcom`,
     description: product.description,
   }
 }
@@ -86,7 +86,7 @@ export default async function DigitalProductPage({ params }: { params: Promise<{
                   {/* Badge PDF Overlay */}
                   <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-black/80 backdrop-blur-md rounded-full border border-white/10">
                     <FileText className="w-4 h-4 text-amber-400" />
-                    <span className="text-xs font-black text-white uppercase tracking-widest">E-Book PDF</span>
+                    <span className="text-xs font-black text-white uppercase tracking-widest">E-Product PDF</span>
                   </div>
                   {discount && discount > 0 && (
                     <div className="absolute top-4 right-4 flex items-center justify-center w-12 h-12 bg-amber-400 text-black font-black text-sm rounded-full rotate-12 shadow-lg">

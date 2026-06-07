@@ -54,7 +54,7 @@ export async function trackOrder(formData: FormData): Promise<TrackingResult> {
             include: {
                 items: {
                     include: {
-                        book: true,
+                        product: true,
                         pack: true,
                         gift: true,
                         digitalProduct: true

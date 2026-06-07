@@ -47,7 +47,7 @@ export default function ImageInput({ defaultValue, bookTitle }: ImageInputProps)
                     value={currentUrl}
                     onChange={(e) => setCurrentUrl(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    placeholder="https://example.com/image.jpg ou /uploads/books/..."
+                    placeholder="https://example.com/image.jpg ou /uploads/products/..."
                 />
             </div>
 
@@ -102,7 +102,7 @@ export default function ImageInput({ defaultValue, bookTitle }: ImageInputProps)
                                 src={normalizeImage(currentUrl)}
                                 alt={bookTitle || 'Image actuelle'}
                                 className="w-full h-full object-cover"
-                                onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
+                                onError={(e) => { (e.target as HTMLImageElement).src = '/product-placeholder.png' }}
                             />
                         </div>
                     </div>

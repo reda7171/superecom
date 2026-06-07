@@ -18,7 +18,7 @@ export async function getAuthorsData(): Promise<AuthorData[]> {
         'authors:all_data',
         async () => {
             // 1. Récupérer tous les auteurs uniques et leurs comptes de livres actifs
-            const bookStats = await prisma.book.groupBy({
+            const bookStats = await prisma.product.groupBy({
                 by: ['author'],
                 where: { active: true },
                 _count: {
@@ -32,7 +32,7 @@ export async function getAuthorsData(): Promise<AuthorData[]> {
             })
 
             // Récupérer les auteurs ayant au moins un livre en stock
-            const authorsWithStock = await prisma.book.findMany({
+            const authorsWithStock = await prisma.product.findMany({
                 where: { active: true, stock: { gt: 0 } },
                 select: { author: true },
                 distinct: ['author']
@@ -47,7 +47,7 @@ export async function getAuthorsData(): Promise<AuthorData[]> {
                 !profiles.find(p => p.name === s.author)?.image
             ).map(s => s.author)
 
-            const sampleBooks = await prisma.book.findMany({
+            const sampleBooks = await prisma.product.findMany({
                 where: {
                     active: true,
                     author: { in: authorsWithNoProfileImage }

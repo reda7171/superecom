@@ -23,7 +23,7 @@ export default async function MarketPage({
     // Si l'utilisateur n'a pas de commande, on force la recherche sur sa ville
     const effectiveCity = isBlurred ? (user?.city || city) : city
 
-    const [books, smartMatches] = await Promise.all([
+    const [products, smartMatches] = await Promise.all([
         getMarketBooks({ search, city: effectiveCity }),
         getSmartMatches()
     ])
@@ -43,7 +43,7 @@ export default async function MarketPage({
                 </div>
 
                 <MarketClientSection
-                    initialBooks={books}
+                    initialBooks={products}
                     smartMatches={smartMatches}
                     search={search}
                     city={effectiveCity}

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Trash2 } from 'lucide-react'
-import { deleteAllBooks } from '@/lib/actions/books'
+import { deleteAllBooks } from '@/lib/actions/products'
 import { useRouter } from 'next/navigation'
 
 export default function EmptyLibraryButton() {

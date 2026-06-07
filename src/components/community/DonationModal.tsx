@@ -32,7 +32,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
 
                     {/* Content */}
                     <div className="space-y-2 mb-8 text-center">
-                        <h2 className="text-xl font-black text-black leading-tight">Supporter Riwaya</h2>
+                        <h2 className="text-xl font-black text-black leading-tight">Supporter SuperEcom</h2>
                         <div className="bg-pixio-cream p-4 rounded-2xl border border-pixio-cream/50 mt-4">
                             <p className="text-sm text-black font-black leading-relaxed">
                                 Merci ! Si vous appréciez le service, vous pouvez nous soutenir via PayPal.

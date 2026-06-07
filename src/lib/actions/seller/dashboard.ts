@@ -12,7 +12,7 @@ export async function getSellerDashboardData() {
     if (!user || user.role !== 'SELLER') throw new Error('Non autorisé')
 
     const [booksCount, ordersCount, recentOrders] = await Promise.all([
-        prisma.book.count({ where: { sellerId: user.id } }),
+        prisma.product.count({ where: { sellerId: user.id } }),
         prisma.order.count({ where: { sellerId: user.id } }),
         prisma.order.findMany({
             where: { sellerId: user.id },
@@ -21,7 +21,7 @@ export async function getSellerDashboardData() {
             include: {
                 items: {
                     include: {
-                        book: { select: { title: true } }
+                        product: { select: { title: true } }
                     }
                 }
             }
@@ -50,7 +50,7 @@ export async function getSellerBooks() {
     const user = await getCommunityUser()
     if (!user || user.role !== 'SELLER') throw new Error('Non autorisé')
 
-    return prisma.book.findMany({
+    return prisma.product.findMany({
         where: { sellerId: user.id },
         orderBy: { createdAt: 'desc' }
     })
@@ -69,7 +69,7 @@ export async function getSellerOrders() {
         include: {
             items: {
                 include: {
-                    book: { select: { title: true, image: true, price: true } }
+                    product: { select: { title: true, image: true, price: true } }
                 }
             }
         }
@@ -83,7 +83,7 @@ export async function createSellerBook(data: any) {
     const user = await getCommunityUser()
     if (!user || user.role !== 'SELLER') throw new Error('Non autorisé')
 
-    const book = await prisma.book.create({
+    const product = await prisma.product.create({
         data: {
             ...data,
             sellerId: user.id,
@@ -92,6 +92,6 @@ export async function createSellerBook(data: any) {
         }
     })
 
-    revalidatePath('/seller/books')
-    return { success: true, book }
+    revalidatePath('/seller/products')
+    return { success: true, product }
 }

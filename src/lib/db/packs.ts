@@ -7,9 +7,9 @@ export async function getPacks() {
     return prisma.pack.findMany({
         where: { active: true },
         include: {
-            books: {
+            products: {
                 include: {
-                    book: true,
+                    product: true,
                 },
             },
         },
@@ -25,9 +25,9 @@ export async function getPacks() {
 export async function adminGetPacks() {
     return prisma.pack.findMany({
         include: {
-            books: {
+            products: {
                 include: {
-                    book: true,
+                    product: true,
                 },
             },
         },
@@ -44,9 +44,9 @@ export async function getPackById(id: string) {
     return prisma.pack.findUnique({
         where: { id },
         include: {
-            books: {
+            products: {
                 include: {
-                    book: true,
+                    product: true,
                 },
             },
         },
@@ -60,9 +60,9 @@ export async function getPopularPacks(limit = 3) {
     return prisma.pack.findMany({
         where: { active: true },
         include: {
-            books: {
+            products: {
                 include: {
-                    book: {
+                    product: {
                         select: {
                             id: true,
                             title: true,
@@ -88,9 +88,9 @@ export async function checkPackAvailability(packId: string, quantity: number) {
     const pack = await prisma.pack.findUnique({
         where: { id: packId },
         include: {
-            books: {
+            products: {
                 include: {
-                    book: {
+                    product: {
                         select: {
                             stock: true,
                             active: true,
@@ -106,11 +106,11 @@ export async function checkPackAvailability(packId: string, quantity: number) {
     }
 
     // Vérifier que tous les livres du pack sont disponibles
-    for (const packBook of pack.books) {
-        if (!packBook.book.active) {
+    for (const packBook of pack.products) {
+        if (!packBook.product.active) {
             return { available: false, reason: 'Un livre du pack n\'est plus disponible' }
         }
-        if (packBook.book.stock < quantity) {
+        if (packBook.product.stock < quantity) {
             return { available: false, reason: 'Stock insuffisant pour un livre du pack' }
         }
     }

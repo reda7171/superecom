@@ -99,15 +99,15 @@ export default async function AdminExchangesPage({
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-14 bg-gray-100 rounded overflow-hidden shrink-0">
-                                                {exchange.bookRequested.image ? (
-                                                    <img src={exchange.bookRequested.image} alt="" className="w-full h-full object-cover" />
+                                                {exchange.productRequested.image ? (
+                                                    <img src={exchange.productRequested.image} alt="" className="w-full h-full object-cover" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-4 h-4 text-gray-200" /></div>
                                                 )}
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="font-bold text-sm text-black truncate">{exchange.bookRequested.title}</p>
-                                                <p className="text-xs text-gray-500 truncate">{exchange.bookRequested.author}</p>
+                                                <p className="font-bold text-sm text-black truncate">{exchange.productRequested.title}</p>
+                                                <p className="text-xs text-gray-500 truncate">{exchange.productRequested.author}</p>
                                             </div>
                                         </div>
                                     </td>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createAdminExchange, getEligibleUsers, getUserExchangeBooks } from '@/lib/actions/admin-exchanges'
-import { User, Book, Check, AlertCircle, Loader2 } from 'lucide-react'
+import { User, Package, Check, AlertCircle, Loader2 } from 'lucide-react'
 
 export default function CreateExchangeForm() {
     const router = useRouter()
@@ -13,8 +13,8 @@ export default function CreateExchangeForm() {
     // Form state
     const [requesterId, setRequesterId] = useState('')
     const [responderId, setResponderId] = useState('')
-    const [bookRequestedId, setBookRequestedId] = useState('')
-    const [bookOfferedId, setBookOfferedId] = useState('')
+    const [productRequestedId, setBookRequestedId] = useState('')
+    const [productOfferedId, setBookOfferedId] = useState('')
     const [type, setType] = useState<'DIRECT' | 'CREDIT'>('DIRECT')
     const [creditsAmount, setCreditsAmount] = useState(0)
     const [message, setMessage] = useState('')
@@ -45,7 +45,7 @@ export default function CreateExchangeForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!requesterId || !responderId || !bookRequestedId) {
+        if (!requesterId || !responderId || !productRequestedId) {
             alert('Veuillez remplir les champs obligatoires')
             return
         }
@@ -54,8 +54,8 @@ export default function CreateExchangeForm() {
         const result = await createAdminExchange({
             requesterId,
             responderId,
-            bookRequestedId,
-            bookOfferedId: type === 'DIRECT' ? bookOfferedId : undefined,
+            productRequestedId,
+            productOfferedId: type === 'DIRECT' ? productOfferedId : undefined,
             type,
             creditsAmount: type === 'CREDIT' ? creditsAmount : undefined,
             message
@@ -101,7 +101,7 @@ export default function CreateExchangeForm() {
                         <div>
                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Livre à proposer (Offered)</label>
                             <select
-                                value={bookOfferedId}
+                                value={productOfferedId}
                                 onChange={(e) => setBookOfferedId(e.target.value)}
                                 className="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-black transition-all"
                                 required={type === 'DIRECT'}
@@ -158,7 +158,7 @@ export default function CreateExchangeForm() {
                     <div>
                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Livre demandé</label>
                         <select
-                            value={bookRequestedId}
+                            value={productRequestedId}
                             onChange={(e) => setBookRequestedId(e.target.value)}
                             className="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-black transition-all"
                             required

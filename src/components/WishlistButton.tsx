@@ -63,7 +63,7 @@ export default function WishlistButton({ item, className, showText = false, vari
                 formData.append('title', item.title)
                 if (item.author) formData.append('author', item.author)
                 if (item.type === 'BOOK') {
-                    formData.append('bookId', item.id)
+                    formData.append('productId', item.id)
                 } else if (item.type === 'PACK') {
                     formData.append('packId', item.id)
                 }

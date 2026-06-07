@@ -56,13 +56,13 @@ export async function GET(req: NextRequest) {
         
         for (const order of orders) {
             for (const item of order.items) {
-                if (item.bookId) {
+                if (item.productId) {
                     // On récupère le titre si on l'a pas
-                    if (!bookStats[item.bookId]) {
-                        const book = await prisma.book.findUnique({ where: { id: item.bookId }, select: { title: true } })
-                        bookStats[item.bookId] = { title: book?.title || 'Livre inconnu', qty: 0 }
+                    if (!bookStats[item.productId]) {
+                        const product = await prisma.product.findUnique({ where: { id: item.productId }, select: { title: true } })
+                        bookStats[item.productId] = { title: product?.title || 'Livre inconnu', qty: 0 }
                     }
-                    bookStats[item.bookId].qty += item.quantity
+                    bookStats[item.productId].qty += item.quantity
                 }
             }
         }
@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
         const bestSeller = Object.values(bookStats).sort((a, b) => b.qty - a.qty)[0]
 
         // 5. Envoyer le message
-        const text = `📊 <b>Résumé Journalier - Riwaya</b>\n\n` +
+        const text = `📊 <b>Résumé Journalier - SuperEcom</b>\n\n` +
             `📅 <b>Date:</b> ${startOfDay.toLocaleDateString('fr-FR')}\n` +
             `📦 <b>Commandes:</b> ${orders.length}\n` +
             `💰 <b>Chiffre d'Affaires:</b> ${totalRevenue.toFixed(2)} MAD\n\n` +

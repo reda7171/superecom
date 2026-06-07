@@ -6,10 +6,10 @@ interface Props {
     title: string
     price: number
     phone?: string // numéro depuis les settings
-    type?: 'book' | 'pack' | 'accessory'
+    type?: 'product' | 'pack' | 'accessory'
 }
 
-export default function WhatsAppOrderButton({ title, price, phone, type = 'book' }: Props) {
+export default function WhatsAppOrderButton({ title, price, phone, type = 'product' }: Props) {
     const tCommon = useTranslations('Common')
     const phoneNumber = (phone || '212600000000').replace(/[\s+\-()]/g, '')
 

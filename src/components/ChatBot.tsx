@@ -7,14 +7,14 @@ import {
     ThumbsUp, ThumbsDown, Sparkles, Volume2, VolumeX, 
     ChevronRight, CornerDownRight, Zap 
 } from 'lucide-react'
-import BookCarousel from './chatbot/BookCarousel'
+import ProductCarousel from './chatbot/ProductCarousel'
 import OrderCard from './chatbot/OrderCard'
 
 interface Message {
     role: 'bot' | 'user'
     text: string
     time: string
-    type?: 'books' | 'order'
+    type?: 'products' | 'order'
     data?: any
     feedback?: 'up' | 'down' | null
 }
@@ -37,7 +37,7 @@ export default function ChatBot() {
             suggestions: "اقتراحات لك"
         },
         fr: {
-            welcome: "Bonjour ! ✨ Je suis l'assistant intelligent de **Riwaya**. Posez-moi vos questions sur nos livres, commandes ou livraison.",
+            welcome: "Bonjour ! ✨ Je suis l'assistant intelligent de **SuperEcom**. Posez-moi vos questions sur nos livres, commandes ou livraison.",
             quick: ['Livraison ?', 'Nouveautés', 'Clé USB', 'Suivi Commande', 'Propose moi des titres?', 'Catégories ?'],
             placeholder: "Posez votre question...",
             online: "En ligne",
@@ -206,7 +206,7 @@ export default function ChatBot() {
                             <Sparkles className="absolute -top-1 -right-1 w-5 h-5 text-yellow-300 animate-pulse" />
                         </div>
                         <div className="flex-1">
-                            <p className="text-white font-black text-sm tracking-wide">Assistant Riwaya</p>
+                            <p className="text-white font-black text-sm tracking-wide">Assistant SuperEcom</p>
                             <div className="flex items-center gap-1.5 mt-1">
                                 <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]" />
                                 <span className="text-[10px] text-green-300 font-bold uppercase tracking-widest">{t.online}</span>
@@ -243,7 +243,7 @@ export default function ChatBot() {
                                         {formatText(msg.text)}
 
                                         {/* Dynamic Components */}
-                                        {msg.role === 'bot' && msg.type === 'books' && <BookCarousel books={msg.data} t={t} />}
+                                        {msg.role === 'bot' && msg.type === 'products' && <ProductCarousel products={msg.data} t={t} />}
                                         {msg.role === 'bot' && msg.type === 'order' && <OrderCard order={msg.data} t={t} />}
                                     </div>
                                     <div className={`flex items-center gap-3 px-1.5 opacity-60 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>

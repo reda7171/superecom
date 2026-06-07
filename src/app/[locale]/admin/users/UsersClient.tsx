@@ -56,7 +56,7 @@ export default function UsersClient({ initialUsers, initialPermissions }: { init
     const AVAILABLE_MENUS = [
         { id: 'dashboard', label: 'Dashboard' },
         { id: 'posts', label: 'Articles' },
-        { id: 'books', label: 'Livres' },
+        { id: 'products', label: 'Livres' },
         { id: 'digital-products', label: 'Livres Numériques' },
         { id: 'authors', label: 'Auteurs' },
         { id: 'packs', label: 'Packs' },

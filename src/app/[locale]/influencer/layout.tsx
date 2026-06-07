@@ -47,7 +47,7 @@ export default function InfluencerLayout({
             {/* Sidebar Simple pour Influenceur */}
             <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col fixed inset-y-0">
                 <div className="h-20 flex items-center justify-center border-b border-gray-100">
-                    <h1 className="text-xl font-black text-indigo-600 uppercase tracking-tighter">Riwaya <span className="text-gray-900 border-l-2 border-gray-100 ml-2 pl-2 text-xs">Affiliés</span></h1>
+                    <h1 className="text-xl font-black text-indigo-600 uppercase tracking-tighter">SuperEcom <span className="text-gray-900 border-l-2 border-gray-100 ml-2 pl-2 text-xs">Affiliés</span></h1>
                 </div>
 
                 <nav className="flex-1 p-6 space-y-2">

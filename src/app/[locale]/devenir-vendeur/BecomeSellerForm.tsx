@@ -126,7 +126,7 @@ export default function BecomeSellerForm() {
                         {!isSubmitting && <Send className="w-5 h-5" />}
                     </button>
                     <p className="text-center text-xs text-gray-400 font-bold mt-4">
-                        En soumettant ce formulaire, vous acceptez d&apos;être recontacté par l&apos;équipe Riwaya.
+                        En soumettant ce formulaire, vous acceptez d&apos;être recontacté par l&apos;équipe SuperEcom.
                     </p>
                 </div>
             </form>

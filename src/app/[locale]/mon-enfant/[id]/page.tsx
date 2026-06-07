@@ -29,7 +29,7 @@ export async function generateMetadata({
     }
 
     return {
-        title: `${product.name} | Riwaya`,
+        title: `${product.name} | SuperEcom`,
         description: product.description || t('MetaDesc', { name: product.name }),
     }
 }

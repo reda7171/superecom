@@ -104,7 +104,7 @@ export default function SiteSettingsForm({ initialSettings }: SettingsFormProps)
                                         type="text"
                                         value={settings.site_logo || ''}
                                         onChange={(e) => handleChange('site_logo', e.target.value)}
-                                        placeholder="/uploads/books/logo.png ou https://..."
+                                        placeholder="/uploads/products/logo.png ou https://..."
                                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-black outline-none transition-colors pr-12"
                                     />
                                     {settings.site_logo && (
@@ -175,7 +175,7 @@ export default function SiteSettingsForm({ initialSettings }: SettingsFormProps)
                             type="url"
                             value={settings.social_instagram || ''}
                             onChange={(e) => handleChange('social_instagram', e.target.value)}
-                            placeholder="https://instagram.com/riwaya"
+                            placeholder="https://instagram.com/superEcom"
                             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-black outline-none transition-colors"
                         />
                     </div>
@@ -188,7 +188,7 @@ export default function SiteSettingsForm({ initialSettings }: SettingsFormProps)
                             type="url"
                             value={settings.social_facebook || ''}
                             onChange={(e) => handleChange('social_facebook', e.target.value)}
-                            placeholder="https://facebook.com/riwaya"
+                            placeholder="https://facebook.com/superEcom"
                             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-black outline-none transition-colors"
                         />
                     </div>
@@ -201,7 +201,7 @@ export default function SiteSettingsForm({ initialSettings }: SettingsFormProps)
                             type="url"
                             value={settings.social_twitter || ''}
                             onChange={(e) => handleChange('social_twitter', e.target.value)}
-                            placeholder="https://twitter.com/riwaya"
+                            placeholder="https://twitter.com/superEcom"
                             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-black outline-none transition-colors"
                         />
                     </div>
@@ -214,7 +214,7 @@ export default function SiteSettingsForm({ initialSettings }: SettingsFormProps)
                             type="url"
                             value={settings.social_linkedin || ''}
                             onChange={(e) => handleChange('social_linkedin', e.target.value)}
-                            placeholder="https://linkedin.com/company/riwaya"
+                            placeholder="https://linkedin.com/company/superEcom"
                             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-black outline-none transition-colors"
                         />
                     </div>
@@ -227,7 +227,7 @@ export default function SiteSettingsForm({ initialSettings }: SettingsFormProps)
                             type="url"
                             value={settings.social_youtube || ''}
                             onChange={(e) => handleChange('social_youtube', e.target.value)}
-                            placeholder="https://youtube.com/@riwaya"
+                            placeholder="https://youtube.com/@superEcom"
                             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-black outline-none transition-colors"
                         />
                     </div>
@@ -240,7 +240,7 @@ export default function SiteSettingsForm({ initialSettings }: SettingsFormProps)
                             type="url"
                             value={settings.social_threads || ''}
                             onChange={(e) => handleChange('social_threads', e.target.value)}
-                            placeholder="https://threads.net/@riwaya"
+                            placeholder="https://threads.net/@superEcom"
                             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-black outline-none transition-colors"
                         />
                     </div>
@@ -278,7 +278,7 @@ export default function SiteSettingsForm({ initialSettings }: SettingsFormProps)
                             type="email"
                             value={settings.contact_email || ''}
                             onChange={(e) => handleChange('contact_email', e.target.value)}
-                            placeholder="contact@riwaya.com"
+                            placeholder="contact@superEcom.com"
                             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-black outline-none transition-colors"
                         />
                     </div>

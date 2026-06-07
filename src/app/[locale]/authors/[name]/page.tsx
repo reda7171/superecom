@@ -1,9 +1,9 @@
 
-import { getBooks } from '@/lib/db/books'
+import { getBooks } from '@/lib/db/products'
 import { getAuthorProfile } from '@/lib/db/authors'
 import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/FooterWithFeatures'
-import BookCard from '@/components/BookCard'
+import ProductCard from '@/components/ProductCard'
 import { getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/routing'
 import { ArrowLeft, User } from 'lucide-react'
@@ -22,10 +22,10 @@ export async function generateMetadata({
     const authorName = decodeURIComponent(name)
 
     return {
-        title: `${authorName} - Livres et Biographie | Riwaya`,
-        description: `Découvrez tous les livres de ${authorName} disponibles sur Riwaya. Achetez en ligne au Maroc avec livraison rapide.`,
+        title: `${authorName} - Livres et Biographie | SuperEcom`,
+        description: `Découvrez tous les livres de ${authorName} disponibles sur SuperEcom. Achetez en ligne au Maroc avec livraison rapide.`,
         openGraph: {
-            title: `${authorName} - Auteur sur Riwaya`,
+            title: `${authorName} - Auteur sur SuperEcom`,
             description: `Les meilleurs livres de ${authorName} sélectionnés pour vous.`,
             type: 'profile',
             locale: locale === 'ar' ? 'ar_MA' : locale === 'en' ? 'en_MA' : 'fr_MA',
@@ -44,7 +44,7 @@ export default async function AuthorPage({
     const tBook = await getTranslations('BookDetail')
     const tCommon = await getTranslations('Common')
 
-    const [books, authorProfile] = await Promise.all([
+    const [products, authorProfile] = await Promise.all([
         getBooks({ author: authorName, active: true, limit: 100 }),
         getAuthorProfile(authorName)
     ])
@@ -57,7 +57,7 @@ export default async function AuthorPage({
         birthYear: 1948
     } : null)
 
-    if (!books || books.length === 0) {
+    if (!products || products.length === 0) {
         // Optionnel : rediriger ou afficher 404 si on veut être strict
         // notFound()
     }
@@ -70,7 +70,7 @@ export default async function AuthorPage({
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-32">
                     {/* Back Button */}
                     <Link
-                        href="/books"
+                        href="/products"
                         className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black mb-12 group transition-colors rtl:flex-row-reverse"
                     >
                         <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform rtl:rotate-180 rtl:group-hover:translate-x-1" />
@@ -113,7 +113,7 @@ export default async function AuthorPage({
                                 <div className="flex items-center gap-4">
                                     <div className="h-px bg-gray-100 w-20"></div>
                                     <p className="text-lg font-black text-gray-400 uppercase tracking-widest">
-                                        {tAuthor('BooksCount', { count: books.length })}
+                                        {tAuthor('BooksCount', { count: products.length })}
                                     </p>
                                 </div>
                             </div>
@@ -133,11 +133,11 @@ export default async function AuthorPage({
                         </div>
                     </div>
 
-                    {/* Books Grid */}
-                    {books.length > 0 ? (
+                    {/* Products Grid */}
+                    {products.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
-                            {books.map((book) => (
-                                <BookCard key={book.id} {...book} />
+                            {products.map((product) => (
+                                <ProductCard key={product.id} {...product} />
                             ))}
                         </div>
                     ) : (

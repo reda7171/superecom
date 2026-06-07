@@ -26,7 +26,7 @@ export default async function AuthorsPage({ params }: { params: Promise<{ locale
     const t = await getTranslations('AuthorsPage')
     const authors = await getAuthorsData()
 
-    // Top authors (most books or with bio)
+    // Top authors (most products or with bio)
     const featuredAuthors = authors.filter(a => a.bio || a.bookCount > 5).slice(0, 4)
 
     return (

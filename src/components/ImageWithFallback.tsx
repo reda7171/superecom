@@ -1,5 +1,7 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { normalizeImage } from '@/lib/utils'
 
 interface ImageWithFallbackProps {
@@ -11,22 +13,29 @@ interface ImageWithFallbackProps {
 
 /**
  * Composant client pour afficher une image avec fallback.
- * Utilisé dans les Server Components qui ne peuvent pas gérer onError.
+ * Optimisé avec next/image pour WebP/AVIF et dimensionnement automatique via srcSet.
  */
 export default function ImageWithFallback({
     src,
     alt,
     className = 'w-full h-full object-cover',
-    fallback = '/book-placeholder.png',
+    fallback = '/product-placeholder.png',
 }: ImageWithFallbackProps) {
+    const [imgSrc, setImgSrc] = useState(normalizeImage(src || ''))
+
+    useEffect(() => {
+        setImgSrc(normalizeImage(src || ''))
+    }, [src])
+
     return (
-        <img
-            src={normalizeImage(src || '')}
+        <Image
+            src={imgSrc || fallback}
             alt={alt}
+            width={800}
+            height={1200}
             className={className}
-            loading="lazy"
-            onError={(e) => {
-                ;(e.target as HTMLImageElement).src = fallback
+            onError={() => {
+                setImgSrc(fallback)
             }}
         />
     )

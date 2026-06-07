@@ -1,11 +1,11 @@
 import { adminGetPacks } from '@/lib/db/packs'
-import { getBooks } from '@/lib/db/books'
+import { getBooks } from '@/lib/db/products'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import PacksTable from './PacksTable'
 
 export default async function PacksPage() {
-    const [packs, books] = await Promise.all([
+    const [packs, products] = await Promise.all([
         adminGetPacks(),
         getBooks({ active: true }),
     ])
@@ -43,7 +43,7 @@ export default async function PacksPage() {
                 </div>
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                     <p className="text-sm font-medium text-gray-600">Livres Disponibles</p>
-                    <p className="mt-2 text-3xl font-bold text-blue-600">{books.length}</p>
+                    <p className="mt-2 text-3xl font-bold text-blue-600">{products.length}</p>
                 </div>
             </div>
 

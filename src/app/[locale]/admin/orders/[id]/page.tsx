@@ -68,13 +68,13 @@ export default async function OrderDetailsPage({
                         </div>
                         <div className="divide-y divide-gray-100">
                             {order.items.map((item) => {
-                                const product = item.book || item.pack
+                                const product = item.product || item.pack
                                 return (
                                     <div key={item.id} className="p-6 flex gap-4">
                                         <div className="relative w-20 h-28 bg-gray-50 rounded-lg overflow-hidden shrink-0 border border-gray-100">
-                                            {item.book?.image ? (
+                                            {item.product?.image ? (
                                                 <ImageWithFallback
-                                                    src={item.book.image}
+                                                    src={item.product.image}
                                                     alt="Produit"
                                                     className="w-full h-full object-cover"
                                                 />
@@ -87,14 +87,14 @@ export default async function OrderDetailsPage({
                                         <div className="flex-1 space-y-1">
                                             <div className="flex justify-between items-start">
                                                 <h3 className="font-bold text-gray-900 line-clamp-2">
-                                                    {item.book?.title || item.pack?.name}
+                                                    {item.product?.title || item.pack?.name}
                                                 </h3>
                                                 <span className="text-sm font-black text-blue-600">
                                                     {item.price} MAD
                                                 </span>
                                             </div>
                                             <p className="text-sm text-gray-500">
-                                                {item.type === 'PACK' ? 'Pack Exclusive' : `Par ${item.book?.author}`}
+                                                {item.type === 'PACK' ? 'Pack Exclusive' : `Par ${item.product?.author}`}
                                             </p>
                                             <div className="pt-2 flex items-center justify-between">
                                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-gray-100 text-gray-600">
@@ -118,7 +118,7 @@ export default async function OrderDetailsPage({
                                         // sinon on retombe sur celui du livre actuel, sinon 0
                                         const itemCost = (item.costPrice && item.costPrice > 0) 
                                             ? item.costPrice 
-                                            : (item.book?.costPrice || item.pack?.costPrice || 0)
+                                            : (item.product?.costPrice || item.pack?.costPrice || 0)
                                         return sum + (itemCost * item.quantity)
                                     }, 0).toFixed(2)} MAD
                                 </span>
@@ -145,7 +145,7 @@ export default async function OrderDetailsPage({
                                         order.items.reduce((sum, item) => {
                                             const itemCost = (item.costPrice && item.costPrice > 0) 
                                                 ? item.costPrice 
-                                                : (item.book?.costPrice || item.pack?.costPrice || 0)
+                                                : (item.product?.costPrice || item.pack?.costPrice || 0)
                                             return sum + (itemCost * item.quantity)
                                         }, 0) -
                                         2.65 -

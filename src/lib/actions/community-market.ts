@@ -15,7 +15,7 @@ export async function getMarketBooks(filters: MarketFilters = {}) {
 
     const where: any = {
         status: 'AVAILABLE',
-        // Exclude own books
+        // Exclude own products
         ownerId: currentUserId ? { not: currentUserId } : undefined,
     }
 
@@ -33,7 +33,7 @@ export async function getMarketBooks(filters: MarketFilters = {}) {
     }
 
     try {
-        const books = await (prisma as any).exchangeBook.findMany({
+        const products = await (prisma as any).exchangeBook.findMany({
             where,
             include: {
                 owner: {
@@ -50,16 +50,16 @@ export async function getMarketBooks(filters: MarketFilters = {}) {
             take: 50,
         })
 
-        return books
+        return products
     } catch (error) {
         return []
     }
 }
 
-export async function getExchangeBookDetails(bookId: string) {
+export async function getExchangeBookDetails(productId: string) {
     try {
-        const book = await (prisma as any).exchangeBook.findUnique({
-            where: { id: bookId },
+        const product = await (prisma as any).exchangeBook.findUnique({
+            where: { id: productId },
             include: {
                 owner: {
                     select: {
@@ -73,7 +73,7 @@ export async function getExchangeBookDetails(bookId: string) {
                 }
             }
         })
-        return book
+        return product
     } catch (error) {
         return null
     }
@@ -82,7 +82,7 @@ export async function getExchangeBookDetails(bookId: string) {
 // Fonction pour récupérer les livres d'échange récents pour la page d'accueil
 export async function getRecentExchangeBooks(limit = 6) {
     try {
-        const books = await (prisma as any).exchangeBook.findMany({
+        const products = await (prisma as any).exchangeBook.findMany({
             where: {
                 status: 'AVAILABLE',
             },
@@ -101,7 +101,7 @@ export async function getRecentExchangeBooks(limit = 6) {
             take: limit,
         })
 
-        return books
+        return products
     } catch (error) {
         return []
     }
@@ -146,8 +146,8 @@ export async function getSmartMatches() {
         })
 
         // 4. Filtrer pour ne garder que ceux où le propriétaire veut un de mes livres
-        const smartMatches = matchingBooks.filter((book: any) => {
-            const ownerWishlist = (book.owner as any).wishlist || []
+        const smartMatches = matchingBooks.filter((product: any) => {
+            const ownerWishlist = (product.owner as any).wishlist || []
             return ownerWishlist.some((w: any) =>
                 myTitles.some((myTitle: any) => myTitle.includes(w.title.toLowerCase()) || w.title.toLowerCase().includes(myTitle))
             )

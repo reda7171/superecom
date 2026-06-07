@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Book as BookType } from '@prisma/client'
+import { Product as BookType } from '@prisma/client'
 import { X, Search, Check, ShoppingBag, Plus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useCartStore } from '@/store/cart'
@@ -31,13 +31,13 @@ export default function CustomPackBuilder({ availableBooks }: CustomPackBuilderP
         )
     }, [availableBooks, searchQuery])
 
-    const toggleBook = (book: BookType) => {
+    const toggleBook = (product: BookType) => {
         setSelectedBooks(prev => {
-            const isSelected = prev.some(b => b.id === book.id)
+            const isSelected = prev.some(b => b.id === product.id)
             if (isSelected) {
-                return prev.filter(b => b.id !== book.id)
+                return prev.filter(b => b.id !== product.id)
             } else {
-                return [...prev, book]
+                return [...prev, product]
             }
         })
     }
@@ -53,20 +53,20 @@ export default function CustomPackBuilder({ availableBooks }: CustomPackBuilderP
 
         let remainingTotal = finalPrice;
 
-        selectedBooks.forEach((book, index) => {
+        selectedBooks.forEach((product, index) => {
             let itemPrice;
             if (index === selectedBooks.length - 1) {
                 itemPrice = Number(remainingTotal.toFixed(2));
             } else {
-                itemPrice = Number(((book.price / subtotal) * finalPrice).toFixed(2));
+                itemPrice = Number(((product.price / subtotal) * finalPrice).toFixed(2));
                 remainingTotal -= itemPrice;
             }
             
             addItem({
-                id: book.id,
-                title: `${t('CustomPack.CartPrefix')} ${book.title}`,
+                id: product.id,
+                title: `${t('CustomPack.CartPrefix')} ${product.title}`,
                 price: itemPrice,
-                image: book.image || '',
+                image: product.image || '',
                 type: 'BOOK'
             })
         })
@@ -122,7 +122,7 @@ export default function CustomPackBuilder({ availableBooks }: CustomPackBuilderP
 
                         {/* Content */}
                         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-                            {/* Left: Book List */}
+                            {/* Left: Product List */}
                             <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-100 overflow-hidden">
                                 <div className="p-6 border-b border-gray-100">
                                     <div className="relative">
@@ -143,20 +143,20 @@ export default function CustomPackBuilder({ availableBooks }: CustomPackBuilderP
                                         </div>
                                     ) : (
                                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                                            {filteredBooks.map(book => {
-                                                const isSelected = selectedBooks.some(b => b.id === book.id)
+                                            {filteredBooks.map(product => {
+                                                const isSelected = selectedBooks.some(b => b.id === product.id)
                                                 return (
                                                     <div 
-                                                        key={book.id}
-                                                        onClick={() => toggleBook(book)}
+                                                        key={product.id}
+                                                        onClick={() => toggleBook(product)}
                                                         className={`relative group cursor-pointer rounded-2xl border-2 transition-all overflow-hidden ${
                                                             isSelected ? 'border-black bg-gray-50' : 'border-transparent hover:border-gray-200'
                                                         }`}
                                                     >
                                                         <div className="aspect-[2/3] relative bg-gray-100">
                                                             <ImageWithFallback 
-                                                                src={book.image || ''} 
-                                                                alt={book.title}
+                                                                src={product.image || ''} 
+                                                                alt={product.title}
                                                                 className="absolute inset-0 w-full h-full object-cover mix-blend-multiply"
                                                             />
                                                             {isSelected && (
@@ -168,9 +168,9 @@ export default function CustomPackBuilder({ availableBooks }: CustomPackBuilderP
                                                             )}
                                                         </div>
                                                         <div className="p-3 text-center">
-                                                            <p className="text-xs font-bold text-black line-clamp-2 leading-tight mb-1">{book.title}</p>
-                                                            <p className="text-[10px] text-gray-500 truncate">{book.author}</p>
-                                                            <p className="text-xs font-black text-black mt-2">{book.price} MAD</p>
+                                                            <p className="text-xs font-bold text-black line-clamp-2 leading-tight mb-1">{product.title}</p>
+                                                            <p className="text-[10px] text-gray-500 truncate">{product.author}</p>
+                                                            <p className="text-xs font-black text-black mt-2">{product.price} MAD</p>
                                                         </div>
                                                     </div>
                                                 )
@@ -196,18 +196,18 @@ export default function CustomPackBuilder({ availableBooks }: CustomPackBuilderP
                                             <p className="text-sm font-medium text-center">{t('CustomPack.SelectBooks')}</p>
                                         </div>
                                     ) : (
-                                        selectedBooks.map(book => (
-                                            <div key={`selected-${book.id}`} className="flex items-center gap-3 bg-white p-3 rounded-xl shadow-sm">
+                                        selectedBooks.map(product => (
+                                            <div key={`selected-${product.id}`} className="flex items-center gap-3 bg-white p-3 rounded-xl shadow-sm">
                                                 <div className="w-12 h-16 relative bg-gray-100 rounded-md overflow-hidden shrink-0">
-                                                    <ImageWithFallback src={book.image || ''} alt={book.title} className="absolute inset-0 w-full h-full object-cover" />
+                                                    <ImageWithFallback src={product.image || ''} alt={product.title} className="absolute inset-0 w-full h-full object-cover" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-xs font-bold text-black truncate">{book.title}</p>
-                                                    <p className="text-[10px] text-gray-500 truncate">{book.author}</p>
-                                                    <p className="text-sm font-black text-black mt-1">{book.price} MAD</p>
+                                                    <p className="text-xs font-bold text-black truncate">{product.title}</p>
+                                                    <p className="text-[10px] text-gray-500 truncate">{product.author}</p>
+                                                    <p className="text-sm font-black text-black mt-1">{product.price} MAD</p>
                                                 </div>
                                                 <button 
-                                                    onClick={() => toggleBook(book)}
+                                                    onClick={() => toggleBook(product)}
                                                     className="w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                                                 >
                                                     <X className="w-4 h-4" />

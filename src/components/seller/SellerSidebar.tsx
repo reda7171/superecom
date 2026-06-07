@@ -18,7 +18,7 @@ export default function SellerSidebar({ user }: { user: any }) {
 
     const navigation = [
         { name: 'Dashboard', href: '/seller', icon: LayoutDashboard },
-        { name: 'Mes Livres', href: '/seller/books', icon: BookOpen },
+        { name: 'Mes Livres', href: '/seller/products', icon: BookOpen },
         { name: 'Mes Commandes', href: '/seller/orders', icon: ShoppingCart },
     ]
 
@@ -33,7 +33,7 @@ export default function SellerSidebar({ user }: { user: any }) {
                 {/* Logo Section */}
                 <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
                     <Link href="/" className="text-sm font-black text-gray-900 uppercase tracking-tighter">
-                        Riwaya <span className="text-pixio-yellow">Seller</span>
+                        SuperEcom <span className="text-pixio-yellow">Seller</span>
                     </Link>
                 </div>
 
@@ -63,7 +63,7 @@ export default function SellerSidebar({ user }: { user: any }) {
 
                     <div className="pt-4 mt-4 border-t border-gray-100">
                         <Link
-                            href="/seller/books/new"
+                            href="/seller/products/new"
                             className="flex items-center px-4 py-3 text-sm font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                         >
                             <PlusCircle className="w-5 h-5 mr-3" />

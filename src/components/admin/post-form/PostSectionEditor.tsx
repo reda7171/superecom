@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, GripVertical, Sparkles, Loader2, Book as BookIcon } from 'lucide-react'
+import { Plus, Trash2, GripVertical, Sparkles, Loader2, Package as BookIcon } from 'lucide-react'
 import { generatePostContent } from '@/lib/actions/gemini'
 
 export interface Section {

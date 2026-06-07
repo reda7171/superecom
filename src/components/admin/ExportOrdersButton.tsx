@@ -32,7 +32,7 @@ export default function ExportOrdersButton({ orders }: ExportOrdersButtonProps) 
                     order.address,
                     order.city,
                     item.type === 'BOOK'
-                        ? (item.book?.title || 'Livre inconnu')
+                        ? (item.product?.title || 'Livre inconnu')
                         : (item.pack?.name || 'Pack inconnu'),
                     item.type,
                     String(item.quantity),

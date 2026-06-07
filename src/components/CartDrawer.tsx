@@ -92,7 +92,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                     />
                                 </div>
                                 <Link
-                                    href="/books"
+                                    href="/products"
                                     onClick={onClose}
                                     className="inline-flex items-center gap-3 px-10 py-5 bg-black text-white font-black text-xs uppercase tracking-widest rounded-full hover:bg-gray-800 transition-all shadow-xl hover:shadow-black/20"
                                 >
@@ -115,7 +115,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                                     src={normalizeImage(item.image)}
                                                     alt={item.title}
                                                     className="w-full h-full object-cover"
-                                                    onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
+                                                    onError={(e) => { (e.target as HTMLImageElement).src = '/product-placeholder.png' }}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-300">

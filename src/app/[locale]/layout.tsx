@@ -28,13 +28,13 @@ const outfit = Outfit({
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
-  const siteUrl = await getSetting('site_url') || 'https://riwaya.store';
+  const siteUrl = await getSetting('site_url') || 'https://superEcom.store';
   
   // Dynamic SEO configurations from database
   const seoTitle = await getSetting('seo_default_title');
   const seoDescription = await getSetting('seo_default_description');
   const seoKeywords = await getSetting('seo_default_keywords');
-  const seoAuthor = await getSetting('seo_author') || 'Riwaya Team';
+  const seoAuthor = await getSetting('seo_author') || 'SuperEcom Team';
   const seoOgImage = await getSetting('seo_og_image') || '/og-image.jpg';
   const seoOgWidth = await getSetting('seo_og_image_width') || '1200';
   const seoOgHeight = await getSetting('seo_og_image_height') || '630';
@@ -52,11 +52,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
   const t = await getTranslations({ locale, namespace: 'HomePage.seo' });
 
-  const title = seoTitle || t('Title') || "Riwaya | Librairie en Ligne au Maroc - Livres, Packs & Échange de Livres";
-  const description = seoDescription || t('Description') || "Découvrez Riwaya, la librairie en ligne n°1 au Maroc. Achetez des livres de développement personnel, business, philosophie et romans. Échangez vos livres avec notre communauté. Livraison rapide partout au Maroc, paiement à la livraison.";
+  const title = seoTitle || t('Title') || "SuperEcom | Librairie en Ligne au Maroc - Livres, Packs & Échange de Livres";
+  const description = seoDescription || t('Description') || "Découvrez SuperEcom, la librairie en ligne n°1 au Maroc. Achetez des livres de développement personnel, business, philosophie et romans. Échangez vos livres avec notre communauté. Livraison rapide partout au Maroc, paiement à la livraison.";
 
   const keywordsFr = [
-    "livres maroc", "librairie en ligne maroc", "achat livres maroc", "riwaya",
+    "livres maroc", "librairie en ligne maroc", "achat livres maroc", "superEcom",
     "librairie casablanca", "librairie rabat", "librairie marrakech", "librairie tanger",
     "développement personnel maroc", "livres business maroc", "philosophie maroc",
     "romans maroc", "packs de livres", "échange de livres maroc", "livraison livres maroc",
@@ -80,15 +80,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      template: "%s | Riwaya",
+      template: "%s | SuperEcom",
       default: title,
     },
     description: description,
     keywords: keywords,
     authors: [{ name: seoAuthor, url: siteUrl }],
-    creator: "Riwaya",
-    publisher: "Riwaya",
-    applicationName: "Riwaya",
+    creator: "SuperEcom",
+    publisher: "SuperEcom",
+    applicationName: "SuperEcom",
     formatDetection: {
       email: false,
       address: false,
@@ -98,7 +98,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       title: title,
       description: description,
       url: siteUrl,
-      siteName: "Riwaya",
+      siteName: "SuperEcom",
       locale: ogLocale,
       alternateLocale: ["fr_MA", "ar_MA", "en_MA"].filter(l => l !== ogLocale),
       type: seoOgType as any || "website",
@@ -135,7 +135,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       apple: '/apple-touch-icon.png',
     },
     manifest: '/site.webmanifest',
-    category: 'books',
+    category: 'products',
     verification: {
       google: googleVerification || undefined,
       yandex: yandexVerification || undefined,
@@ -173,7 +173,7 @@ export default async function LocaleLayout({
   const facebook = await getSetting('contact_facebook');
   const twitter = await getSetting('contact_twitter');
   const linkedin = await getSetting('contact_linkedin');
-  const siteUrl = await getSetting('site_url') || 'https://riwaya.store';
+  const siteUrl = await getSetting('site_url') || 'https://superEcom.store';
   const injectedHeadTags = await getSetting('seo_injected_head_tags');
   const fbPixelId = await getSetting('facebook_pixel_id') || process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
   const googleSearchConsoleId = await getSetting('google_search_console_id') || await getSetting('seo_google_verification');
@@ -226,12 +226,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               url: siteUrl,
-              name: 'Riwaya',
+              name: 'SuperEcom',
               potentialAction: {
                 '@type': 'SearchAction',
                 target: {
                   '@type': 'EntryPoint',
-                  urlTemplate: `${siteUrl}/fr/books?search={search_term_string}`
+                  urlTemplate: `${siteUrl}/fr/products?search={search_term_string}`
                 },
                 'query-input': 'required name=search_term_string'
               }
@@ -246,14 +246,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
-              name: 'Riwaya',
+              name: 'SuperEcom',
               url: siteUrl,
               logo: `${siteUrl}/globe.svg`,
               sameAs: [
-                facebook || 'https://facebook.com/riwaya',
-                instagram || 'https://instagram.com/riwaya',
-                twitter || 'https://twitter.com/riwaya',
-                linkedin || 'https://linkedin.com/company/riwaya'
+                facebook || 'https://facebook.com/superEcom',
+                instagram || 'https://instagram.com/superEcom',
+                twitter || 'https://twitter.com/superEcom',
+                linkedin || 'https://linkedin.com/company/superEcom'
               ].filter(Boolean),
               contactPoint: {
                 '@type': 'ContactPoint',

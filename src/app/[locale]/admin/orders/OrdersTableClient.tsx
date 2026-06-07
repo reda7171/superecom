@@ -11,7 +11,7 @@ interface OrderItem {
     quantity: number
     price: number
     costPrice?: number
-    book?: { title: string }
+    product?: { title: string }
     pack?: { name: string }
 }
 
@@ -194,7 +194,7 @@ export default function OrdersTableClient({
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right flex items-center justify-end gap-2">
                                         <a 
-                                            href={`https://wa.me/212${order.phone.replace(/^0+/, '')}?text=Bonjour ${order.fullName}, votre commande a bien été reçue sur Riwaya.`} 
+                                            href={`https://wa.me/212${order.phone.replace(/^0+/, '')}?text=Bonjour ${order.fullName}, votre commande a bien été reçue sur SuperEcom.`} 
                                             target="_blank" 
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-1 text-green-600 hover:text-green-900 font-bold text-sm bg-green-50 px-3 py-1 rounded-lg transition-colors"

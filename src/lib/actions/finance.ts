@@ -97,7 +97,7 @@ export async function getFinancialStats() {
         include: {
             items: {
                 include: {
-                    book: { select: { costPrice: true } },
+                    product: { select: { costPrice: true } },
                     pack: { select: { costPrice: true } }
                 }
             }
@@ -115,7 +115,7 @@ export async function getFinancialStats() {
             // Utiliser le costPrice de l'item ou celui du produit s'il est à 0
             const itemCost = ((item as any).costPrice && (item as any).costPrice > 0)
                 ? (item as any).costPrice
-                : ((item as any).book?.costPrice || (item as any).pack?.costPrice || 0)
+                : ((item as any).product?.costPrice || (item as any).pack?.costPrice || 0)
             totalCostOfGoodsSold += itemCost * item.quantity
         }
     }

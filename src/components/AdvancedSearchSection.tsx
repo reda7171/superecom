@@ -29,7 +29,7 @@ export default function AdvancedSearchSection() {
         if (formData.minPrice) params.append('minPrice', formData.minPrice)
         if (formData.maxPrice) params.append('maxPrice', formData.maxPrice)
 
-        router.push(`/books?${params.toString()}`)
+        router.push(`/products?${params.toString()}`)
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

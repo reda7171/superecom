@@ -26,7 +26,7 @@ export default async function InfluencerDashboard() {
                             Bonjour, <span className="text-indigo-600">{user.fullName}</span> 👋
                         </h1>
                         <p className="text-gray-500 font-medium mt-2 italic">
-                            Voici vos performances d'affiliation actuelles sur Riwaya.
+                            Voici vos performances d'affiliation actuelles sur SuperEcom.
                         </p>
                     </div>
                 </div>
@@ -132,7 +132,7 @@ export default async function InfluencerDashboard() {
                                                         <div key={idx} className="text-xs text-gray-800 flex items-center gap-2">
                                                             <span className="w-5 h-5 bg-indigo-50 text-indigo-600 rounded flex items-center justify-center font-black text-[10px] shrink-0">{item.quantity}</span>
                                                             <span className="font-bold truncate max-w-[150px]">
-                                                                {item.book?.title || item.pack?.name || item.gift?.name || 'Article'}
+                                                                {item.product?.title || item.pack?.name || item.gift?.name || 'Article'}
                                                             </span>
                                                         </div>
                                                     ))}

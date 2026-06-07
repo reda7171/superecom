@@ -34,14 +34,14 @@ interface Exchange {
         city: string
         rating: number
     }
-    bookRequested: {
+    productRequested: {
         id: string
         title: string
         author: string
         condition: string
         image?: string
     }
-    bookOffered?: {
+    productOffered?: {
         id: string
         title: string
         author: string
@@ -116,10 +116,10 @@ export default function ExchangesTable({ exchanges }: { exchanges: Exchange[] })
                             <td className="px-10 py-6">
                                 <div className="flex items-center gap-4">
                                     <div className="relative w-12 h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0 shadow-sm border border-gray-100">
-                                        {exchange.bookRequested.image ? (
+                                        {exchange.productRequested.image ? (
                                             <img
-                                                src={exchange.bookRequested.image}
-                                                alt={exchange.bookRequested.title}
+                                                src={exchange.productRequested.image}
+                                                alt={exchange.productRequested.title}
                                                 className="w-full h-full object-cover unoptimized"
                                             />
                                         ) : (
@@ -128,11 +128,11 @@ export default function ExchangesTable({ exchanges }: { exchanges: Exchange[] })
                                     </div>
                                     <div className="min-w-0">
                                         <p className="text-xs font-black text-black uppercase truncate italic mb-1">
-                                            {exchange.bookRequested.title}
+                                            {exchange.productRequested.title}
                                         </p>
-                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">{exchange.bookRequested.author}</p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">{exchange.productRequested.author}</p>
                                         <span className="inline-block mt-1 text-[8px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-tighter border border-blue-100">
-                                            {exchange.bookRequested.condition}
+                                            {exchange.productRequested.condition}
                                         </span>
                                     </div>
                                 </div>

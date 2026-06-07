@@ -22,13 +22,13 @@ export async function generateMetadata({
 
     if (!product) {
         return {
-            title: 'Produit introuvable | Riwaya',
+            title: 'Produit introuvable | SuperEcom',
         }
     }
 
     return {
-        title: `${product.name} | Riwaya`,
-        description: product.description || `Découvrez ${product.name} sur Riwaya. Livraison rapide au Maroc.`,
+        title: `${product.name} | SuperEcom`,
+        description: product.description || `Découvrez ${product.name} sur SuperEcom. Livraison rapide au Maroc.`,
     }
 }
 
@@ -72,7 +72,7 @@ export default async function ProductDetailPage({
         { label: 'Matériau / Matière', value: product.materials || (product.category === 'BOOKMARK' ? 'Métal ciselé / Cuir' : 'Matériaux premium') },
         { label: 'Dimensions', value: product.dimensions || (product.category === 'BOOKMARK' ? '12 x 3 cm' : 'Standard') },
         { label: 'Poids / Capacité', value: product.weight || (product.category === 'USB' ? '64 Go' : 'Standard') },
-        { label: 'Garantie', value: product.warranty || 'Garantie qualité Riwaya' },
+        { label: 'Garantie', value: product.warranty || 'Garantie qualité SuperEcom' },
     ]
 
     return (

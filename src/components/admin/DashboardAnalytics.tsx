@@ -186,16 +186,16 @@ export default function DashboardAnalytics() {
                         {data.lowStockBooks.length === 0 ? (
                             <p className="text-sm text-gray-500 italic">Tous les stocks sont suffisants.</p>
                         ) : (
-                            data.lowStockBooks.map((book: any) => (
-                                <div key={book.id} className="flex items-center justify-between p-3 bg-orange-50/50 rounded-lg border border-orange-100">
+                            data.lowStockBooks.map((product: any) => (
+                                <div key={product.id} className="flex items-center justify-between p-3 bg-orange-50/50 rounded-lg border border-orange-100">
                                     <div className="flex items-center gap-3">
                                         <div className="relative w-10 h-10 rounded overflow-hidden">
-                                            <Image src={normalizeImage(book.image)} alt={book.title} fill className="object-cover" />
+                                            <Image src={normalizeImage(product.image)} alt={product.title} fill className="object-cover" />
                                         </div>
-                                        <span className="font-medium text-sm text-gray-800 line-clamp-1">{book.title}</span>
+                                        <span className="font-medium text-sm text-gray-800 line-clamp-1">{product.title}</span>
                                     </div>
                                     <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">
-                                        Stock: {book.stock}
+                                        Stock: {product.stock}
                                     </span>
                                 </div>
                             ))

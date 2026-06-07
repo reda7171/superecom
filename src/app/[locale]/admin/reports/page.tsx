@@ -21,7 +21,7 @@ export default async function AdminReportsPage({
 
     return (
         <div className="space-y-12">
-            {/* Header section style Riwaya */}
+            {/* Header section style SuperEcom */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-gray-100">
                 <div>
                     <h1 className="text-5xl lg:text-6xl font-black text-black tracking-tighter mb-2 italic">
@@ -91,10 +91,10 @@ export default async function AdminReportsPage({
                                                     <span className="font-bold text-xs text-blue-700">{report.targetUser.fullName}</span>
                                                 </div>
                                             )}
-                                            {report.targetBook && (
+                                            {report.targetProduct && (
                                                 <div className="flex items-center gap-2 bg-emerald-50/50 p-2 rounded-xl border border-emerald-100/50 w-fit">
                                                     <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
-                                                    <span className="font-bold text-xs text-emerald-700">{report.targetBook.title}</span>
+                                                    <span className="font-bold text-xs text-emerald-700">{report.targetProduct.title}</span>
                                                 </div>
                                             )}
                                         </td>

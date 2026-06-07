@@ -19,7 +19,7 @@ export default async function AboutPage() {
                         Notre Histoire
                     </div>
                     <h1 className="text-6xl md:text-9xl font-black text-black tracking-tighter leading-none mb-10 italic">
-                        Riwaya<span className="text-gray-200">.</span>
+                        SuperEcom<span className="text-gray-200">.</span>
                     </h1>
                     <p className="max-w-2xl mx-auto text-lg md:text-2xl font-bold text-gray-400 uppercase tracking-tight leading-relaxed">
                         Plus qu'une librairie, une destination pour les esprits curieux et les amoureux du savoir.
@@ -67,11 +67,11 @@ export default async function AboutPage() {
                 </div>
             </section>
 
-            {/* Why Riwaya */}
+            {/* Why SuperEcom */}
             <section className="py-32 px-4">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-24">
-                        <h2 className="text-4xl md:text-7xl font-black text-black tracking-tighter mb-6 italic">Pourquoi Riwaya ?<span className="text-gray-200">.</span></h2>
+                        <h2 className="text-4xl md:text-7xl font-black text-black tracking-tighter mb-6 italic">Pourquoi SuperEcom ?<span className="text-gray-200">.</span></h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                         {[
@@ -108,7 +108,7 @@ export default async function AboutPage() {
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
                             className="absolute inset-0"
-                            title="Riwaya - Rabat, Maroc"
+                            title="SuperEcom - Rabat, Maroc"
                         ></iframe>
                     </div>
                 </div>

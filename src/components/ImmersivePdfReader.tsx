@@ -97,7 +97,7 @@ export default function ImmersivePdfReader({ pdfUrl, title, onClose }: Immersive
             // Check for saved bookmark
             let initialPage = 0
             try {
-                const saved = localStorage.getItem(`riwaya-bookmark-${title}`)
+                const saved = localStorage.getItem(`superEcom-bookmark-${title}`)
                 if (saved) {
                     const parsed = parseInt(saved, 10)
                     if (!isNaN(parsed)) {
@@ -181,7 +181,7 @@ export default function ImmersivePdfReader({ pdfUrl, title, onClose }: Immersive
         
         // Auto-save bookmark
         try {
-            localStorage.setItem(`riwaya-bookmark-${title}`, newPage.toString())
+            localStorage.setItem(`superEcom-bookmark-${title}`, newPage.toString())
         } catch (err) {}
         
         // Lazy render next/prev pages
@@ -210,7 +210,7 @@ export default function ImmersivePdfReader({ pdfUrl, title, onClose }: Immersive
                     <div className="w-10 h-10 bg-amber-400 rounded-xl flex items-center justify-center text-black font-black italic">R</div>
                     <div>
                         <h2 className="text-white font-black text-sm tracking-tight leading-none">{title}</h2>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Riwaya Immersive Reader</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">SuperEcom Immersive Reader</p>
                     </div>
                 </div>
                 
@@ -218,7 +218,7 @@ export default function ImmersivePdfReader({ pdfUrl, title, onClose }: Immersive
                     <button 
                         onClick={() => {
                             try {
-                                localStorage.setItem(`riwaya-bookmark-${title}`, currentPage.toString())
+                                localStorage.setItem(`superEcom-bookmark-${title}`, currentPage.toString())
                                 alert('Signet mémorisé avec succès !')
                             } catch(e) {}
                         }}
@@ -262,7 +262,7 @@ export default function ImmersivePdfReader({ pdfUrl, title, onClose }: Immersive
                         showCover={true}
                         mobileScrollSupport={true}
                         onFlip={onFlip}
-                        className="demo-book"
+                        className="demo-product"
                         style={{}}
                         startPage={startPage}
                         drawShadow={true}
@@ -340,7 +340,7 @@ export default function ImmersivePdfReader({ pdfUrl, title, onClose }: Immersive
 
             {/* Custom Styles for Flipbook */}
             <style jsx global>{`
-                .demo-book {
+                .demo-product {
                     background-color: transparent;
                 }
                 canvas {

@@ -9,7 +9,7 @@ import { getSetting } from '@/lib/actions/site-settings'
 
 async function getStats() {
     const [booksCount, packsCount, ordersCount, totalRevenue, deliveredCount] = await Promise.all([
-        prisma.book.count({ where: { active: true } }),
+        prisma.product.count({ where: { active: true } }),
         prisma.pack.count({ where: { active: true } }),
         prisma.order.count({ where: { status: { notIn: ['CANCELLED', 'RETURNED'] } } }), // Commandes valides
         prisma.order.aggregate({ 
@@ -48,7 +48,7 @@ async function getRecentOrders() {
 }
 
 async function getLowStockBooks() {
-    return prisma.book.findMany({
+    return prisma.product.findMany({
         where: {
             stock: { lte: 5 },
             active: true
@@ -61,10 +61,10 @@ async function getLowStockBooks() {
 async function getTopPerformers() {
     // Récupérer les livres les plus vendus
     const topBooks = await prisma.orderItem.groupBy({
-        by: ['bookId'],
+        by: ['productId'],
         where: {
             type: 'BOOK',
-            bookId: { not: null },
+            productId: { not: null },
             order: {
                 status: {
                     notIn: ['CANCELLED', 'RETURNED']
@@ -89,12 +89,12 @@ async function getTopPerformers() {
     // Récupérer les détails des livres
     const booksWithDetails = await Promise.all(
         topBooks.map(async (item) => {
-            const book = await prisma.book.findUnique({
-                where: { id: item.bookId! },
+            const product = await prisma.product.findUnique({
+                where: { id: item.productId! },
                 select: { id: true, title: true, author: true, image: true, price: true }
             })
             return {
-                ...book,
+                ...product,
                 totalOrders: item._count.id,
                 totalQuantity: item._sum.quantity || 0,
                 totalRevenue: item._sum.price || 0
@@ -146,7 +146,7 @@ async function getTopPerformers() {
     )
 
     return {
-        books: booksWithDetails.filter(b => b.id !== null),
+        products: booksWithDetails.filter(b => b.id !== null),
         packs: packsWithDetails.filter(p => p.id !== null)
     }
 }
@@ -237,14 +237,14 @@ export default async function AdminDashboard(props: { params: Promise<{ locale: 
 
     return (
         <div className="space-y-12">
-            {/* Header section style Riwaya */}
+            {/* Header section style SuperEcom */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-gray-100">
                 <div>
                     <h1 className="text-5xl lg:text-7xl font-black text-black tracking-tighter mb-2 italic">
                         Tableau<span className="text-blue-600">.</span>
                     </h1>
                     <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">
-                        Centre de commande global Riwaya
+                        Centre de commande global SuperEcom
                     </p>
                 </div>
 
@@ -332,26 +332,26 @@ export default async function AdminDashboard(props: { params: Promise<{ locale: 
                     </div>
                     <div className="p-10">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                            {/* Top Books */}
+                            {/* Top Products */}
                             <div>
                                 <h3 className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-6 flex items-center gap-2 italic">
                                     <BookOpen className="w-4 h-4 text-blue-600" />
                                     Livres Vedettes
                                 </h3>
                                 <div className="space-y-4">
-                                    {topPerformers.books.map((book: any, index: number) => (
-                                        <div key={book.id} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors group border border-transparent hover:border-gray-100">
+                                    {topPerformers.products.map((product: any, index: number) => (
+                                        <div key={product.id} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors group border border-transparent hover:border-gray-100">
                                             <span className="flex-shrink-0 w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center text-[10px] font-black italic shadow-lg">0{index + 1}</span>
-                                            {book.image && (
+                                            {product.image && (
                                                 <div className="w-12 h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0 shadow-sm border border-gray-100">
-                                                    <img src={book.image} alt={book.title} className="w-full h-full object-cover unoptimized" />
+                                                    <img src={product.image} alt={product.title} className="w-full h-full object-cover unoptimized" />
                                                 </div>
                                             )}
                                             <div className="flex-grow min-w-0">
-                                                <p className="font-black text-[10px] text-black uppercase truncate italic">{book.title}</p>
+                                                <p className="font-black text-[10px] text-black uppercase truncate italic">{product.title}</p>
                                                 <div className="flex items-center gap-3 mt-1">
-                                                    <span className="text-[10px] font-black text-blue-600">{book.totalQuantity} VENTES</span>
-                                                    <span className="text-[10px] font-black text-emerald-500">{book.totalRevenue.toFixed(0)} MAD</span>
+                                                    <span className="text-[10px] font-black text-blue-600">{product.totalQuantity} VENTES</span>
+                                                    <span className="text-[10px] font-black text-emerald-500">{product.totalRevenue.toFixed(0)} MAD</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -436,15 +436,15 @@ export default async function AdminDashboard(props: { params: Promise<{ locale: 
                                 <p className="font-black uppercase tracking-widest text-[9px] text-gray-400">Stock optimal</p>
                             </div>
                         ) : (
-                            lowStockBooks.map((book) => (
-                                <div key={book.id} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                            lowStockBooks.map((product) => (
+                                <div key={product.id} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
                                     <div className="flex-1 min-w-0 pr-4">
-                                        <p className="text-[10px] font-black text-black uppercase truncate italic">{book.title}</p>
-                                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em] mt-1">{book.author}</p>
+                                        <p className="text-[10px] font-black text-black uppercase truncate italic">{product.title}</p>
+                                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em] mt-1">{product.author}</p>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${book.stock === 0 ? 'bg-black text-red-500 shadow-lg shadow-red-500/10' : 'bg-red-50 text-red-600'}`}>
-                                            {book.stock} RESTANTS
+                                        <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ${product.stock === 0 ? 'bg-black text-red-500 shadow-lg shadow-red-500/10' : 'bg-red-50 text-red-600'}`}>
+                                            {product.stock} RESTANTS
                                         </span>
                                     </div>
                                 </div>
@@ -452,7 +452,7 @@ export default async function AdminDashboard(props: { params: Promise<{ locale: 
                         )}
                     </div>
                     <div className="p-8 bg-gray-50/50 border-t border-gray-50">
-                        <Link href="/admin/books" className="block w-full text-center py-4 bg-white border border-gray-100 rounded-2xl text-[9px] font-black text-gray-400 hover:text-black hover:border-black transition-all uppercase tracking-[0.2em]">Rapprovisionner</Link>
+                        <Link href="/admin/products" className="block w-full text-center py-4 bg-white border border-gray-100 rounded-2xl text-[9px] font-black text-gray-400 hover:text-black hover:border-black transition-all uppercase tracking-[0.2em]">Rapprovisionner</Link>
                     </div>
                 </div>
             </div>

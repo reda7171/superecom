@@ -27,9 +27,9 @@ export const packCardSelect = {
     price: true,
     image: true,
     description: true,
-    books: {
+    products: {
         select: {
-            book: {
+            product: {
                 select: {
                     id: true,
                     title: true,
@@ -70,7 +70,7 @@ export const orderDetailSelect = {
             type: true,
             quantity: true,
             price: true,
-            book: {
+            product: {
                 select: {
                     id: true,
                     title: true,
@@ -107,7 +107,7 @@ export const orderDetailSelect = {
 export const RECOMMENDED_INDEXES = `
 // Dans schema.prisma
 
-model Book {
+model Product {
   // ... existing fields
   
   @@index([active, stock])
@@ -128,7 +128,7 @@ model Order {
 model OrderItem {
   // ... existing fields
   
-  @@index([bookId, type])
+  @@index([productId, type])
   @@index([packId, type])
 }
 
@@ -172,7 +172,7 @@ export function getSearchWhere(search: string): Prisma.BookWhereInput {
 }
 
 // Filtres combinés optimisés
-export function buildBookFilters(filters: {
+export function buildProductFilters(filters: {
     category?: string
     minPrice?: number
     maxPrice?: number

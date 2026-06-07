@@ -14,13 +14,13 @@ export default async function CommunityBookDetailPage({
     params: Promise<{ id: string }>
 }) {
     const { id } = await params
-    const book = await getExchangeBookDetails(id)
+    const product = await getExchangeBookDetails(id)
     const t = await getTranslations('Community')
     const tc = await getTranslations('Community.Market')
     const te = await getTranslations('Community.Exchange')
     const tCommon = await getTranslations('Common')
 
-    if (!book) {
+    if (!product) {
         redirect('/community/market')
     }
 
@@ -39,14 +39,14 @@ export default async function CommunityBookDetailPage({
                 </Link>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-                    {/* Left: Book Cover Premium Look */}
+                    {/* Left: Product Cover Premium Look */}
                     <div className="lg:col-span-5 relative">
                         <div className="absolute inset-0 bg-pixio-yellow rounded-[3rem] rotate-3 -z-10 opacity-50 scale-105 blur-sm"></div>
                         <div className="relative aspect-[3/4] bg-white rounded-[2.5rem] shadow-2xl shadow-black/10 overflow-hidden border-2 border-black group">
-                            {book.image ? (
+                            {product.image ? (
                                 <ImageWithFallback
-                                    src={book.image}
-                                    alt={book.title}
+                                    src={product.image}
+                                    alt={product.title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                 />
                             ) : (
@@ -58,35 +58,35 @@ export default async function CommunityBookDetailPage({
                             {/* Condition Badge Overlay */}
                             <div className="absolute top-8 right-8">
                                 <span className="px-6 py-2 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-xl">
-                                    {t(`BookForm.Conditions.${book.condition}` as any)}
+                                    {t(`BookForm.Conditions.${product.condition}` as any)}
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Right: Book & Owner Details */}
+                    {/* Right: Product & Owner Details */}
                     <div className="lg:col-span-7 space-y-12">
-                        {/* Book Basic Info */}
+                        {/* Product Basic Info */}
                         <div className="space-y-4">
                             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-black text-white rounded-full text-[9px] font-black uppercase tracking-[0.3em]">
                                 <RefreshCw className="w-3 h-3 text-pixio-yellow" />
-                                <span>{book.exchangeType === 'DIRECT' ? te('BookToBook') : tc('Credits')}</span>
+                                <span>{product.exchangeType === 'DIRECT' ? te('BookToBook') : tc('Credits')}</span>
                             </div>
                             <h1 className="text-5xl md:text-7xl font-black text-black tracking-tighter leading-[0.9]">
-                                {book.title}<span className="text-pixio-yellow">.</span>
+                                {product.title}<span className="text-pixio-yellow">.</span>
                             </h1>
                             <p className="text-2xl text-gray-400 font-bold italic">
-                                {tCommon('By')} {book.author}
+                                {tCommon('By')} {product.author}
                             </p>
                         </div>
 
                         {/* Description */}
-                        {book.description && (
+                        {product.description && (
                             <div className="p-10 bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-black/5 relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-pixio-yellow/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 mb-6">{tc('DescriptionTitle')}</h3>
                                 <p className="text-lg text-gray-600 leading-relaxed font-medium">
-                                    {book.description}
+                                    {product.description}
                                 </p>
                             </div>
                         )}
@@ -98,30 +98,30 @@ export default async function CommunityBookDetailPage({
                                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full"></div>
 
                                 <div className="relative w-24 h-24 rounded-full border-4 border-pixio-yellow overflow-hidden bg-gray-800 mb-2">
-                                    {book.owner.image ? (
+                                    {product.owner.image ? (
                                         <ImageWithFallback
-                                            src={book.owner.image}
-                                            alt={book.owner.fullName}
+                                            src={product.owner.image}
+                                            alt={product.owner.fullName}
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-3xl font-black">
-                                            {book.owner.fullName?.[0]}
+                                            {product.owner.fullName?.[0]}
                                         </div>
                                     )}
                                 </div>
 
                                 <div>
-                                    <h4 className="text-xl font-black tracking-tight">{book.owner.fullName}</h4>
+                                    <h4 className="text-xl font-black tracking-tight">{product.owner.fullName}</h4>
                                     <div className="flex items-center justify-center gap-4 mt-2">
                                         <div className="flex items-center gap-1">
                                             <MapPin className="w-3 h-3 text-pixio-yellow" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest">{book.owner.city}</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest">{product.owner.city}</span>
                                         </div>
-                                        {book.owner.rating > 0 && (
+                                        {product.owner.rating > 0 && (
                                             <div className="flex items-center gap-1">
                                                 <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                                                <span className="text-[10px] font-black">{book.owner.rating.toFixed(1)}</span>
+                                                <span className="text-[10px] font-black">{product.owner.rating.toFixed(1)}</span>
                                             </div>
                                         )}
                                     </div>
@@ -130,7 +130,7 @@ export default async function CommunityBookDetailPage({
                                 <div className="pt-4 w-full">
                                     <div className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 mb-1">{tc('MemberSince')}</div>
                                     <div className="text-xs font-bold">
-                                        {new Date(book.owner.createdAt).toLocaleDateString()}
+                                        {new Date(product.owner.createdAt).toLocaleDateString()}
                                     </div>
                                 </div>
                             </div>
@@ -145,7 +145,7 @@ export default async function CommunityBookDetailPage({
                                 </div>
 
                                 <Link
-                                    href={`/community/exchange/request/${book.id}`}
+                                    href={`/community/exchange/request/${product.id}`}
                                     className="w-full h-full min-h-[140px] bg-pixio-yellow rounded-[2.5rem] flex flex-col items-center justify-center text-center group hover:bg-black hover:text-white transition-all duration-500 shadow-xl shadow-pixio-yellow/20 hover:shadow-black/20"
                                 >
                                     <RefreshCw className="w-10 h-10 mb-2 group-hover:rotate-180 transition-transform duration-700" />

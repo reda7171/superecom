@@ -149,7 +149,7 @@ export default function UserDropdown({ user, features = {} }: UserDropdownProps)
                             <span className="text-sm font-bold text-gray-700 group-hover:text-black">{t('UserMenu.Orders')}</span>
                         </Link>
 
-                        {(user.email === 'admin@riwaya.com' || user.role === 'ADMIN') && (
+                        {(user.email === 'admin@superEcom.com' || user.role === 'ADMIN') && (
                             <Link
                                 href="/admin"
                                 onClick={() => setIsOpen(false)}

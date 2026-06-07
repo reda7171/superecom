@@ -20,8 +20,8 @@ interface Exchange {
     createdAt: Date
     requester?: { fullName: string | null; rating: number; city: string | null }
     responder?: { fullName: string | null; rating: number; city: string | null }
-    bookRequested: { title: string; author: string; image: string | null }
-    bookOffered: { title: string; author: string; image: string | null } | null
+    productRequested: { title: string; author: string; image: string | null }
+    productOffered: { title: string; author: string; image: string | null } | null
     deliveryMethod?: string | null
     meetingPoint?: string | null
     meetingDate?: Date | null
@@ -174,21 +174,21 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
                             </div>
                         </div>
 
-                        {/* Content: Books */}
+                        {/* Content: Products */}
                         <div className="p-4 sm:p-6 flex-grow">
                             <div className="space-y-4">
-                                {/* Requested Book */}
+                                {/* Requested Product */}
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0">
-                                        {exchange.bookRequested.image ? (
-                                            <img src={exchange.bookRequested.image} alt="" className="w-full h-full object-cover" />
+                                        {exchange.productRequested.image ? (
+                                            <img src={exchange.productRequested.image} alt="" className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-4 h-4 text-gray-300" /></div>
                                         )}
                                     </div>
                                     <div className="min-w-0">
                                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{t('Requested')}</p>
-                                        <p className="text-xs font-black text-black truncate">{exchange.bookRequested.title}</p>
+                                        <p className="text-xs font-black text-black truncate">{exchange.productRequested.title}</p>
                                     </div>
                                 </div>
 
@@ -202,15 +202,15 @@ export default function ExchangesList({ exchanges, type }: ExchangesListProps) {
                                 {/* Offered Product */}
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0">
-                                        {exchange.bookOffered?.image ? (
-                                            <img src={exchange.bookOffered.image} alt="" className="w-full h-full object-cover" />
+                                        {exchange.productOffered?.image ? (
+                                            <img src={exchange.productOffered.image} alt="" className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-4 h-4 text-gray-300" /></div>
                                         )}
                                     </div>
                                     <div className="min-w-0">
                                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{t('Offered')}</p>
-                                        <p className="text-xs font-black text-black truncate">{exchange.bookOffered?.title}</p>
+                                        <p className="text-xs font-black text-black truncate">{exchange.productOffered?.title}</p>
                                     </div>
                                 </div>
                             </div>

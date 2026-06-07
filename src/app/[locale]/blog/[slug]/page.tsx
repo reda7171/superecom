@@ -23,11 +23,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     if (!post) return {}
 
-    const siteUrl = 'https://riwaya.store'
+    const siteUrl = 'https://superEcom.store'
     const canonicalUrl = `${siteUrl}/${locale}/blog/${slug}`
 
     return {
-        title: `${post.title} | Blog Riwaya`,
+        title: `${post.title} | Blog SuperEcom`,
         description: post.excerpt || post.title,
         openGraph: {
             title: post.title,
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             url: canonicalUrl,
             type: 'article',
             publishedTime: post.publishedAt?.toISOString(),
-            authors: post.author?.fullName ? [post.author.fullName] : ['Riwaya'],
+            authors: post.author?.fullName ? [post.author.fullName] : ['SuperEcom'],
             images: post.coverImage ? [{ url: post.coverImage, width: 1200, height: 630, alt: post.title }] : [],
         },
         twitter: {
@@ -103,11 +103,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                         "@type": "BlogPosting",
                         "headline": post.title,
                         "image": post.coverImage,
-                        "author": { "@type": "Person", "name": post.author?.fullName || "Riwaya" },
+                        "author": { "@type": "Person", "name": post.author?.fullName || "SuperEcom" },
                         "publisher": {
                             "@type": "Organization",
-                            "name": "Riwaya",
-                            "logo": { "@type": "ImageObject", "url": "https://riwaya.store/logo.png" }
+                            "name": "SuperEcom",
+                            "logo": { "@type": "ImageObject", "url": "https://superEcom.store/logo.png" }
                         },
                         "datePublished": post.publishedAt,
                         "dateModified": post.updatedAt,
@@ -359,63 +359,63 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                         )}
 
                         {/* === Livres Mentionnés (Mobile/Desktop bas d'article) === */}
-                        {post.books && post.books.length > 0 && (
+                        {post.products && post.products.length > 0 && (
                             <div className="mt-12 p-8 bg-indigo-50/50 border border-indigo-100 rounded-3xl">
                                 <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
                                     <BookOpen className="w-5 h-5 text-indigo-600" />
                                     {t('InThisArticle')}
                                 </h3>
                                 <div className="grid grid-cols-1 gap-4">
-                                    {post.books.map(book => (
-                                        <Link href={`/books/${book.id}`} key={book.id} className="group flex flex-col sm:flex-row gap-6 p-6 bg-white rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-lg transition-all">
+                                    {post.products.map(product => (
+                                        <Link href={`/products/${product.id}`} key={product.id} className="group flex flex-col sm:flex-row gap-6 p-6 bg-white rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-lg transition-all">
                                             <div className="relative w-24 h-36 sm:w-32 sm:h-48 bg-slate-50 rounded-lg shadow-sm overflow-hidden flex-shrink-0 mx-auto sm:mx-0">
-                                                {book.image && <Image src={book.image} alt={book.title} fill className="object-cover group-hover:scale-105 transition-transform" unoptimized />}
+                                                {product.image && <Image src={product.image} alt={product.title} fill className="object-cover group-hover:scale-105 transition-transform" unoptimized />}
                                             </div>
                                             <div className="flex flex-col flex-1 min-w-0">
-                                                <h4 className="text-lg font-black text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight">{book.title}</h4>
-                                                <p className="text-sm font-bold text-slate-500 mt-1 uppercase tracking-widest">{book.author}</p>
+                                                <h4 className="text-lg font-black text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight">{product.title}</h4>
+                                                <p className="text-sm font-bold text-slate-500 mt-1 uppercase tracking-widest">{product.author}</p>
 
-                                                {book.description && (
+                                                {product.description && (
                                                     <p className="text-sm text-slate-600 mt-3 line-clamp-3 leading-relaxed">
-                                                        {book.description}
+                                                        {product.description}
                                                     </p>
                                                 )}
 
-                                                {(book.bestQuote || book.bestLessons || book.bestFor || book.bestChapters) && (
+                                                {(product.bestQuote || product.bestLessons || product.bestFor || product.bestChapters) && (
                                                     <div className="mt-4 space-y-3 bg-slate-50/80 p-4 rounded-xl border border-slate-100">
-                                                        {book.bestQuote && (
+                                                        {product.bestQuote && (
                                                             <div className="flex gap-3">
                                                                 <Quote className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
                                                                 <div>
                                                                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-0.5">{t('BestQuote')}</p>
-                                                                    <p className="text-xs text-slate-700 italic font-medium leading-relaxed">"{book.bestQuote}"</p>
+                                                                    <p className="text-xs text-slate-700 italic font-medium leading-relaxed">"{product.bestQuote}"</p>
                                                                 </div>
                                                             </div>
                                                         )}
-                                                        {book.bestLessons && (
+                                                        {product.bestLessons && (
                                                             <div className="flex gap-3">
                                                                 <Lightbulb className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
                                                                 <div>
                                                                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-0.5">{t('KeyLessons')}</p>
-                                                                    <p className="text-xs text-slate-700 leading-relaxed">{book.bestLessons}</p>
+                                                                    <p className="text-xs text-slate-700 leading-relaxed">{product.bestLessons}</p>
                                                                 </div>
                                                             </div>
                                                         )}
-                                                        {book.bestFor && (
+                                                        {product.bestFor && (
                                                             <div className="flex gap-3">
                                                                 <Target className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                                                                 <div>
                                                                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-0.5">{t('BestFor')}</p>
-                                                                    <p className="text-xs text-slate-700 leading-relaxed">{book.bestFor}</p>
+                                                                    <p className="text-xs text-slate-700 leading-relaxed">{product.bestFor}</p>
                                                                 </div>
                                                             </div>
                                                         )}
-                                                        {book.bestChapters && (
+                                                        {product.bestChapters && (
                                                             <div className="flex gap-3">
                                                                 <Bookmark className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
                                                                 <div>
                                                                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-0.5">{t('KeyChapters')}</p>
-                                                                    <p className="text-xs text-slate-700 leading-relaxed">{book.bestChapters}</p>
+                                                                    <p className="text-xs text-slate-700 leading-relaxed">{product.bestChapters}</p>
                                                                 </div>
                                                             </div>
                                                         )}
@@ -424,8 +424,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
                                                 <div className="mt-auto pt-4 flex items-center justify-between">
                                                     <div>
-                                                        <p className="text-lg font-black text-indigo-600">{book.price} MAD</p>
-                                                        {book.stock > 0 ? (
+                                                        <p className="text-lg font-black text-indigo-600">{product.price} MAD</p>
+                                                        {product.stock > 0 ? (
                                                             <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">{t('InStock')}</span>
                                                         ) : (
                                                             <span className="text-[10px] font-bold text-rose-500 uppercase tracking-widest">{t('OutOfStock')}</span>
@@ -528,22 +528,22 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                             )}
 
                             {/* Livres Mentionnés (Sidebar) */}
-                            {post.books && post.books.length > 0 && (
+                            {post.products && post.products.length > 0 && (
                                 <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
                                     <p className="text-[10px] rtl:text-xs font-black uppercase tracking-[0.3em] rtl:tracking-normal text-slate-400 mb-5 flex items-center gap-2">
                                         <BookOpen className="w-3.5 h-3.5" />
                                         {t('InThisArticle')}
                                     </p>
                                     <div className="space-y-4">
-                                        {post.books.map(book => (
-                                            <Link href={`/books/${book.id}`} key={book.id} className="group flex gap-4 items-start">
+                                        {post.products.map(product => (
+                                            <Link href={`/products/${product.id}`} key={product.id} className="group flex gap-4 items-start">
                                                 <div className="relative w-12 h-16 bg-slate-100 rounded shadow-sm overflow-hidden flex-shrink-0">
-                                                    {book.image && <Image src={book.image} alt={book.title} fill className="object-cover group-hover:scale-105 transition-transform" unoptimized />}
+                                                    {product.image && <Image src={product.image} alt={product.title} fill className="object-cover group-hover:scale-105 transition-transform" unoptimized />}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="text-xs font-bold text-slate-900 line-clamp-2 group-hover:text-indigo-600 transition-colors leading-tight">{book.title}</h4>
-                                                    <p className="text-[10px] text-slate-500 truncate mt-1">{book.author}</p>
-                                                    <p className="text-xs font-black text-indigo-600 mt-1">{book.price} MAD</p>
+                                                    <h4 className="text-xs font-bold text-slate-900 line-clamp-2 group-hover:text-indigo-600 transition-colors leading-tight">{product.title}</h4>
+                                                    <p className="text-[10px] text-slate-500 truncate mt-1">{product.author}</p>
+                                                    <p className="text-xs font-black text-indigo-600 mt-1">{product.price} MAD</p>
                                                 </div>
                                             </Link>
                                         ))}
@@ -603,7 +603,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center">
-                                                <span className="text-gray-200 font-black text-2xl">Riwaya</span>
+                                                <span className="text-gray-200 font-black text-2xl">SuperEcom</span>
                                             </div>
                                         )}
                                         {related.category && (

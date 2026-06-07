@@ -45,7 +45,7 @@ export default async function ExchangeChatPage({
                             <div className="flex-grow">
                                 <h1 className="text-xl font-black text-black leading-tight">Chat d'échange</h1>
                                 <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">
-                                    {exchange.bookRequested.title}
+                                    {exchange.productRequested.title}
                                 </p>
                             </div>
                             <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest ${exchange.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :

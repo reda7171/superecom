@@ -33,7 +33,7 @@ export async function updateCategoryBadge(name: string, badge: string | null, ex
 
 export async function getAllCategories() {
     // Publicly accessible for filters
-    const categories = await prisma.book.groupBy({
+    const categories = await prisma.product.groupBy({
         by: ['category'],
         where: { category: { not: null } }
     })

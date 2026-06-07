@@ -5,7 +5,7 @@ const transporter = nodemailer.createTransport({
     port: parseInt(process.env.SMTP_PORT || '465'),
     secure: true,
     auth: {
-        user: process.env.SMTP_USER || 'admin@riwaya.com',
+        user: process.env.SMTP_USER || 'admin@superEcom.com',
         pass: process.env.SMTP_PASS || 'admin123',
     },
 })
@@ -15,7 +15,7 @@ export async function sendOrderConfirmation(order: any) {
 
     const itemsHtml = order.items.map((item: any) => `
         <div style="padding: 10px; border-bottom: 1px solid #eee;">
-            <p><strong>${item.type === 'BOOK' ? (item.book?.title || 'Livre') : (item.pack?.name || 'Pack')}</strong></p>
+            <p><strong>${item.type === 'BOOK' ? (item.product?.title || 'Livre') : (item.pack?.name || 'Pack')}</strong></p>
             <p>Qté: ${item.quantity} x ${item.price} MAD</p>
         </div>
     `).join('')
@@ -43,15 +43,15 @@ export async function sendOrderConfirmation(order: any) {
             <hr style="margin: 40px 0; border: none; border-top: 1px solid #eee;" />
             
             <p style="color: #888; font-size: 12px;">
-                Riwaya - Librairie en ligne<br/>
-                <a href="${process.env.NEXT_PUBLIC_APP_URL}">www.riwaya.com</a>
+                SuperEcom - Librairie en ligne<br/>
+                <a href="${process.env.NEXT_PUBLIC_APP_URL}">www.superEcom.com</a>
             </p>
         </div>
     `
 
     try {
         await transporter.sendMail({
-            from: '"Riwaya" <admin@riwaya.com>',
+            from: '"SuperEcom" <admin@superEcom.com>',
             to: order.email,
             subject: `Confirmation de commande #${order.id.slice(0, 8)}`,
             html,
@@ -100,7 +100,7 @@ export async function sendOrderStatusUpdate(order: any, status: string) {
 
     try {
         await transporter.sendMail({
-            from: '"Riwaya" <admin@riwaya.com>',
+            from: '"SuperEcom" <admin@superEcom.com>',
             to: order.email,
             subject: `Mise à jour commande #${order.id.slice(0, 8)}: ${status}`,
             html,

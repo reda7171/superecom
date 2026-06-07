@@ -30,7 +30,7 @@ export async function getAllExchanges() {
                         rating: true,
                     }
                 },
-                bookRequested: {
+                productRequested: {
                     select: {
                         id: true,
                         title: true,
@@ -39,7 +39,7 @@ export async function getAllExchanges() {
                         image: true,
                     }
                 },
-                bookOffered: {
+                productOffered: {
                     select: {
                         id: true,
                         title: true,
@@ -90,8 +90,8 @@ export async function getExchangeById(id: string) {
                         image: true,
                     }
                 },
-                bookRequested: true,
-                bookOffered: true,
+                productRequested: true,
+                productOffered: true,
             }
         })
 
@@ -120,16 +120,16 @@ export async function updateExchangeStatus(exchangeId: string, status: string) {
             })
 
             if (exchange) {
-                if (exchange.bookRequestedId) {
+                if (exchange.productRequestedId) {
                     await (prisma as any).exchangeBook.update({
-                        where: { id: exchange.bookRequestedId },
+                        where: { id: exchange.productRequestedId },
                         data: { status: 'EXCHANGED' }
                     })
                 }
 
-                if (exchange.bookOfferedId) {
+                if (exchange.productOfferedId) {
                     await (prisma as any).exchangeBook.update({
-                        where: { id: exchange.bookOfferedId },
+                        where: { id: exchange.productOfferedId },
                         data: { status: 'EXCHANGED' }
                     })
                 }
@@ -182,16 +182,16 @@ export async function cancelExchange(exchangeId: string, reason?: string) {
         })
 
         // Remettre les livres disponibles
-        if (exchange.bookRequestedId) {
+        if (exchange.productRequestedId) {
             await (prisma as any).exchangeBook.update({
-                where: { id: exchange.bookRequestedId },
+                where: { id: exchange.productRequestedId },
                 data: { status: 'AVAILABLE' }
             })
         }
 
-        if (exchange.bookOfferedId) {
+        if (exchange.productOfferedId) {
             await (prisma as any).exchangeBook.update({
-                where: { id: exchange.bookOfferedId },
+                where: { id: exchange.productOfferedId },
                 data: { status: 'AVAILABLE' }
             })
         }
@@ -251,8 +251,8 @@ export async function getExchangeStats() {
 export async function createAdminExchange(data: {
     requesterId: string
     responderId: string
-    bookRequestedId: string
-    bookOfferedId?: string
+    productRequestedId: string
+    productOfferedId?: string
     type: 'DIRECT' | 'CREDIT'
     creditsAmount?: number
     message?: string
@@ -269,13 +269,13 @@ export async function createAdminExchange(data: {
 
         // Marquer les livres comme PENDING
         await (prisma as any).exchangeBook.update({
-            where: { id: data.bookRequestedId },
+            where: { id: data.productRequestedId },
             data: { status: 'PENDING' }
         })
 
-        if (data.bookOfferedId) {
+        if (data.productOfferedId) {
             await (prisma as any).exchangeBook.update({
-                where: { id: data.bookOfferedId },
+                where: { id: data.productOfferedId },
                 data: { status: 'PENDING' }
             })
         }

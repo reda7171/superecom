@@ -31,15 +31,15 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
         seo_default_title: d['seo_default_title'] || '',
         seo_default_description: d['seo_default_description'] || '',
         seo_default_keywords: d['seo_default_keywords'] || '',
-        seo_canonical_url: d['seo_canonical_url'] || 'https://riwaya.store',
-        seo_site_name: d['seo_site_name'] || 'Riwaya',
-        seo_author: d['seo_author'] || 'Riwaya Team',
+        seo_canonical_url: d['seo_canonical_url'] || 'https://superEcom.store',
+        seo_site_name: d['seo_site_name'] || 'SuperEcom',
+        seo_author: d['seo_author'] || 'SuperEcom Team',
         seo_language: d['seo_language'] || 'fr-MA',
         // Open Graph
         seo_og_image: d['seo_og_image'] || '',
         seo_og_image_width: d['seo_og_image_width'] || '1200',
         seo_og_image_height: d['seo_og_image_height'] || '630',
-        seo_og_image_alt: d['seo_og_image_alt'] || 'Riwaya - Librairie en ligne au Maroc',
+        seo_og_image_alt: d['seo_og_image_alt'] || 'SuperEcom - Librairie en ligne au Maroc',
         seo_og_type: d['seo_og_type'] || 'website',
         seo_og_locale: d['seo_og_locale'] || 'fr_MA',
         seo_twitter_handle: d['seo_twitter_handle'] || '@riwaya_ma',
@@ -52,7 +52,7 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
         seo_pinterest_verification: d['seo_pinterest_verification'] || '',
         // Technique
         seo_favicon_url: d['seo_favicon_url'] || '/favicon.ico',
-        seo_robots_txt: d['seo_robots_txt'] || 'User-agent: *\nAllow: /\nSitemap: https://riwaya.store/sitemap.xml',
+        seo_robots_txt: d['seo_robots_txt'] || 'User-agent: *\nAllow: /\nSitemap: https://superEcom.store/sitemap.xml',
         seo_robots_meta: d['seo_robots_meta'] || 'index, follow',
         seo_viewport: d['seo_viewport'] || 'width=device-width, initial-scale=1',
         seo_theme_color: d['seo_theme_color'] || '#000000',
@@ -114,18 +114,18 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
         if (fieldToGen === 'title') {
             setGenerating = lang === 'fr' ? setIsGeneratingTitleFR : setIsGeneratingTitleAR;
             prompt = lang === 'fr'
-                ? "Propose un Meta Title SEO très accrocheur (max 60 caractères) pour la page d'accueil d'une librairie en ligne au Maroc nommée Riwaya. Ne donne que le titre sans guillemets."
-                : "اقترح عنوان Meta Title جذاب جدا (بحد أقصى 60 حرفًا) للصفحة الرئيسية لمكتبة إلكترونية في المغرب تسمى Riwaya. أعطني العنوان فقط بدون علامات تنصيص.";
+                ? "Propose un Meta Title SEO très accrocheur (max 60 caractères) pour la page d'accueil d'une librairie en ligne au Maroc nommée SuperEcom. Ne donne que le titre sans guillemets."
+                : "اقترح عنوان Meta Title جذاب جدا (بحد أقصى 60 حرفًا) للصفحة الرئيسية لمكتبة إلكترونية في المغرب تسمى SuperEcom. أعطني العنوان فقط بدون علامات تنصيص.";
         } else if (fieldToGen === 'description') {
             setGenerating = lang === 'fr' ? setIsGeneratingDescFR : setIsGeneratingDescAR;
             prompt = lang === 'fr'
-                ? "Rédige une Meta Description SEO persuasive (max 160 caractères) pour la page d'accueil d'une librairie en ligne au Maroc nommée Riwaya. Ne donne que la description sans guillemets."
-                : "اكتب وصف Meta Description مقنع (بحد أقصى 160 حرفًا) للصفحة الرئيسية لمكتبة إلكترونية في المغرب تسمى Riwaya. أعطني الوصف فقط بدون علامات تنصيص.";
+                ? "Rédige une Meta Description SEO persuasive (max 160 caractères) pour la page d'accueil d'une librairie en ligne au Maroc nommée SuperEcom. Ne donne que la description sans guillemets."
+                : "اكتب وصف Meta Description مقنع (بحد أقصى 160 حرفًا) للصفحة الرئيسية لمكتبة إلكترونية في المغرب تسمى SuperEcom. أعطني الوصف فقط بدون علامات تنصيص.";
         } else if (fieldToGen === 'keywords') {
             setGenerating = lang === 'fr' ? setIsGeneratingKeywordsFR : setIsGeneratingKeywordsAR;
             prompt = lang === 'fr'
-                ? "Génère 10 à 15 mots-clés SEO pertinents (séparés par des virgules) pour une librairie en ligne au Maroc nommée Riwaya. Ne donne que les mots-clés."
-                : "قم بتوليد 10 إلى 15 كلمة مفتاحية SEO ذات صلة (مفصولة بفواصل) لمكتبة إلكترونية في المغرب تسمى Riwaya. أعطني الكلمات المفتاحية فقط.";
+                ? "Génère 10 à 15 mots-clés SEO pertinents (séparés par des virgules) pour une librairie en ligne au Maroc nommée SuperEcom. Ne donne que les mots-clés."
+                : "قم بتوليد 10 إلى 15 كلمة مفتاحية SEO ذات صلة (مفصولة بفواصل) لمكتبة إلكترونية في المغرب تسمى SuperEcom. أعطني الكلمات المفتاحية فقط.";
         }
 
         if (!setGenerating) return;
@@ -228,7 +228,7 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
                     <Eye className="w-3 h-3" /> Aperçu Google (SERP)
                 </p>
                 <div className="max-w-lg">
-                    <p className="text-[11px] text-gray-400 mb-1">{form.seo_canonical_url || 'https://riwaya.store'}</p>
+                    <p className="text-[11px] text-gray-400 mb-1">{form.seo_canonical_url || 'https://superEcom.store'}</p>
                     <p className="text-lg font-medium text-blue-700 leading-tight line-clamp-1">{form.seo_default_title || 'Titre de votre site'}</p>
                     <p className="text-sm text-gray-600 mt-1 leading-snug line-clamp-2">{form.seo_default_description || 'Description...'}</p>
                 </div>
@@ -262,7 +262,7 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
                                     <span className={`text-xs font-bold ml-2 ${titleLen > 60 ? 'text-red-500' : titleLen > 50 ? 'text-orange-500' : 'text-green-600'}`}>{titleLen}/60</span>
                                 </div>
                             </div>
-                            {input('seo_default_title', 'Riwaya - Librairie en ligne au Maroc')}
+                            {input('seo_default_title', 'SuperEcom - Librairie en ligne au Maroc')}
                         </div>
                         <div className="sm:col-span-2">
                             <div className="flex justify-between items-center mb-1.5">
@@ -292,7 +292,7 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
                                 value={form.seo_default_description}
                                 onChange={e => update('seo_default_description', e.target.value)}
                                 className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm resize-none"
-                                placeholder="Découvrez Riwaya, la librairie en ligne n°1 au Maroc..."
+                                placeholder="Découvrez SuperEcom, la librairie en ligne n°1 au Maroc..."
                             />
                         </div>
                         <div className="sm:col-span-2">
@@ -320,9 +320,9 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
                             {input('seo_default_keywords', 'livres, maroc, librairie, achat')}
                             <p className="text-xs text-gray-400 mt-1">Séparés par des virgules</p>
                         </div>
-                        {field('URL Canonique', 'seo_canonical_url', 'https://riwaya.store', 'url')}
-                        {field('Nom du site', 'seo_site_name', 'Riwaya')}
-                        {field('Auteur', 'seo_author', 'Riwaya Team')}
+                        {field('URL Canonique', 'seo_canonical_url', 'https://superEcom.store', 'url')}
+                        {field('Nom du site', 'seo_site_name', 'SuperEcom')}
+                        {field('Auteur', 'seo_author', 'SuperEcom Team')}
                         {field('Langue principale', 'seo_language', 'fr-MA', 'text', 'Ex: fr-MA, ar-MA, en-US')}
                     </div>
                 )}
@@ -342,7 +342,7 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
                                         value={form.seo_og_image}
                                         onChange={e => update('seo_og_image', e.target.value)}
                                         className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white"
-                                        placeholder="https://riwaya.store/og-image.jpg"
+                                        placeholder="https://superEcom.store/og-image.jpg"
                                     />
                                     <div className="relative mt-2">
                                         <input
@@ -365,9 +365,9 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
                                 )}
                             </div>
                         </div>
-                        {field('Alt Image OG', 'seo_og_image_alt', 'Riwaya - Librairie en ligne au Maroc')}
-                        {field('Image Twitter', 'seo_twitter_image', 'https://riwaya.store/twitter-image.jpg', 'url')}
-                        {field('OG Type', 'seo_og_type', 'website', 'text', 'website, book, article...')}
+                        {field('Alt Image OG', 'seo_og_image_alt', 'SuperEcom - Librairie en ligne au Maroc')}
+                        {field('Image Twitter', 'seo_twitter_image', 'https://superEcom.store/twitter-image.jpg', 'url')}
+                        {field('OG Type', 'seo_og_type', 'website', 'text', 'website, product, article...')}
                         {field('OG Locale', 'seo_og_locale', 'fr_MA')}
                         {field('Largeur image OG (px)', 'seo_og_image_width', '1200')}
                         {field('Hauteur image OG (px)', 'seo_og_image_height', '630')}
@@ -480,10 +480,10 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
                 <SectionHeader s="social" />
                 {openSection === 'social' && (
                     <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {field('Page Facebook (URL)', 'seo_facebook_page', 'https://facebook.com/riwaya', 'url')}
-                        {field('Instagram (@handle)', 'seo_instagram_handle', '@riwaya.ma')}
-                        {field('YouTube (URL chaîne)', 'seo_youtube_channel', 'https://youtube.com/@riwaya', 'url')}
-                        {field('TikTok (@handle)', 'seo_tiktok_handle', '@riwaya.ma')}
+                        {field('Page Facebook (URL)', 'seo_facebook_page', 'https://facebook.com/superEcom', 'url')}
+                        {field('Instagram (@handle)', 'seo_instagram_handle', '@superEcom.ma')}
+                        {field('YouTube (URL chaîne)', 'seo_youtube_channel', 'https://youtube.com/@superEcom', 'url')}
+                        {field('TikTok (@handle)', 'seo_tiktok_handle', '@superEcom.ma')}
                     </div>
                 )}
             </div>
@@ -523,7 +523,7 @@ export default function SeoConfigForm({ initialData }: SeoExpertFormProps) {
                         {field('Ville', 'seo_address_city', 'Casablanca')}
                         {field('Pays (code)', 'seo_address_country', 'MA')}
                         {field('Téléphone de contact', 'seo_contact_phone', '+212600000000', 'tel')}
-                        {field('Email de contact', 'seo_contact_email', 'contact@riwaya.com', 'email')}
+                        {field('Email de contact', 'seo_contact_email', 'contact@superEcom.com', 'email')}
                     </div>
                 )}
             </div>

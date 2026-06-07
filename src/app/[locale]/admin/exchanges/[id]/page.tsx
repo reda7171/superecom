@@ -56,7 +56,7 @@ export default async function ExchangeDetailsPage({
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                {/* Book Requested */}
+                {/* Product Requested */}
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-6">
                     <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
                         <div className="flex items-center gap-2">
@@ -68,10 +68,10 @@ export default async function ExchangeDetailsPage({
 
                     <div className="flex gap-4">
                         <div className="relative w-24 h-36 bg-gray-50 rounded-lg overflow-hidden shrink-0 border border-gray-100">
-                            {exchange.bookRequested.image ? (
+                            {exchange.productRequested.image ? (
                                 <Image
-                                    src={exchange.bookRequested.image}
-                                    alt={exchange.bookRequested.title}
+                                    src={exchange.productRequested.image}
+                                    alt={exchange.productRequested.title}
                                     fill
                                     className="object-cover"
                                     unoptimized
@@ -83,16 +83,16 @@ export default async function ExchangeDetailsPage({
                             )}
                         </div>
                         <div>
-                            <h3 className="font-bold text-gray-900">{exchange.bookRequested.title}</h3>
-                            <p className="text-sm text-gray-600 mb-2">{exchange.bookRequested.author}</p>
+                            <h3 className="font-bold text-gray-900">{exchange.productRequested.title}</h3>
+                            <p className="text-sm text-gray-600 mb-2">{exchange.productRequested.author}</p>
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                {exchange.bookRequested.condition}
+                                {exchange.productRequested.condition}
                             </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Book Offered (or Credit info) */}
+                {/* Product Offered (or Credit info) */}
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-6">
                     <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
                         <div className="flex items-center gap-2">
@@ -110,13 +110,13 @@ export default async function ExchangeDetailsPage({
                         )}
                     </div>
 
-                    {exchange.type === 'DIRECT' && exchange.bookOffered ? (
+                    {exchange.type === 'DIRECT' && exchange.productOffered ? (
                         <div className="flex gap-4">
                             <div className="relative w-24 h-36 bg-gray-50 rounded-lg overflow-hidden shrink-0 border border-gray-100">
-                                {exchange.bookOffered.image ? (
+                                {exchange.productOffered.image ? (
                                     <Image
-                                        src={exchange.bookOffered.image}
-                                        alt={exchange.bookOffered.title}
+                                        src={exchange.productOffered.image}
+                                        alt={exchange.productOffered.title}
                                         fill
                                         className="object-cover"
                                         unoptimized
@@ -128,10 +128,10 @@ export default async function ExchangeDetailsPage({
                                 )}
                             </div>
                             <div>
-                                <h3 className="font-bold text-gray-900">{exchange.bookOffered.title}</h3>
-                                <p className="text-sm text-gray-600 mb-2">{exchange.bookOffered.author}</p>
+                                <h3 className="font-bold text-gray-900">{exchange.productOffered.title}</h3>
+                                <p className="text-sm text-gray-600 mb-2">{exchange.productOffered.author}</p>
                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                    {exchange.bookOffered.condition}
+                                    {exchange.productOffered.condition}
                                 </span>
                             </div>
                         </div>

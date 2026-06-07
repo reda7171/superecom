@@ -16,7 +16,7 @@ async function getOrders(status?: string) {
         include: {
             items: {
                 include: {
-                    book: { select: { title: true, image: true, price: true } },
+                    product: { select: { title: true, image: true, price: true } },
                     pack: { select: { name: true, price: true } }
                 }
             },

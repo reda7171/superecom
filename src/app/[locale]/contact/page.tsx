@@ -7,7 +7,7 @@ import { getAllSettings } from '@/lib/actions/site-settings'
 export default async function ContactPage() {
     // Récupérer les paramètres du site
     const settings = await getAllSettings()
-    const email = settings.contact_email || 'admin@riwaya.store'
+    const email = settings.contact_email || 'admin@superEcom.store'
     const phone = settings.contact_phone || '+212 600-000000'
     const address = settings.contact_address || 'Casablanca, Maroc'
 

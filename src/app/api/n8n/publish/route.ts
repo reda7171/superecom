@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json()
-        const { bookId, packId, format, scheduleAt, platform, useDescription, customImageUrl } = body
+        const { productId, packId, format, scheduleAt, platform, useDescription, customImageUrl } = body
 
         // URL du webhook n8n (Priorité à la DB, puis .env)
         const dbWebhookUrl = await getSetting('n8n_webhook_url')
@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
         let item: any = null;
         let itemType: 'BOOK' | 'PACK' | 'OTHER' = 'OTHER';
 
-        if (bookId) {
-            item = await prisma.book.findUnique({ where: { id: bookId } })
+        if (productId) {
+            item = await prisma.product.findUnique({ where: { id: productId } })
             itemType = 'BOOK';
         } else if (packId) {
             item = await prisma.pack.findUnique({ where: { id: packId } })
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
         // Si pas de livre/pack et pas d'image custom, on arrête
         if (!item && !customImageUrl) {
-            return NextResponse.json({ error: 'bookId, packId ou image requis' }, { status: 400 })
+            return NextResponse.json({ error: 'productId, packId ou image requis' }, { status: 400 })
         }
 
         // Jeton d'accès Facebook, IG et TikTok (Stocké en DB via l'admin)
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
             console.log('[N8N PUBLISH] Using Proxy URL for Meta:', imageUrl);
         }
 
-        const title = body.packName || body.title || (item ? (itemType === 'BOOK' ? item.title : item.name) : 'Riwaya');
+        const title = body.packName || body.title || (item ? (itemType === 'BOOK' ? item.title : item.name) : 'SuperEcom');
         const price = body.price || item?.price || 0;
 
         // Construire le payload envoyé à n8n
@@ -118,16 +118,16 @@ export async function POST(req: NextRequest) {
             itemId: item?.id || 'marketing',
             itemType,
             title: title,
-            author: itemType === 'BOOK' ? item?.author : 'Riwaya',
+            author: itemType === 'BOOK' ? item?.author : 'SuperEcom',
             price: price,
             category: itemType === 'BOOK' ? item?.category : 'Promotion',
             language: itemType === 'BOOK' ? item?.language : 'fr',
             image: imageUrl,
             isPack: itemType === 'PACK',
-            booksList: body.books || (itemType === 'PACK' ? (item as any).books?.map((b: any) => b.book?.title || b.title) : []),
-            bookUrl: itemType === 'BOOK' ? `${baseUrl}/fr/books/${item.id}` : '',
+            booksList: body.products || (itemType === 'PACK' ? (item as any).products?.map((b: any) => b.product?.title || b.title) : []),
+            bookUrl: itemType === 'BOOK' ? `${baseUrl}/fr/products/${item.id}` : '',
             packUrl: itemType === 'PACK' ? `${baseUrl}/fr/packs` : '',
-            itemUrl: item ? (itemType === 'BOOK' ? `${baseUrl}/fr/books/${item.id}` : `${baseUrl}/fr/packs`) : baseUrl,
+            itemUrl: item ? (itemType === 'BOOK' ? `${baseUrl}/fr/products/${item.id}` : `${baseUrl}/fr/packs`) : baseUrl,
             // Texte à publier avec lien intégré
             caption: body.customCaption || (itemType === 'BOOK' ? (item?.description || title) : (item?.description ? `${title}\n\n${item.description}` : title)),
             description: body.customCaption || item?.description || '',
@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
             format,
             platform,
             scheduleAt: scheduleAt || null,
-            source: 'riwaya-admin',
+            source: 'superEcom-admin',
             facebook_access_token: facebookAccessToken,
             instagram_account_id: instagramAccountId,
             tiktok_access_token: tiktokAccessToken,

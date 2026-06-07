@@ -7,8 +7,8 @@ import { isFeatureEnabled } from '@/lib/actions/site-settings'
 import { notFound } from 'next/navigation'
 
 export const metadata: Metadata = {
-    title: 'Devenir vendeur | Riwaya',
-    description: 'Rejoignez la plus grande librairie en ligne du Maroc. Vendez vos livres simplement et rapidement avec Riwaya.',
+    title: 'Devenir vendeur | SuperEcom',
+    description: 'Rejoignez la plus grande librairie en ligne du Maroc. Vendez vos livres simplement et rapidement avec SuperEcom.',
     keywords: ['vendre', 'vendeur', 'livres', 'maroc', 'librairie', 'boutique', 'ecommerce'],
 }
 
@@ -58,12 +58,12 @@ export default async function BecomeSellerPage() {
                 </div>
             </section>
 
-            {/* Pourquoi choisir Riwaya */}
+            {/* Pourquoi choisir SuperEcom */}
             <section className="py-24 bg-white overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-black text-black tracking-tight">
-                            Pourquoi vendre sur Riwaya ?
+                            Pourquoi vendre sur SuperEcom ?
                         </h2>
                         <p className="mt-4 text-xl text-gray-500 font-medium">Votre croissance, notre priorité.</p>
                     </div>

@@ -22,7 +22,7 @@ export default async function AdminReviewsPage({
 
     return (
         <div className="space-y-12">
-            {/* Header section style Riwaya */}
+            {/* Header section style SuperEcom */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-gray-100">
                 <div>
                     <h1 className="text-5xl lg:text-7xl font-black text-black tracking-tighter mb-2 italic">
@@ -121,15 +121,15 @@ export default async function AdminReviewsPage({
                                             <div className="flex items-center gap-4">
                                                 <div className="relative w-12 h-16 bg-gray-100 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0 shadow-sm transition-transform group-hover:scale-105">
                                                     <Image
-                                                        src={review.book.image}
-                                                        alt={review.book.title}
+                                                        src={review.product.image}
+                                                        alt={review.product.title}
                                                         fill
                                                         className="object-cover"
                                                         unoptimized
                                                     />
                                                 </div>
                                                 <span className="font-bold text-black text-[10px] uppercase tracking-tight line-clamp-2 max-w-[150px] italic leading-relaxed">
-                                                    {review.book.title}
+                                                    {review.product.title}
                                                 </span>
                                             </div>
                                         </td>

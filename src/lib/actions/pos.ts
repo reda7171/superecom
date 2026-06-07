@@ -26,11 +26,11 @@ export async function createPOSOrder(data: {
     const itemsWithCost = await Promise.all(data.items.map(async (item) => {
       let costPrice = 0;
       if (item.type === 'BOOK') {
-        const book = await prisma.book.findUnique({
+        const product = await prisma.product.findUnique({
           where: { id: item.id },
           select: { costPrice: true }
         });
-        costPrice = book?.costPrice || 0;
+        costPrice = product?.costPrice || 0;
       } else if (item.type === 'PACK') {
         const pack = await prisma.pack.findUnique({
           where: { id: item.id },
@@ -59,7 +59,7 @@ export async function createPOSOrder(data: {
             quantity: item.quantity,
             price: item.price,
             costPrice: item.costPrice,
-            bookId: item.type === 'BOOK' ? item.id : null,
+            productId: item.type === 'BOOK' ? item.id : null,
             packId: item.type === 'PACK' ? item.id : null,
           })),
         },
@@ -68,23 +68,23 @@ export async function createPOSOrder(data: {
 
 
 
-    // Update stock for books
+    // Update stock for products
     for (const item of data.items) {
       if (item.type === 'BOOK') {
-        await prisma.book.update({
+        await prisma.product.update({
           where: { id: item.id },
           data: { stock: { decrement: item.quantity } },
         });
       } else if (item.type === 'PACK') {
-        // Increment books in pack? (Optional depending on business logic)
+        // Increment products in pack? (Optional depending on business logic)
         const pack = await prisma.pack.findUnique({
           where: { id: item.id },
-          include: { books: true },
+          include: { products: true },
         });
         if (pack) {
-          for (const pb of pack.books) {
-            await prisma.book.update({
-              where: { id: pb.bookId },
+          for (const pb of pack.products) {
+            await prisma.product.update({
+              where: { id: pb.productId },
               data: { stock: { decrement: item.quantity } },
             });
           }

@@ -94,7 +94,7 @@ export default function AdminLayout({
     const allNavigation = useMemo(() => [
         { name: 'Dashboard', href: `/${lang}/admin`, icon: LayoutDashboard },
         { name: 'Articles', href: `/${lang}/admin/posts`, icon: FileText },
-        { name: 'Livres', href: `/${lang}/admin/books`, icon: BookOpen },
+        { name: 'Livres', href: `/${lang}/admin/products`, icon: BookOpen },
         { name: 'Livres Numériques', href: `/${lang}/admin/digital-products`, icon: Download, featureKey: 'feature_digital_books' },
         { name: 'Auteurs', href: `/${lang}/admin/authors`, icon: Users },
         { name: 'Packs', href: `/${lang}/admin/packs`, icon: Package, featureKey: 'feature_packs' },
@@ -211,7 +211,7 @@ export default function AdminLayout({
                     <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center shrink-0">
                         <span className="text-white text-lg font-black italic">R</span>
                     </div>
-                    {!isCollapsed && <h1 className="text-lg font-black text-slate-900 tracking-tight">Riwaya<span className="text-blue-600">.</span></h1>}
+                    {!isCollapsed && <h1 className="text-lg font-black text-slate-900 tracking-tight">SuperEcom<span className="text-blue-600">.</span></h1>}
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -340,7 +340,7 @@ export default function AdminLayout({
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-bold text-slate-900 truncate">Administrateur</p>
-                                <p className="text-[10px] text-slate-500 font-medium truncate">admin@riwaya.store</p>
+                                <p className="text-[10px] text-slate-500 font-medium truncate">admin@superEcom.store</p>
                             </div>
                         </div>
 
@@ -402,7 +402,7 @@ export default function AdminLayout({
                         <div className="w-7 h-7 bg-black rounded-lg flex items-center justify-center">
                             <span className="text-white text-sm font-black italic">R</span>
                         </div>
-                        <span className="text-base font-black text-slate-900">Riwaya<span className="text-blue-600">.</span></span>
+                        <span className="text-base font-black text-slate-900">SuperEcom<span className="text-blue-600">.</span></span>
                     </div>
                     <div className="flex items-center gap-2">
                         <LanguageSwitcher />

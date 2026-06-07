@@ -7,8 +7,8 @@ import { uploadPostImage } from '@/lib/actions/upload'
 import { Loader2, Save, ArrowLeft, Image as ImageIcon, Sparkles, ExternalLink } from 'lucide-react'
 import { generatePostContent } from '@/lib/actions/gemini'
 import Link from 'next/link'
-import { Book as BookIcon, Search, X } from 'lucide-react'
-import { fetchBooks } from '@/lib/actions/books'
+import { Package as BookIcon, Search, X } from 'lucide-react'
+import { fetchBooks } from '@/lib/actions/products'
 import { useEffect } from 'react'
 import PostSectionEditor from './post-form/PostSectionEditor'
 
@@ -37,7 +37,7 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
     const [language, setLanguage] = useState(post?.language || lang)
     const [allBooks, setAllBooks] = useState<any[]>([])
     const [bookSearch, setBookSearch] = useState('')
-    const [selectedBookIds, setSelectedBookIds] = useState<string[]>(post?.books?.map((b: any) => b.id) || [])
+    const [selectedBookIds, setSelectedBookIds] = useState<string[]>(post?.products?.map((b: any) => b.id) || [])
 
     useEffect(() => {
         const loadBooks = async () => {
@@ -417,14 +417,14 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                                 />
                             </div>
 
-                            {/* Selected Books */}
+                            {/* Selected Products */}
                             {selectedBookIds.length > 0 && (
                                 <div className="flex flex-wrap gap-2 py-2">
                                     {selectedBookIds.map(id => {
-                                        const book = allBooks.find(b => b.id === id)
+                                        const product = allBooks.find(b => b.id === id)
                                         return (
                                             <div key={id} className="flex items-center gap-2 px-2 py-1 bg-black text-white rounded text-[10px] font-bold">
-                                                <span className="truncate max-w-[120px]">{book?.title || 'Livre...'}</span>
+                                                <span className="truncate max-w-[120px]">{product?.title || 'Livre...'}</span>
                                                 <button
                                                     type="button"
                                                     onClick={() => setSelectedBookIds(prev => prev.filter(bid => bid !== id))}
@@ -438,27 +438,27 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                                 </div>
                             )}
 
-                            {/* Book List */}
+                            {/* Product List */}
                             <div className="max-h-60 overflow-y-auto border border-gray-100 rounded-lg divide-y divide-gray-100">
                                 {allBooks
                                     .filter(b => b.title.toLowerCase().includes(bookSearch.toLowerCase()) && !selectedBookIds.includes(b.id))
                                     .slice(0, 50)
-                                    .map(book => (
+                                    .map(product => (
                                         <button
-                                            key={book.id}
+                                            key={product.id}
                                             type="button"
-                                            onClick={() => setSelectedBookIds(prev => [...prev, book.id])}
+                                            onClick={() => setSelectedBookIds(prev => [...prev, product.id])}
                                             className="w-full px-3 py-2 text-left hover:bg-gray-50 text-xs font-medium flex items-center gap-3 transition-colors"
                                         >
                                             <div className="w-8 h-10 bg-gray-100 rounded flex-shrink-0 overflow-hidden">
-                                                {book.image && (
+                                                {product.image && (
                                                     <img 
                                                         src={
-                                                            book.image.startsWith('http') || book.image.startsWith('/') || book.image.startsWith('data:') 
-                                                                ? book.image 
-                                                                : book.image.startsWith('/9j/') ? `data:image/jpeg;base64,${book.image}` 
-                                                                : book.image.startsWith('iVBOR') ? `data:image/png;base64,${book.image}` 
-                                                                : `data:image/jpeg;base64,${book.image}`
+                                                            product.image.startsWith('http') || product.image.startsWith('/') || product.image.startsWith('data:') 
+                                                                ? product.image 
+                                                                : product.image.startsWith('/9j/') ? `data:image/jpeg;base64,${product.image}` 
+                                                                : product.image.startsWith('iVBOR') ? `data:image/png;base64,${product.image}` 
+                                                                : `data:image/jpeg;base64,${product.image}`
                                                         } 
                                                         alt="" 
                                                         className="w-full h-full object-cover" 
@@ -466,8 +466,8 @@ export default function PostForm({ post, isEditing = false }: PostFormProps) {
                                                 )}
                                             </div>
                                             <div className="min-w-0">
-                                                <div className="truncate font-bold text-gray-900">{book.title}</div>
-                                                <div className="truncate text-gray-400">{book.author}</div>
+                                                <div className="truncate font-bold text-gray-900">{product.title}</div>
+                                                <div className="truncate text-gray-400">{product.author}</div>
                                             </div>
                                         </button>
                                     ))}

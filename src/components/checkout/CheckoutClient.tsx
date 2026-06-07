@@ -416,7 +416,7 @@ export default function CheckoutClient({
                                                     src={normalizeImage(item.image)}
                                                     alt={item.title}
                                                     className="w-full h-full object-cover"
-                                                    onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
+                                                    onError={(e) => { (e.target as HTMLImageElement).src = '/product-placeholder.png' }}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -442,7 +442,7 @@ export default function CheckoutClient({
                                                     src={normalizeImage(eligibleGift.image)}
                                                     alt={eligibleGift.name}
                                                     className="w-full h-full object-cover"
-                                                    onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
+                                                    onError={(e) => { (e.target as HTMLImageElement).src = '/product-placeholder.png' }}
                                                 />
                                             ) : (
                                                 <Package className="w-8 h-8 text-indigo-300" />

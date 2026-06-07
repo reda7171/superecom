@@ -7,8 +7,8 @@ import { z } from 'zod'
 import { createNotification } from './community-notifications'
 
 const ExchangeRequestSchema = z.object({
-    bookRequestedId: z.string().uuid(),
-    bookOfferedId: z.string().uuid().optional(), // Optionnel si crédit
+    productRequestedId: z.string().uuid(),
+    productOfferedId: z.string().uuid().optional(), // Optionnel si crédit
     message: z.string().optional(),
     type: z.literal('DIRECT'),
     deliveryMethod: z.enum(['MEETUP', 'SHIPPING', 'LOCKER']).optional(),
@@ -25,8 +25,8 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
     if (!user) return { success: false, error: "Vous devez être connecté" }
 
     const rawData = {
-        bookRequestedId: formData.get('bookRequestedId'),
-        bookOfferedId: formData.get('bookOfferedId') || undefined,
+        productRequestedId: formData.get('productRequestedId'),
+        productOfferedId: formData.get('productOfferedId') || undefined,
         message: formData.get('message'),
         type: formData.get('type') || 'DIRECT',
         deliveryMethod: formData.get('deliveryMethod') || undefined,
@@ -39,7 +39,7 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
 
         // 1. Vérifier le livre demandé
         const requestedBook = await (prisma as any).exchangeBook.findUnique({
-            where: { id: data.bookRequestedId },
+            where: { id: data.productRequestedId },
             include: { owner: true }
         })
 
@@ -54,13 +54,13 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
         // 3. Vérifier l'éligibilité (Au moins une commande effectuée)
         const isEligible = await checkExchangeEligibility(user)
         if (!isEligible) {
-            return { success: false, error: "Vous devez avoir effectué au moins une commande sur Riwaya pour accéder au système d'échange." }
+            return { success: false, error: "Vous devez avoir effectué au moins une commande sur SuperEcom pour accéder au système d'échange." }
         }
 
         // 2. Vérifier le livre offert (si échange direct)
-        if (data.type === 'DIRECT' && data.bookOfferedId) {
+        if (data.type === 'DIRECT' && data.productOfferedId) {
             const offeredBook = await (prisma as any).exchangeBook.findUnique({
-                where: { id: data.bookOfferedId }
+                where: { id: data.productOfferedId }
             })
 
             if (!offeredBook || offeredBook.ownerId !== user.id) {
@@ -76,8 +76,8 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
             data: {
                 requesterId: user.id,
                 responderId: requestedBook.ownerId,
-                bookRequestedId: requestedBook.id,
-                bookOfferedId: data.bookOfferedId || null,
+                productRequestedId: requestedBook.id,
+                productOfferedId: data.productOfferedId || null,
                 type: 'DIRECT',
                 message: data.message || '',
                 status: 'PENDING',
@@ -106,12 +106,12 @@ export async function createExchangeRequest(formData: FormData): Promise<Exchang
 /**
  * Récupérer les détails pour la page de demande
  */
-export async function getExchangeDetails(bookId: string) {
+export async function getExchangeDetails(productId: string) {
     const user = await getCommunityUser()
     if (!user) return null
 
-    const book = await (prisma as any).exchangeBook.findUnique({
-        where: { id: bookId },
+    const product = await (prisma as any).exchangeBook.findUnique({
+        where: { id: productId },
         include: {
             owner: {
                 select: {
@@ -125,7 +125,7 @@ export async function getExchangeDetails(bookId: string) {
         }
     })
 
-    if (!book) return null
+    if (!product) return null
 
     // Récupérer mes livres disponibles pour l'échange
     const myBooks = await (prisma as any).exchangeBook.findMany({
@@ -138,7 +138,7 @@ export async function getExchangeDetails(bookId: string) {
     // Vérifier l'éligibilité
     const isEligible = await checkExchangeEligibility(user)
 
-    return { book, myBooks, currentUser: user, isEligible }
+    return { product, myBooks, currentUser: user, isEligible }
 }
 
 /**
@@ -152,8 +152,8 @@ export async function getUserExchanges() {
         where: { responderId: user.id },
         include: {
             requester: { select: { fullName: true, rating: true, city: true } },
-            bookRequested: true,
-            bookOffered: true,
+            productRequested: true,
+            productOffered: true,
             rating: true,
         },
         orderBy: { createdAt: 'desc' }
@@ -163,8 +163,8 @@ export async function getUserExchanges() {
         where: { requesterId: user.id },
         include: {
             responder: { select: { fullName: true, rating: true, city: true } },
-            bookRequested: true,
-            bookOffered: true,
+            productRequested: true,
+            productOffered: true,
             rating: true,
         },
         orderBy: { createdAt: 'desc' }
@@ -185,7 +185,7 @@ export async function acceptExchange(exchangeId: string) {
         await (prisma as any).$transaction(async (tx: any) => {
             const exchange = await tx.exchange.findUnique({
                 where: { id: exchangeId },
-                include: { bookRequested: true, bookOffered: true, requester: true }
+                include: { productRequested: true, productOffered: true, requester: true }
             })
 
             if (!exchange || exchange.responderId !== user.id) {
@@ -197,12 +197,12 @@ export async function acceptExchange(exchangeId: string) {
             }
 
             // Vérifier validité finale
-            if (exchange.bookRequested.status !== 'AVAILABLE') {
+            if (exchange.productRequested.status !== 'AVAILABLE') {
                 throw new Error("Votre livre n'est plus disponible")
             }
 
-            if (exchange.type === 'DIRECT' && exchange.bookOffered) {
-                if (exchange.bookOffered.status !== 'AVAILABLE') {
+            if (exchange.type === 'DIRECT' && exchange.productOffered) {
+                if (exchange.productOffered.status !== 'AVAILABLE') {
                     throw new Error("Le livre proposé n'est plus disponible")
                 }
             }
@@ -216,13 +216,13 @@ export async function acceptExchange(exchangeId: string) {
 
             // Marquer les livres comme réservés/échangés
             await tx.exchangeBook.update({
-                where: { id: exchange.bookRequestedId },
+                where: { id: exchange.productRequestedId },
                 data: { status: 'EXCHANGED' }
             })
 
-            if (exchange.bookOfferedId) {
+            if (exchange.productOfferedId) {
                 await tx.exchangeBook.update({
-                    where: { id: exchange.bookOfferedId },
+                    where: { id: exchange.productOfferedId },
                     data: { status: 'EXCHANGED' }
                 })
             }
@@ -232,7 +232,7 @@ export async function acceptExchange(exchangeId: string) {
                 userId: exchange.requesterId,
                 type: 'EXCHANGE_ACCEPTED',
                 title: 'Échange accepté !',
-                message: `${(user as any).fullName} a accepté votre demande d'échange pour "${exchange.bookRequested.title}"`,
+                message: `${(user as any).fullName} a accepté votre demande d'échange pour "${exchange.productRequested.title}"`,
                 link: `/community/exchanges`
             })
         })
@@ -254,7 +254,7 @@ export async function rejectExchange(exchangeId: string) {
     try {
         const exchange = await (prisma as any).exchange.findUnique({
             where: { id: exchangeId },
-            include: { bookRequested: true }
+            include: { productRequested: true }
         })
 
         if (!exchange || exchange.responderId !== user.id) {
@@ -268,13 +268,13 @@ export async function rejectExchange(exchangeId: string) {
 
         // Marquer les livres comme à nouveau disponibles
         await (prisma as any).exchangeBook.update({
-            where: { id: exchange.bookRequestedId },
+            where: { id: exchange.productRequestedId },
             data: { status: 'AVAILABLE' }
         })
 
-        if (exchange.bookOfferedId) {
+        if (exchange.productOfferedId) {
             await (prisma as any).exchangeBook.update({
-                where: { id: exchange.bookOfferedId },
+                where: { id: exchange.productOfferedId },
                 data: { status: 'AVAILABLE' }
             })
         }
@@ -297,8 +297,8 @@ export async function completeExchange(exchangeId: string) {
         const exchange = await (prisma as any).exchange.findUnique({
             where: { id: exchangeId },
             include: {
-                bookRequested: true,
-                bookOffered: true
+                productRequested: true,
+                productOffered: true
             }
         })
 
@@ -323,7 +323,7 @@ export async function completeExchange(exchangeId: string) {
 
             // 2. Transférer le livre demandé (du Responder -> Requester)
             await tx.exchangeBook.update({
-                where: { id: exchange.bookRequestedId },
+                where: { id: exchange.productRequestedId },
                 data: {
                     ownerId: exchange.requesterId, // Nouveau propriétaire
                     status: 'EXCHANGED', // Marqué comme échangé
@@ -331,9 +331,9 @@ export async function completeExchange(exchangeId: string) {
             })
 
             // 3. Transférer le livre offert (du Requester -> Responder) si applicable (Echange DIRECT)
-            if (exchange.bookOfferedId) {
+            if (exchange.productOfferedId) {
                 await tx.exchangeBook.update({
-                    where: { id: exchange.bookOfferedId },
+                    where: { id: exchange.productOfferedId },
                     data: {
                         ownerId: exchange.responderId, // Nouveau propriétaire
                         status: 'EXCHANGED',

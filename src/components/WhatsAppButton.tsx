@@ -28,20 +28,20 @@ export default function WhatsAppButton({ phone }: WhatsAppButtonProps) {
     
     // Traductions du message WhatsApp
     const messages: Record<string, string> = {
-        fr: 'Bonjour Riwaya, je suis intéressé par ces livres :\n{books}\nCombien le prix total avec livraison ?',
-        en: 'Hello Riwaya, I am interested in these books:\n{books}\nHow much is the total price with delivery?',
-        ar: 'مرحباً رواية، أنا مهتم بهذه الكتب:\n{books}\nكم السعر الإجمالي مع التوصيل؟'
+        fr: 'Bonjour SuperEcom, je suis intéressé par ces livres :\n{products}\nCombien le prix total avec livraison ?',
+        en: 'Hello SuperEcom, I am interested in these products:\n{products}\nHow much is the total price with delivery?',
+        ar: 'مرحباً رواية، أنا مهتم بهذه الكتب:\n{products}\nكم السعر الإجمالي مع التوصيل؟'
     }
 
     let finalMessage = ''
     if (items.length > 0) {
         const baseMsg = messages[locale] || messages.fr
         const booksList = items.map(item => `- ${item.title} (x${item.quantity})`).join('\n')
-        finalMessage = baseMsg.replace('{books}', booksList)
+        finalMessage = baseMsg.replace('{products}', booksList)
     } else {
         const emptyMessages: Record<string, string> = {
-            fr: 'Bonjour Riwaya, je souhaite découvrir votre bibliothèque et en savoir plus sur vos livres.',
-            en: 'Hello Riwaya, I would like to browse your library and know more about your books.',
+            fr: 'Bonjour SuperEcom, je souhaite découvrir votre bibliothèque et en savoir plus sur vos livres.',
+            en: 'Hello SuperEcom, I would like to browse your library and know more about your products.',
             ar: 'مرحباً رواية، أود تصفح مكتبتكم ومعرفة المزيد عن كتبكم.'
         }
         finalMessage = emptyMessages[locale] || emptyMessages.fr

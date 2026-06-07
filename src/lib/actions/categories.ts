@@ -23,7 +23,7 @@ export async function getPopularCategories() {
         // Décembre (Cadeaux/Fin d'année)
         if (month === 11) seasonalThemes.push('Cadeaux');
 
-        const categories = await prisma.book.groupBy({
+        const categories = await prisma.product.groupBy({
             by: ['category'],
             where: {
                 active: true,
@@ -95,7 +95,7 @@ export async function getPopularCategories() {
             const finalBadge = manualBadge || (trendingCats.has(name) ? 'TRENDING' : null);
 
             // Trouver le top auteur pour cette catégorie
-            const topAuthorResult = await prisma.book.groupBy({
+            const topAuthorResult = await prisma.product.groupBy({
                 by: ['author'],
                 where: { category: name, active: true },
                 _count: { author: true },
@@ -104,7 +104,7 @@ export async function getPopularCategories() {
             });
 
             // Trouver le prix minimum pour cette catégorie
-            const minPriceResult = await prisma.book.aggregate({
+            const minPriceResult = await prisma.product.aggregate({
                 where: { category: name, active: true },
                 _min: { price: true }
             });
@@ -124,7 +124,7 @@ export async function getPopularCategories() {
             });
 
             // Calculer la réduction moyenne pour cette catégorie
-            const booksWithDiscount = await prisma.book.findMany({
+            const booksWithDiscount = await prisma.product.findMany({
                 where: {
                     category: name,
                     active: true,
@@ -153,7 +153,7 @@ export async function getPopularCategories() {
             }
 
             // Calculer le prix moyen pour déterminer si Livraison Gratuite (Seuil > 200 MAD)
-            const avgPriceResult = await prisma.book.aggregate({
+            const avgPriceResult = await prisma.product.aggregate({
                 where: { category: name, active: true },
                 _avg: { price: true }
             });

@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
                 const { sendTelegramMessage } = await import('@/lib/telegram')
                 const replyText = result.text
                 await sendTelegramMessage(
-                    `🤖 <b>Assistant Riwaya (Gemini)</b>\n\n` +
+                    `🤖 <b>Assistant SuperEcom (Gemini)</b>\n\n` +
                     `👤 <b>User:</b> ${message}\n` +
                     `🤖 <b>AI:</b> ${replyText.slice(0, 300)}${replyText.length > 300 ? '...' : ''}\n` +
                     `🌐 <b>IP:</b> ${ip}`

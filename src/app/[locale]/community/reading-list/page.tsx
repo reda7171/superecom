@@ -1,7 +1,7 @@
 import { getReadingList } from '@/lib/actions/reading-list'
 import { getTranslations } from 'next-intl/server'
 import ReadingListBoard from '@/components/ReadingListBoard'
-import AddManualBookReadingList from '@/components/AddManualBookReadingList'
+import AddManualProductReadingList from '@/components/AddManualProductReadingList'
 import ReadingListStats from '@/components/ReadingListStats'
 import Header from '@/components/HeaderWithUser'
 import { getCommunityUser } from '@/lib/actions/community-auth'
@@ -28,7 +28,7 @@ export default async function ReadingListPage() {
                 <ReadingListStats items={readingList} />
 
                 <ReadingListBoard initialItems={readingList} user={user}>
-                    <AddManualBookReadingList />
+                    <AddManualProductReadingList />
                 </ReadingListBoard>
             </div>
             <Footer />

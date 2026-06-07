@@ -51,7 +51,7 @@ export async function importOrdersFromExcel(formData: FormData) {
             const totalStr = getVal('total') || 0
             const total = parseFloat(totalStr.toString().replace(',', '.')) || 0
             
-            const subtotalStr = getVal('prix book') || 0
+            const subtotalStr = getVal('prix product') || 0
             const subtotal = parseFloat(subtotalStr.toString().replace(',', '.')) || 0
             
             const shippingFeesStr = getVal('livraison') || 0
@@ -70,19 +70,19 @@ export async function importOrdersFromExcel(formData: FormData) {
             if (!getVal('nom') && !getVal('num') && !getVal('total')) continue; // Skip completely empty rows
             
             // Tentative de retrouver le livre par son titre pour avoir le costPrice
-            let bookId = null
+            let productId = null
             let bookCostPrice = 0
             
             if (booksTitles) {
-                const book = await prisma.book.findFirst({
+                const product = await prisma.product.findFirst({
                     where: { 
                         title: { contains: booksTitles.toString().split(',')[0].trim() } 
                     },
                     select: { id: true, costPrice: true }
                 })
-                if (book) {
-                    bookId = book.id
-                    bookCostPrice = book.costPrice
+                if (product) {
+                    productId = product.id
+                    bookCostPrice = product.costPrice
                 }
             }
 
@@ -102,7 +102,7 @@ export async function importOrdersFromExcel(formData: FormData) {
                         create: [
                             {
                                 type: 'BOOK',
-                                bookId: bookId,
+                                productId: productId,
                                 quantity: nbrLivre,
                                 price: nbrLivre > 0 ? subtotal / nbrLivre : subtotal,
                                 costPrice: bookCostPrice

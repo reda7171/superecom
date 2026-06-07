@@ -15,8 +15,8 @@ interface PackCardProps {
     price: number
     image: string | null
     shippingFees?: number
-    books: Array<{
-        book: {
+    products: Array<{
+        product: {
             id: string
             title: string
             author: string
@@ -31,14 +31,14 @@ export default function PackCard({
     name,
     price,
     image,
-    books,
+    products,
     shippingFees,
 }: PackCardProps) {
     const t = useTranslations('Packs')
     const tCommon = useTranslations('Common')
     const addItem = useCartStore((state) => state.addItem)
     const { openCart, showNotification } = useUIStore()
-    const totalOriginalPrice = books.reduce((sum: number, pb: any) => sum + pb.book.price, 0)
+    const totalOriginalPrice = products.reduce((sum: number, pb: any) => sum + pb.product.price, 0)
     const savings = totalOriginalPrice - price
     const savingsPercent = Math.round((savings / totalOriginalPrice) * 100)
 
@@ -66,7 +66,7 @@ export default function PackCard({
                         id,
                         title: name,
                         price,
-                        image: image || (books && books.length > 0 ? books[0].book.image : '/images/placeholder.jpg'),
+                        image: image || (products && products.length > 0 ? products[0].product.image : '/images/placeholder.jpg'),
                         type: 'PACK',
                         slug: `/packs/${id}`
                     }}
@@ -80,20 +80,20 @@ export default function PackCard({
                     {image ? (
                         <img
                             src={normalizeImage(image)}
-                            alt={`Pack ${name} - Riwaya Selection`}
+                            alt={`Pack ${name} - SuperEcom Selection`}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                            onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
+                            onError={(e) => { (e.target as HTMLImageElement).src = '/product-placeholder.png' }}
                         />
                     ) : (
                         <div className="absolute inset-0 flex items-center justify-center bg-pixio-yellow/30 p-8">
                             <div className="grid grid-cols-2 gap-3 transform group-hover:scale-105 transition-transform">
-                                {books.slice(0, 4).map((pb: any, idx: number) => (
-                                    <div key={pb.book.id} className={`relative w-20 h-28 rounded-xl overflow-hidden shadow-2xl border-2 border-white ${idx % 2 === 0 ? '-rotate-6' : 'rotate-6'}`}>
+                                {products.slice(0, 4).map((pb: any, idx: number) => (
+                                    <div key={pb.product.id} className={`relative w-20 h-28 rounded-xl overflow-hidden shadow-2xl border-2 border-white ${idx % 2 === 0 ? '-rotate-6' : 'rotate-6'}`}>
                                         <img
-                                            src={normalizeImage(pb.book.image)}
-                                            alt={`${pb.book.title} - Inclus dans le pack ${name}`}
+                                            src={normalizeImage(pb.product.image)}
+                                            alt={`${pb.product.title} - Inclus dans le pack ${name}`}
                                             className="w-full h-full object-cover"
-                                            onError={(e) => { (e.target as HTMLImageElement).src = '/book-placeholder.png' }}
+                                            onError={(e) => { (e.target as HTMLImageElement).src = '/product-placeholder.png' }}
                                         />
                                     </div>
                                 ))}
@@ -113,7 +113,7 @@ export default function PackCard({
                         </h3>
                         <div className="flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-gray-100 shadow-sm">
                             <Sparkles className="w-3 h-3 text-yellow-500" />
-                            <span className="text-[10px] rtl:text-xs font-black black uppercase tracking-widest rtl:tracking-normal">{books.length} {t('Includes')}</span>
+                            <span className="text-[10px] rtl:text-xs font-black black uppercase tracking-widest rtl:tracking-normal">{products.length} {t('Includes')}</span>
                         </div>
                     </div>
                 </Link>
@@ -143,8 +143,8 @@ export default function PackCard({
                                     id,
                                     title: name,
                                     price,
-                                    image: image || (books.length > 0 ? books[0].book.image : '/images/placeholder-pack.jpg'),
-                                    booksCount: books.length,
+                                    image: image || (products.length > 0 ? products[0].product.image : '/images/placeholder-pack.jpg'),
+                                    booksCount: products.length,
                                     shippingFees,
                                 })
                                 openCart()

@@ -94,7 +94,7 @@ export async function getPostBySlug(slug: string, language?: string) {
             _count: {
                 select: { comments: { where: { isApproved: true } } }
             },
-            books: {
+            products: {
                 select: {
                     id: true,
                     title: true,
@@ -214,7 +214,7 @@ export async function createPost(data: any) {
                 category: data.category,
                 tags: data.tags || null,
                 language: data.language || 'fr',
-                books: data.bookIds ? {
+                products: data.bookIds ? {
                     connect: data.bookIds.map((id: string) => ({ id }))
                 } : undefined
             }
@@ -246,7 +246,7 @@ export async function updatePost(id: string, data: any) {
                 category: data.category,
                 tags: data.tags || null,
                 language: data.language || 'fr',
-                books: {
+                products: {
                     set: data.bookIds ? data.bookIds.map((id: string) => ({ id })) : []
                 }
             }
@@ -283,7 +283,7 @@ export async function getPostById(id: string) {
     return prisma.post.findUnique({
         where: { id },
         include: {
-            books: {
+            products: {
                 select: { id: true, title: true }
             }
         }
@@ -293,13 +293,13 @@ export async function getPostById(id: string) {
 /**
  * Récupère les articles parlant d'un livre spécifique
  */
-export async function getPostsByBookId(bookId: string, language: string = 'fr') {
+export async function getPostsByBookId(productId: string, language: string = 'fr') {
     return prisma.post.findMany({
         where: {
             published: true,
             language,
-            books: {
-                some: { id: bookId }
+            products: {
+                some: { id: productId }
             }
         },
         orderBy: { publishedAt: 'desc' },

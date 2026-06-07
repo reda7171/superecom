@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { X, Copy, Check } from 'lucide-react'
 
-interface Book {
+interface Product {
     id: string
     title: string
     price: number
@@ -15,16 +15,16 @@ interface Book {
 interface CaptionPreviewModalProps {
     isOpen: boolean
     onClose: () => void
-    book: Book | null
+    product: Product | null
 }
 
-export default function CaptionPreviewModal({ isOpen, onClose, book }: CaptionPreviewModalProps) {
+export default function CaptionPreviewModal({ isOpen, onClose, product }: CaptionPreviewModalProps) {
     const [caption, setCaption] = useState('')
     const [loading, setLoading] = useState(true)
     const [copied, setCopied] = useState(false)
 
     useEffect(() => {
-        if (!isOpen || !book) return
+        if (!isOpen || !product) return
 
         setLoading(true)
         setCopied(false)
@@ -39,18 +39,18 @@ export default function CaptionPreviewModal({ isOpen, onClose, book }: CaptionPr
                     whatsappPhone = data.settings.contact_phone
                 }
 
-                const baseDesc = book.description || book.title
-                const productUrl = `${window.location.origin}/fr/books/${book.id}`
+                const baseDesc = product.description || product.title
+                const productUrl = `${window.location.origin}/fr/products/${product.id}`
                 const waPhone = whatsappPhone.replace(/[^0-9+]/g, '')
                 const waLink = `https://wa.me/${waPhone.startsWith('+') ? waPhone.slice(1) : waPhone}`
-                const hashtags = `#riwaya #lecture #booktok #riwaya #livre #maroc #culture ${book.category ? `#${book.category.toLowerCase().replace(/\s+/g, '')}` : ''}`
+                const hashtags = `#superEcom #lecture #booktok #superEcom #livre #maroc #culture ${product.category ? `#${product.category.toLowerCase().replace(/\s+/g, '')}` : ''}`
                 
-                setCaption(`${baseDesc}\n\n📖 Lien pour commander : ${productUrl}\n💰 Prix : ${book.price} MAD\n🚚 Paiement à la livraison + Livraison rapide !\n\n💬 Commander via WhatsApp : ${waLink}\n\n${hashtags}`)
+                setCaption(`${baseDesc}\n\n📖 Lien pour commander : ${productUrl}\n💰 Prix : ${product.price} MAD\n🚚 Paiement à la livraison + Livraison rapide !\n\n💬 Commander via WhatsApp : ${waLink}\n\n${hashtags}`)
             })
             .catch(console.error)
             .finally(() => setLoading(false))
 
-    }, [isOpen, book])
+    }, [isOpen, product])
 
     const handleCopy = () => {
         navigator.clipboard.writeText(caption)
@@ -58,7 +58,7 @@ export default function CaptionPreviewModal({ isOpen, onClose, book }: CaptionPr
         setTimeout(() => setCopied(false), 2000)
     }
 
-    if (!isOpen || !book) return null
+    if (!isOpen || !product) return null
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">

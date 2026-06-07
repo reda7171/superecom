@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 
 interface AddToReadingListProps {
-    bookId: string
+    productId: string
     title: string
     author: string
     cover: string
@@ -18,11 +18,11 @@ interface AddToReadingListProps {
     className?: string
 }
 
-export default function AddToReadingListButton({ bookId, title, author, cover, totalPages = 300, className }: AddToReadingListProps) {
+export default function AddToReadingListButton({ productId, title, author, cover, totalPages = 300, className }: AddToReadingListProps) {
     const [loading, setLoading] = useState(false)
     const [mounted, setMounted] = useState(false)
     const { addItem, removeItem, isInReadingList } = useReadingListStore()
-    const isAdded = isInReadingList(bookId)
+    const isAdded = isInReadingList(productId)
     const { showNotification } = useUIStore()
     const t = useTranslations()
 
@@ -41,7 +41,7 @@ export default function AddToReadingListButton({ bookId, title, author, cover, t
 
         // On tente l'ajout serveur d'abord (pour les connectés)
         const result = await addToReadingList({
-            bookId,
+            productId,
             title,
             author,
             cover,
@@ -53,7 +53,7 @@ export default function AddToReadingListButton({ bookId, title, author, cover, t
             showNotification(result.message || t('Common.AddedToReadingList'), 'success')
             // On met à jour le store local aussi pour que le bouton change d'état immédiatement
             addItem({
-                id: bookId,
+                id: productId,
                 title,
                 author,
                 cover,
@@ -82,14 +82,14 @@ export default function AddToReadingListButton({ bookId, title, author, cover, t
 
         setLoading(true)
 
-        const result = await removeFromReadingListByBookId(bookId)
+        const result = await removeFromReadingListByBookId(productId)
 
         if (result.success) {
             showNotification(t('Common.RemovedFromReadingList') || 'Retiré de mes lectures', 'success')
-            removeItem(bookId)
+            removeItem(productId)
         } else {
             if (result.error === 'Non autorisé' || result.error === 'Vous devez être connecté') {
-                removeItem(bookId)
+                removeItem(productId)
                 showNotification(t('Common.RemovedFromReadingList') || 'Retiré de mes lectures', 'success')
             } else {
                 showNotification(result.error || 'Erreur', 'error')

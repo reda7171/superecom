@@ -3,7 +3,7 @@ import JumiaConfigForm from './JumiaConfigForm'
 import { ShoppingBag } from 'lucide-react'
 
 export const metadata = {
-    title: 'Configuration Jumia | Riwaya Admin'
+    title: 'Configuration Jumia | SuperEcom Admin'
 }
 
 export default async function JumiaConfigPage() {

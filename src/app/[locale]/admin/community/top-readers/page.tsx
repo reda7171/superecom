@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { Crown, BookOpen, Medal, MapPin } from 'lucide-react'
 
 export const metadata = {
-    title: 'Top Lecteurs | Admin Riwaya',
+    title: 'Top Lecteurs | Admin SuperEcom',
     description: 'Classement des meilleurs lecteurs de la communauté'
 }
 

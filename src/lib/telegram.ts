@@ -58,7 +58,7 @@ export async function sendOrderNotification(order: {
     city: string
     total: number
     status: string
-    items?: { quantity: number; book?: { title: string } | null; pack?: { name: string } | null }[]
+    items?: { quantity: number; product?: { title: string } | null; pack?: { name: string } | null }[]
 }) {
     const botToken = await getTelegramToken()
     const chatId = await getTelegramChatId()
@@ -72,7 +72,7 @@ export async function sendOrderNotification(order: {
     const location = await getLocationFromIp(ip)
     const shortId = order.id.slice(0, 8).toUpperCase()
     const itemsList = order.items
-        ?.map(i => `  • ${i.book?.title || i.pack?.name || 'Article'} x${i.quantity}`)
+        ?.map(i => `  • ${i.product?.title || i.pack?.name || 'Article'} x${i.quantity}`)
         .join('\n') || ''
 
     const text = `🛒 <b>Nouvelle Commande #${shortId}</b>\n\n` +
@@ -92,7 +92,7 @@ export async function sendOrderNotification(order: {
         cleanPhone = '212' + cleanPhone
     }
 
-    const whatsappMsg = encodeURIComponent(`Bonjour ${order.fullName},\n\nVotre commande #${shortId} sur Riwaya a bien été reçue. Nous préparons votre colis pour une livraison rapide à ${order.city}.\n\nMerci de votre confiance ! 📚✨`)
+    const whatsappMsg = encodeURIComponent(`Bonjour ${order.fullName},\n\nVotre commande #${shortId} sur SuperEcom a bien été reçue. Nous préparons votre colis pour une livraison rapide à ${order.city}.\n\nMerci de votre confiance ! 📚✨`)
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${whatsappMsg}`
 
     const keyboard = {
@@ -349,7 +349,7 @@ export async function sendReviewNotification(review: { id: string, fullName: str
 /**
  * Alerte stock faible
  */
-export async function sendLowStockNotification(book: { id: string, title: string, stock: number }) {
+export async function sendLowStockNotification(product: { id: string, title: string, stock: number }) {
     const botToken = await getTelegramToken()
     const chatId = await getTelegramChatId()
     if (!botToken || !chatId) return
@@ -358,18 +358,18 @@ export async function sendLowStockNotification(book: { id: string, title: string
     if (shouldNotify?.value === 'false') return
 
     const text = `⚠️ <b>Alerte Stock Faible</b>\n\n` +
-        `📖 <b>Livre:</b> ${book.title}\n` +
-        `📦 <b>Stock restant:</b> <b>${book.stock}</b>\n\n` +
+        `📖 <b>Livre:</b> ${product.title}\n` +
+        `📦 <b>Stock restant:</b> <b>${product.stock}</b>\n\n` +
         `<i>Action rapide disponible :</i>`
 
     const replyMarkup = {
         inline_keyboard: [
             [
-                { text: '🏷️ Promo Flash (-10%)', callback_data: `promo_flash:${book.id}` },
+                { text: '🏷️ Promo Flash (-10%)', callback_data: `promo_flash:${product.id}` },
             ],
             [
-                { text: '📦 Restock +10', callback_data: `restock:${book.id}:10` },
-                { text: '🚫 Masquer', callback_data: `hide_book:${book.id}` }
+                { text: '📦 Restock +10', callback_data: `restock:${product.id}:10` },
+                { text: '🚫 Masquer', callback_data: `hide_book:${product.id}` }
             ]
         ]
     }

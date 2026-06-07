@@ -281,7 +281,7 @@ export default function CustomersTable({ initialCustomers, externalSearch = '', 
                                         name="email"
                                         type="email"
                                         defaultValue={editingCustomer?.email || ''}
-                                        placeholder="Ex: contact@riwaya.com"
+                                        placeholder="Ex: contact@superEcom.com"
                                         className="w-full px-8 py-5 bg-gray-50 border-2 border-transparent rounded-[1.5rem] focus:bg-white focus:border-black outline-none transition-all font-bold text-black text-sm"
                                     />
                                 </div>

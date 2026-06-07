@@ -28,7 +28,7 @@ interface Asset {
     name: string
     url: string
     type: string
-    bookId?: string
+    productId?: string
     packId?: string
     createdAt: string
 }
@@ -414,7 +414,7 @@ export default function MarketingPage() {
                                         if (url.startsWith('data:image')) return url;
                                         if (url.startsWith('/uploads')) return url;
                                         if (url.startsWith('uploads')) return `/${url}`;
-                                        return `/uploads/books/${url}`;
+                                        return `/uploads/products/${url}`;
                                     })()}
                                     alt={asset.name}
                                     fill
@@ -430,7 +430,7 @@ export default function MarketingPage() {
                                             if (url.startsWith('data:image')) return url;
                                             if (url.startsWith('/uploads')) return url;
                                             if (url.startsWith('uploads')) return `/${url}`;
-                                            return `/uploads/books/${url}`;
+                                            return `/uploads/products/${url}`;
                                         })()}
                                         target="_blank"
                                         rel="noopener noreferrer"

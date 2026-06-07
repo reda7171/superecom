@@ -26,11 +26,11 @@ interface CartItem extends Product {
 }
 
 interface POSClientProps {
-  books: any[];
+  products: any[];
   packs: any[];
 }
 
-export default function POSClient({ books, packs }: POSClientProps) {
+export default function POSClient({ products, packs }: POSClientProps) {
   const params = useParams();
   const locale = params.locale as string;
   const { showNotification } = useUIStore();
@@ -83,7 +83,7 @@ export default function POSClient({ books, packs }: POSClientProps) {
     }
   };
 
-  const filteredBooks = books.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredBooks = products.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()));
   const filteredPacks = packs.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const displayedProducts = [

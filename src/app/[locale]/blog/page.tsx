@@ -20,16 +20,16 @@ export async function generateMetadata({
     const t = await getTranslations({ locale, namespace: 'Blog' })
     
     return {
-        title: `${t('Title')} | Riwaya`,
+        title: `${t('Title')} | SuperEcom`,
         description: t('Subtitle'),
         openGraph: {
-            title: `${t('Title')} | Riwaya`,
+            title: `${t('Title')} | SuperEcom`,
             description: t('Subtitle'),
             type: 'website',
-            url: `https://riwaya.com/${locale}/blog`,
+            url: `https://superEcom.com/${locale}/blog`,
         },
         alternates: {
-            canonical: `https://riwaya.com/${locale}/blog`
+            canonical: `https://superEcom.com/${locale}/blog`
         }
     }
 }
@@ -61,9 +61,9 @@ export default async function BlogPage({
                     __html: JSON.stringify({
                         "@context": "https://schema.org",
                         "@type": "Blog",
-                        "name": `${t('Title')} | Riwaya`,
+                        "name": `${t('Title')} | SuperEcom`,
                         "description": t('Subtitle'),
-                        "url": `https://riwaya.com/${locale}/blog`
+                        "url": `https://superEcom.com/${locale}/blog`
                     })
                 }}
             />
@@ -148,7 +148,7 @@ export default async function BlogPage({
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-gray-50">
-                                            <span className="text-gray-300 font-black text-4xl opacity-20">Riwaya</span>
+                                            <span className="text-gray-300 font-black text-4xl opacity-20">SuperEcom</span>
                                         </div>
                                     )}
                                     <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors" />

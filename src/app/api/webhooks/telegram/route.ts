@@ -128,26 +128,26 @@ export async function POST(req: Request) {
                 }
             }
             
-            // Format: promo_flash:{bookId}
+            // Format: promo_flash:{productId}
             else if (data && data.startsWith('promo_flash:')) {
-                const [, bookId] = data.split(':')
+                const [, productId] = data.split(':')
                 try {
-                    const book = await prisma.book.findUnique({ where: { id: bookId } })
-                    if (!book) throw new Error('Livre introuvable')
+                    const product = await prisma.product.findUnique({ where: { id: productId } })
+                    if (!product) throw new Error('Livre introuvable')
                     
-                    const newPrice = Math.round(book.price * 0.9) // -10%
-                    await prisma.book.update({
-                        where: { id: bookId },
+                    const newPrice = Math.round(product.price * 0.9) // -10%
+                    await prisma.product.update({
+                        where: { id: productId },
                         data: { price: newPrice }
                     })
 
                     await answerCallbackQuery(callbackId, `🏷️ Promo appliquée : ${newPrice} MAD`, token)
                     if (message?.chat?.id && message?.message_id) {
                         const updatedText = `🏷️ <b>PROMO FLASH APPLIQUÉE (-10%)</b>\n\n` +
-                                            `📖 <b>Livre:</b> ${escapeHtml(book.title)}\n` +
-                                            `💰 <b>Ancien prix:</b> ${book.price} MAD\n` +
+                                            `📖 <b>Livre:</b> ${escapeHtml(product.title)}\n` +
+                                            `💰 <b>Ancien prix:</b> ${product.price} MAD\n` +
                                             `🔥 <b>Nouveau prix:</b> ${newPrice} MAD\n` +
-                                            `📦 <b>Stock:</b> ${book.stock}`
+                                            `📦 <b>Stock:</b> ${product.stock}`
                         await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
                     }
                 } catch (error: any) {
@@ -155,19 +155,19 @@ export async function POST(req: Request) {
                 }
             }
 
-            // Format: restock:{bookId}:{amount}
+            // Format: restock:{productId}:{amount}
             else if (data && data.startsWith('restock:')) {
-                const [, bookId, amount] = data.split(':')
+                const [, productId, amount] = data.split(':')
                 try {
-                    const book = await prisma.book.update({
-                        where: { id: bookId },
+                    const product = await prisma.product.update({
+                        where: { id: productId },
                         data: { stock: { increment: parseInt(amount) } }
                     })
-                    await answerCallbackQuery(callbackId, `📦 Stock mis à jour : ${book.stock}`, token)
+                    await answerCallbackQuery(callbackId, `📦 Stock mis à jour : ${product.stock}`, token)
                     if (message?.chat?.id && message?.message_id) {
                         const updatedText = `✅ <b>RÉAPPROVISIONNEMENT EFFECTUÉ</b>\n\n` +
-                                            `📖 <b>Livre:</b> ${escapeHtml(book.title)}\n` +
-                                            `📦 <b>Nouveau stock:</b> <b>${book.stock}</b>`
+                                            `📖 <b>Livre:</b> ${escapeHtml(product.title)}\n` +
+                                            `📦 <b>Nouveau stock:</b> <b>${product.stock}</b>`
                         await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
                     }
                 } catch (error: any) {
@@ -175,18 +175,18 @@ export async function POST(req: Request) {
                 }
             }
 
-            // Format: hide_book:{bookId}
+            // Format: hide_book:{productId}
             else if (data && data.startsWith('hide_book:')) {
-                const [, bookId] = data.split(':')
+                const [, productId] = data.split(':')
                 try {
-                    const book = await prisma.book.update({
-                        where: { id: bookId },
+                    const product = await prisma.product.update({
+                        where: { id: productId },
                         data: { active: false }
                     })
                     await answerCallbackQuery(callbackId, `🚫 Livre masqué du site`, token)
                     if (message?.chat?.id && message?.message_id) {
                         const updatedText = `🚫 <b>LIVRE MASQUÉ DU SITE</b>\n\n` +
-                                            `📖 <b>Livre:</b> ${escapeHtml(book.title)}\n` +
+                                            `📖 <b>Livre:</b> ${escapeHtml(product.title)}\n` +
                                             `📌 Statut: <b>INACTIF</b>`
                         await editTelegramMessage(message.chat.id, message.message_id, updatedText, token)
                     }
@@ -201,14 +201,14 @@ export async function POST(req: Request) {
                 try {
                     const order = await prisma.order.findUnique({
                         where: { id: orderId },
-                        include: { items: { include: { book: true, pack: true } } }
+                        include: { items: { include: { product: true, pack: true } } }
                     })
                     
                     if (!order || order.items.length === 0) throw new Error('Commande ou articles introuvables')
                     
                     const firstItem = order.items[0]
-                    const itemId = firstItem.bookId || firstItem.packId
-                    const itemType = firstItem.bookId ? 'BOOK' : 'PACK'
+                    const itemId = firstItem.productId || firstItem.packId
+                    const itemType = firstItem.productId ? 'BOOK' : 'PACK'
 
                     const replyMarkup = {
                         inline_keyboard: [
@@ -240,7 +240,7 @@ export async function POST(req: Request) {
                     const facebookPageId = (await prisma.siteSettings.findUnique({ where: { key: 'marketing_facebook_page_id' } }))?.value
 
                     const payload = {
-                        bookId: itemType === 'BOOK' ? itemId : null,
+                        productId: itemType === 'BOOK' ? itemId : null,
                         packId: itemType === 'PACK' ? itemId : null,
                         format: 'story',
                         platform: platform,
@@ -294,13 +294,13 @@ export async function POST(req: Request) {
                 const review = await prisma.review.update({
                     where: { id: reviewId },
                     data: { isApproved: true },
-                    include: { book: { select: { title: true } } }
+                    include: { product: { select: { title: true } } }
                 })
                 
                 await answerCallbackQuery(callbackId, '✅ Avis approuvé !', token)
                 const updatedText = `✅ <b>Avis Approuvé</b>\n\n` +
                     `👤 <b>Client:</b> ${review.fullName}\n` +
-                    `📖 <b>Livre:</b> ${review.book.title}\n` +
+                    `📖 <b>Livre:</b> ${review.product.title}\n` +
                     `⭐ <b>Note:</b> ${review.rating}/5\n` +
                     `💬 <i>${review.comment}</i>`
 
@@ -381,19 +381,19 @@ export async function POST(req: Request) {
 
                 if (period === 'top5') {
                     const topBooks = await prisma.orderItem.groupBy({
-                        by: ['bookId'],
-                        where: { bookId: { not: null }, order: { status: { not: 'CANCELLED' } } },
-                        _count: { bookId: true },
-                        orderBy: { _count: { bookId: 'desc' } },
+                        by: ['productId'],
+                        where: { productId: { not: null }, order: { status: { not: 'CANCELLED' } } },
+                        _count: { productId: true },
+                        orderBy: { _count: { productId: 'desc' } },
                         take: 5
                     })
 
-                    const books = await Promise.all(topBooks.map(async (item) => {
-                        const book = await prisma.book.findUnique({ where: { id: item.bookId! }, select: { title: true } })
-                        return `🏆 <b>${book?.title || 'Livre inconnu'}</b> : ${item._count.bookId} ventes`
+                    const products = await Promise.all(topBooks.map(async (item) => {
+                        const product = await prisma.product.findUnique({ where: { id: item.productId! }, select: { title: true } })
+                        return `🏆 <b>${product?.title || 'Livre inconnu'}</b> : ${item._count.productId} ventes`
                     }))
 
-                    const text = `🥇 <b>TOP 5 DES VENTES</b>\n\n${books.join('\n')}`
+                    const text = `🥇 <b>TOP 5 DES VENTES</b>\n\n${products.join('\n')}`
                     await answerCallbackQuery(callbackId, '🏆 Top 5 généré', token)
                     await sendTelegramMessage(text, message?.chat?.id.toString(), token)
                 } else {
@@ -460,7 +460,7 @@ export async function POST(req: Request) {
                             by: ['url'],
                             where: { 
                                 createdAt: { gte: start, lte: end },
-                                url: { contains: '/books/' }
+                                url: { contains: '/products/' }
                             },
                             _count: { url: true },
                             orderBy: { _count: { url: 'desc' } },
@@ -471,10 +471,10 @@ export async function POST(req: Request) {
                             text += `\n\n👀 <b>LIVRES LES PLUS CONSULTÉS :</b>`
                             for (const view of topViews) {
                                 // Extraire le titre du livre de l'URL si possible ou juste l'URL
-                                const bookId = view.url.split('/').pop()?.split('?')[0]
-                                if (bookId && bookId.length > 20) {
-                                    const book = await prisma.book.findUnique({ where: { id: bookId }, select: { title: true } })
-                                    text += `\n• ${escapeHtml(book?.title || 'Livre')} (<b>${view._count.url}</b> vues)`
+                                const productId = view.url.split('/').pop()?.split('?')[0]
+                                if (productId && productId.length > 20) {
+                                    const product = await prisma.product.findUnique({ where: { id: productId }, select: { title: true } })
+                                    text += `\n• ${escapeHtml(product?.title || 'Livre')} (<b>${view._count.url}</b> vues)`
                                 }
                             }
                         }
@@ -611,7 +611,7 @@ export async function POST(req: Request) {
             console.log(`[TELEGRAM MESSAGE] Received from ${chatId}: ${text}`)
 
             if (text.startsWith('/BILAN') || text === 'BILAN' || text.startsWith('/STATS')) {
-                const replyText = `📊 <b>Centre de Rapports Riwaya</b>\n\nQue souhaitez-vous consulter ?`
+                const replyText = `📊 <b>Centre de Rapports SuperEcom</b>\n\nQue souhaitez-vous consulter ?`
                 const replyMarkup = {
                     inline_keyboard: [
                         [
@@ -643,7 +643,7 @@ export async function POST(req: Request) {
                     let creatives: any[] = []
                     
                     // 1. Scanner le disque (Priorité car l'utilisateur dit qu'elles sont là)
-                    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'books')
+                    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'products')
                     console.log(`[TELEGRAM] Scanning directory: ${uploadDir}`)
                     
                     try {
@@ -680,23 +680,23 @@ export async function POST(req: Request) {
                         creatives = dbAssets.map(a => ({
                             name: a.name,
                             type: a.type,
-                            bookId: a.bookId,
+                            productId: a.productId,
                             packId: a.packId
                         }))
                     }
 
                     if (creatives.length === 0) {
-                        await sendTelegramMessage(`⚠️ Aucune créative trouvée dans <code>/public/uploads/books/</code>.\n\nFichiers attendus : commençant par <code>creative_</code> ou <code>pack_</code>.`, chatId.toString(), token)
+                        await sendTelegramMessage(`⚠️ Aucune créative trouvée dans <code>/public/uploads/products/</code>.\n\nFichiers attendus : commençant par <code>creative_</code> ou <code>pack_</code>.`, chatId.toString(), token)
                         return NextResponse.json({ ok: true })
                     }
 
-                    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
+                    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://superEcom.store'
 
                     // Envoyer un album des 3 dernières images pour l'aperçu
                     if (creatives.length > 0) {
                         const album = creatives.slice(0, 3).map(c => ({
                             type: 'photo' as const,
-                            media: `${siteUrl}/uploads/books/${c.name}`,
+                            media: `${siteUrl}/uploads/products/${c.name}`,
                             caption: `📸 Aperçu : ${c.name}`
                         }))
                         await sendTelegramMediaGroup(album, chatId.toString(), token)
@@ -705,7 +705,7 @@ export async function POST(req: Request) {
                     const buttons = creatives.map(c => {
                         const label = c.name.length > 30 ? c.name.substring(0, 27) + '...' : c.name
                         const typeLabel = c.type === 'PACK' ? '📦' : '✨'
-                        const itemId = (c as any).bookId || (c as any).packId || 'manual'
+                        const itemId = (c as any).productId || (c as any).packId || 'manual'
                         return [{ 
                             text: `${typeLabel} ${label}`, 
                             callback_data: `prep_creative:${itemId}:${c.type === 'PACK' ? 'PACK' : 'BOOK'}`.substring(0, 64)
@@ -720,7 +720,7 @@ export async function POST(req: Request) {
                     }
 
                     console.log(`[TELEGRAM] Sending final menu to ${chatId}`)
-                    const result = await sendTelegramMessage(`🚀 <b>Marketing Riwaya</b>\n\nChoisissez une créative ci-dessus pour la publier :`, chatId.toString(), token, replyMarkup)
+                    const result = await sendTelegramMessage(`🚀 <b>Marketing SuperEcom</b>\n\nChoisissez une créative ci-dessus pour la publier :`, chatId.toString(), token, replyMarkup)
                     console.log(`[TELEGRAM] Final menu send result:`, result ? 'SUCCESS' : 'FAILED')
                 } catch (error: any) {
                     console.error('[TELEGRAM ERROR] /GENERER failed:', error)
@@ -732,15 +732,15 @@ export async function POST(req: Request) {
                 if (!query) {
                     await sendTelegramMessage(`💡 Utilisation : <code>/stock [nom du livre]</code>`, chatId.toString(), token)
                 } else {
-                    const books = await prisma.book.findMany({
+                    const products = await prisma.product.findMany({
                         where: { title: { contains: query } },
                         take: 5,
                         select: { title: true, stock: true, price: true }
                     })
-                    if (books.length === 0) {
+                    if (products.length === 0) {
                         await sendTelegramMessage(`❌ Aucun livre trouvé pour "${query}"`, chatId.toString(), token)
                     } else {
-                        const list = books.map(b => `📖 <b>${b.title}</b>\n📦 Stock: <b>${b.stock}</b> | 💰 ${b.price} MAD`).join('\n\n')
+                        const list = products.map(b => `📖 <b>${b.title}</b>\n📦 Stock: <b>${b.stock}</b> | 💰 ${b.price} MAD`).join('\n\n')
                         await sendTelegramMessage(`🔍 <b>Résultats Stock</b> :\n\n${list}`, chatId.toString(), token)
                     }
                 }

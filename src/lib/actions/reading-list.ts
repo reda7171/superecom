@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { ReadingStatus } from '@prisma/client'
 
 const AddBookSchema = z.object({
-    bookId: z.string().optional(),
+    productId: z.string().optional(),
     title: z.string().min(1, 'Le titre est requis'),
     author: z.string().min(1, 'L\'auteur est requis'),
     cover: z.string().optional(),
@@ -32,7 +32,7 @@ export async function getReadingList() {
         where: { userId: user.id },
         orderBy: { updatedAt: 'desc' },
         include: {
-            book: {
+            product: {
                 select: {
                     id: true,
                     title: true,
@@ -67,8 +67,8 @@ export async function addToReadingList(data: z.infer<typeof AddBookSchema>) {
             }
         ]
 
-        if (validated.bookId) {
-            orConditions.push({ bookId: validated.bookId })
+        if (validated.productId) {
+            orConditions.push({ productId: validated.productId })
         }
 
         // Vérifier si déjà présent (doublon)
@@ -91,7 +91,7 @@ export async function addToReadingList(data: z.infer<typeof AddBookSchema>) {
                 author: validated.author,
                 totalPages: validated.totalPages,
                 status: validated.status,
-                bookId: validated.bookId,
+                productId: validated.productId,
                 cover: validated.cover,
                 startedAt: validated.status === ReadingStatus.READING ? new Date() : null,
             }
@@ -171,9 +171,9 @@ export async function removeFromReadingList(id: string) {
 }
 
 /**
- * Supprimer un livre de la liste par bookId ou id
+ * Supprimer un livre de la liste par productId ou id
  */
-export async function removeFromReadingListByBookId(bookId: string) {
+export async function removeFromReadingListByBookId(productId: string) {
     const user = await getCommunityUser()
     if (!user) return { success: false, error: 'Non autorisé' }
 
@@ -182,8 +182,8 @@ export async function removeFromReadingListByBookId(bookId: string) {
             where: { 
                 userId: user.id,
                 OR: [
-                    { bookId: bookId },
-                    { id: bookId }
+                    { productId: productId },
+                    { id: productId }
                 ]
             }
         })

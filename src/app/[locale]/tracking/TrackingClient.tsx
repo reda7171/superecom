@@ -148,7 +148,7 @@ export default function TrackingClient() {
                             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-6 border-b border-gray-200 pb-4">{t('Items')}</h3>
                             <ul className="space-y-4">
                                 {result.order.items.map((item: any, idx: number) => {
-                                    const title = item.book?.title || item.pack?.name || item.gift?.name || item.digitalProduct?.title || 'Produit inconnu'
+                                    const title = item.product?.title || item.pack?.name || item.gift?.name || item.digitalProduct?.title || 'Produit inconnu'
                                     return (
                                         <li key={idx} className="flex justify-between items-center text-sm font-bold">
                                             <span className="text-gray-800"><span className="text-black font-black mr-2">{item.quantity}x</span> {title}</span>

@@ -5,7 +5,7 @@ import FormConfig from './FormConfig'
 import { Settings } from 'lucide-react'
 
 export const metadata = {
-    title: 'Configuration Formulaire | Admin Riwaya',
+    title: 'Configuration Formulaire | Admin SuperEcom',
 }
 
 export default async function FormConfigPage() {
@@ -19,7 +19,7 @@ export default async function FormConfigPage() {
 
     return (
         <div className="space-y-12">
-            {/* Header section style Riwaya */}
+            {/* Header section style SuperEcom */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-gray-100">
                 <div>
                     <h1 className="text-5xl lg:text-6xl font-black text-black tracking-tighter mb-2 italic">

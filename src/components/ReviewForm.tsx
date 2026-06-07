@@ -6,7 +6,7 @@ import { Star, Send, Loader2, CheckCircle2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/store/ui'
 
-export default function ReviewForm({ bookId }: { bookId: string }) {
+export default function ReviewForm({ productId }: { productId: string }) {
     const [rating, setRating] = useState(5)
     const [hover, setHover] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
@@ -22,7 +22,7 @@ export default function ReviewForm({ bookId }: { bookId: string }) {
 
         const formData = new FormData(e.currentTarget)
         const data = {
-            bookId,
+            productId,
             fullName: formData.get('fullName') as string,
             rating,
             comment: formData.get('comment') as string,

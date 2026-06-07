@@ -21,10 +21,10 @@ export default async function SellerDashboardPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-4xl font-black text-black tracking-tighter capitalize">Salut, {user?.fullName}! 👋</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">Votre boutique Riwaya Marketplace</p>
+                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">Votre boutique SuperEcom Marketplace</p>
                 </div>
                 <Link 
-                    href="/seller/books/new" 
+                    href="/seller/products/new" 
                     className="bg-black text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-gray-800 transition-all active:scale-95"
                 >
                     Nouveau Livre

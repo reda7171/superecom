@@ -19,8 +19,8 @@ export async function generatePostContent(
             prompt = `Génère un slug d'URL SEO-friendly (en caractères latins, minuscules, séparés par des tirets) pour l'article suivant : "${input}". Réponds UNIQUEMENT avec le slug.`;
         } else if (type === 'TITLE') {
             prompt = language === 'fr'
-                ? `Génère 5 titres d'articles de blog accrocheurs et professionnels en français pour une librairie nommée "Riwaya" basés sur ces mots-clés : "${input}". Réponds UNIQUEMENT avec le meilleur titre, sans ponctuation inutile au début ou à la fin.`
-                : `Génère 5 titres d'articles de blog accrocheurs et professionnels en arabe pour une librairie nommée "Riwaya" basés sur ces mots-clés : "${input}". Réponds UNIQUEMENT avec le meilleur titre, sans ponctuation inutile au début ou à la fin.`;
+                ? `Génère 5 titres d'articles de blog accrocheurs et professionnels en français pour une librairie nommée "SuperEcom" basés sur ces mots-clés : "${input}". Réponds UNIQUEMENT avec le meilleur titre, sans ponctuation inutile au début ou à la fin.`
+                : `Génère 5 titres d'articles de blog accrocheurs et professionnels en arabe pour une librairie nommée "SuperEcom" basés sur ces mots-clés : "${input}". Réponds UNIQUEMENT avec le meilleur titre, sans ponctuation inutile au début ou à la fin.`;
         } else if (type === 'EXCERPT') {
             prompt = language === 'fr'
                 ? `Rédige un court extrait (résumé) professionnel et intriguant en français (max 160 caractères) pour un article dont le sujet est : "${input}".`
@@ -45,11 +45,11 @@ export async function generatePostContent(
             `;
 
             prompt = language === 'fr' 
-                ? `Rédige un article de blog complet et professionnel pour la librairie "Riwaya" sur le livre ou le thème suivant : "${input}". 
+                ? `Rédige un article de blog complet et professionnel pour la librairie "SuperEcom" sur le livre ou le thème suivant : "${input}". 
                    Tu DOIS impérativement suivre cette structure Markdown :
                    ${structure}
                    Rédige un contenu de haute qualité, optimisé pour le SEO et engageant.`
-                : `Rédige un article de blog complet et professionnel pour la librairie "Riwaya" sur le livre ou le thème suivant : "${input}". 
+                : `Rédige un article de blog complet et professionnel pour la librairie "SuperEcom" sur le livre ou le thème suivant : "${input}". 
                    Tu DOIS impérativement suivre cette structure Markdown (en arabe) :
                    ${structure}
                    Rédige un contenu de haute qualité (en arabe), optimisé pour le SEO et engageant.`;

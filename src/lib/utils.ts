@@ -12,23 +12,23 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function normalizeImage(raw: string | null | undefined): string {
     const img = raw?.trim() || ''
-    if (!img) return '/book-placeholder.png'
+    if (!img) return '/product-placeholder.png'
     
     // Déjà une URL ou déjà formaté
     if (img.startsWith('http') || img.startsWith('data:') || img.startsWith('/')) {
         // Ignorer si c'est un message d'erreur
-        if (img.includes('cellule')) return '/book-placeholder.png'
+        if (img.includes('cellule')) return '/product-placeholder.png'
         
         // Cas particulier : /9j/ détecté comme chemin local alors que c'est du JPEG Base64
         if (img.startsWith('/9j/')) return 'data:image/jpeg;base64,' + img
         return img
     }
 
-    // Détection de chemin local sans slash (ex: uploads/books/...)
+    // Détection de chemin local sans slash (ex: uploads/products/...)
     if (img.startsWith('uploads/')) return '/' + img
 
     // Détection Base64 pure (Odoo)
-    if (img.includes(' ')) return '/book-placeholder.png'
+    if (img.includes(' ')) return '/product-placeholder.png'
     
     if (img.startsWith('iVBOR')) return 'data:image/png;base64,' + img
     if (img.startsWith('/9j/')) return 'data:image/jpeg;base64,' + img

@@ -8,7 +8,7 @@ export async function getGeminiModel() {
   const genAI = new GoogleGenerativeAI(apiKey);
   return genAI.getGenerativeModel({ 
     model: "gemini-2.0-flash",
-    systemInstruction: `Tu es l'assistant intelligent de Riwaya, une librairie en ligne au Maroc.
+    systemInstruction: `Tu es l'assistant intelligent de SuperEcom, une librairie en ligne au Maroc.
     Tes réponses doivent être chaleureuses, utiles et professionnelles.
     
     INFOS CLÉS :
@@ -23,7 +23,7 @@ export async function getGeminiModel() {
     
     RÈGLES :
     - Réponds en français ou en arabe selon la langue de l'utilisateur.
-    - Ne mentionne jamais que tu es une IA ou un modèle de langage. Tu es "l'Assistant Riwaya".
+    - Ne mentionne jamais que tu es une IA ou un modèle de langage. Tu es "l'Assistant SuperEcom".
     - Sois concis.`
   });
 }
@@ -38,12 +38,12 @@ export async function chatWithDatabase(message: string, locale: string = 'fr') {
     if (greetings.some(g => msg === g || msg.startsWith(g + ' '))) {
       const welcome = locale === 'ar' 
         ? "مرحباً! ✨ أنا المساعد الذكي لـ **رواية**. كيف يمكنني مساعدتك اليوم؟" 
-        : "Bonjour ! ✨ Je suis l'assistant intelligent de **Riwaya**. Comment puis-je vous aider aujourd'hui ?";
+        : "Bonjour ! ✨ Je suis l'assistant intelligent de **SuperEcom**. Comment puis-je vous aider aujourd'hui ?";
       return { text: welcome, type: undefined, data: undefined };
     }
 
     let context = "";
-    let dataType: 'books' | 'order' | undefined;
+    let dataType: 'products' | 'order' | undefined;
     let data: any;
 
     // 1. Détection d'intention pour le contexte DB
@@ -65,7 +65,7 @@ export async function chatWithDatabase(message: string, locale: string = 'fr') {
       }
     } else if (msg.length > 3) {
       // Recherche de livres
-      const books = await prisma.book.findMany({
+      const products = await prisma.product.findMany({
         where: { 
           OR: [
             { title: { contains: message } },
@@ -77,10 +77,10 @@ export async function chatWithDatabase(message: string, locale: string = 'fr') {
         select: { id: true, title: true, author: true, price: true, image: true }
       });
 
-      if (books.length > 0) {
-        context = `CONTEXTE LIVRES TROUVÉS :\n${books.map(b => `- ${b.title} par ${b.author} (${b.price} MAD). ID: ${b.id}`).join("\n")}`;
-        dataType = 'books';
-        data = books;
+      if (products.length > 0) {
+        context = `CONTEXTE LIVRES TROUVÉS :\n${products.map(b => `- ${b.title} par ${b.author} (${b.price} MAD). ID: ${b.id}`).join("\n")}`;
+        dataType = 'products';
+        data = products;
       }
     }
 

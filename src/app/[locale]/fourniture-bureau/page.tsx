@@ -8,7 +8,7 @@ import type { Metadata } from 'next'
 import FournitureClient from './FournitureClient'
 
 export const metadata: Metadata = {
-    title: 'Fourniture Bureau | Riwaya',
+    title: 'Fourniture Bureau | SuperEcom',
     description: 'Découvrez notre sélection de fournitures de bureau : stylos, cahiers, organiseurs et tout ce qu\'il faut pour votre espace de travail.',
 }
 

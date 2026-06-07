@@ -23,7 +23,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Dummy DATABASE_URL for build time (Prisma requirement)
 # If your build needs to fetch real data from DB, this might still fail.
-ENV DATABASE_URL="mysql://riwaya_user:riwaya_pass@167.86.108.246:3906/riwaya_db"
+ENV DATABASE_URL="mysql://superecom_user:superecom_pass@167.86.108.246:3906/superecom_db"
 
 # Generate Prisma Client
 RUN npx prisma generate

@@ -90,7 +90,7 @@ export default async function InfluencerOrdersPage() {
                                                                     {item.quantity}
                                                                 </span>
                                                                 <span className="text-gray-800 font-black truncate max-w-[300px]">
-                                                                    {item.book?.title || item.pack?.name || item.gift?.name || 'Article'}
+                                                                    {item.product?.title || item.pack?.name || item.gift?.name || 'Article'}
                                                                 </span>
                                                             </div>
                                                         ))}

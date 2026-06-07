@@ -57,7 +57,7 @@ export default function CartClient({ minOrderAmount = 0, recommendedBooks = [] }
                     </p>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center">
                         <Link
-                            href="/books"
+                            href="/products"
                             className="px-12 py-6 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-gray-800 transition-all shadow-xl"
                         >
                             {t('BrowseLibrary')}
@@ -236,7 +236,7 @@ export default function CartClient({ minOrderAmount = 0, recommendedBooks = [] }
                             )}
 
                             <Link
-                                href="/books"
+                                href="/products"
                                 className="w-full text-center block text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 hover:text-black transition-colors"
                             >
                                 {t('ContinueShopping')}
@@ -274,32 +274,32 @@ export default function CartClient({ minOrderAmount = 0, recommendedBooks = [] }
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
                         {recommendedBooks
-                            .filter(book => !items.some(item => item.id === book.id))
+                            .filter(product => !items.some(item => item.id === product.id))
                             .slice(0, 4)
-                            .map((book) => (
-                                <div key={book.id} className="group relative bg-white rounded-[2.5rem] p-6 overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col h-full">
-                                    <Link href={`/books/${book.id}`} className="relative aspect-[3/4] overflow-hidden rounded-[2rem] mb-8 block">
+                            .map((product) => (
+                                <div key={product.id} className="group relative bg-white rounded-[2.5rem] p-6 overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col h-full">
+                                    <Link href={`/products/${product.id}`} className="relative aspect-[3/4] overflow-hidden rounded-[2rem] mb-8 block">
                                         <ImageWithFallback
-                                            src={book.image}
-                                            alt={book.title}
+                                            src={product.image}
+                                            alt={product.title}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                         />
                                     </Link>
                                     <div className="flex-grow flex flex-col">
                                         <h3 className="text-lg font-black text-black leading-tight mb-2 line-clamp-1">
-                                            {book.title}
+                                            {product.title}
                                         </h3>
                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-6">
-                                            {book.author}
+                                            {product.author}
                                         </p>
                                         <div className="mt-auto flex items-center justify-between gap-4 pt-6 border-t border-gray-50">
-                                            <span className="text-xl font-black text-black">{book.price} MAD</span>
+                                            <span className="text-xl font-black text-black">{product.price} MAD</span>
                                             <AddToCartButton
                                                 product={{
-                                                    id: book.id,
-                                                    title: book.title,
-                                                    price: book.price,
-                                                    image: book.image,
+                                                    id: product.id,
+                                                    title: product.title,
+                                                    price: product.price,
+                                                    image: product.image,
                                                     type: 'BOOK'
                                                 }}
                                                 showIcon={false}

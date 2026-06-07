@@ -5,7 +5,7 @@ import { Flag, X, Loader2 } from 'lucide-react'
 import { createReport } from '@/lib/actions/reports'
 import { useTranslations } from 'next-intl'
 
-export default function ReportButton({ targetBookId, targetUserId }: { targetBookId?: string, targetUserId?: string }) {
+export default function ReportButton({ targetProductId, targetUserId }: { targetProductId?: string, targetUserId?: string }) {
     const t = useTranslations('Community.Report')
     const tcmn = useTranslations('Common')
     const [open, setOpen] = useState(false)
@@ -21,7 +21,7 @@ export default function ReportButton({ targetBookId, targetUserId }: { targetBoo
         setError(null)
 
         const result = await createReport({
-            targetBookId,
+            targetProductId,
             targetUserId,
             reason,
             details

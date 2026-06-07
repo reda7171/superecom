@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Image as ImageIcon, Search, CheckCircle2, AlertCircle, Loader2, Tag } from 'lucide-react'
 
-interface Book {
+interface Product {
     id: string
     title: string
     author: string
@@ -14,37 +14,37 @@ interface Book {
 }
 
 interface ImageInjectorMetaFormProps {
-    books: Book[]
+    products: Product[]
 }
 
-export default function ImageInjectorMetaForm({ books }: ImageInjectorMetaFormProps) {
+export default function ImageInjectorMetaForm({ products }: ImageInjectorMetaFormProps) {
     const [search, setSearch] = useState('')
     const [saving, setSaving] = useState<string | null>(null)
     const [saved, setSaved] = useState<Set<string>>(new Set())
     const [edits, setEdits] = useState<Record<string, { alt: string; title: string }>>(
-        Object.fromEntries(books.map(b => [b.id, {
-            alt: b.altText || `${b.title} - ${b.author} | Riwaya`,
-            title: b.imageTitle || `Acheter ${b.title} de ${b.author} sur Riwaya`
+        Object.fromEntries(products.map(b => [b.id, {
+            alt: b.altText || `${b.title} - ${b.author} | SuperEcom`,
+            title: b.imageTitle || `Acheter ${b.title} de ${b.author} sur SuperEcom`
         }]))
     )
     const [message, setMessage] = useState('')
 
-    const filtered = books.filter(b =>
+    const filtered = products.filter(b =>
         b.title.toLowerCase().includes(search.toLowerCase()) ||
         b.author.toLowerCase().includes(search.toLowerCase())
     )
 
-    async function saveBook(bookId: string) {
-        setSaving(bookId)
+    async function saveBook(productId: string) {
+        setSaving(productId)
         try {
-            const res = await fetch(`/api/admin/books/${bookId}/image-seo`, {
+            const res = await fetch(`/api/admin/products/${productId}/image-seo`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(edits[bookId])
+                body: JSON.stringify(edits[productId])
             })
             if (res.ok) {
-                setSaved(prev => new Set([...prev, bookId]))
-                setTimeout(() => setSaved(prev => { const n = new Set(prev); n.delete(bookId); return n }), 2000)
+                setSaved(prev => new Set([...prev, productId]))
+                setTimeout(() => setSaved(prev => { const n = new Set(prev); n.delete(productId); return n }), 2000)
             }
         } catch (e) {
             setMessage('Erreur lors de la sauvegarde.')
@@ -57,7 +57,7 @@ export default function ImageInjectorMetaForm({ books }: ImageInjectorMetaFormPr
         setSaving('all')
         setMessage('')
         try {
-            const res = await fetch('/api/admin/books/image-seo-bulk', {
+            const res = await fetch('/api/admin/products/image-seo-bulk', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ edits })
@@ -74,10 +74,10 @@ export default function ImageInjectorMetaForm({ books }: ImageInjectorMetaFormPr
 
     function autoGenerateAll() {
         const updated: Record<string, { alt: string; title: string }> = {}
-        books.forEach(b => {
+        products.forEach(b => {
             updated[b.id] = {
-                alt: `${b.title} - ${b.author}${b.category ? ` | ${b.category}` : ''} | Librairie Riwaya Maroc`,
-                title: `Acheter "${b.title}" de ${b.author} - Livraison rapide au Maroc | Riwaya`
+                alt: `${b.title} - ${b.author}${b.category ? ` | ${b.category}` : ''} | Librairie SuperEcom Maroc`,
+                title: `Acheter "${b.title}" de ${b.author} - Livraison rapide au Maroc | SuperEcom`
             }
         })
         setEdits(updated)
@@ -140,15 +140,15 @@ export default function ImageInjectorMetaForm({ books }: ImageInjectorMetaFormPr
                 {filtered.length === 0 && (
                     <p className="text-center text-gray-400 text-sm py-8">Aucun livre trouvé.</p>
                 )}
-                {filtered.map(book => (
-                    <div key={book.id} className="border border-gray-200 rounded-xl p-4 bg-gray-50 hover:bg-white transition-colors">
+                {filtered.map(product => (
+                    <div key={product.id} className="border border-gray-200 rounded-xl p-4 bg-gray-50 hover:bg-white transition-colors">
                         <div className="flex gap-4 items-start">
                             {/* Image */}
                             <div className="w-16 h-20 rounded-lg overflow-hidden border border-gray-200 bg-white shrink-0">
                                 <img
-                                    src={book.image}
-                                    alt={edits[book.id]?.alt || book.title}
-                                    title={edits[book.id]?.title || book.title}
+                                    src={product.image}
+                                    alt={edits[product.id]?.alt || product.title}
+                                    title={edits[product.id]?.title || product.title}
                                     className="w-full h-full object-cover"
                                     onError={e => { (e.target as HTMLImageElement).src = '/placeholder.jpg' }}
                                 />
@@ -157,8 +157,8 @@ export default function ImageInjectorMetaForm({ books }: ImageInjectorMetaFormPr
                             {/* Fields */}
                             <div className="flex-1 space-y-3">
                                 <div>
-                                    <p className="text-xs font-black text-gray-600 uppercase tracking-widest mb-0.5">{book.title}</p>
-                                    <p className="text-xs text-gray-400">{book.author}</p>
+                                    <p className="text-xs font-black text-gray-600 uppercase tracking-widest mb-0.5">{product.title}</p>
+                                    <p className="text-xs text-gray-400">{product.author}</p>
                                 </div>
 
                                 <div>
@@ -167,10 +167,10 @@ export default function ImageInjectorMetaForm({ books }: ImageInjectorMetaFormPr
                                     </label>
                                     <input
                                         type="text"
-                                        value={edits[book.id]?.alt || ''}
-                                        onChange={e => setEdits(prev => ({ ...prev, [book.id]: { ...prev[book.id], alt: e.target.value } }))}
+                                        value={edits[product.id]?.alt || ''}
+                                        onChange={e => setEdits(prev => ({ ...prev, [product.id]: { ...prev[product.id], alt: e.target.value } }))}
                                         className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
-                                        placeholder={`${book.title} - ${book.author} | Riwaya`}
+                                        placeholder={`${product.title} - ${product.author} | SuperEcom`}
                                     />
                                 </div>
 
@@ -180,10 +180,10 @@ export default function ImageInjectorMetaForm({ books }: ImageInjectorMetaFormPr
                                     </label>
                                     <input
                                         type="text"
-                                        value={edits[book.id]?.title || ''}
-                                        onChange={e => setEdits(prev => ({ ...prev, [book.id]: { ...prev[book.id], title: e.target.value } }))}
+                                        value={edits[product.id]?.title || ''}
+                                        onChange={e => setEdits(prev => ({ ...prev, [product.id]: { ...prev[product.id], title: e.target.value } }))}
                                         className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
-                                        placeholder={`Acheter ${book.title} | Riwaya`}
+                                        placeholder={`Acheter ${product.title} | SuperEcom`}
                                     />
                                 </div>
                             </div>
@@ -191,16 +191,16 @@ export default function ImageInjectorMetaForm({ books }: ImageInjectorMetaFormPr
                             {/* Save individual */}
                             <button
                                 type="button"
-                                onClick={() => saveBook(book.id)}
-                                disabled={saving === book.id}
+                                onClick={() => saveBook(product.id)}
+                                disabled={saving === product.id}
                                 className="shrink-0 flex items-center gap-1 px-4 py-2 bg-black text-white text-xs font-black rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 mt-8"
                             >
-                                {saving === book.id ? (
+                                {saving === product.id ? (
                                     <Loader2 className="w-3 h-3 animate-spin" />
-                                ) : saved.has(book.id) ? (
+                                ) : saved.has(product.id) ? (
                                     <CheckCircle2 className="w-3 h-3 text-green-400" />
                                 ) : null}
-                                {saved.has(book.id) ? 'Sauvé' : 'Sauver'}
+                                {saved.has(product.id) ? 'Sauvé' : 'Sauver'}
                             </button>
                         </div>
                     </div>

@@ -52,9 +52,9 @@ export async function createPack(input: PackInput): Promise<PackResult> {
                 isFreeDelivery: validatedData.isFreeDelivery,
                 shippingFees: validatedData.shippingFees,
                 active: true,
-                books: {
-                    create: validatedData.bookIds.map((bookId) => ({
-                        bookId,
+                products: {
+                    create: validatedData.bookIds.map((productId) => ({
+                        productId,
                     })),
                 },
             },
@@ -92,9 +92,9 @@ export async function getPackById(id: string) {
         const pack = await prisma.pack.findUnique({
             where: { id },
             include: {
-                books: {
+                products: {
                     include: {
-                        book: {
+                        product: {
                             select: {
                                 id: true,
                                 title: true,
@@ -158,9 +158,9 @@ export async function updatePack(
                     image: validatedData.image,
                     isFreeDelivery: validatedData.isFreeDelivery,
                     shippingFees: validatedData.shippingFees,
-                    books: {
-                        create: validatedData.bookIds.map((bookId) => ({
-                            bookId,
+                    products: {
+                        create: validatedData.bookIds.map((productId) => ({
+                            productId,
                         })),
                     },
                 },

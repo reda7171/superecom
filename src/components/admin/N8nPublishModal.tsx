@@ -5,7 +5,7 @@ import { X, Send, Clock, Facebook, Instagram, FileText, AlignLeft, Music, ImageI
 import * as htmlToImage from 'html-to-image'
 import { normalizeImage } from '@/lib/utils'
 
-interface Book {
+interface Product {
     id: string
     title: string
     author: string
@@ -17,11 +17,11 @@ interface Book {
 interface N8nPublishModalProps {
     isOpen: boolean
     onClose: () => void
-    book: Book | null
+    product: Product | null
     format: 'post' | 'story'
 }
 
-export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPublishModalProps) {
+export default function N8nPublishModal({ isOpen, onClose, product, format }: N8nPublishModalProps) {
     const [platform, setPlatform] = useState<'facebook' | 'instagram' | 'tiktok' | 'all'>('all')
     const [useDescription, setUseDescription] = useState<'short' | 'long'>('short')
     const [scheduleAt, setScheduleAt] = useState('')
@@ -34,10 +34,10 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
     const [theme, setTheme] = useState<'dark' | 'emerald' | 'gold' | 'purple'>('dark')
     const [useCustomCreative, setUseCustomCreative] = useState(true)
     const [editableTexts, setEditableTexts] = useState({
-        title: book?.title || '',
-        description: book?.description || ''
+        title: product?.title || '',
+        description: product?.description || ''
     })
-    const [positions, setPositions] = useState({ text: { x: 0, y: 0 }, book: { x: 0, y: 0 } })
+    const [positions, setPositions] = useState({ text: { x: 0, y: 0 }, product: { x: 0, y: 0 } })
     const [dragging, setDragging] = useState<string | null>(null)
     const [offset, setOffset] = useState({ x: 0, y: 0 })
     
@@ -48,13 +48,13 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
     const [textOpacity, setTextOpacity] = useState(100)
 
     useEffect(() => {
-        if (isOpen && book) {
+        if (isOpen && product) {
             setEditableTexts({
-                title: book.title,
-                description: book.description
+                title: product.title,
+                description: product.description
             })
         }
-    }, [isOpen, book])
+    }, [isOpen, product])
 
     const handleMouseDown = (e: React.MouseEvent, key: string) => {
         if ((e.target as HTMLElement).isContentEditable) return
@@ -80,7 +80,7 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
         }
     }, [dragging, offset])
 
-    if (!isOpen || !book) return null
+    if (!isOpen || !product) return null
 
     const handlePublish = async () => {
         setLoading(true)
@@ -103,7 +103,7 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
                 const u8arr = new Uint8Array(n)
                 while (n--) u8arr[n] = bstr.charCodeAt(n)
                 const blob = new Blob([u8arr], { type: mime })
-                const file = new File([blob], `n8n_creative_${book.id}.png`, { type: mime })
+                const file = new File([blob], `n8n_creative_${product.id}.png`, { type: mime })
 
                 const formData = new FormData()
                 formData.append('file', file)
@@ -121,8 +121,8 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    bookId: (book as any).author ? book.id : undefined,
-                    packId: !(book as any).author ? book.id : undefined,
+                    productId: (product as any).author ? product.id : undefined,
+                    packId: !(product as any).author ? product.id : undefined,
                     format,
                     platform: platform === 'all' ? 'both' : platform,
                     useDescription,
@@ -154,7 +154,7 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
             if (newWindow) {
                 newWindow.document.write(`
                     <html>
-                        <head><title>Aperçu n8n - Riwaya</title></head>
+                        <head><title>Aperçu n8n - SuperEcom</title></head>
                         <body style="margin:0;display:flex;align-items:center;justify-content:center;background:#000;min-height:100vh;">
                             <img src="${dataUrl}" style="max-width:95%;max-height:95vh;border-radius:12px;box-shadow:0 0 50px rgba(255,255,255,0.1);" />
                         </body>
@@ -178,8 +178,8 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
 
     // Aperçu du texte qui sera publié
     const previewText = useDescription === 'long'
-        ? (book.longDescription || book.description)
-        : book.description
+        ? (product.longDescription || product.description)
+        : product.description
 
     return (
         <div className="fixed inset-0 z-[200] flex flex-col bg-white">
@@ -192,7 +192,7 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
                         </div>
                         <div>
                             <h3 className="font-bold text-gray-900 text-sm">Publier via n8n</h3>
-                            <p className="text-xs text-gray-500">{book.title} — {format === 'post' ? 'Post' : 'Story'}</p>
+                            <p className="text-xs text-gray-500">{product.title} — {format === 'post' ? 'Post' : 'Story'}</p>
                         </div>
                     </div>
                     <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
@@ -260,17 +260,17 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
 
                                 <div 
                                     className="absolute bottom-10 left-1/2 -translate-x-1/2 cursor-move z-10 flex flex-col items-center"
-                                    style={{ transform: `translate(${positions.book.x}px, ${positions.book.y}px)` }}
-                                    onMouseDown={(e) => handleMouseDown(e, 'book')}
+                                    style={{ transform: `translate(${positions.product.x}px, ${positions.product.y}px)` }}
+                                    onMouseDown={(e) => handleMouseDown(e, 'product')}
                                 >
                                     <img 
                                         src={(() => {
-                                            const img = normalizeImage(book.image);
+                                            const img = normalizeImage(product.image);
                                             if (img.startsWith('http') && !img.includes(typeof window !== 'undefined' ? window.location.host : '')) {
                                                 return `/api/proxy/image?url=${encodeURIComponent(img)}`;
                                             }
                                             return img;
-                                        })() || '/book-placeholder.png'} 
+                                        })() || '/product-placeholder.png'} 
                                         className="h-auto rounded shadow-2xl pointer-events-none" 
                                         style={{ width: `${(96 * bookSize) / 100}px` }}
                                         alt=""
@@ -282,12 +282,12 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
                             <div className="w-[300px] h-[450px] shadow-2xl rounded-xl overflow-hidden mt-12">
                                 <img 
                                     src={(() => {
-                                        const img = normalizeImage(book.image);
+                                        const img = normalizeImage(product.image);
                                         if (img.startsWith('http') && !img.includes(typeof window !== 'undefined' ? window.location.host : '')) {
                                             return `/api/proxy/image?url=${encodeURIComponent(img)}`;
                                         }
                                         return img;
-                                    })() || '/book-placeholder.png'} 
+                                    })() || '/product-placeholder.png'} 
                                     className="w-full h-full object-cover" 
                                     alt="" 
                                     crossOrigin="anonymous"
@@ -339,7 +339,7 @@ export default function N8nPublishModal({ isOpen, onClose, book, format }: N8nPu
                                     </button>
                                     <button
                                         onClick={() => setUseDescription('long')}
-                                        disabled={!book.longDescription}
+                                        disabled={!product.longDescription}
                                         className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed
                                             ${useDescription === 'long' ? 'border-indigo-500 bg-indigo-50 text-indigo-700 ring-1 ring-indigo-500' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                                     >

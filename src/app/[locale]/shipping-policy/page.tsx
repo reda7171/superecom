@@ -23,7 +23,7 @@ export default async function ShippingPolicyPage() {
                                 <MapPin className="w-5 h-5" /> 1. Zones de livraison
                             </h2>
                             <p className="leading-relaxed">
-                                <strong>Riwaya</strong> livre dans toutes les villes du Royaume du Maroc. Que vous soyez à Casablanca, Rabat, Marrakech, Tanger ou dans les zones plus reculées, nous nous assurons que vos livres arrivent à bon port.
+                                <strong>SuperEcom</strong> livre dans toutes les villes du Royaume du Maroc. Que vous soyez à Casablanca, Rabat, Marrakech, Tanger ou dans les zones plus reculées, nous nous assurons que vos livres arrivent à bon port.
                             </p>
                         </section>
 

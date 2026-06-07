@@ -2,7 +2,7 @@ import Header from '@/components/HeaderWithUser'
 import Footer from '@/components/Footer'
 import CartClient from '@/components/cart/CartClient'
 import { getSetting } from '@/lib/actions/site-settings'
-import { getPopularBooks } from '@/lib/db/books'
+import { getPopularBooks } from '@/lib/db/products'
 
 export default async function CartPage() {
     const minAmount = await getSetting('min_order_amount', '0')

@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const t = await getTranslations('PacksPage')
 
     return {
-        title: `${t('Title')} | Riwaya`,
+        title: `${t('Title')} | SuperEcom`,
         description: t('Subtitle'),
     }
 }
@@ -21,7 +21,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function PacksPage() {
     const packs = await getPacks()
-    const availableBooks = await prisma.book.findMany({
+    const availableBooks = await prisma.product.findMany({
         where: {
             active: true,
             stock: { gt: 0 }

@@ -1,5 +1,5 @@
 import { getPackById } from '@/lib/actions/packs'
-import { getBooks } from '@/lib/db/books'
+import { getBooks } from '@/lib/db/products'
 import { notFound } from 'next/navigation'
 import PackEditForm from './PackEditForm'
 import { getSetting } from '@/lib/actions/site-settings'
@@ -7,7 +7,7 @@ import { getSetting } from '@/lib/actions/site-settings'
 export default async function EditPackPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
 
-    const [packResult, books, whatsappPhone] = await Promise.all([
+    const [packResult, products, whatsappPhone] = await Promise.all([
         getPackById(id),
         getBooks({ includeInactive: true, limit: 1000 }),
         getSetting('contact_whatsapp')
@@ -21,7 +21,7 @@ export default async function EditPackPage({ params }: { params: Promise<{ id: s
     }
 
     const pack = packResult.data
-    const selectedBookIds = pack.books.map(pb => pb.bookId)
+    const selectedBookIds = pack.products.map(pb => pb.productId)
 
     return (
         <PackEditForm
@@ -35,7 +35,7 @@ export default async function EditPackPage({ params }: { params: Promise<{ id: s
                 shippingFees: pack.shippingFees,
                 selectedBookIds
             }}
-            books={books}
+            products={products}
             whatsappPhone={whatsappPhone || undefined}
         />
     )

@@ -69,7 +69,7 @@ export async function exportSalesReport() {
             include: {
                 items: {
                     include: {
-                        book: { select: { title: true, category: true } },
+                        product: { select: { title: true, category: true } },
                         pack: { select: { name: true } }
                     }
                 }
@@ -106,8 +106,8 @@ export async function exportSalesReport() {
                     Ville: order.city,
                     Date: new Date(order.createdAt).toLocaleDateString('fr-FR'),
                     Type: item.type,
-                    Produit: item.book?.title || item.pack?.name || 'Inconnu',
-                    Catégorie: item.book?.category || 'N/A',
+                    Produit: item.product?.title || item.pack?.name || 'Inconnu',
+                    Catégorie: item.product?.category || 'N/A',
                     Quantité: item.quantity,
                     Prix_Unitaire: item.price,
                     Sous_Total_Ligne: item.price * item.quantity,

@@ -90,7 +90,7 @@ export async function importBooksFromExcel(formData: FormData): Promise<BulkImpo
                 const parsedPrice = parseFloat(String(priceVal).replace(/[^0-9.]/g, '')) || 0
 
                 if (row.isbn) {
-                    const existing = await prisma.book.findUnique({
+                    const existing = await prisma.product.findUnique({
                         where: { isbn: String(row.isbn) }
                     })
                     if (existing) {
@@ -100,7 +100,7 @@ export async function importBooksFromExcel(formData: FormData): Promise<BulkImpo
                     }
                 }
 
-                await prisma.book.create({
+                await prisma.product.create({
                     data: {
                         title: String(titleStr),
                         author: String(authorStr),
@@ -122,7 +122,7 @@ export async function importBooksFromExcel(formData: FormData): Promise<BulkImpo
             }
         }
 
-        revalidatePath('/admin/books')
+        revalidatePath('/admin/products')
         revalidatePath('/')
 
         return {
@@ -149,7 +149,7 @@ export async function generateExcelTemplate() {
         await verifyAdmin()
 
         const workbook = new ExcelJS.Workbook()
-        const worksheet = workbook.addWorksheet('Books')
+        const worksheet = workbook.addWorksheet('Products')
 
         worksheet.columns = [
             { header: 'Marque', key: 'Marque', width: 20 },
@@ -224,27 +224,27 @@ export async function updateStockFromTsv(formData: FormData): Promise<BulkImport
             }
 
             // Recherche exacte du livre
-            const book = await prisma.book.findFirst({
+            const product = await prisma.product.findFirst({
                 where: { 
                     title: title.trim()
                 }
             })
 
-            if (!book) {
+            if (!product) {
                 errors.push(`Ligne ${i + 1}: Livre "${title}" introuvable`)
                 failed++
                 continue
             }
 
-            await prisma.book.update({
-                where: { id: book.id },
+            await prisma.product.update({
+                where: { id: product.id },
                 data: { stock: stockValue }
             })
 
             updated++
         }
 
-        revalidatePath('/admin/books')
+        revalidatePath('/admin/products')
         revalidatePath('/')
 
         return {

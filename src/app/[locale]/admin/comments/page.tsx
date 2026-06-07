@@ -3,7 +3,7 @@ import { MessageSquare, Check, Trash2, Clock, User, ExternalLink } from 'lucide-
 import { revalidatePath } from 'next/cache'
 
 export const metadata = {
-    title: 'Modération des Commentaires | Admin Riwaya',
+    title: 'Modération des Commentaires | Admin SuperEcom',
 }
 
 export default async function AdminCommentsPage({

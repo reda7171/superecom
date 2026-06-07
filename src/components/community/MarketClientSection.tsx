@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import MarketFiltersClient from './MarketFiltersClient'
-import MarketBookCard from './MarketBookCard'
-import BookGridSkeleton from './BookGridSkeleton'
+import MarketProductCard from './MarketProductCard'
+import ProductGridSkeleton from './ProductGridSkeleton'
 import { Frown, Sparkles } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
@@ -29,7 +29,7 @@ export default function MarketClientSection({ initialBooks, smartMatches, search
                 {/* Overlay Skeleton during transitions */}
                 {isPending && (
                     <div className="absolute inset-0 bg-pixio-cream/60 z-20 backdrop-blur-[2px] animate-in fade-in duration-300">
-                        <BookGridSkeleton />
+                        <ProductGridSkeleton />
                     </div>
                 )}
 
@@ -47,8 +47,8 @@ export default function MarketClientSection({ initialBooks, smartMatches, search
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                                {smartMatches.map((book: any) => (
-                                    <MarketBookCard key={book.id} book={book} isSmartMatch isBlurred={isBlurred} />
+                                {smartMatches.map((product: any) => (
+                                    <MarketProductCard key={product.id} product={product} isSmartMatch isBlurred={isBlurred} />
                                 ))}
                             </div>
                         </div>
@@ -63,8 +63,8 @@ export default function MarketClientSection({ initialBooks, smartMatches, search
                     {/* Main Grid */}
                     {initialBooks.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                            {initialBooks.map((book: any) => (
-                                <MarketBookCard key={book.id} book={book} isBlurred={isBlurred} />
+                            {initialBooks.map((product: any) => (
+                                <MarketProductCard key={product.id} product={product} isBlurred={isBlurred} />
                             ))}
                         </div>
                     ) : (

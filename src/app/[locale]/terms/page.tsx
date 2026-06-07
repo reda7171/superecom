@@ -24,7 +24,7 @@ export default async function TermsPage() {
                                 <Info className="w-5 h-5" /> 1. Objet
                             </h2>
                             <p className="leading-relaxed">
-                                Les présentes Conditions Générales d'Utilisation (CGU) ont pour objet l'encadrement juridique des modalités de mise à disposition du site et des services par <strong>Riwaya</strong> et de définir les conditions d'accès et d'utilisation des services par l'Utilisateur.
+                                Les présentes Conditions Générales d'Utilisation (CGU) ont pour objet l'encadrement juridique des modalités de mise à disposition du site et des services par <strong>SuperEcom</strong> et de définir les conditions d'accès et d'utilisation des services par l'Utilisateur.
                             </p>
                         </section>
 
@@ -42,7 +42,7 @@ export default async function TermsPage() {
                                 <CreditCard className="w-5 h-5" /> 3. Commandes et Prix
                             </h2>
                             <p className="leading-relaxed">
-                                Les prix des produits sont indiqués en Dirhams toutes taxes comprises. <strong>Riwaya</strong> se réserve le droit de modifier ses prix à tout moment, étant toutefois entendu que le prix figurant au catalogue le jour de la commande sera le seul applicable à l'acheteur.
+                                Les prix des produits sont indiqués en Dirhams toutes taxes comprises. <strong>SuperEcom</strong> se réserve le droit de modifier ses prix à tout moment, étant toutefois entendu que le prix figurant au catalogue le jour de la commande sera le seul applicable à l'acheteur.
                             </p>
                         </section>
 
@@ -60,7 +60,7 @@ export default async function TermsPage() {
                                 <CheckCircle className="w-5 h-5" /> 5. Responsabilité
                             </h2>
                             <p className="leading-relaxed">
-                                Les sources des informations diffusées sur le site riwaya.store sont réputées fiables mais le site ne garantit pas qu'il soit exempt de défauts, d'erreurs ou d'omissions.
+                                Les sources des informations diffusées sur le site superEcom.store sont réputées fiables mais le site ne garantit pas qu'il soit exempt de défauts, d'erreurs ou d'omissions.
                             </p>
                         </section>
                     </div>

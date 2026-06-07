@@ -11,7 +11,7 @@ import { fbPixelEvents, fbCustomEvents } from '@/lib/facebook-pixel'
 
 interface ExchangeFormProps {
     details: {
-        book: any
+        product: any
         myBooks: any[]
         currentUser: any
         isEligible: boolean
@@ -34,7 +34,7 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
     const [selectedBook, setSelectedBook] = useState<string>('')
     const [deliveryMethod, setDeliveryMethod] = useState<'MEETUP' | 'SHIPPING' | 'LOCKER'>('MEETUP')
 
-    const { book, myBooks, currentUser, isEligible } = details
+    const { product, myBooks, currentUser, isEligible } = details
 
 
 
@@ -54,7 +54,7 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
 
         if (res.success) {
             fbPixelEvents.lead('ExchangeRequest')
-            fbCustomEvents.exchangeInitiated(book.id)
+            fbCustomEvents.exchangeInitiated(product.id)
             router.push('/community')
             router.refresh()
         } else {
@@ -65,20 +65,20 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
 
     return (
         <div className="w-full max-w-5xl bg-white rounded-[3rem] shadow-2xl shadow-black/10 border border-gray-100 overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
-            {/* Left: Book to Request - Side Panel Look */}
+            {/* Left: Product to Request - Side Panel Look */}
             <div className="lg:w-[35%] bg-black text-white p-12 flex flex-col items-center text-center relative overflow-hidden">
                 {/* Decorative Glow */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-pixio-yellow/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
 
-                <Link href={`/community/market/${book.id}`} className="absolute top-8 left-8 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all group">
+                <Link href={`/community/market/${product.id}`} className="absolute top-8 left-8 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all group">
                     <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                 </Link>
 
                 <div className="relative mt-8 mb-10 group">
                     <div className="absolute inset-0 bg-pixio-yellow rounded-2xl rotate-6 scale-105 opacity-50 blur-sm group-hover:rotate-12 transition-transform"></div>
                     <div className="relative w-40 h-56 bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border-2 border-white/20">
-                        {book.image ? (
-                            <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+                        {product.image ? (
+                            <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
                         ) : (
                             <BookOpen className="w-12 h-12 text-gray-700" />
                         )}
@@ -86,22 +86,22 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
                 </div>
 
                 <div className="space-y-3 mb-10">
-                    <h2 className="text-2xl font-black tracking-tight leading-tight">{book.title}</h2>
-                    <p className="text-lg font-medium text-gray-400 italic">{tcmn('By')} {book.author}</p>
+                    <h2 className="text-2xl font-black tracking-tight leading-tight">{product.title}</h2>
+                    <p className="text-lg font-medium text-gray-400 italic">{tcmn('By')} {product.author}</p>
                 </div>
 
                 <div className="mt-auto pt-10 border-t border-white/10 w-full">
                     <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 mb-4">{t('Subtitle')}</p>
                     <div className="flex flex-col items-center gap-3">
                         <div className="w-12 h-12 bg-pixio-yellow text-black rounded-full flex items-center justify-center font-black text-lg border-2 border-white/20 shadow-lg">
-                            {book.owner.fullName?.[0]}
+                            {product.owner.fullName?.[0]}
                         </div>
-                        <span className="font-black text-sm tracking-tight">{book.owner.fullName}</span>
+                        <span className="font-black text-sm tracking-tight">{product.owner.fullName}</span>
                     </div>
                 </div>
 
                 <div className="mt-8">
-                    <ReportButton targetBookId={book.id} targetUserId={book.owner.id} />
+                    <ReportButton targetProductId={product.id} targetUserId={product.owner.id} />
                 </div>
             </div>
 
@@ -117,11 +117,11 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
                     </div>
 
                     <form onSubmit={onSubmit} className="space-y-10">
-                        <input type="hidden" name="bookRequestedId" value={book.id} />
+                        <input type="hidden" name="productRequestedId" value={product.id} />
 
                         <input type="hidden" name="type" value="DIRECT" />
                         
-                        {/* Selected Book Offer */}
+                        {/* Selected Product Offer */}
                         <div className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
                              <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 ml-1">{t('SelectBook')}</label>
 
@@ -130,7 +130,7 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
                                         <BookOpen className="w-4 h-4 text-black" />
                                     </div>
                                     <select
-                                        name="bookOfferedId"
+                                        name="productOfferedId"
                                         required
                                         value={selectedBook}
                                         onChange={(e) => setSelectedBook(e.target.value)}
@@ -147,7 +147,7 @@ export default function ExchangeForm({ details }: ExchangeFormProps) {
                                 </div>
                                 {myBooks.length === 0 && (
                                     <p className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-3 bg-red-50 p-4 rounded-xl border border-red-100">
-                                        {t('NoBooksAvailable')} <Link href="/community/books/new" className="underline text-black">{t('AddOneFirst')}</Link>
+                                        {t('NoBooksAvailable')} <Link href="/community/products/new" className="underline text-black">{t('AddOneFirst')}</Link>
                                     </p>
                                 )}
                             </div>

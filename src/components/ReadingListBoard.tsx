@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { ReadingStatus } from '@prisma/client'
 import { updateReadingProgress, removeFromReadingList } from '@/lib/actions/reading-list'
 import Image from 'next/image'
-import { MoreHorizontal, Trash2, CheckCircle, BookOpen, Clock, Book } from 'lucide-react'
+import { MoreHorizontal, Trash2, CheckCircle, BookOpen, Clock, Package } from 'lucide-react'
 import { useUIStore } from '@/store/ui'
 
 import { useTranslations } from 'next-intl'
@@ -74,9 +74,9 @@ export default function ReadingListBoard({ initialItems, user, children }: Readi
                             <div className="flex gap-4">
                                 <div className="relative w-16 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
                                     {(() => {
-                                        const rawImage = item.cover || item.book?.image;
+                                        const rawImage = item.cover || item.product?.image;
                                         const normalized = normalizeImage(rawImage);
-                                        const isPlaceholder = normalized === '/book-placeholder.png';
+                                        const isPlaceholder = normalized === '/product-placeholder.png';
                                         
                                         return !isPlaceholder ? (
                                             <Image
@@ -87,7 +87,7 @@ export default function ReadingListBoard({ initialItems, user, children }: Readi
                                             />
                                         ) : (
                                             <div className="w-full h-full flex flex-col items-center justify-center bg-blue-50/50">
-                                                <Book className="w-8 h-8 text-blue-200" />
+                                                <Package className="w-8 h-8 text-blue-200" />
                                                 <span className="text-[8px] font-black text-blue-300 mt-1 uppercase tracking-widest">Perso</span>
                                             </div>
                                         );

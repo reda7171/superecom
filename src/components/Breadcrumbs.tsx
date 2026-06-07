@@ -58,13 +58,13 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
                                 '@type': 'ListItem',
                                 'position': 1,
                                 'name': t('Home'),
-                                'item': process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'
+                                'item': process.env.NEXT_PUBLIC_APP_URL || 'https://superEcom.store'
                             },
                             ...items.map((item, index) => ({
                                 '@type': 'ListItem',
                                 'position': index + 2,
                                 'name': item.label,
-                                'item': item.href ? `${process.env.NEXT_PUBLIC_APP_URL || 'https://riwaya.store'}${item.href}` : undefined
+                                'item': item.href ? `${process.env.NEXT_PUBLIC_APP_URL || 'https://superEcom.store'}${item.href}` : undefined
                             }))
                         ]
                     })

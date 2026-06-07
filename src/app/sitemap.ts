@@ -2,13 +2,13 @@ import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 
 const locales = ['fr', 'ar', 'en']
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://riwaya.store'
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://superEcom.store'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 1. Pages statiques
     const staticPages = [
         '',
-        '/books',
+        '/products',
         '/packs',
         '/blog',
         '/about',
@@ -30,19 +30,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 2. Livres dynamiques
     let bookUrls: any[] = []
     try {
-        const books = await prisma.book.findMany({
+        const products = await prisma.product.findMany({
             select: { id: true, updatedAt: true }
         })
         bookUrls = locales.flatMap((locale) =>
-            books.map((book) => ({
-                url: `${baseUrl}/${locale}/books/${book.id}`,
-                lastModified: book.updatedAt,
+            products.map((product) => ({
+                url: `${baseUrl}/${locale}/products/${product.id}`,
+                lastModified: product.updatedAt,
                 changeFrequency: 'weekly' as const,
                 priority: 0.7,
             }))
         )
     } catch (e) {
-        console.warn('⚠️ Sitemaps: Could not fetch books during build')
+        console.warn('⚠️ Sitemaps: Could not fetch products during build')
     }
 
     // 3. Articles de blog dynamiques

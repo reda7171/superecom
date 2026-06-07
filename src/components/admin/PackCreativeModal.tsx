@@ -6,7 +6,7 @@ import * as htmlToImage from 'html-to-image'
 import { injectXMPToPNG } from '@/lib/pngXmpInjector'
 import { normalizeImage } from '@/lib/utils'
 
-interface Book {
+interface Product {
     id: string
     title: string
     author: string
@@ -23,7 +23,7 @@ interface PackCreativeModalProps {
         description?: string
         price: number
         isFreeDelivery?: boolean
-        books: Book[]
+        products: Product[]
         whatsappNumber?: string
     } | null
     format?: 'post' | 'story'
@@ -87,9 +87,9 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
     // State for editable texts
     const [editableTexts, setEditableTexts] = useState({
         badge: 'Pack Spécial',
-        logo: 'RIWAYA',
+        logo: 'SUPERECOM',
         name: pack?.name || 'Nom du Pack',
-        description: pack?.description || (pack?.books ? `${pack.books.length} Livres exceptionnels` : 'Livres exceptionnels'),
+        description: pack?.description || (pack?.products ? `${pack.products.length} Livres exceptionnels` : 'Livres exceptionnels'),
         limited: 'Offre Limitée',
         delivery_line1: 'Livraison',
         delivery_line2: 'Gratuite',
@@ -157,11 +157,11 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
         })
 
         if (key.startsWith('book_')) {
-            const bookId = key.replace('book_', '')
+            const productId = key.replace('book_', '')
             setLayerOrder(prev => {
-                if (!prev.includes(bookId)) return prev
-                const newOrder = prev.filter(id => id !== bookId)
-                newOrder.push(bookId)
+                if (!prev.includes(productId)) return prev
+                const newOrder = prev.filter(id => id !== productId)
+                newOrder.push(productId)
                 return newOrder
             })
         }
@@ -194,11 +194,11 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
         })
 
         if (key.startsWith('book_')) {
-            const bookId = key.replace('book_', '')
+            const productId = key.replace('book_', '')
             setLayerOrder(prev => {
-                if (!prev.includes(bookId)) return prev
-                const newOrder = prev.filter(id => id !== bookId)
-                newOrder.push(bookId)
+                if (!prev.includes(productId)) return prev
+                const newOrder = prev.filter(id => id !== productId)
+                newOrder.push(productId)
                 return newOrder
             })
         }
@@ -370,9 +370,9 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
     }, [positions, theme, imageScale, plusScale, rotations, shadows, logoScale, showLogo, showPlus, showPrice, showWhatsapp, whatsappScale, editableTexts.whatsapp, isOpen])
 
     useEffect(() => {
-        if (isOpen && pack?.books) {
-            setLayerOrder(pack.books.map(b => b.id))
-            const description = pack.description || `${pack.books.length} Livres exceptionnels`
+        if (isOpen && pack?.products) {
+            setLayerOrder(pack.products.map(b => b.id))
+            const description = pack.description || `${pack.products.length} Livres exceptionnels`
             setEditableTexts(prev => ({
                 ...prev,
                 name: pack.name,
@@ -398,8 +398,8 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                 })
                 .catch(console.error)
 
-            const titles = pack.books.map(b => `• ${b.title}`).join('\n')
-            const packUrl = pack.id ? `https://riwaya.store/fr/packs/${pack.id}` : 'https://riwaya.store/fr/packs'
+            const titles = pack.products.map(b => `• ${b.title}`).join('\n')
+            const packUrl = pack.id ? `https://superEcom.store/fr/packs/${pack.id}` : 'https://superEcom.store/fr/packs'
 
             setCaption(
                 `🎁 ${pack.name}\n\n` +
@@ -407,10 +407,10 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                 `Livres inclus :\n${titles}\n\n` +
                 `💰 ${pack.price} MAD\n\n` +
                 `اطلب الآن 🛒 ${packUrl}\n\n` +
-                `#riwaya #livres #packs #maroc #lecture #livresaddict #casablanca #rabat #booktokmaroc #culturemaroc #bibliophile #offre_speciale`
+                `#superEcom #livres #packs #maroc #lecture #livresaddict #casablanca #rabat #booktokmaroc #culturemaroc #bibliophile #offre_speciale`
             )
         }
-    }, [isOpen, pack?.name, pack?.books?.length, pack?.price, pack?.description, pack?.id])
+    }, [isOpen, pack?.name, pack?.products?.length, pack?.price, pack?.description, pack?.id])
 
     if (!isOpen || !pack) return null
 
@@ -474,7 +474,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
             restoreImages(originals)
 
             try {
-                const keywords = ['Riwaya', 'Pack', pack.name, ...pack.books.map(b => b.title), ...pack.books.map(b => b.author)]
+                const keywords = ['SuperEcom', 'Pack', pack.name, ...pack.products.map(b => b.title), ...pack.products.map(b => b.author)]
                 dataUrl = injectXMPToPNG(dataUrl, pack.name, keywords.filter(Boolean))
             } catch (err) {
                 console.error("XMP injection failed:", err)
@@ -514,7 +514,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
             const baseUrl = window.location.origin
             const productUrl = `${baseUrl}/fr/packs`
             const text = caption || `${editableTexts.name}\n${editableTexts.description}`
-            const tags = `#riwaya #pack #lecture #maroc #culture #promo`
+            const tags = `#superEcom #pack #lecture #maroc #culture #promo`
 
             const newWindow = window.open()
             if (newWindow) {
@@ -548,7 +548,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                     <div class="post-header">
                                         <div class="avatar">R</div>
                                         <div class="author-info">
-                                            <div class="author-name">Riwaya</div>
+                                            <div class="author-name">SuperEcom</div>
                                             <div class="post-time">À l'instant • 🌐</div>
                                         </div>
                                     </div>
@@ -615,7 +615,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
             if (!uploadData.success) throw new Error(uploadData.error || "Échec de l'upload")
 
             // 4. Publish via n8n (on passe l'ID d'un des livres ou un flag pack)
-            // Note: l'API publish actuelle attend bookId. On peut passer le premier livre du pack
+            // Note: l'API publish actuelle attend productId. On peut passer le premier livre du pack
             // ou adapter l'API si nécessaire. Pour l'instant on utilise le premier livre pour le contexte.
             const res = await fetch('/api/n8n/publish', {
                 method: 'POST',
@@ -627,7 +627,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                     isPack: true,
                     packName: pack.name,
                     price: pack.price,
-                    books: pack.books.map(b => b.title),
+                    products: pack.products.map(b => b.title),
                     scheduleAt: scheduleAt || null,
                     customCaption: caption || `${editableTexts.name}\n${editableTexts.description}`
                 })
@@ -772,14 +772,14 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
     ]
 
     const applyLayout = (layoutIdx: number) => {
-        if (!pack?.books?.length) return
-        const books = pack.books
-        const n = books.length
+        if (!pack?.products?.length) return
+        const products = pack.products
+        const n = products.length
         const newPositions: Record<string, { x: number; y: number }> = {}
         const newRotations: Record<string, number> = {}
 
-        books.forEach((book, i) => {
-            const key = `book_${book.id}`
+        products.forEach((product, i) => {
+            const key = `book_${product.id}`
             let x = 0, y = 0, rot = 0
 
             if (layoutIdx === 0) {
@@ -815,7 +815,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
             }
 
             newPositions[key] = { x, y }
-            newRotations[book.id] = rot
+            newRotations[product.id] = rot
 
             // Appliquer DOM directement
             positionsRef.current[key] = { x, y }
@@ -833,13 +833,13 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
     }
 
     const handleGenerateName = async (lang: 'fr' | 'ar') => {
-        if (!pack?.books?.length) return;
+        if (!pack?.products?.length) return;
         const setGenerating = lang === 'fr' ? setIsGeneratingNameFR : setIsGeneratingNameAR;
         setGenerating(true);
 
         try {
-            const titles = pack.books.map(b => b.title).join(', ');
-            const authors = Array.from(new Set(pack.books.map(b => b.author))).filter(Boolean).join(', ');
+            const titles = pack.products.map(b => b.title).join(', ');
+            const authors = Array.from(new Set(pack.products.map(b => b.author))).filter(Boolean).join(', ');
 
             const prompt = lang === 'fr'
                 ? `Propose un nom très court et accrocheur (2 à 4 mots maximum) pour un pack de livres qui contient: ${titles}. Auteurs: ${authors}. Ne donne que le nom, pas de guillemets, pas de point.`
@@ -859,12 +859,12 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
     }
 
     const handleGenerateDesc = async (lang: 'fr' | 'ar') => {
-        if (!pack?.books?.length) return;
+        if (!pack?.products?.length) return;
         const setGenerating = lang === 'fr' ? setIsGeneratingDescFR : setIsGeneratingDescAR;
         setGenerating(true);
 
         try {
-            const titles = pack.books.map(b => b.title).join(', ');
+            const titles = pack.products.map(b => b.title).join(', ');
             const prompt = lang === 'fr'
                 ? `Rédige une phrase très courte et ultra-accrocheuse (maximum 8 à 12 mots) pour faire la promotion d'un pack de livres contenant: ${titles}. N'utilise pas d'emojis, ne mets pas de guillemets, et donne juste la phrase.`
                 : `اكتب جملة قصيرة جداً وجذابة (من 8 إلى 12 كلمة كحد أقصى) للترويج لـمجموعة من هذه الكتب: ${titles}. لا تستخدم إيموجي ولا علامات تنصيص وأعطني الجملة فقط.`;
@@ -984,7 +984,7 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src="/logo.png"
-                                                alt="Riwaya Logo"
+                                                alt="SuperEcom Logo"
                                                 crossOrigin="anonymous"
                                                 className="h-6 sm:h-8 object-contain filter brightness-0 invert transition-transform"
                                                 style={{ transform: `scale(${logoScale})` }}
@@ -1034,43 +1034,43 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
                                 )}
                             </div>
 
-                            {/* Books Visualization (Stacked) */}
+                            {/* Products Visualization (Stacked) */}
                             <div className="flex-1 flex items-center justify-center relative z-10 pointer-events-none mx-auto w-full">
-                                {pack.books.map((book, idx) => {
-                                    const pos = positions[`book_${book.id}`] || { x: 0, y: 0 }
+                                {pack.products.map((product, idx) => {
+                                    const pos = positions[`book_${product.id}`] || { x: 0, y: 0 }
                                     // Slight offset in rotation for initial stacked look
-                                    const rot = rotations[book.id] !== undefined ? rotations[book.id] : (idx * 4 - (pack.books.length * 2))
-                                    const hasShadow = shadows[book.id] !== false
+                                    const rot = rotations[product.id] !== undefined ? rotations[product.id] : (idx * 4 - (pack.products.length * 2))
+                                    const hasShadow = shadows[product.id] !== false
 
                                     // Determine z-index dynamically based on layerOrder
-                                    const layerIndex = layerOrder.indexOf(book.id)
-                                    const zIndex = (layerIndex !== -1 ? layerIndex : idx) + (dragging === `book_${book.id}` ? 50 : 0)
+                                    const layerIndex = layerOrder.indexOf(product.id)
+                                    const zIndex = (layerIndex !== -1 ? layerIndex : idx) + (dragging === `book_${product.id}` ? 50 : 0)
 
                                     return (
                                         <div
-                                            key={book.id}
-                                            ref={el => { dragElemsRef.current[`book_${book.id}`] = el }}
+                                            key={product.id}
+                                            ref={el => { dragElemsRef.current[`book_${product.id}`] = el }}
                                             className="absolute pointer-events-auto cursor-move"
                                             style={{
                                                 zIndex,
-                                                transform: `translate(${positionsRef.current[`book_${book.id}`]?.x || 0}px, ${positionsRef.current[`book_${book.id}`]?.y || 0}px) scale(${imageScale}) rotate(${rot}deg)`,
+                                                transform: `translate(${positionsRef.current[`book_${product.id}`]?.x || 0}px, ${positionsRef.current[`book_${product.id}`]?.y || 0}px) scale(${imageScale}) rotate(${rot}deg)`,
                                                 width: '140px',
-                                                outline: selectedKeys.has(`book_${book.id}`) ? '2px solid #3b82f6' : 'none',
+                                                outline: selectedKeys.has(`book_${product.id}`) ? '2px solid #3b82f6' : 'none',
                                                 outlineOffset: '3px',
                                                 touchAction: 'none'
                                             }}
-                                            onMouseDown={(e) => handleMouseDown(e, `book_${book.id}`)}
-                                            onTouchStart={(e) => handleTouchStart(e, `book_${book.id}`)}
+                                            onMouseDown={(e) => handleMouseDown(e, `book_${product.id}`)}
+                                            onTouchStart={(e) => handleTouchStart(e, `book_${product.id}`)}
                                         >
                                             <img
                                                 src={(() => {
-                                                    const img = normalizeImage(book.image);
+                                                    const img = normalizeImage(product.image);
                                                     if (img && img.startsWith('http') && !img.includes(typeof window !== 'undefined' ? window.location.host : '')) {
                                                         return `/api/proxy/image?url=${encodeURIComponent(img)}`;
                                                     }
-                                                    return img || '/book-placeholder.png';
+                                                    return img || '/product-placeholder.png';
                                                 })()}
-                                                alt={book.title}
+                                                alt={product.title}
                                                 crossOrigin="anonymous"
                                                 className="w-full h-auto object-cover rounded-md border border-white/10"
                                                 style={{ boxShadow: hasShadow ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' : 'none' }}
@@ -1515,26 +1515,26 @@ export default function PackCreativeModal({ isOpen, onClose, pack, format = 'pos
 
                         <div className="space-y-6">
                             <div className="space-y-4">
-                                {pack.books.map((book, idx) => {
-                                    const hasShadow = shadows[book.id] !== false
+                                {pack.products.map((product, idx) => {
+                                    const hasShadow = shadows[product.id] !== false
                                     return (
-                                        <div key={book.id} className="p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                                        <div key={product.id} className="p-3 bg-gray-50 border border-gray-100 rounded-xl">
                                             <div className="flex justify-between text-[10px] font-bold text-gray-500 mb-2">
-                                                <span className="truncate max-w-[200px]">{book.title}</span>
-                                                <span>{rotations[book.id] !== undefined ? rotations[book.id] : (idx % 2 === 0 ? -2 : 2)}°</span>
+                                                <span className="truncate max-w-[200px]">{product.title}</span>
+                                                <span>{rotations[product.id] !== undefined ? rotations[product.id] : (idx % 2 === 0 ? -2 : 2)}°</span>
                                             </div>
                                             <input
                                                 type="range"
                                                 min="-180" max="180" step="1"
-                                                value={rotations[book.id] !== undefined ? rotations[book.id] : (idx % 2 === 0 ? -2 : 2)}
-                                                onChange={(e) => setRotations(prev => ({ ...prev, [book.id]: parseInt(e.target.value) }))}
+                                                value={rotations[product.id] !== undefined ? rotations[product.id] : (idx % 2 === 0 ? -2 : 2)}
+                                                onChange={(e) => setRotations(prev => ({ ...prev, [product.id]: parseInt(e.target.value) }))}
                                                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600 mb-3"
                                             />
                                             <label className="flex items-center gap-2 cursor-pointer">
                                                 <input
                                                     type="checkbox"
                                                     checked={hasShadow}
-                                                    onChange={(e) => setShadows(prev => ({ ...prev, [book.id]: e.target.checked }))}
+                                                    onChange={(e) => setShadows(prev => ({ ...prev, [product.id]: e.target.checked }))}
                                                     className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"
                                                 />
                                                 <span className="text-[11px] font-medium text-gray-700">Afficher l'ombre</span>

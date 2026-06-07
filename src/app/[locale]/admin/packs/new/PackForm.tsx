@@ -12,7 +12,7 @@ const PackCreativeModal = dynamic(() => import('@/components/admin/PackCreativeM
     ssr: false,
 })
 
-interface Book {
+interface Product {
     id: string
     title: string
     author: string
@@ -23,7 +23,7 @@ interface Book {
     stock: number
 }
 
-export default function PackForm({ books, whatsappPhone }: { books: Book[], whatsappPhone?: string }) {
+export default function PackForm({ products, whatsappPhone }: { products: Product[], whatsappPhone?: string }) {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -35,29 +35,29 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
     const [searchQuery, setSearchQuery] = useState('')
     const [onlyAvailable, setOnlyAvailable] = useState(true)
 
-    function toggleBook(bookId: string) {
+    function toggleBook(productId: string) {
         setSelectedBooks(prev =>
-            prev.includes(bookId)
-                ? prev.filter(id => id !== bookId)
-                : [...prev, bookId]
+            prev.includes(productId)
+                ? prev.filter(id => id !== productId)
+                : [...prev, productId]
         )
     }
 
     function toggleAll() {
-        if (selectedBooks.length === books.length) {
+        if (selectedBooks.length === products.length) {
             setSelectedBooks([])
         } else {
-            setSelectedBooks(books.map(b => b.id))
+            setSelectedBooks(products.map(b => b.id))
         }
     }
 
     function selectRandomFour() {
-        const shuffled = [...books].sort(() => 0.5 - Math.random())
+        const shuffled = [...products].sort(() => 0.5 - Math.random())
         const selected = shuffled.slice(0, 4).map(b => b.id)
         setSelectedBooks(selected)
     }
 
-    function toggleAllInCategory(categoryBooks: Book[]) {
+    function toggleAllInCategory(categoryBooks: Product[]) {
         const categoryBookIds = categoryBooks.map(b => b.id)
         const allSelected = categoryBookIds.every(id => selectedBooks.includes(id))
         
@@ -68,25 +68,25 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
         }
     }
 
-    const selectedBooksData = books.filter(b => selectedBooks.includes(b.id))
+    const selectedBooksData = products.filter(b => selectedBooks.includes(b.id))
     const totalOriginalPrice = selectedBooksData.reduce((sum, b) => sum + b.price, 0)
 
-    // Filter and group books
-    const filteredBooks = books.filter(book => {
-        const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                             book.author.toLowerCase().includes(searchQuery.toLowerCase())
-        const matchesAvailability = onlyAvailable ? (book.active && book.stock > 0) : true
+    // Filter and group products
+    const filteredBooks = products.filter(product => {
+        const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             product.author.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesAvailability = onlyAvailable ? (product.active && product.stock > 0) : true
         return matchesSearch && matchesAvailability
     })
 
-    const groupedBooks = filteredBooks.reduce((acc, book) => {
-        const category = book.category || 'Non catégorisé'
+    const groupedBooks = filteredBooks.reduce((acc, product) => {
+        const category = product.category || 'Non catégorisé'
         if (!acc[category]) {
             acc[category] = []
         }
-        acc[category].push(book)
+        acc[category].push(product)
         return acc
-    }, {} as Record<string, typeof books>)
+    }, {} as Record<string, typeof products>)
 
     const handleOpenCreative = () => {
         const name = (document.getElementById('name') as HTMLInputElement)?.value || 'Nouveau Pack';
@@ -99,7 +99,7 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
             description,
             price,
             isFreeDelivery,
-            books: selectedBooksData,
+            products: selectedBooksData,
             whatsappNumber: whatsappPhone
         });
         setShowCreativeModal(true);
@@ -288,7 +288,7 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
                         </div>
                     </div>
 
-                    {/* Book Selection */}
+                    {/* Product Selection */}
                     <div className="bg-white rounded-lg border border-gray-200 p-6">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
                             <div>
@@ -301,7 +301,7 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
                                         onClick={toggleAll}
                                         className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                                     >
-                                        {selectedBooks.length === books.length ? 'Tout désélectionner' : 'Tout sélectionner'}
+                                        {selectedBooks.length === products.length ? 'Tout désélectionner' : 'Tout sélectionner'}
                                     </button>
                                     <button
                                         type="button"
@@ -354,35 +354,35 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
                                             </button>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {categoryBooks.map((book) => (
+                                            {categoryBooks.map((product) => (
                                                 <label
-                                                    key={book.id}
-                                                    className={`flex items-center p-4 border-2 rounded-2xl cursor-pointer transition-all ${selectedBooks.includes(book.id)
+                                                    key={product.id}
+                                                    className={`flex items-center p-4 border-2 rounded-2xl cursor-pointer transition-all ${selectedBooks.includes(product.id)
                                                             ? 'border-blue-600 bg-blue-50'
                                                             : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
                                                         }`}
                                                 >
                                                     <input
                                                         type="checkbox"
-                                                        checked={selectedBooks.includes(book.id)}
-                                                        onChange={() => toggleBook(book.id)}
+                                                        checked={selectedBooks.includes(product.id)}
+                                                        onChange={() => toggleBook(product.id)}
                                                         className="w-5 h-5 text-blue-600 border-gray-300 rounded-lg focus:ring-blue-500"
                                                     />
                                                     <div className="ml-4 flex-1">
                                                         <p className="text-sm font-black text-gray-900 leading-tight">
-                                                            {book.title}
-                                                            {!book.active && (
+                                                            {product.title}
+                                                            {!product.active && (
                                                                 <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-[8px] font-black uppercase rounded">Inactif</span>
                                                             )}
                                                         </p>
                                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
-                                                            {book.author} 
-                                                            <span className={`ml-3 ${book.stock > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                                                Stock: {book.stock}
+                                                            {product.author} 
+                                                            <span className={`ml-3 ${product.stock > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                                                Stock: {product.stock}
                                                             </span>
                                                         </p>
                                                     </div>
-                                                    <span className="text-sm font-black text-black ml-2">{book.price} MAD</span>
+                                                    <span className="text-sm font-black text-black ml-2">{product.price} MAD</span>
                                                 </label>
                                             ))}
                                         </div>
@@ -413,10 +413,10 @@ export default function PackForm({ books, whatsappPhone }: { books: Book[], what
                             <div className="mb-8">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">Livres inclus</p>
                                 <ul className="space-y-3">
-                                    {selectedBooksData.map((book) => (
-                                        <li key={book.id} className="flex items-center gap-3">
+                                    {selectedBooksData.map((product) => (
+                                        <li key={product.id} className="flex items-center gap-3">
                                             <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
-                                            <p className="text-xs font-bold text-gray-800 line-clamp-1">{book.title}</p>
+                                            <p className="text-xs font-bold text-gray-800 line-clamp-1">{product.title}</p>
                                         </li>
                                     ))}
                                 </ul>
