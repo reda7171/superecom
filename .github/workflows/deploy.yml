@@ -28,6 +28,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
           port: 2222
+          command_timeout: 30m
           script: |
             # Aller dans le dossier, le créer s'il n'existe pas
             echo "${{ secrets.VPS_PASSWORD }}" | sudo -S mkdir -p /var/www/superecom
