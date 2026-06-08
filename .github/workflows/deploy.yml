@@ -70,6 +70,17 @@ jobs:
             
             # Rebuild et Restart UNIQUEMENT le service 'app'
             echo "🚀 Rechargement du service application..."
-            # On utilise 'docker compose' (v2) si possible, et --no-deps pour ne pas toucher aux autres conteneurs
-            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker compose rm -fs app || echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker-compose rm -fs app || true
-            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker compose up -d --build --force-recreate --no-deps app || echo "${{ secrets.VPS_PASSWORD }}" | sudo -S docker-compose up -d --build --force-recreate --no-deps app
+            echo "${{ secrets.VPS_PASSWORD }}" | sudo -S bash -c '
+              cd /var/www/superecom
+
+              # Arrêt de l ancien conteneur riwaya_app (libérer le port 3000)
+              docker stop riwaya_app 2>/dev/null || true
+              docker rm -f riwaya_app 2>/dev/null || true
+
+              # Supprimer l ancienne image pour forcer le rebuild
+              docker rm -f superecom_app 2>/dev/null || true
+              docker image rm -f superecom-app:latest 2>/dev/null || true
+
+              # Démarrer le stack complet avec docker compose v2
+              DOCKER_BUILDKIT=0 docker compose up -d --build --force-recreate --remove-orphans
+            '
